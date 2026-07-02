@@ -20,6 +20,7 @@ import feedparser
 
 from flask import Flask
 import yfinance as yf
+from stock_utils import get_history
 import requests
 
 import os
