@@ -21,6 +21,7 @@ import feedparser
 from flask import Flask
 import yfinance as yf
 from stock_utils import get_history
+from portfolio import get_portfolio_summary
 import requests
 
 import os
@@ -2271,83 +2272,19 @@ def trading_signals_page():
 
 @app.route("/portfolio-manager-page")
 def portfolio_manager_page():
-    import csv
+    data = get_portfolio_summary()
+    holdings = data["positions"]
 
-    portfolio_file = "/root/novo-ai-monitor/portfolio.csv"
-
-    def get_fx_rate(pair, fallback):
-        try:
-            fx = yf.Ticker(pair).history(period="5d")
-            return float(fx["Close"].iloc[-1])
-        except Exception:
-            return fallback
-
-    usd_dkk = get_fx_rate("USDDKK=X", 6.95)
-    eur_dkk = get_fx_rate("EURDKK=X", 7.46)
-
-    def currency_for_ticker(ticker):
-        if ticker.endswith(".CO"):
-            return "DKK"
-        if ticker.endswith(".AS"):
-            return "EUR"
-        return "USD"
-
-    def to_dkk(amount, currency):
-        if currency == "USD":
-            return amount * usd_dkk
-        if currency == "EUR":
-            return amount * eur_dkk
-        return amount
-
-    holdings = []
-    total_value = 0
-    total_cost = 0
-
-    with open(portfolio_file, "r") as f:
-        reader = csv.DictReader(f)
-
-        for row in reader:
-            stock_name = row["stock"]
-            ticker = row["ticker"]
-            qty = float(row["qty"])
-            buy_price = float(row["buy_price"])
-
-            data = yf.Ticker(ticker).history(period="10d")
-            latest = float(data["Close"].iloc[-1])
-
-            currency = currency_for_ticker(ticker)
-
-            latest_dkk = to_dkk(latest, currency)
-            buy_price_dkk = to_dkk(buy_price, currency)
-
-            value = latest_dkk * qty
-            cost = buy_price_dkk * qty
-            profit = value - cost
-            profit_pct = (profit / cost) * 100 if cost else 0
-
-            total_value += value
-            total_cost += cost
-
-            holdings.append({
-                "stock": stock_name,
-                "ticker": ticker,
-                "qty": qty,
-                "buy_price": buy_price,
-                "latest": latest,
-                "currency": currency,
-                "buy_price_dkk": buy_price_dkk,
-                "latest_dkk": latest_dkk,
-                "value": value,
-                "cost": cost,
-                "profit": profit,
-                "profit_pct": profit_pct
-            })
+    total_value = data["total_value"]
+    total_cost = data["total_cost"]
+    total_profit = data["total_profit"]
+    total_profit_pct = data["total_profit_pct"]
+    total_color = "green" if total_profit >= 0 else "red"
 
     rows = ""
 
     for h in holdings:
-        weight = (h["value"] / total_value) * 100 if total_value else 0
-        color = "green" if h["profit"] >= 0 else "red"
+        color = "green" if h["profit_dkk"] >= 0 else "red"
 
         rows += f"""
         <tr>
@@ -2356,15 +2293,11 @@ def portfolio_manager_page():
             <td>{h['qty']}</td>
             <td>{h['buy_price']:.2f} {h['currency']}<br><small>{h['buy_price_dkk']:.2f} DKK</small></td>
             <td>{h['latest']:.2f} {h['currency']}<br><small>{h['latest_dkk']:.2f} DKK</small></td>
-            <td>{h['value']:.2f} DKK</td>
-            <td style="color:{color}; font-weight:bold;">{h['profit']:.2f} DKK ({h['profit_pct']:.2f}%)</td>
-            <td>{weight:.1f}%</td>
+            <td>{h['value_dkk']:.2f} DKK</td>
+            <td style="color:{color}; font-weight:bold;">{h['profit_dkk']:.2f} DKK ({h['profit_pct']:.2f}%)</td>
+            <td>{h['weight_pct']:.1f}%</td>
         </tr>
         """
-
-    total_profit = total_value - total_cost
-    total_profit_pct = (total_profit / total_cost) * 100 if total_cost else 0
-    total_color = "green" if total_profit >= 0 else "red"
 
     return f"""
     <html>
@@ -2381,13 +2314,12 @@ def portfolio_manager_page():
     </head>
     <body>
         <div class="container">
-            <h1>💼 Portfolio Manager V3.5</h1>
+            <h1>💼 Portfolio Manager V4.2</h1>
 
             <div class="card">
                 <p><b>Samlet værdi:</b> {total_value:.2f} DKK</p>
                 <p><b>Samlet gevinst/tab:</b> <span style="color:{total_color}; font-weight:bold;">{total_profit:.2f} DKK ({total_profit_pct:.2f}%)</span></p>
-                <p><b>Datakilde:</b> portfolio.csv</p>
-                <p><b>Valutakurser:</b> USD/DKK {usd_dkk:.2f} · EUR/DKK {eur_dkk:.2f}</p>
+                <p><b>Datakilde:</b> portfolio.py + portfolio.csv</p>
             </div>
 
             <table>
