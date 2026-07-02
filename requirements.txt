@@ -1,0 +1,9 @@
+flask
+yfinance
+pandas
+requests
+openai
+feedparser
+praw
+ta
+schedule

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Novo AI Dashboard</title>
+</head>
+<body>
+    <h1>Aktie Dashboard</h1>
+
+    <img src="/history-chart" width="900">
+
+    {% for table in tables %}
+        {{ table|safe }}
+    {% endfor %}
+</body>
+</html>
