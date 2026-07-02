@@ -2,18 +2,23 @@ venv/
 __pycache__/
 *.pyc
 
+# Logs
 *.log
+
+# Data
 *.csv
 *.png
-*.tar.gz
 
+# Backup files
 app.py.bak
+app.py.save
 app.py.backup*
 app.py.before*
-app.py.save
 app.py.v1.*
 app.py.working*
 
+# Cache
 smart_alert_state.json
 stock_news_ai_cache.json
 seen_news.txt
+archive/
