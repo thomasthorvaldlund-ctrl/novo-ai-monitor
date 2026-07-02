@@ -1484,7 +1484,7 @@ def stock_screener_page():
 @app.route("/stock-news-ai-score")
 def stock_news_ai_score():
     cache_file = "/root/novo-ai-monitor/stock_news_ai_cache.json"
-    cache_seconds = 1800
+    cache_seconds = 21600
 
     if os.path.exists(cache_file) and time.time() - os.path.getmtime(cache_file) < cache_seconds:
         with open(cache_file, "r") as f:
