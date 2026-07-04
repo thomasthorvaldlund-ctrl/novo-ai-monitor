@@ -31,4 +31,45 @@ def portfolio_manager_page():
         </tr>
         """
 
-    return "OK"
+    return f"""
+    <html>
+    <head>
+        <title>Portfolio Manager</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; background:#eef2f7; padding:40px; }}
+            .container {{ max-width:1200px; margin:auto; }}
+            .card {{ background:white; padding:24px; border-radius:14px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); }}
+            table {{ width:100%; border-collapse:collapse; background:white; border-radius:14px; overflow:hidden; }}
+            th {{ background:#111827; color:white; padding:14px; text-align:left; }}
+            td {{ padding:14px; border-bottom:1px solid #e5e7eb; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>💼 Portfolio Manager V4.2</h1>
+
+            <div class="card">
+                <p><b>Samlet værdi:</b> {total_value:.2f} DKK</p>
+                <p><b>Samlet gevinst/tab:</b> <span style="color:{total_color}; font-weight:bold;">{total_profit:.2f} DKK ({total_profit_pct:.2f}%)</span></p>
+                <p><b>Datakilde:</b> portfolio.py + portfolio.csv</p>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Aktie</th>
+                    <th>Ticker</th>
+                    <th>Antal</th>
+                    <th>Købskurs</th>
+                    <th>Aktuel kurs</th>
+                    <th>Værdi</th>
+                    <th>Gevinst/tab</th>
+                    <th>Vægt</th>
+                </tr>
+                {rows}
+            </table>
+
+            <p>Rediger beholdninger i: /root/novo-ai-monitor/portfolio.csv</p>
+        </div>
+    </body>
+    </html>
+    """
