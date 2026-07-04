@@ -20,5 +20,9 @@ def portfolio_analysis_page():
 
     novo_weight = (novo_value / total_value) * 100
     dsv_weight = (dsv_value / total_value) * 100
+    
+    novo_profit = novo_value - (novo_qty * novo_buy_price)
+    dsv_profit = dsv_value - (dsv_qty * dsv_buy_price)
+    total_profit = novo_profit + dsv_profit
 
     return "OK"
