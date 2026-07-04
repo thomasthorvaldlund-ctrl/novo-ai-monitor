@@ -48,7 +48,7 @@ AI-forslag:
 - Diversificering er lav.
 - Overvej at sprede på flere sektorer og lande.
 - Mulige kategorier: teknologi, industri, energi, indeksfond/ETF.
-- Dette er ikke finansiel rådgivning.
+- Dette er ikke finansiel rådgivning
 """
 
     return {
@@ -74,7 +74,9 @@ def portfolio_analysis_page():
 
         <p>Samlet værdi: {data.get("total_value")} DKK</p>
         <p>Samlet gevinst/tab: {data.get("total_profit")} DKK</p>
-
+        <p>NOVO vægt: {data.get("novo_weight")}%</p>
+        <p>DSV vægt: {data.get("dsv_weight")}%</p>
+        <p>Koncentrationsrisiko: {data.get("concentration_risk")}</p>
     </body>
     </html>
     """
