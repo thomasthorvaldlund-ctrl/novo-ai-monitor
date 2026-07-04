@@ -1,4 +1,9 @@
 from flask import Blueprint
+import yfinance as yf
+
+portfolio_analysis_bp = Blueprint("portfolio_analysis", __name__)
+
+from flask import Blueprint
 
 portfolio_analysis_bp = Blueprint("portfolio_analysis", __name__)
 
