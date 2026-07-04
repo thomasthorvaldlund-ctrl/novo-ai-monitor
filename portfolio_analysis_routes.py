@@ -31,5 +31,33 @@ def portfolio_analysis_page():
         concentration = "Moderat"
     else:
         concentration = "Lav"
+        
+    analysis = f"""
 
-    return "OK"
+Porteføljeanalyse:
+
+Samlet værdi: {total_value:.2f} DKK
+Samlet gevinst/tab: {total_profit:.2f} DKK
+
+Fordeling:
+NOVO: {novo_weight:.1f}%
+DSV: {dsv_weight:.1f}%
+
+Koncentrationsrisiko: {concentration}
+
+AI-forslag:
+- Porteføljen består kun af 2 aktier.
+- Diversificering er lav.
+- Overvej at sprede på flere sektorer og lande.
+- Mulige kategorier: teknologi, industri, energi, indeksfond/ETF.
+- Dette er ikke finansiel rådgivning.
+"""
+
+    return {
+        "total_value": round(total_value, 2),
+        "total_profit": round(total_profit, 2),
+        "novo_weight": round(novo_weight, 1),
+        "dsv_weight": round(dsv_weight, 1),
+        "concentration_risk": concentration,
+        "analysis": analysis,
+    }
