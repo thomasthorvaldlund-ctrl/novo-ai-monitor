@@ -77,6 +77,8 @@ def portfolio_analysis_page():
         <p>NOVO vægt: {data.get("novo_weight")}%</p>
         <p>DSV vægt: {data.get("dsv_weight")}%</p>
         <p>Koncentrationsrisiko: {data.get("concentration_risk")}</p>
+        
+        <pre>{data.get("analysis")}</pre>
     </body>
     </html>
     """
