@@ -73,6 +73,7 @@ def portfolio_analysis_page():
         <h1>Porteføljeanalyse</h1>
 
         <p>Samlet værdi: {data.get("total_value")} DKK</p>
+        <p>Samlet gevinst/tab: {data.get("total_profit")} DKK</p>
 
     </body>
     </html>
