@@ -62,4 +62,18 @@ AI-forslag:
     
 @portfolio_analysis_bp.route("/portfolio-analysis-page")
 def portfolio_analysis_page():
-    return "HTML OK"
+    data = portfolio_analysis()
+
+    return f"""
+    <html>
+    <head>
+        <title>Porteføljeanalyse</title>
+    </head>
+    <body>
+        <h1>Porteføljeanalyse</h1>
+
+        <p>Samlet værdi: {data.get("total_value")} DKK</p>
+
+    </body>
+    </html>
+    """
