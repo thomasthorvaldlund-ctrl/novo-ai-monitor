@@ -13,5 +13,12 @@ def portfolio_analysis_page():
     
     novo_price = float(yf.Ticker("NOVO-B.CO").history(period="10d")["Close"].iloc[-1])
     dsv_price = float(yf.Ticker("DSV.CO").history(period="10d")["Close"].iloc[-1])
+    
+    novo_value = novo_qty * novo_price
+    dsv_value = dsv_qty * dsv_price
+    total_value = novo_value + dsv_value
+
+    novo_weight = (novo_value / total_value) * 100
+    dsv_weight = (dsv_value / total_value) * 100
 
     return "OK"
