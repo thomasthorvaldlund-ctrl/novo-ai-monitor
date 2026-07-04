@@ -12,4 +12,29 @@ def market_dashboard():
         "DAX": "^GDAXI"
     }
 
+    results = []
+    positive = 0
+
+    for name, ticker in markets.items():
+        try:
+            data = yf.Ticker(ticker).history(period="5d")
+            latest = float(data["Close"].iloc[-1])
+            previous = float(data["Close"].iloc[-2])
+            change = ((latest - previous) / previous) * 100
+
+            if change > 0:
+                positive += 1
+
+            results.append({
+                "market": name,
+                "price": round(latest, 2),
+                "change": round(change, 2)
+            })
+
+        except Exception as e:
+            results.append({
+                "market": name,
+                "error": str(e)
+            })
+
     return "OK"
