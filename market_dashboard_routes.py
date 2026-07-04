@@ -47,4 +47,19 @@ def market_dashboard():
         signal = "Bearish"
         color = "red"
 
+    rows = ""
+
+    for item in results:
+        if "error" in item:
+            rows += f"<tr><td>{item['market']}</td><td colspan='2'>Fejl: {item['error']}</td></tr>"
+        else:
+            c = "green" if item["change"] >= 0 else "red"
+            rows += f"""
+            <tr>
+                <td><b>{item['market']}</b></td>
+                <td>{item['price']}</td>
+                <td style="color:{c}; font-weight:bold;">{item['change']}%</td>
+            </tr>
+            """
+            
     return "OK"
