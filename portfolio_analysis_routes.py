@@ -24,5 +24,12 @@ def portfolio_analysis_page():
     novo_profit = novo_value - (novo_qty * novo_buy_price)
     dsv_profit = dsv_value - (dsv_qty * dsv_buy_price)
     total_profit = novo_profit + dsv_profit
+    
+    if max(novo_weight, dsv_weight) > 65:
+        concentration = "Høj"
+    elif max(novo_weight, dsv_weight) > 50:
+        concentration = "Moderat"
+    else:
+        concentration = "Lav"
 
     return "OK"
