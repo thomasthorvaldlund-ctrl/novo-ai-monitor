@@ -23,6 +23,7 @@ import yfinance as yf
 from stock_utils import get_history
 from portfolio import get_portfolio_summary
 from portfolio_manager_routes import portfolio_manager_bp
+from portfolio_analysis_routes import portfolio_analysis_bp
 import requests
 
 import os
