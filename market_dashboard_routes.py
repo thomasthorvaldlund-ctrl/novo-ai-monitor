@@ -37,4 +37,14 @@ def market_dashboard():
                 "error": str(e)
             })
 
+    if positive >= 3:
+        signal = "Bullish"
+        color = "green"
+    elif positive == 2:
+        signal = "Neutral"
+        color = "orange"
+    else:
+        signal = "Bearish"
+        color = "red"
+
     return "OK"
