@@ -33,6 +33,7 @@ app = Flask(__name__)
 from routes.system_status import system_status_bp
 app.register_blueprint(system_status_bp)
 app.register_blueprint(portfolio_manager_bp)
+app.register_blueprint(portfolio_analysis_bp)
 
 USERS = {
     "thomas": "84autoKamp19#",
