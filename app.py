@@ -26,6 +26,7 @@ from portfolio_manager_routes import portfolio_manager_bp
 from portfolio_analysis_routes import portfolio_analysis_bp
 from market_dashboard_routes import market_dashboard_bp
 from watchlist_routes import watchlist_bp
+from combined_score_routes import combined_score_bp
 import requests
 
 import os
@@ -38,6 +39,7 @@ app.register_blueprint(portfolio_manager_bp)
 app.register_blueprint(portfolio_analysis_bp)
 app.register_blueprint(market_dashboard_bp)
 app.register_blueprint(watchlist_bp)
+app.register_blueprint(combined_score_bp)
 
 USERS = {
     "thomas": "84autoKamp19#",
