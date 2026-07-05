@@ -25,6 +25,7 @@ from portfolio_analysis_routes import portfolio_analysis_bp
 from market_dashboard_routes import market_dashboard_bp
 from watchlist_routes import watchlist_bp
 from combined_score_routes import combined_score_bp
+from command_center_routes import command_center_bp
 from stock_screener_service import stock_screener as service_stock_screener
 from stock_news_service import stock_news_ai_score as service_stock_news_ai_score
 import requests
@@ -39,6 +40,7 @@ app.register_blueprint(portfolio_analysis_bp)
 app.register_blueprint(market_dashboard_bp)
 app.register_blueprint(watchlist_bp)
 app.register_blueprint(combined_score_bp)
+app.register_blueprint(command_center_bp)
 
 USERS = {
     "thomas": "84autoKamp19#",
@@ -71,7 +73,7 @@ def before_request():
         "/dsv-chart",
         "/daily-report",
         "/smart-alerts",
-	"/save-history",
+	    "/save-history",
         "/stock-screener",
         "/stock-screener-page",
         "/portfolio-alerts",
@@ -89,6 +91,13 @@ def before_request():
         "/combined-stock-score-page",
         "/stock-news-ai-score",
         "/stock-screener-report",
+        "/watchlist-page",
+        "/trading-signals-page",
+        "/portfolio-manager-page",
+        "/combined-stock-score-page",
+        "/stock-news-ai-score",
+        "/stock-screener-report",
+    "/command-center",
     ]:
         return
 
