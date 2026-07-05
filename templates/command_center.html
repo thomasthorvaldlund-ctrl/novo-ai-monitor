@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Command Center</title>
+    <style>
+        body{
+            font-family:Arial,sans-serif;
+            background:#f4f4f4;
+            margin:40px;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        h1{
+            color:#1f2937;
+        }
+
+        h2{
+            margin-top:0;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>AI Command Center</h1>
+
+<div class="card">
+    <h2>🌍 Market Score</h2>
+
+    <h3>{{ market.score }}/100</h3>
+
+    <p>{{ market.status }}</p>
+
+</div>
+
+<div class="card">
+
+<h2>⭐ Top Picks</h2>
+
+<ol>
+
+{% for stock in top_picks %}
+
+<li>{{ stock.stock }} ({{ stock.score }})</li>
+
+{% endfor %}
+
+</ol>
+
+</div>
+
+</body>
+</html>
