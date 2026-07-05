@@ -28,6 +28,7 @@ from market_dashboard_routes import market_dashboard_bp
 from watchlist_routes import watchlist_bp
 from combined_score_routes import combined_score_bp
 from stock_screener_service import stock_screener as service_stock_screener
+from stock_news_service import stock_news_ai_score as service_stock_news_ai_score
 import requests
 
 import os
