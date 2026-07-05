@@ -10,8 +10,6 @@ from flask import request, Response
 
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from flask import send_file
 
 import os
 from openai import OpenAI
@@ -31,7 +29,6 @@ from stock_screener_service import stock_screener as service_stock_screener
 from stock_news_service import stock_news_ai_score as service_stock_news_ai_score
 import requests
 
-import os
 import time
 
 app = Flask(__name__)
