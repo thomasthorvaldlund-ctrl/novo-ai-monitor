@@ -6,13 +6,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from flask import send_file, render_template
 
+from combined_score_service import combined_stock_score as service_combined_score
+
 from flask import request, Response
 
 import matplotlib
 matplotlib.use("Agg")
 
 import os
-from openai import OpenAI
+from openai_service import client
 
 import feedparser
 
@@ -108,7 +110,6 @@ def before_request():
 
 BOT_TOKEN = "8860628701:AAFQuL3nUBkL_eVCVDhnjJzbOahqfFOhKhU"
 CHAT_ID = "8532274659"
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
@@ -1638,8 +1639,7 @@ def stock_news_ai_page():
     </body>
     </html>
     """
-
-
+    
 @app.route("/combined-stock-score")
 def combined_stock_score():
     tech_data = service_stock_screener()
