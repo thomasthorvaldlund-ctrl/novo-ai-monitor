@@ -27,6 +27,7 @@ from portfolio_analysis_routes import portfolio_analysis_bp
 from market_dashboard_routes import market_dashboard_bp
 from watchlist_routes import watchlist_bp
 from combined_score_routes import combined_score_bp
+from stock_screener_service import stock_screener as service_stock_screener
 import requests
 
 import os
@@ -1379,7 +1380,7 @@ def stock_screener():
 
 @app.route("/stock-screener-report")
 def stock_screener_report():
-    data = stock_screener()
+    data = service_stock_screener()
     ranking = data.get("ranking", [])[:3]
 
     message = "📈 Dagens Aktie Screener Top 3\n\n"
@@ -1400,7 +1401,7 @@ def stock_screener_report():
 
 @app.route("/stock-screener-page")
 def stock_screener_page():
-    data = stock_screener()
+    data = service_stock_screener()
     ranking = data.get("ranking", [])
 
     rows = ""
@@ -1704,7 +1705,7 @@ def stock_news_ai_page():
 
 @app.route("/combined-stock-score")
 def combined_stock_score():
-    tech_data = stock_screener()
+    tech_data = service_stock_screener()
     news_data = stock_news_ai_score()
 
     tech_map = {
