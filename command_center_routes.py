@@ -7,6 +7,7 @@ from top_picks_service import get_top_picks
 from combined_score_service import combined_stock_score as service_combined_score
 from openai_service import client
 from ai_alerts_service import get_ai_alerts
+from portfolio_summary_service import get_portfolio_summary
 
 command_center_bp = Blueprint("command_center", __name__)
 
@@ -15,6 +16,7 @@ def command_center():
     market = get_market_score()
     summary = get_market_summary()
     alerts = get_ai_alerts()
+    portfolio = get_portfolio_summary()
 
     combined_data = service_combined_score(client)
     ranking = combined_data.get("combined_ranking", [])
@@ -27,4 +29,5 @@ def command_center():
         top_picks=top_picks,
         summary=summary,
         alerts=alerts,
+        portfolio=portfolio,
     )
