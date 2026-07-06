@@ -1,10 +1,19 @@
 from combined_score_service import combined_stock_score
 from openai_service import client
 
-
-def get_ai_analyst():
+def build_analysis_data():
     data = combined_stock_score(client)
     ranking = data.get("combined_ranking", [])
+
+    return {
+        "ranking": ranking,
+        "count": len(ranking),
+    }
+    
+def get_ai_analyst():
+    analysis = build_analysis_data()
+
+    ranking = analysis["ranking"]
 
     if not ranking:
         return "Ingen markedsdata er tilgængelige."
