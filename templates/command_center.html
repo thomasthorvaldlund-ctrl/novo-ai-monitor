@@ -41,19 +41,18 @@
 </div>
 
 <div class="card">
+    <h2>⭐ Top Picks</h2>
 
-<h2>⭐ Top Picks</h2>
+    <ol>
+    {% for stock in top_picks %}
+        <li>{{ stock.stock }} ({{ stock.score }})</li>
+    {% endfor %}
+    </ol>
+</div>
 
-<ol>
-
-{% for stock in top_picks %}
-
-<li>{{ stock.stock }} ({{ stock.score }})</li>
-
-{% endfor %}
-
-</ol>
-
+<div class="card">
+    <h2>📰 AI Market Summary</h2>
+    <p>{{ summary }}</p>
 </div>
 
 </body>
