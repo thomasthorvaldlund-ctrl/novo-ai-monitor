@@ -1,5 +1,8 @@
+import json
+
 from combined_score_service import combined_stock_score
 from openai_service import client
+
 
 def build_analysis_data():
     data = combined_stock_score(client)
@@ -9,15 +12,9 @@ def build_analysis_data():
         "ranking": ranking,
         "count": len(ranking),
     }
-    
-def get_ai_analyst():
-    analysis = build_analysis_data()
 
-    ranking = analysis["ranking"]
 
-    if not ranking:
-        return "Ingen markedsdata er tilgængelige."
-
+def build_fallback_analysis(ranking):
     top_3 = ranking[:3]
     weak = [item for item in ranking if item.get("combined_score", 0) < 50]
 
@@ -26,13 +23,10 @@ def get_ai_analyst():
         for item in top_3
     )
 
-    if weak:
-        risk_text = ", ".join(
-            f"{item.get('stock')} ({item.get('combined_score')})"
-            for item in weak[:3]
-        )
-    else:
-        risk_text = "ingen tydelige svage kandidater"
+    risk_text = ", ".join(
+        f"{item.get('stock')} ({item.get('combined_score')})"
+        for item in weak[:3]
+    ) or "ingen tydelige svage kandidater"
 
     return (
         f"AI Analyst vurderer markedet som moderat positivt. "
@@ -40,3 +34,41 @@ def get_ai_analyst():
         f"De største svaghedstegn ses ved {risk_text}. "
         f"Fokus bør være på aktier med høj Combined Score og lav nyhedsrisiko."
     )
+
+
+def get_ai_analyst():
+    analysis = build_analysis_data()
+    ranking = analysis["ranking"]
+
+    if not ranking:
+        return "Ingen markedsdata er tilgængelige."
+
+    fallback = build_fallback_analysis(ranking)
+
+    try:
+        prompt = f"""
+Du er en kortfattet dansk AI-aktieanalytiker.
+
+Skriv en kort markedsvurdering på dansk baseret på disse data.
+Maks 5 sætninger.
+Ingen investeringsgaranti. Ingen lange forbehold.
+
+Data:
+{json.dumps(analysis, ensure_ascii=False)}
+"""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Du er en forsigtig og konkret aktieanalytiker."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.4,
+            max_tokens=220,
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        print("AI Analyst error:", e)
+        return fallback
