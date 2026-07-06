@@ -55,5 +55,18 @@
     <p>{{ summary }}</p>
 </div>
 
+<div class="card">
+    <h2>🚨 AI Alerts</h2>
+
+    <ul>
+    {% for alert in alerts %}
+        <li>
+            <b>{{ alert.title }}</b><br>
+            {{ alert.message }}
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
 </body>
 </html>
