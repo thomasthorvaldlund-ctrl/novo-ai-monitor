@@ -9,10 +9,25 @@ def get_ai_analyst():
     if not ranking:
         return "Ingen markedsdata er tilgængelige."
 
-    best = ranking[0]
+    top_3 = ranking[:3]
+    weak = [item for item in ranking if item.get("combined_score", 0) < 50]
+
+    top_text = ", ".join(
+        f"{item.get('stock')} ({item.get('combined_score')})"
+        for item in top_3
+    )
+
+    if weak:
+        risk_text = ", ".join(
+            f"{item.get('stock')} ({item.get('combined_score')})"
+            for item in weak[:3]
+        )
+    else:
+        risk_text = "ingen tydelige svage kandidater"
 
     return (
-        f"AI vurderer markedet som overvejende positivt. "
-        f"Den stærkeste aktie lige nu er {best['stock']} "
-        f"med en Combined Score på {best['combined_score']}."
+        f"AI Analyst vurderer markedet som moderat positivt. "
+        f"De stærkeste kandidater er {top_text}. "
+        f"De største svaghedstegn ses ved {risk_text}. "
+        f"Fokus bør være på aktier med høj Combined Score og lav nyhedsrisiko."
     )
