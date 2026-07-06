@@ -108,7 +108,7 @@ def before_request():
     if not auth or not check_auth(auth.username, auth.password):
         return require_auth()
 
-BOT_TOKEN = "8860628701:AAFQuL3nUBkL_eVCVDhnjJzbOahqfFOhKhU"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = "8532274659"
 
 def send_telegram(message):
