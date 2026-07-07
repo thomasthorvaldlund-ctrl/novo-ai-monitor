@@ -18,12 +18,13 @@ def command_center():
     summary = get_market_summary()
     alerts = get_ai_alerts()
     portfolio = get_portfolio_summary()
-    analyst = get_ai_analyst()
 
     combined_data = service_combined_score(client)
     ranking = combined_data.get("combined_ranking", [])
 
     top_picks = get_top_picks(ranking)
+    
+    analyst = get_ai_analyst()
 
     return render_template(
         "command_center.html",
