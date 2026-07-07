@@ -1,131 +1,90 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AI Command Center</title>
-    <style>
-        body{
-            font-family:Arial,sans-serif;
-            background:#eef2f7;
-            margin:0;
-            padding:40px;
-            color:#111827;
-        }
+{% extends "base.html" %}
 
-        .container{
-            max-width:1100px;
-            margin:auto;
-        }
+{% block title %}AI Command Center{% endblock %}
 
-        .grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-            gap:20px;
-        }
-
-        .card{
-            background:white;
-            padding:22px;
-            border-radius:14px;
-            box-shadow:0 4px 14px rgba(0,0,0,.08);
-        }
-
-        h1{
-            color:#111827;
-            margin-bottom:25px;
-        }
-
-        h2{
-            margin-top:0;
-        }
-        .score{
-    font-size:48px;
-    font-weight:bold;
-    margin:10px 0;
-    color:#2563eb;
+{% block head %}
+<style>
+    .score {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #2563eb;
     }
 
-    .status{
-    display:inline-block;
-    padding:6px 14px;
-    border-radius:999px;
-    background:#dcfce7;
-    color:#166534;
-    font-weight:bold;
-    font-size:14px;
+    .status {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #166534;
+        font-weight: bold;
+        font-size: 14px;
     }
 
-    .card p{
-    line-height:1.6;
+    .card p {
+        line-height: 1.6;
     }
-    </style>
-</head>
+</style>
+{% endblock %}
 
-<body>
-
-<div class="container">
+{% block content %}
 
 <h1>AI Command Center</h1>
 
 <div class="grid">
 
-<div class="card">
-    <h2>🌍 Market Score</h2>
-<div class="score">
-    {{ market.score }}/100
-</div>
+    <div class="card">
+        <h2>🌍 Market Score</h2>
+        <div class="score">{{ market.score }}/100</div>
+        <div class="status">{{ market.status }}</div>
+    </div>
 
-<div class="status">
-    {{ market.status }}
-</div>
-</div>
+    <div class="card">
+        <h2>⭐ Top Picks</h2>
+        <ol>
+        {% for stock in top_picks %}
+            <li>{{ stock.stock }} ({{ stock.score }})</li>
+        {% endfor %}
+        </ol>
+    </div>
 
-<div class="card">
-    <h2>⭐ Top Picks</h2>
-    <ol>
-    {% for stock in top_picks %}
-        <li>{{ stock.stock }} ({{ stock.score }})</li>
-    {% endfor %}
-    </ol>
-</div>
+    <div class="card">
+        <h2>📰 AI Market Summary</h2>
+        <p>{{ summary }}</p>
+    </div>
 
-<div class="card">
-    <h2>📰 AI Market Summary</h2>
-    <p>{{ summary }}</p>
-</div>
+    <div class="card">
+        <h2>🚨 AI Alerts</h2>
+        <ul>
+        {% for alert in alerts %}
+            <li>
+                <b>{{ alert.title }}</b><br>
+                {{ alert.message }}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
 
-<div class="card">
-    <h2>🚨 AI Alerts</h2>
-    <ul>
-    {% for alert in alerts %}
-        <li>
-            <b>{{ alert.title }}</b><br>
-            {{ alert.message }}
-        </li>
-    {% endfor %}
-    </ul>
-</div>
+    <div class="card">
+        <h2>💼 Portfolio</h2>
+        <p><b>Samlet værdi:</b> {{ portfolio.value }}</p>
+        <p><b>Dagens ændring:</b> {{ portfolio.daily_change }}</p>
+        <p><b>Samlet afkast:</b> {{ portfolio.total_return }}</p>
+        <p><b>Positioner:</b> {{ portfolio.positions }}</p>
+    </div>
 
-<div class="card">
-    <h2>💼 Portfolio</h2>
-    <p><b>Samlet værdi:</b> {{ portfolio.value }}</p>
-    <p><b>Dagens ændring:</b> {{ portfolio.daily_change }}</p>
-    <p><b>Samlet afkast:</b> {{ portfolio.total_return }}</p>
-    <p><b>Positioner:</b> {{ portfolio.positions }}</p>
-</div>
+    <div class="card">
+        <h2>🖥️ System Health</h2>
+        <p><b>Server:</b> {{ system_health.server }}</p>
+        <p><b>RAM:</b> {{ system_health.mem_used }} MB / {{ system_health.mem_total }} MB ({{ system_health.memory_status }})</p>
+        <p><b>Disk:</b> {{ system_health.disk_pct }}% ({{ system_health.disk_status }})</p>
+        <p><b>AI Service:</b> {{ system_health.ai }}</p>
+    </div>
 
-<div class="card">
-    <h2>🖥️ System Health</h2>
-
-    <p><b>Server:</b> {{ system_health.server }}</p>
-    <p><b>RAM:</b> {{ system_health.mem_used }} MB / {{ system_health.mem_total }} MB ({{ system_health.memory_status }})</p>
-    <p><b>Disk:</b> {{ system_health.disk_pct }}% ({{ system_health.disk_status }})</p>
-    <p><b>AI Service:</b> {{ system_health.ai }}</p>
-</div>
-
-<div class="card">
-    <h2>🤖 AI Analyst</h2>
-    <p>{{ analyst }}</p>
-</div>
+    <div class="card">
+        <h2>🤖 AI Analyst</h2>
+        <p>{{ analyst }}</p>
+    </div>
 
 </div>
 
@@ -138,10 +97,9 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/static/js/history_charts.js"></script>
-
-</div>
-
-</body>
-</html>
+{% endblock %}
