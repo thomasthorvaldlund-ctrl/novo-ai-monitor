@@ -35,15 +35,45 @@ def get_ai_analyst():
     fallback = build_fallback_analysis(ranking)
 
     try:
+        market = analysis.get("market", {})
+        portfolio = analysis.get("portfolio", {})
+        alerts = analysis.get("alerts", [])
+        top_picks = analysis.get("top_picks", [])
+        summary = analysis.get("summary", "")
+
+        top_picks_text = "\n".join(
+            f"- {item.get('stock')} ({item.get('score')})"
+            for item in top_picks[:5]
+        )
+
+        alerts_text = "\n".join(
+            f"- {item.get('title')}: {item.get('message')}"
+            for item in alerts
+        )
+
         prompt = f"""
 Du er en kortfattet dansk AI-aktieanalytiker.
 
-Skriv en kort markedsvurdering på dansk baseret på disse data.
+Market Score:
+{market.get("score")}/100 ({market.get("status")})
+
+Top Picks:
+{top_picks_text}
+
+Portfolio:
+Værdi: {portfolio.get("value")}
+Afkast: {portfolio.get("total_return")}
+
+AI Alerts:
+{alerts_text}
+
+Market Summary:
+{summary}
+
+Opgave:
+Skriv en professionel markedsbriefing på dansk.
 Maks 5 sætninger.
 Ingen investeringsgaranti. Ingen lange forbehold.
-
-Data:
-{json.dumps(analysis, ensure_ascii=False)}
 """
 
         response = client.chat.completions.create(
