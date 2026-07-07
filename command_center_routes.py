@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 
-
+from system_health_service import get_system_health
 from market_score_service import get_market_score
 from market_summary_service import get_market_summary
 from top_picks_service import get_top_picks
@@ -14,6 +14,7 @@ command_center_bp = Blueprint("command_center", __name__)
 
 @command_center_bp.route("/command-center")
 def command_center():
+    system_health = get_system_health()
     market = get_market_score()
     summary = get_market_summary()
     alerts = get_ai_alerts()
@@ -28,6 +29,7 @@ def command_center():
 
     return render_template(
         "command_center.html",
+        system_health=system_health,
         market=market,
         top_picks=top_picks,
         summary=summary,
