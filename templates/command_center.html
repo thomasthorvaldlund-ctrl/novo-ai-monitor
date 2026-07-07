@@ -113,17 +113,6 @@
     <p><b>Positioner:</b> {{ portfolio.positions }}</p>
 </div>
 
-<hr>
-
-<h2>Historiske grafer</h2>
-
-<div style="width:100%; max-width:900px;">
-    <canvas id="novoHistoryChart"></canvas>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/static/js/history_charts.js"></script>
-
 <div class="card">
     <h2>🖥️ System Health</h2>
 
@@ -139,6 +128,19 @@
 </div>
 
 </div>
+
+<div class="card" style="margin-top:25px;">
+    <h2>📈 Historisk kursudvikling – Novo Nordisk</h2>
+    <p>Historisk kursdata fra Novo AI Monitor.</p>
+
+    <div style="height:420px;">
+        <canvas id="novoHistoryChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/js/history_charts.js"></script>
+
 </div>
 
 </body>
