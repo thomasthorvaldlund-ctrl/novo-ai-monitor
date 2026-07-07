@@ -4,13 +4,21 @@ from datetime import datetime
 
 import pandas as pd
 import matplotlib.pyplot as plt
-from flask import send_file, render_template
-
-from combined_score_service import combined_stock_score as service_combined_score
-
-from flask import request, Response
-
+import csv
 import matplotlib
+
+from flask import (
+    Flask,
+    send_file,
+    render_template,
+    jsonify,
+    request,
+    Response,
+)
+
+from combined_score_service import (
+    combined_stock_score as service_combined_score
+)
 matplotlib.use("Agg")
 
 import os
@@ -18,7 +26,6 @@ from openai_service import client
 
 import feedparser
 
-from flask import Flask
 import yfinance as yf
 from stock_utils import get_history
 from portfolio import get_portfolio_summary
@@ -31,6 +38,7 @@ from command_center_routes import command_center_bp
 from stock_screener_service import stock_screener as service_stock_screener
 from stock_news_service import stock_news_ai_score as service_stock_news_ai_score
 import requests
+
 
 import time
 
@@ -45,9 +53,9 @@ app.register_blueprint(combined_score_bp)
 app.register_blueprint(command_center_bp)
 
 USERS = {
-    "thomas": "84autoKamp19#",
-    "admin": "Suramitr2627",
-    "guest": "GuestSeatrout59#"
+    "thomas": "59autoKamp19#",
+    "admin": "Suramitr8267",
+    "guest": "GuestSeatrout68#"
 }
 
 def check_auth(username, password):
@@ -99,7 +107,8 @@ def before_request():
         "/combined-stock-score-page",
         "/stock-news-ai-score",
         "/stock-screener-report",
-    "/command-center",
+        "/command-center",
+        "/history-data",
     ]:
         return
 
@@ -1166,6 +1175,31 @@ def save_history():
             ])
 
     return {"status": "history saved"}
+
+@app.route("/history-data")
+def history_data():
+    stock = request.args.get("stock", "NOVO")
+
+    data = []
+
+    try:
+        with open("history.csv", newline="") as csvfile:
+            reader = csv.DictReader(csvfile)
+
+            for row in reader:
+                if row["stock"] == stock:
+                    data.append({
+                        "date": row["date"],
+                        "price": float(row["price"]),
+                        "technical_risk": row["technical_risk"],
+                        "ai_risk": row["ai_risk"],
+                        "total_risk": row["total_risk"],
+                    })
+
+    except FileNotFoundError:
+        return jsonify([])
+
+    return jsonify(data)
 
 @app.route("/history")
 def history():
