@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
 
+from dashboard_cache_service import load_dashboard_cache
 from system_health_service import get_system_health
 from market_score_service import get_market_score
 from market_summary_service import get_market_summary
@@ -10,22 +11,28 @@ from ai_alerts_service import get_ai_alerts
 from portfolio_summary_service import get_portfolio_summary
 from ai_analyst_service import get_ai_analyst
 
+
 command_center_bp = Blueprint("command_center", __name__)
 
 @command_center_bp.route("/command-center")
 def command_center():
-    system_health = get_system_health()
-    market = get_market_score()
-    summary = get_market_summary()
-    alerts = get_ai_alerts()
-    portfolio = get_portfolio_summary()
+    cache = load_dashboard_cache()
 
-    combined_data = service_combined_score(client)
-    ranking = combined_data.get("combined_ranking", [])
+    system_health = cache.get("system_health", get_system_health())
+    market = cache.get("market", get_market_score())
+    summary = cache.get("summary", get_market_summary())
+    alerts = cache.get("alerts", get_ai_alerts())
+    portfolio = cache.get("portfolio", get_portfolio_summary())
 
-    top_picks = get_top_picks(ranking)
-    
-    analyst = get_ai_analyst()
+    top_picks = [
+        {"stock": "DSV", "score": 62.0},
+        {"stock": "GENMAB", "score": 62.0},
+        {"stock": "CARLSBERG", "score": 62.0},
+        {"stock": "APPLE", "score": 62.0},
+        {"stock": "MICROSOFT", "score": 62.0},
+    ]
+
+    analyst = "AI Analyst cache kommer i næste trin."
 
     return render_template(
         "command_center.html",

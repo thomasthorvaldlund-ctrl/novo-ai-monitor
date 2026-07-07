@@ -65,7 +65,7 @@ def require_auth():
     return Response(
         "Login required",
         401,
-        {"WWW-Authenticate": 'Basic realm="Novo AI Monitor"'}
+        {"WWW-Authenticate": 'Basic realm="Stock AI Monitor"'}
     )
 
 
@@ -524,7 +524,7 @@ def home():
 
             <div class="grid">
                 <div class="card">
-                    <div class="title">📊 Novo AI Monitor</div>
+                    <div class="title">📊 Stock AI Monitor</div>
                     <p class="metric">Aktuel kurs: <b>{latest:.2f} DKK</b></p>
                     <p class="metric">Dagsændring: <b>{daily_change:.2f}%</b></p>
                     <p class="metric">Ugeændring: <b>{weekly_change:.2f}%</b></p>
@@ -636,7 +636,7 @@ def home():
 
 @app.route("/test-alert")
 def test_alert():
-    send_telegram("✅ Novo AI Monitor test-alarm virker!")
+    send_telegram("✅ Stock AI Monitor test-alarm virker!")
     return {"status": "Telegram test sent"}
 
 @app.route("/risk-check")
