@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Novo AI Monitor{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            margin: 0;
+            color: #111827;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 230px;
+            background: #111827;
+            color: white;
+            padding: 24px 18px;
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 36px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.08);
+        }
+
+        h1 {
+            color: #111827;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 800px) {
+            .app-shell {
+                display: block;
+            }
+
+            .sidebar {
+                width: auto;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <h2>Novo AI Monitor</h2>
+
+        <a class="nav-link" href="/command-center">🏠 Command Center</a>
+        <a class="nav-link" href="/portfolio-manager-page">💼 Portfolio</a>
+        <a class="nav-link" href="/history">📈 History</a>
+        <a class="nav-link" href="/risk-check">⚠️ Risk Check</a>
+        <a class="nav-link" href="/news-check">📰 News Check</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+
+            <div class="footer">
+                Novo AI Monitor · AI-assisted investing dashboard
+            </div>
+        </div>
+    </main>
+
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>
