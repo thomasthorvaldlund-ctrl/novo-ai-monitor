@@ -1180,24 +1180,30 @@ def save_history():
 def history_data():
     stock = request.args.get("stock", "NOVO")
 
-    data = []
+    daily_data = {}
 
     try:
         with open("history.csv", newline="") as csvfile:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
-                if row["stock"] == stock:
-                    data.append({
-                        "date": row["date"],
-                        "price": float(row["price"]),
-                        "technical_risk": row["technical_risk"],
-                        "ai_risk": row["ai_risk"],
-                        "total_risk": row["total_risk"],
-                    })
+                if row["stock"] != stock:
+                    continue
+
+                # Overskriver samme dato, så den sidste måling for dagen bevares
+                daily_data[row["date"]] = {
+                    "date": row["date"],
+                    "price": float(row["price"]),
+                    "technical_risk": row["technical_risk"],
+                    "ai_risk": row["ai_risk"],
+                    "total_risk": row["total_risk"],
+                }
 
     except FileNotFoundError:
         return jsonify([])
+
+    data = list(daily_data.values())
+    data.sort(key=lambda x: x["date"])
 
     return jsonify(data)
 
