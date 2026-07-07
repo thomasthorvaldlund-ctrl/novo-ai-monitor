@@ -117,8 +117,8 @@
     <h2>🖥️ System Health</h2>
 
     <p><b>Server:</b> {{ system_health.server }}</p>
-    <p><b>RAM:</b> {{ system_health.mem_used }} MB / {{ system_health.mem_total }} MB</p>
-    <p><b>Disk:</b> {{ system_health.disk_pct }}%</p>
+    <p><b>RAM:</b> {{ system_health.mem_used }} MB / {{ system_health.mem_total }} MB ({{ system_health.memory_status }})</p>
+    <p><b>Disk:</b> {{ system_health.disk_pct }}% ({{ system_health.disk_status }})</p>
     <p><b>AI Service:</b> {{ system_health.ai }}</p>
 </div>
 
