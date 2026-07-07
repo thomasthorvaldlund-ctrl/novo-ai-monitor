@@ -1,18 +1,7 @@
 import json
 
-from combined_score_service import combined_stock_score
+from analysis_data_service import build_analysis_data
 from openai_service import client
-
-
-def build_analysis_data():
-    data = combined_stock_score(client)
-    ranking = data.get("combined_ranking", [])
-
-    return {
-        "ranking": ranking,
-        "count": len(ranking),
-    }
-
 
 def build_fallback_analysis(ranking):
     top_3 = ranking[:3]
