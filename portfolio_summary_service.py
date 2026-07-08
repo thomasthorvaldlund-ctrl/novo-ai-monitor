@@ -1,6 +1,19 @@
 from portfolio import get_portfolio_summary as get_real_portfolio_summary
 
 
+def get_portfolio_signal(profit_pct, weight_pct):
+    if profit_pct >= 8:
+        return "BUY", "⭐⭐⭐⭐⭐", "Stærk udvikling"
+    elif profit_pct >= 3:
+        return "HOLD", "⭐⭐⭐⭐", "Positiv udvikling"
+    elif profit_pct >= 0:
+        return "HOLD", "⭐⭐⭐", "Stabil position"
+    elif weight_pct > 35:
+        return "WATCH", "⭐⭐", "Høj vægt og negativ udvikling"
+    else:
+        return "REDUCE", "⭐", "Svag udvikling"
+
+
 def get_portfolio_summary():
     data = get_real_portfolio_summary()
 
@@ -9,9 +22,30 @@ def get_portfolio_summary():
     total_profit_pct = data.get("total_profit_pct", 0)
     positions = data.get("positions", [])
 
+    position_details = []
+
+    for p in positions:
+        signal, stars, comment = get_portfolio_signal(
+            p.get("profit_pct", 0),
+            p.get("weight_pct", 0)
+        )
+
+        position_details.append({
+            "stock": p.get("stock"),
+            "ticker": p.get("ticker"),
+            "value": f'{p.get("value_dkk", 0):,.2f} DKK',
+            "profit": f'{p.get("profit_dkk", 0):,.2f} DKK',
+            "profit_pct": f'{p.get("profit_pct", 0):.2f}%',
+            "weight_pct": f'{p.get("weight_pct", 0):.2f}%',
+            "signal": signal,
+            "stars": stars,
+            "comment": comment,
+        })
+
     return {
         "value": f"{total_value:,.2f} DKK",
         "daily_change": f"{total_profit:,.2f} DKK",
         "total_return": f"{total_profit_pct:.2f}%",
-        "positions": len(positions)
+        "positions": len(positions),
+        "position_details": position_details,
     }
