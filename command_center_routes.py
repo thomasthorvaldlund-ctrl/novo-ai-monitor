@@ -24,15 +24,8 @@ def command_center():
     alerts = cache.get("alerts", get_ai_alerts())
     portfolio = cache.get("portfolio", get_portfolio_summary())
 
-    top_picks = [
-        {"stock": "DSV", "score": 62.0},
-        {"stock": "GENMAB", "score": 62.0},
-        {"stock": "CARLSBERG", "score": 62.0},
-        {"stock": "APPLE", "score": 62.0},
-        {"stock": "MICROSOFT", "score": 62.0},
-    ]
-
-    analyst = "AI Analyst cache kommer i næste trin."
+    top_picks = cache.get("top_picks", [])
+    analyst = cache.get("analyst", "AI Analyst er ikke tilgængelig endnu.")
 
     return render_template(
         "command_center.html",
