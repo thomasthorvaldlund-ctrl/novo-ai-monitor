@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from ai_analyst_service import get_ai_analyst
 from combined_score_service import combined_stock_score
@@ -16,16 +17,17 @@ def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
     ranking = combined_data.get("combined_ranking", [])
-
+    
     data = {
-        "market": get_market_score(),
-        "summary": get_market_summary(),
-        "alerts": get_ai_alerts(),
-        "portfolio": get_portfolio_summary(),
-        "system_health": get_system_health(),
-        "top_picks": get_top_picks(ranking),
-        "analyst": get_ai_analyst(),
-    }
+    "updated_at": datetime.now().strftime("%d-%m-%Y %H:%M"),
+    "market": get_market_score(),
+    "summary": get_market_summary(),
+    "alerts": get_ai_alerts(),
+    "portfolio": get_portfolio_summary(),
+    "system_health": get_system_health(),
+    "top_picks": get_top_picks(ranking),
+    "analyst": get_ai_analyst(),
+}
 
     save_dashboard_cache(data)
 

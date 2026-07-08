@@ -109,6 +109,7 @@ def before_request():
         "/stock-screener-report",
         "/command-center",
         "/history-data",
+        "/update-dashboard-cache",
     ]:
         return
 
@@ -1994,5 +1995,14 @@ def trading_signals_page():
     </html>
     """
 
+@app.route("/update-dashboard-cache")
+def update_dashboard_cache():
+    from dashboard_cache_builder import build_dashboard_cache
 
-app.run(host="0.0.0.0", port=3000)
+    build_dashboard_cache()
+
+    return {"status": "dashboard cache updated"}
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=3000)
+    

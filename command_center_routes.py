@@ -17,6 +17,7 @@ command_center_bp = Blueprint("command_center", __name__)
 @command_center_bp.route("/command-center")
 def command_center():
     cache = load_dashboard_cache()
+    updated_at = cache.get("updated_at", "Ukendt")
 
     system_health = cache.get("system_health", get_system_health())
     market = cache.get("market", get_market_score())
@@ -36,4 +37,5 @@ def command_center():
         alerts=alerts,
         portfolio=portfolio,
         analyst=analyst,
+        updated_at=updated_at,
     )
