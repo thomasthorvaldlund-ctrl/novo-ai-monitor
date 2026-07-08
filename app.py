@@ -37,6 +37,8 @@ from combined_score_routes import combined_score_bp
 from command_center_routes import command_center_bp
 from stock_screener_service import stock_screener as service_stock_screener
 from stock_news_service import stock_news_ai_score as service_stock_news_ai_score
+from job_status_routes import job_status_bp
+from job_status_routes import job_status_bp
 import requests
 
 
@@ -51,6 +53,7 @@ app.register_blueprint(market_dashboard_bp)
 app.register_blueprint(watchlist_bp)
 app.register_blueprint(combined_score_bp)
 app.register_blueprint(command_center_bp)
+app.register_blueprint(job_status_bp)
 
 USERS = {
     "thomas": "59autoKamp19#",
@@ -110,6 +113,7 @@ def before_request():
         "/command-center",
         "/history-data",
         "/update-dashboard-cache",
+        "/job-status",
     ]:
         return
 

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Scheduler & Jobs{% endblock %}
+
+{% block content %}
+
+<h1>⚙️ Scheduler & Jobs</h1>
+
+<p style="color:#6b7280; margin-top:-10px; margin-bottom:20px;">
+    Status på alle automatiske baggrundsopgaver.
+</p>
+
+<div class="card">
+
+<table style="width:100%;border-collapse:collapse;">
+
+<tr>
+    <th>Job</th>
+    <th>Sidst kørt</th>
+    <th>Status</th>
+</tr>
+
+{% for job in jobs %}
+
+<tr>
+    <td>{{ job.name }}</td>
+    <td>{{ job.last_run }}</td>
+
+    <td>
+        {% if job.status == "OK" %}
+            🟢 OK
+        {% else %}
+            🔴 {{ job.status }}
+        {% endif %}
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+{% endblock %}
