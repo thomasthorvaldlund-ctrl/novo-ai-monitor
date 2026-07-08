@@ -44,12 +44,16 @@
     </div>
 
     <div class="card">
-        <h2>⭐ Top Picks</h2>
-        <ol>
-        {% for stock in top_picks %}
-            <li>{{ stock.stock }} ({{ stock.score }})</li>
-        {% endfor %}
-        </ol>
+    <h2>⭐ Top Picks</h2>
+
+    {% for stock in top_picks %}
+        <div style="margin-bottom:14px;">
+            <b>{{ stock.stock }}</b> {{ stock.trend }}<br>
+            <span>{{ stock.stars }}</span><br>
+            <span>Score: {{ stock.score }}</span><br>
+            <span><b>{{ stock.signal }}</b></span>
+        </div>
+    {% endfor %}
     </div>
 
     <div class="card">
