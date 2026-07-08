@@ -1,17 +1,17 @@
+from ai_decision_service import get_ai_decision
 from portfolio import get_portfolio_summary as get_real_portfolio_summary
 
 
-def get_portfolio_signal(profit_pct, weight_pct):
+def portfolio_score(profit_pct):
     if profit_pct >= 8:
-        return "BUY", "⭐⭐⭐⭐⭐", "Stærk udvikling"
-    elif profit_pct >= 3:
-        return "HOLD", "⭐⭐⭐⭐", "Positiv udvikling"
+        return 80
+    elif profit_pct >= 5:
+        return 70
     elif profit_pct >= 0:
-        return "HOLD", "⭐⭐⭐", "Stabil position"
-    elif weight_pct > 35:
-        return "WATCH", "⭐⭐", "Høj vægt og negativ udvikling"
-    else:
-        return "REDUCE", "⭐", "Svag udvikling"
+        return 60
+    elif profit_pct >= -5:
+        return 50
+    return 40
 
 
 def get_portfolio_summary():
@@ -25,21 +25,24 @@ def get_portfolio_summary():
     position_details = []
 
     for p in positions:
-        signal, stars, comment = get_portfolio_signal(
-            p.get("profit_pct", 0),
-            p.get("weight_pct", 0)
-        )
+        profit_pct = p.get("profit_pct", 0)
+        score = portfolio_score(profit_pct)
+        decision = get_ai_decision(score)
 
         position_details.append({
             "stock": p.get("stock"),
             "ticker": p.get("ticker"),
             "value": f'{p.get("value_dkk", 0):,.2f} DKK',
             "profit": f'{p.get("profit_dkk", 0):,.2f} DKK',
-            "profit_pct": f'{p.get("profit_pct", 0):.2f}%',
+            "profit_pct": f'{profit_pct:.2f}%',
             "weight_pct": f'{p.get("weight_pct", 0):.2f}%',
-            "signal": signal,
-            "stars": stars,
-            "comment": comment,
+            "score": score,
+            "signal": decision["signal"],
+            "stars": decision["stars"],
+            "trend": decision["trend"],
+            "confidence": decision["confidence"],
+            "risk": decision["risk"],
+            "comment": decision["comment"],
         })
 
     return {
