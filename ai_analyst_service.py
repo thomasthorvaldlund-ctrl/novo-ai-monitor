@@ -34,6 +34,9 @@ def get_ai_analyst():
 
     fallback = build_fallback_analysis(ranking)
 
+    if client is None:
+        return fallback
+    
     try:
         market = analysis.get("market", {})
         portfolio = analysis.get("portfolio", {})
