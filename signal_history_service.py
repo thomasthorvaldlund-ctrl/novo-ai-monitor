@@ -34,12 +34,17 @@ def signal_changed(stock, signal):
 
     return last["signal"] != signal
 
-
 def save_signal(stock, score, signal, confidence, risk):
-    """Gemmer signal hvis det er nyt eller ændret."""
+    """Gemmer signal hvis det er nyt eller ændret og returnerer ændringen."""
+    last = get_last_signal(stock)
 
-    if not signal_changed(stock, signal):
-        return False
+    if last is not None and last["signal"] == signal:
+        return {
+            "changed": False,
+            "stock": stock,
+            "old_signal": signal,
+            "new_signal": signal,
+        }
 
     exists = os.path.exists(HISTORY_FILE)
 
@@ -65,4 +70,12 @@ def save_signal(stock, score, signal, confidence, risk):
             risk,
         ])
 
-    return True
+    return {
+        "changed": True,
+        "stock": stock,
+        "old_signal": last["signal"] if last else None,
+        "new_signal": signal,
+        "score": score,
+        "confidence": confidence,
+        "risk": risk,
+    }
