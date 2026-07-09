@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Signal History{% endblock %}
+
+{% block content %}
+
+<h1>📈 Signal History</h1>
+
+<p style="color:#6b7280; margin-top:-10px; margin-bottom:20px;">
+    Historik over AI-signalændringer.
+</p>
+
+<div class="card">
+<table style="width:100%; border-collapse:collapse;">
+    <tr>
+        <th>Tid</th>
+        <th>Aktie</th>
+        <th>Score</th>
+        <th>Signal</th>
+        <th>Confidence</th>
+        <th>Risk</th>
+    </tr>
+
+    {% for row in signals %}
+    <tr>
+        <td>{{ row.datetime }}</td>
+        <td><b>{{ row.stock }}</b></td>
+        <td>{{ row.score }}</td>
+        <td>
+            {% if row.signal == "BUY" %}
+                🟢 BUY
+            {% elif row.signal == "HOLD" %}
+                🟡 HOLD
+            {% elif row.signal == "WATCH" %}
+                🟠 WATCH
+            {% else %}
+                🔴 {{ row.signal }}
+            {% endif %}
+        </td>
+        <td>{{ row.confidence }}%</td>
+        <td>{{ row.risk }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+
+{% endblock %}

@@ -39,6 +39,7 @@ from stock_screener_service import stock_screener as service_stock_screener
 from stock_news_service import stock_news_ai_score as service_stock_news_ai_score
 from job_status_routes import job_status_bp
 from job_status_routes import job_status_bp
+from signal_history_routes import signal_history_bp
 import requests
 
 
@@ -54,6 +55,7 @@ app.register_blueprint(watchlist_bp)
 app.register_blueprint(combined_score_bp)
 app.register_blueprint(command_center_bp)
 app.register_blueprint(job_status_bp)
+app.register_blueprint(signal_history_bp)
 
 USERS = {
     "thomas": "59autoKamp19#",
@@ -114,6 +116,7 @@ def before_request():
         "/history-data",
         "/update-dashboard-cache",
         "/job-status",
+        "/signal-history",
     ]:
         return
 
