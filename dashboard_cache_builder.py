@@ -10,6 +10,7 @@ from market_summary_service import get_market_summary
 from ai_alerts_service import get_ai_alerts
 from portfolio_summary_service import get_portfolio_summary
 from system_health_service import get_system_health
+from morning_brief_service import get_morning_brief
 
 from dashboard_cache_service import save_dashboard_cache
 
@@ -27,6 +28,7 @@ def build_dashboard_cache():
     "system_health": get_system_health(),
     "top_picks": get_top_picks(ranking),
     "analyst": get_ai_analyst(),
+    "morning_brief": get_morning_brief(),
 }
 
     save_dashboard_cache(data)

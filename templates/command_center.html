@@ -35,6 +35,44 @@
     🕒 Sidst opdateret: <strong>{{ updated_at }}</strong>
 </p>
 
+<div class="card" style="border-left:6px solid #2563eb; margin-bottom:24px;">
+    <h2>☀️ AI Morning Brief</h2>
+
+    <p>
+        <b>📈 Market:</b>
+        {{ brief.market.score }} / 100
+        ({{ brief.market.status }})
+    </p>
+
+    {% if brief.top_pick %}
+    <p>
+        <b>⭐ Top Pick:</b>
+        {{ brief.top_pick.stock }}
+        — {{ brief.top_pick.signal }}
+        {{ brief.top_pick.stars }}
+        (Score: {{ brief.top_pick.score }})
+    </p>
+    {% endif %}
+
+    <p>
+        <b>💼 Portefølje:</b>
+        {{ brief.portfolio.total_return }}
+        · {{ brief.portfolio.value }}
+    </p>
+
+    <p>
+        <b>🔔 AI Alerts:</b>
+        {{ brief.alerts|length }}
+    </p>
+
+    <p>
+        <b>🖥️ System:</b>
+        {{ brief.health.server }}
+        · RAM {{ brief.health.memory_status }}
+        · Disk {{ brief.health.disk_status }}
+    </p>
+</div>
+
 <div class="grid">
 
     <div class="card">

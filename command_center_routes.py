@@ -10,6 +10,7 @@ from openai_service import client
 from ai_alerts_service import get_ai_alerts
 from portfolio_summary_service import get_portfolio_summary
 from ai_analyst_service import get_ai_analyst
+from morning_brief_service import get_morning_brief
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -27,6 +28,7 @@ def command_center():
 
     top_picks = cache.get("top_picks", [])
     analyst = cache.get("analyst", "AI Analyst er ikke tilgængelig endnu.")
+    brief = cache.get("morning_brief", {})
 
     return render_template(
         "command_center.html",
@@ -37,5 +39,6 @@ def command_center():
         alerts=alerts,
         portfolio=portfolio,
         analyst=analyst,
-        updated_at=updated_at,
+        brief=brief,
+        updated_at=updated_at,  
     )
