@@ -1,6 +1,9 @@
+from combined_score_service import combined_stock_score
+from openai_service import client
 from ai_decision_service import get_ai_decision
 from portfolio import get_portfolio_summary as get_real_portfolio_summary
 
+from portfolio import get_portfolio_summary as get_real_portfolio_summary
 
 def portfolio_score(profit_pct):
     if profit_pct >= 8:
@@ -21,12 +24,24 @@ def get_portfolio_summary():
     total_profit = data.get("total_profit", 0)
     total_profit_pct = data.get("total_profit_pct", 0)
     positions = data.get("positions", [])
+    
+    combined = combined_stock_score(client)
+
+    score_lookup = {
+    s["stock"]: s["combined_score"]
+    for s in combined["combined_ranking"]
+    }
 
     position_details = []
-
+    
     for p in positions:
         profit_pct = p.get("profit_pct", 0)
-        score = portfolio_score(profit_pct)
+
+        score = score_lookup.get(
+            p.get("stock"),
+            portfolio_score(profit_pct)   # fallback hvis aktien ikke findes
+        )
+
         decision = get_ai_decision(score)
 
         position_details.append({
