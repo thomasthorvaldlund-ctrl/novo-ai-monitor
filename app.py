@@ -76,6 +76,9 @@ def require_auth():
 
 @app.before_request
 def before_request():
+    if request.path.startswith("/static/"):
+        return
+    
     if request.path in [
         "/test-alert",
         "/risk-check",

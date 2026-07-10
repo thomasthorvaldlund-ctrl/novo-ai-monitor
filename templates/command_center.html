@@ -75,15 +75,41 @@
 
 <div class="grid">
 
-    <div class="card">
-        <h2>📊 AI Performance</h2>
+<div class="card">
+    <h2>📊 AI Performance</h2>
 
-        <p><b>Samlede signalændringer:</b> {{ performance.total or 0 }}</p>
-        <p>🟢 <b>BUY:</b> {{ performance.buy or 0 }}</p>
-        <p>🟡 <b>HOLD:</b> {{ performance.hold or 0 }}</p>
-        <p>🟠 <b>WATCH:</b> {{ performance.watch or 0 }}</p>
-        <p>🔴 <b>SELL:</b> {{ performance.sell or 0 }}</p>
+    <div style="text-align:center; margin-bottom:20px;">
+    <div style="font-size:42px; font-weight:bold;">
+        {{ performance.total or 0 }}
     </div>
+    <div style="color:#888;">
+        Samlede signalændringer
+    </div>
+
+    <div style="margin-top:12px; height:220px;">
+        <canvas
+            id="performanceChart"
+            data-buy="{{ performance.buy or 0 }}"
+            data-hold="{{ performance.hold or 0 }}"
+            data-watch="{{ performance.watch or 0 }}"
+            data-sell="{{ performance.sell or 0 }}">
+        </canvas>
+    </div>
+
+    <div style="margin-top:18px; line-height:1.8;">
+        <div>🟢 <b>BUY</b> <span style="float:right;">{{ performance.buy or 0 }}</span></div>
+        <div>🟡 <b>HOLD</b> <span style="float:right;">{{ performance.hold or 0 }}</span></div>
+        <div>🟠 <b>WATCH</b> <span style="float:right;">{{ performance.watch or 0 }}</span></div>
+        <div>🔴 <b>SELL</b> <span style="float:right;">{{ performance.sell or 0 }}</span></div>
+    </div>
+
+    <p style="margin-top:24px; text-align:center;">
+        <a href="/signal-history">
+    🔗 Åbn AI Signal History →
+    </a>
+    </p>
+</div>
+</div>
 
     <div class="card">
         <h2>🌍 Market Score</h2>
@@ -184,4 +210,5 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/static/js/history_charts.js"></script>
+<script src="/static/js/performance_chart.js"></script>
 {% endblock %}
