@@ -11,7 +11,7 @@ from ai_alerts_service import get_ai_alerts
 from portfolio_summary_service import get_portfolio_summary
 from system_health_service import get_system_health
 from morning_brief_service import get_morning_brief
-
+from performance_service import get_signal_statistics
 from dashboard_cache_service import save_dashboard_cache
 
 def build_dashboard_cache():
@@ -29,6 +29,7 @@ def build_dashboard_cache():
     "top_picks": get_top_picks(ranking),
     "analyst": get_ai_analyst(),
     "morning_brief": get_morning_brief(),
+    "performance": get_signal_statistics(),
 }
 
     save_dashboard_cache(data)

@@ -76,6 +76,16 @@
 <div class="grid">
 
     <div class="card">
+        <h2>📊 AI Performance</h2>
+
+        <p><b>Samlede signalændringer:</b> {{ performance.total or 0 }}</p>
+        <p>🟢 <b>BUY:</b> {{ performance.buy or 0 }}</p>
+        <p>🟡 <b>HOLD:</b> {{ performance.hold or 0 }}</p>
+        <p>🟠 <b>WATCH:</b> {{ performance.watch or 0 }}</p>
+        <p>🔴 <b>SELL:</b> {{ performance.sell or 0 }}</p>
+    </div>
+
+    <div class="card">
         <h2>🌍 Market Score</h2>
         <div class="score">{{ market.score }}/100</div>
         <div class="status">{{ market.status }}</div>
