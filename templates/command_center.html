@@ -24,6 +24,89 @@
     .card p {
         line-height: 1.6;
     }
+
+    .signal-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+
+    .signal-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .signal-tag.buy {
+        background: #dff7e3;
+        color: #187a3d;
+    }
+
+    .signal-tag.hold {
+        background: #fff4cc;
+        color: #8a6d00;
+    }
+
+    .signal-tag.watch {
+        background: #ffe8cc;
+        color: #b45309;
+    }
+
+    .signal-tag.sell {
+        background: #ffe2e2;
+        color: #b91c1c;
+    }
+
+    .morning-brief-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .morning-brief-item {
+        min-width: 0;
+        padding: 12px 14px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+    }
+
+    .morning-brief-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .morning-brief-value {
+        color: #374151;
+        font-size: 14px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 1100px) {
+        .morning-brief-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 750px) {
+        .morning-brief-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 500px) {
+        .morning-brief-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -38,78 +121,163 @@
 <div class="card" style="border-left:6px solid #2563eb; margin-bottom:24px;">
     <h2>☀️ AI Morning Brief</h2>
 
-    <p>
-        <b>📈 Market:</b>
-        {{ brief.market.score }} / 100
-        ({{ brief.market.status }})
-    </p>
+    <div class="morning-brief-grid">
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">📈 Market</span>
+            <div class="morning-brief-value">
+                {{ brief.market.score }} / 100<br>
+                {{ brief.market.status }}
+            </div>
+        </div>
 
-    {% if brief.top_pick %}
-    <p>
-        <b>⭐ Top Pick:</b>
-        {{ brief.top_pick.stock }}
-        — {{ brief.top_pick.signal }}
-        {{ brief.top_pick.stars }}
-        (Score: {{ brief.top_pick.score }})
-    </p>
-    {% endif %}
+        {% if brief.top_pick %}
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">⭐ Top Pick</span>
+            <div class="morning-brief-value">
+                <strong>{{ brief.top_pick.stock }}</strong>
+                · {{ brief.top_pick.signal }}<br>
+                {{ brief.top_pick.stars }}
+                · Score {{ brief.top_pick.score }}
+            </div>
+        </div>
+        {% endif %}
 
-    <p>
-        <b>💼 Portefølje:</b>
-        {{ brief.portfolio.total_return }}
-        · {{ brief.portfolio.value }}
-    </p>
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">💼 Portefølje</span>
+            <div class="morning-brief-value">
+                {{ brief.portfolio.total_return }}<br>
+                {{ brief.portfolio.value }}
+            </div>
+        </div>
 
-    <p>
-        <b>🔔 AI Alerts:</b>
-        {{ brief.alerts|length }}
-    </p>
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">🔔 AI Alerts</span>
+            <div class="morning-brief-value">
+                {{ brief.alerts|length }}
+            </div>
+        </div>
 
-    <p>
-        <b>🖥️ System:</b>
-        {{ brief.health.server }}
-        · RAM {{ brief.health.memory_status }}
-        · Disk {{ brief.health.disk_status }}
-    </p>
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">🖥️ System</span>
+            <div class="morning-brief-value">
+                {{ brief.health.server }}<br>
+                RAM {{ brief.health.memory_status }}
+                · Disk {{ brief.health.disk_status }}
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="grid">
 
-<div class="card">
-    <h2>📊 AI Performance</h2>
+    <div class="card">
+        <h2>📊 AI Performance</h2>
 
-    <div style="text-align:center; margin-bottom:20px;">
-    <div style="font-size:42px; font-weight:bold;">
-        {{ performance.total or 0 }}
-    </div>
-    <div style="color:#888;">
-        Samlede signalændringer
+        <div style="text-align:center; margin-bottom:20px;">
+            <div style="font-size:42px; font-weight:bold;">
+                {{ performance.total or 0 }}
+            </div>
+
+            <div style="color:#888;">
+                Samlede signalændringer
+            </div>
+
+            <div style="margin-top:12px; height:220px;">
+                <canvas
+                    id="performanceChart"
+                    data-buy="{{ performance.buy or 0 }}"
+                    data-hold="{{ performance.hold or 0 }}"
+                    data-watch="{{ performance.watch or 0 }}"
+                    data-sell="{{ performance.sell or 0 }}">
+                </canvas>
+            </div>
+
+            <div style="margin-top:18px; line-height:1.8;">
+                <div>
+                    🟢 <b>BUY</b>
+                    <span style="float:right;">{{ performance.buy or 0 }}</span>
+                </div>
+                <div>
+                    🟡 <b>HOLD</b>
+                    <span style="float:right;">{{ performance.hold or 0 }}</span>
+                </div>
+                <div>
+                    🟠 <b>WATCH</b>
+                    <span style="float:right;">{{ performance.watch or 0 }}</span>
+                </div>
+                <div>
+                    🔴 <b>SELL</b>
+                    <span style="float:right;">{{ performance.sell or 0 }}</span>
+                </div>
+            </div>
+
+            <p style="margin-top:24px; text-align:center;">
+                <a href="/signal-history">
+                    🔗 Åbn AI Signal History →
+                </a>
+            </p>
+        </div>
     </div>
 
-    <div style="margin-top:12px; height:220px;">
-        <canvas
-            id="performanceChart"
-            data-buy="{{ performance.buy or 0 }}"
-            data-hold="{{ performance.hold or 0 }}"
-            data-watch="{{ performance.watch or 0 }}"
-            data-sell="{{ performance.sell or 0 }}">
-        </canvas>
-    </div>
+    <div class="card">
+        <h2>📋 Aktier pr. signal</h2>
 
-    <div style="margin-top:18px; line-height:1.8;">
-        <div>🟢 <b>BUY</b> <span style="float:right;">{{ performance.buy or 0 }}</span></div>
-        <div>🟡 <b>HOLD</b> <span style="float:right;">{{ performance.hold or 0 }}</span></div>
-        <div>🟠 <b>WATCH</b> <span style="float:right;">{{ performance.watch or 0 }}</span></div>
-        <div>🔴 <b>SELL</b> <span style="float:right;">{{ performance.sell or 0 }}</span></div>
-    </div>
+        <p>
+            <b>🟢 BUY ({{ performance.buy_stocks|length }})</b>
+        </p>
 
-    <p style="margin-top:24px; text-align:center;">
-        <a href="/signal-history">
-    🔗 Åbn AI Signal History →
-    </a>
-    </p>
-</div>
-</div>
+        <div class="signal-tags">
+            {% if performance.buy_stocks %}
+                {% for stock in performance.buy_stocks %}
+                    <span class="signal-tag buy">{{ stock }}</span>
+                {% endfor %}
+            {% else %}
+                <span style="color:#888;">Ingen aktier</span>
+            {% endif %}
+        </div>
+
+        <p>
+            <b>🟡 HOLD ({{ performance.hold_stocks|length }})</b>
+        </p>
+
+        <div class="signal-tags">
+            {% if performance.hold_stocks %}
+                {% for stock in performance.hold_stocks %}
+                    <span class="signal-tag hold">{{ stock }}</span>
+                {% endfor %}
+            {% else %}
+                <span style="color:#888;">Ingen aktier</span>
+            {% endif %}
+        </div>
+
+        <p>
+            <b>🟠 WATCH ({{ performance.watch_stocks|length }})</b>
+        </p>
+
+        <div class="signal-tags">
+            {% if performance.watch_stocks %}
+                {% for stock in performance.watch_stocks %}
+                    <span class="signal-tag watch">{{ stock }}</span>
+                {% endfor %}
+            {% else %}
+                <span style="color:#888;">Ingen aktier</span>
+            {% endif %}
+        </div>
+
+        <p>
+            <b>🔴 SELL ({{ performance.sell_stocks|length }})</b>
+        </p>
+
+        <div class="signal-tags">
+            {% if performance.sell_stocks %}
+                {% for stock in performance.sell_stocks %}
+                    <span class="signal-tag sell">{{ stock }}</span>
+                {% endfor %}
+            {% else %}
+                <span style="color:#888;">Ingen aktier</span>
+            {% endif %}
+        </div>
+    </div>
 
     <div class="card">
         <h2>🌍 Market Score</h2>
@@ -118,16 +286,16 @@
     </div>
 
     <div class="card">
-    <h2>⭐ Top Picks</h2>
+        <h2>⭐ Top Picks</h2>
 
-    {% for stock in top_picks %}
-        <div style="margin-bottom:14px;">
-            <b>{{ stock.stock }}</b> {{ stock.trend }}<br>
-            <span>{{ stock.stars }}</span><br>
-            <span>Score: {{ stock.score }}</span><br>
-            <span><b>{{ stock.signal }}</b></span>
-        </div>
-    {% endfor %}
+        {% for stock in top_picks %}
+            <div style="margin-bottom:14px;">
+                <b>{{ stock.stock }}</b> {{ stock.trend }}<br>
+                <span>{{ stock.stars }}</span><br>
+                <span>Score: {{ stock.score }}</span><br>
+                <span><b>{{ stock.signal }}</b></span>
+            </div>
+        {% endfor %}
     </div>
 
     <div class="card">
@@ -137,37 +305,48 @@
 
     <div class="card">
         <h2>🚨 AI Alerts</h2>
+
         <ul>
-        {% for alert in alerts %}
-            <li>
-                <b>{{ alert.title }}</b><br>
-                {{ alert.message }}
-            </li>
-        {% endfor %}
+            {% for alert in alerts %}
+                <li>
+                    <b>{{ alert.title }}</b><br>
+                    {{ alert.message }}
+                </li>
+            {% endfor %}
         </ul>
     </div>
 
     <div class="card">
         <h2>💼 Portfolio</h2>
+
         <p><b>Samlet værdi:</b> {{ portfolio.value }}</p>
         <p><b>Dagens ændring:</b> {{ portfolio.daily_change }}</p>
         <p><b>Samlet afkast:</b> {{ portfolio.total_return }}</p>
         <p><b>Positioner:</b> {{ portfolio.positions }}</p>
 
         {% for p in portfolio.position_details %}
-        <hr>
-        <b>{{ p.stock }}</b> {{ p.stars }}<br>
-        {{ p.signal }} · {{ p.profit_pct }} · {{ p.weight_pct }}<br>
-        <span style="color:#6b7280;">{{ p.comment }}</span>
+            <hr>
+            <b>{{ p.stock }}</b> {{ p.stars }}<br>
+            {{ p.signal }} · {{ p.profit_pct }} · {{ p.weight_pct }}<br>
+            <span style="color:#6b7280;">{{ p.comment }}</span>
         {% endfor %}
-
     </div>
 
     <div class="card">
         <h2>🖥️ System Health</h2>
+
         <p><b>Server:</b> {{ system_health.server }}</p>
-        <p><b>RAM:</b> {{ system_health.mem_used }} MB / {{ system_health.mem_total }} MB ({{ system_health.memory_status }})</p>
-        <p><b>Disk:</b> {{ system_health.disk_pct }}% ({{ system_health.disk_status }})</p>
+        <p>
+            <b>RAM:</b>
+            {{ system_health.mem_used }} MB /
+            {{ system_health.mem_total }} MB
+            ({{ system_health.memory_status }})
+        </p>
+        <p>
+            <b>Disk:</b>
+            {{ system_health.disk_pct }}%
+            ({{ system_health.disk_status }})
+        </p>
         <p><b>AI Service:</b> {{ system_health.ai }}</p>
     </div>
 
@@ -179,28 +358,28 @@
 </div>
 
 <div class="card" style="margin-top:25px;">
-<h2>📈 Historisk kursudvikling</h2>
+    <h2>📈 Historisk kursudvikling</h2>
 
-<p>Vælg aktie:</p>
+    <p>Vælg aktie:</p>
 
-<select id="stockSelector">
-    <option value="NOVO">Novo Nordisk</option>
-    <option value="DSV">DSV</option>
-</select>
+    <select id="stockSelector">
+        <option value="NOVO">Novo Nordisk</option>
+        <option value="DSV">DSV</option>
+    </select>
 
-<p style="margin-top:18px;"><b>Periode:</b></p>
+    <p style="margin-top:18px;">
+        <b>Periode:</b>
+    </p>
 
-<div id="timeFilters" style="margin-bottom:18px;">
-    <button data-days="7">7D</button>
-    <button data-days="30">30D</button>
-    <button data-days="90">90D</button>
-    <button data-days="365">1Y</button>
-    <button data-days="0">Alle</button>
-</div>
+    <div id="timeFilters" style="margin-bottom:18px;">
+        <button data-days="7">7D</button>
+        <button data-days="30">30D</button>
+        <button data-days="90">90D</button>
+        <button data-days="365">1Y</button>
+        <button data-days="0">Alle</button>
+    </div>
 
-<br><br>
-
-    <div style="height:420px;">
+    <div style="height:420px; margin-top:28px;">
         <canvas id="novoHistoryChart"></canvas>
     </div>
 </div>

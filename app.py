@@ -115,7 +115,6 @@ def before_request():
         "/combined-stock-score-page",
         "/stock-news-ai-score",
         "/stock-screener-report",
-        "/command-center",
         "/history-data",
         "/update-dashboard-cache",
         "/job-status",
