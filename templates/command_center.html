@@ -4,6 +4,89 @@
 
 {% block head %}
 <style>
+
+    .top-picks-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .top-pick-row {
+        padding: 12px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .top-pick-row:last-child {
+        border-bottom: none;
+    }
+
+    .top-pick-main,
+    .top-pick-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .top-pick-main {
+        margin-bottom: 6px;
+    }
+
+    .top-pick-score {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2563eb;
+    }
+
+    .top-pick-trend {
+        margin-left: 4px;
+    }
+
+    .top-pick-meta {
+        font-size: 13px;
+    }
+
+    .top-pick-stars {
+        letter-spacing: 1px;
+    }
+
+    .top-pick-signal {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .top-pick-signal.buy {
+        background: #dff7e3;
+        color: #187a3d;
+    }
+
+    .top-pick-signal.hold {
+        background: #fff4cc;
+        color: #8a6d00;
+    }
+
+    .top-pick-signal.watch {
+        background: #ffe8cc;
+        color: #b45309;
+    }
+
+    .top-pick-signal.sell {
+        background: #ffe2e2;
+        color: #b91c1c;
+    }
+
+    .command-center-grid {
+        align-items: stretch;
+    }
+
+    .command-center-grid > .card {
+        height: 100%;
+        box-sizing: border-box;
+    
+    }
     .score {
         font-size: 48px;
         font-weight: bold;
@@ -61,6 +144,43 @@
         color: #b91c1c;
     }
 
+    .market-score-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .market-score-main {
+        text-align: center;
+        margin-top: 18px;
+    }
+
+    .market-score-scale {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .market-score-bar {
+        height: 10px;
+        margin-top: 8px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .market-score-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(
+            90deg,
+            #ef4444 0%,
+            #f59e0b 50%,
+            #22c55e 100%
+        );
+    }
+    
     .morning-brief-grid {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -107,6 +227,52 @@
             grid-template-columns: 1fr;
         }
     }
+
+    .info-icon {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        text-align: center;
+        margin-left: 6px;
+        border-radius: 50%;
+        background: #e5e7eb;
+        color: #4b5563;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: help;
+        position: relative;
+        vertical-align: middle;
+    }
+
+    .info-icon:hover {
+        background: #d1d5db;
+    }
+
+    .info-icon::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 50%;
+        bottom: 130%;
+        transform: translateX(-50%);
+        width: 260px;
+        padding: 10px 12px;
+        background: #111827;
+        color: white;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.5;
+        text-align: left;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease;
+        z-index: 1000;
+    }
+
+    .info-icon:hover::after {
+        opacity: 1;
+    }
+
 </style>
 {% endblock %}
 
@@ -168,7 +334,7 @@
     </div>
 </div>
 
-<div class="grid">
+<div class="grid command-center-grid">
 
     <div class="card">
         <h2>📊 AI Performance</h2>
@@ -279,24 +445,67 @@
         </div>
     </div>
 
-    <div class="card">
-        <h2>🌍 Market Score</h2>
-        <div class="score">{{ market.score }}/100</div>
-        <div class="status">{{ market.status }}</div>
+    <div class="card market-score-card">
+        <h2>
+            🌍 Market Score
+            <span
+                class="info-icon"
+                data-tooltip="Samlet AI-vurdering af markedet på en skala fra 0-100. Baseret på tekniske signaler, AI-analyser og risikofaktorer.">
+                ?
+            </span>
+        </h2>
+
+        <div class="market-score-main">
+            <div class="score">{{ market.score }}/100</div>
+            <div class="status">{{ market.status }}</div>
+        </div>
+
+        <div class="market-score-scale">
+            <span>Bearish</span>
+            <span>Neutral</span>
+            <span>Bullish</span>
+        </div>
+
+        <div class="market-score-bar">
+            <div
+                class="market-score-fill"
+                style="width: {{ market.score }}%;">
+            </div>
+        </div>
     </div>
 
     <div class="card">
-        <h2>⭐ Top Picks</h2>
+    <h2>⭐ Top Picks</h2>
 
+    <div class="top-picks-list">
         {% for stock in top_picks %}
-            <div style="margin-bottom:14px;">
-                <b>{{ stock.stock }}</b> {{ stock.trend }}<br>
-                <span>{{ stock.stars }}</span><br>
-                <span>Score: {{ stock.score }}</span><br>
-                <span><b>{{ stock.signal }}</b></span>
+            <div class="top-pick-row">
+                <div class="top-pick-main">
+                    <div>
+                        <strong>{{ stock.stock }}</strong>
+                        <span class="top-pick-trend">{{ stock.trend }}</span>
+                    </div>
+
+                    <span class="top-pick-score">
+                        {{ stock.score }}
+                    </span>
+                </div>
+
+                <div class="top-pick-meta">
+                    <span class="top-pick-signal {{ stock.signal|lower }}">
+                        {{ stock.signal }}
+                    </span>
+
+                    <span class="top-pick-stars">
+                        {{ stock.stars }}
+                    </span>
+                </div>
             </div>
+        {% else %}
+            <p style="color:#888;">Ingen Top Picks</p>
         {% endfor %}
     </div>
+</div>    
 
     <div class="card">
         <h2>📰 AI Market Summary</h2>
