@@ -285,7 +285,14 @@
 </p>
 
 <div class="card" style="border-left:6px solid #2563eb; margin-bottom:24px;">
-    <h2>☀️ AI Morning Brief</h2>
+    <h2>
+        ☀️ AI Morning Brief
+        <span
+            class="info-icon"
+            data-tooltip="Dagens vigtigste markedsdata, Top Pick, portefølje, alarmer og systemstatus samlet ét sted.">
+            ?
+        </span>
+    </h2>
 
     <div class="morning-brief-grid">
         <div class="morning-brief-item">
@@ -337,7 +344,14 @@
 <div class="grid command-center-grid">
 
     <div class="card">
-        <h2>📊 AI Performance</h2>
+        <h2>
+            📊 AI Performance
+            <span
+                class="info-icon"
+                data-tooltip="Viser antallet og fordelingen af registrerede BUY, HOLD, WATCH og SELL-signaler i signalhistorikken.">
+                ?
+            </span>
+        </h2>
 
         <div style="text-align:center; margin-bottom:20px;">
             <div style="font-size:42px; font-weight:bold;">
@@ -386,7 +400,14 @@
     </div>
 
     <div class="card">
-        <h2>📋 Aktier pr. signal</h2>
+        <h2>
+            📋 Aktier pr. signal
+            <span
+                class="info-icon"
+                data-tooltip="Viser hvilke aktier der historisk har været registreret med BUY, HOLD, WATCH eller SELL. En aktie kan derfor optræde under flere signaler.">
+                ?
+            </span>
+        </h2>
 
         <p>
             <b>🟢 BUY ({{ performance.buy_stocks|length }})</b>
@@ -475,7 +496,14 @@
     </div>
 
     <div class="card">
-    <h2>⭐ Top Picks</h2>
+    <h2>
+        ⭐ Top Picks
+        <span
+            class="info-icon"
+            data-tooltip="De fem højest rangerede aktier lige nu, sorteret efter deres aktuelle Combined Score.">
+            ?
+        </span>
+    </h2>
 
     <div class="top-picks-list">
         {% for stock in top_picks %}
@@ -508,12 +536,26 @@
 </div>    
 
     <div class="card">
-        <h2>📰 AI Market Summary</h2>
+        <h2>
+            📰 AI Market Summary
+            <span
+                class="info-icon"
+                data-tooltip="Kort opsummering af de stærkeste og svageste aktier samt markedets samlede tekniske og AI-baserede vurdering.">
+                ?
+            </span>
+        </h2>
         <p>{{ summary }}</p>
     </div>
 
     <div class="card">
-        <h2>🚨 AI Alerts</h2>
+        <h2>
+            🚨 AI Alerts
+            <span
+                class="info-icon"
+                data-tooltip="Viser aktier eller hændelser, som systemet vurderer kræver ekstra opmærksomhed på grund af lav score eller øget risiko.">
+                ?
+            </span>
+        </h2>
 
         <ul>
             {% for alert in alerts %}
@@ -526,10 +568,17 @@
     </div>
 
     <div class="card">
-        <h2>💼 Portfolio</h2>
+        <h2>
+            💼 Portfolio
+            <span
+                class="info-icon"
+                data-tooltip="Overblik over porteføljens samlede værdi, samlede gevinst, afkast, positioner og AI-vurdering af hver aktie.">
+                ?
+            </span>
+        </h2>
 
         <p><b>Samlet værdi:</b> {{ portfolio.value }}</p>
-        <p><b>Dagens ændring:</b> {{ portfolio.daily_change }}</p>
+        <p><b>Samlet gevinst:</b> {{ portfolio.daily_change }}</p>
         <p><b>Samlet afkast:</b> {{ portfolio.total_return }}</p>
         <p><b>Positioner:</b> {{ portfolio.positions }}</p>
 
@@ -542,7 +591,14 @@
     </div>
 
     <div class="card">
-        <h2>🖥️ System Health</h2>
+        <h2>
+            🖥️ System Health
+            <span
+                class="info-icon"
+                data-tooltip="Viser om serveren, hukommelsen, disken og AI-servicen fungerer normalt.">
+                ?
+            </span>
+        </h2>
 
         <p><b>Server:</b> {{ system_health.server }}</p>
         <p>
@@ -560,7 +616,14 @@
     </div>
 
     <div class="card">
-        <h2>🤖 AI Analyst</h2>
+        <h2>
+            🤖 AI Analyst
+            <span
+                class="info-icon"
+                data-tooltip="AI'ens samlede vurdering af markedet, muligheder, risici og de vigtigste aktier at holde øje med.">
+                ?
+            </span>
+        </h2>
         <p>{{ analyst }}</p>
     </div>
 

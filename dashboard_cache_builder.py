@@ -21,7 +21,7 @@ def build_dashboard_cache():
     
     data = {
     "updated_at": datetime.now().strftime("%d-%m-%Y %H:%M"),
-    "market": get_market_score(),
+    "market": get_market_score(ranking),
     "summary": get_market_summary(),
     "alerts": get_ai_alerts(),
     "portfolio": get_portfolio_summary(),
