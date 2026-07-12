@@ -11,6 +11,7 @@ from ai_alerts_service import get_ai_alerts
 from portfolio_summary_service import get_portfolio_summary
 from ai_analyst_service import get_ai_analyst
 from morning_brief_service import get_morning_brief
+from market_score_history_service import load_market_score_history
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -46,3 +47,9 @@ def command_center():
         performance=performance,
         ai_news=ai_news,  
     )
+    
+@command_center_bp.route("/market-score-history")
+def market_score_history():
+    return {
+        "history": load_market_score_history()
+    }    

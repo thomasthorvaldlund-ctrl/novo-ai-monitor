@@ -119,6 +119,7 @@ def before_request():
         "/update-dashboard-cache",
         "/job-status",
         "/signal-history",
+        "/market-score-history",
     ]:
         return
 

@@ -425,6 +425,25 @@
         </div>
     </div>
 
+<div class="card">
+    <h2>
+        📈 Market Score History
+        <span
+            class="info-icon"
+            data-tooltip="Viser udviklingen i Market Score over tid. Scoren gemmes højst én gang pr. dag.">
+            ?
+        </span>
+    </h2>
+
+    <div style="height:320px; margin-top:20px;">
+        <canvas id="marketScoreHistoryChart"></canvas>
+    </div>
+
+    <p style="margin-top:16px; color:#888; text-align:center;">
+        Historikken opbygges automatisk dag for dag.
+    </p>
+</div>
+
     <div class="card">
         <h2>
             📋 Aktier pr. signal
@@ -807,5 +826,6 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/static/js/history_charts.js"></script>
+<script src="/static/js/market_score_history_chart.js"></script>
 <script src="/static/js/performance_chart.js"></script>
 {% endblock %}

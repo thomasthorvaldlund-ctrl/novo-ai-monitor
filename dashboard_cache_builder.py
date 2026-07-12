@@ -14,11 +14,19 @@ from morning_brief_service import get_morning_brief
 from performance_service import get_signal_statistics
 from dashboard_cache_service import save_dashboard_cache
 from news_sentiment_service import get_ai_news_sentiment
+from market_score_history_service import save_market_score
 
 def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
     ranking = combined_data.get("combined_ranking", [])
+
+    market = get_market_score(ranking)
+
+    save_market_score(
+        market.get("score", 50),
+        market.get("status", "Neutral"),
+    )
     
     data = {
     "updated_at": datetime.now().strftime("%d-%m-%Y %H:%M"),
