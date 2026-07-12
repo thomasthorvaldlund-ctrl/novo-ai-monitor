@@ -654,6 +654,47 @@
 
     <div class="card">
         <h2>
+            🧠 AI News Summary
+            <span
+                class="info-icon"
+                data-tooltip="AI-analyse af de seneste markedsnyheder med samlet score, status og kort forklaring.">
+                ?
+            </span>
+        </h2>
+
+        {% if ai_news %}
+   
+        <div
+            class="score"
+            style="
+                font-size:42px;
+                text-align:center;
+                margin:15px 0 5px;
+            ">
+            {{ ai_news.score or 0 }}/100
+        </div>
+
+        <div style="text-align:center; margin-bottom:20px;">
+            <span class="status">
+                {{ ai_news.status or "Ukendt" }}
+            </span>
+        </div>
+
+            <p>
+                {{ (ai_news.summary or "Ingen AI-nyhedsanalyse tilgængelig.")[:180] }}
+                {% if ai_news.summary and ai_news.summary|length > 180 %}
+                    ...
+                {% endif %}
+            </p>
+        {% else %}
+            <p style="color:#888;">
+                Ingen AI-nyhedsanalyse tilgængelig.
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>
             🚨 AI Alerts
             <span
                 class="info-icon"

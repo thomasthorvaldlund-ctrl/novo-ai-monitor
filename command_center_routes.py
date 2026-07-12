@@ -30,6 +30,7 @@ def command_center():
     analyst = cache.get("analyst", "AI Analyst er ikke tilgængelig endnu.")
     brief = cache.get("morning_brief", {})
     performance = cache.get("performance", {})
+    ai_news = cache.get("ai_news", {})
 
     return render_template(
         "command_center.html",
@@ -42,5 +43,6 @@ def command_center():
         analyst=analyst,
         brief=brief,
         updated_at=updated_at,
-        performance=performance,  
+        performance=performance,
+        ai_news=ai_news,  
     )
