@@ -1,4 +1,8 @@
+import json
+
 import feedparser
+
+from openai_service import client
 
 
 NEWS_FEED_URL = (
@@ -53,12 +57,15 @@ def get_news_sentiment(limit=20):
     """
     feed = feedparser.parse(NEWS_FEED_URL)
     entries = feed.entries[:limit]
+    headlines = []
 
     positive = 0
     negative = 0
     neutral = 0
 
     for entry in entries:
+        headlines.append(entry.get("title", ""))
+        
         title = entry.get("title", "").lower()
 
         has_positive = any(word in title for word in POSITIVE_WORDS)
@@ -90,4 +97,66 @@ def get_news_sentiment(limit=20):
         "neutral": neutral,
         "negative": negative,
         "checked_articles": checked_articles,
+        "headlines": headlines,
     }
+    
+def get_ai_news_sentiment():
+    """
+    AI-baseret analyse af de seneste nyhedsoverskrifter.
+    """
+
+    if client is None:
+        return {
+            "score": None,
+            "status": "Unavailable",
+            "summary": "OpenAI-klient ikke tilgængelig.",
+        }
+
+    news = get_news_sentiment()
+
+    headlines = "\n".join(news["headlines"])
+
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Du er en erfaren aktieanalytiker. "
+                    "Vurder den samlede stemning i nyhederne."
+                ),
+            },
+            {
+                "role": "user",
+                "content": f"""
+Analyser disse nyhedsoverskrifter.
+
+Svar KUN som gyldig JSON.
+
+Format:
+
+{{
+    "score": 0,
+    "status": "",
+    "summary": ""
+}}
+
+Hvor:
+
+- score er et helt tal mellem 0 og 100
+- status er Positiv, Neutral eller Negativ
+- summary er højst to sætninger.
+
+Returnér KUN JSON.
+
+Overskrifter:
+
+{headlines}
+""",
+            },
+        ],
+    )
+
+    ai_result = json.loads(response.choices[0].message.content)
+
+    return ai_result
