@@ -24,6 +24,31 @@ def get_last_signal(stock):
 
     return None
 
+def get_latest_signals():
+    """
+    Returnerer den seneste signalregistrering for hver aktie.
+    """
+    history = load_signal_history()
+    latest = {}
+
+    excluded_stocks = {
+        "TEST",
+        "TEST2",
+        "TEST_TELEGRAM",
+    }
+
+    for row in reversed(history):
+        stock = row.get("stock")
+
+        if (
+            stock
+            and stock not in excluded_stocks
+            and stock not in latest
+        ):
+            latest[stock] = row
+
+    return latest
+
 
 def signal_changed(stock, signal):
     """Returnerer True hvis signalet er ændret siden sidst."""

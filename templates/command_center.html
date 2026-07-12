@@ -273,6 +273,32 @@
         opacity: 1;
     }
 
+    .market-score-components {
+        margin-top: 22px;
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .market-score-component {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 9px;
+        color: #374151;
+        font-size: 13px;
+    }
+
+    .market-score-component strong {
+        color: #111827;
+    }
+
+    .market-score-alert-count {
+        margin-top: 12px;
+        color: #6b7280;
+        font-size: 12px;
+        text-align: center;
+    }
+
 </style>
 {% endblock %}
 
@@ -491,6 +517,85 @@
             <div
                 class="market-score-fill"
                 style="width: {{ market.score }}%;">
+            </div>
+        </div>
+        <div class="market-score-components">
+            <div class="market-score-component">
+                <span>📈 Combined Score</span>
+                <strong
+                    style="
+                        color:
+                        {% if (market.combined_component or 0) >= 70 %}
+                            #16a34a
+                        {% elif (market.combined_component or 0) >= 50 %}
+                            #ca8a04
+                        {% else %}
+                            #dc2626
+                        {% endif %};
+                    ">
+                    {{ "%.1f"|format(market.combined_component or 0) }}
+                </strong>
+            </div>
+
+            <div class="market-score-component">
+                <span>🤖 AI Signals</span>
+                <strong
+                    style="
+                        color:
+                        {% if (market.signal_component or 0) >= 70 %}
+                            #16a34a
+                        {% elif (market.signal_component or 0) >= 50 %}
+                            #ca8a04
+                        {% else %}
+                            #dc2626
+                        {% endif %};
+                    ">
+                    {{ "%.1f"|format(market.signal_component or 0) }}
+                </strong>
+            </div>
+
+            <div class="market-score-component">
+                <span>🚨 AI Alerts</span>
+                <strong
+                    style="
+                        color:
+                        {% if (market.alert_component or 0) >= 70 %}
+                            #16a34a
+                        {% elif (market.alert_component or 0) >= 50 %}
+                            #ca8a04
+                        {% else %}
+                            #dc2626
+                        {% endif %};
+                    ">
+                    {{ "%.1f"|format(market.alert_component or 0) }}
+                </strong>
+            </div>
+
+            <div class="market-score-component">
+                <span>📰 News Sentiment</span>
+                <strong
+                    style="
+                        color:
+                        {% if (market.news_component or 0) >= 70 %}
+                            #16a34a
+                        {% elif (market.news_component or 0) >= 50 %}
+                            #ca8a04
+                        {% else %}
+                            #dc2626
+                        {% endif %};
+                    ">
+                    {{ "%.1f"|format(market.news_component or 0) }}
+                </strong>
+            </div>
+
+            <div class="market-score-alert-count">
+                {% set alert_count = market.critical_alerts or 0 %}
+
+                {% if alert_count == 1 %}
+                    1 kritisk AI-alert
+                {% else %}
+                {{ alert_count }} kritiske AI-alerts
+                {% endif %}
             </div>
         </div>
     </div>
