@@ -15,11 +15,17 @@ from performance_service import get_signal_statistics
 from dashboard_cache_service import save_dashboard_cache
 from news_sentiment_service import get_ai_news_sentiment
 from market_score_history_service import save_market_score
+from ai_explain_service import explain_stock
 
 def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
     ranking = combined_data.get("combined_ranking", [])
+    
+    stock_explanations = [
+        explain_stock(stock)
+        for stock in ranking
+    ]
 
     market = get_market_score(ranking)
 
@@ -40,6 +46,7 @@ def build_dashboard_cache():
     "morning_brief": get_morning_brief(),
     "performance": get_signal_statistics(),
     "ai_news": get_ai_news_sentiment(),
+    "stock_explanations": stock_explanations,
 }
 
     save_dashboard_cache(data)

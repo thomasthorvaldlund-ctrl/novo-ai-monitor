@@ -782,6 +782,75 @@
 
     <div class="card">
         <h2>
+            🧩 AI Explain
+            <span
+                class="info-icon"
+                data-tooltip="Forklarer hvorfor en aktie har fået sin aktuelle Combined Score, baseret på tekniske signaler, nyheder og kursmomentum.">
+                ?
+            </span>
+        </h2>
+
+        {% if stock_explanations %}
+            {% for explanation in stock_explanations[:5] %}
+                <div style="
+                    margin-bottom:16px;
+                    padding-bottom:14px;
+                    border-bottom:1px solid #e5e7eb;
+                ">
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:12px;
+                        align-items:center;
+                    ">
+                        <strong>{{ explanation.stock }}</strong>
+
+                        <span class="top-pick-score">
+                            {{ explanation.score }}
+                        </span>
+                    </div>
+
+                    <p style="margin:8px 0 4px;">
+                        <b>{{ explanation.headline }}</b>
+                    </p>
+
+                    <p style="margin:4px 0; color:#6b7280;">
+                        {{ explanation.summary }}
+                    </p>
+
+                    <p style="margin:8px 0 0;">
+                        <b>Primær årsag:</b>
+                        {{ explanation.primary_reason }}
+                    </p>
+
+                    <p style="
+                        margin:10px 0 0;
+                        padding:10px;
+                        background:#f8fafc;
+                        border-left:4px solid #2563eb;
+                        border-radius:6px;
+                        font-size:14px;
+                        line-height:1.5;
+                    ">
+                        <b>AI-konklusion</b><br>
+                        {{ explanation.conclusion }}
+                    </p>
+
+                    <p style="margin:8px 0 0; font-size:13px; color:#6b7280;">
+                        Sikkerhed: {{ explanation.confidence }}%
+                    </p>
+
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color:#888;">
+                Ingen AI-forklaringer tilgængelige.
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>
             🤖 AI Analyst
             <span
                 class="info-icon"
