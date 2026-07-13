@@ -340,13 +340,6 @@
     <div class="morning-brief-grid" style="margin-top:20px;">
 
         <div class="morning-brief-item">
-            <span class="morning-brief-label">📊 Overvågede aktier</span>
-            <div class="morning-brief-value">
-                {{ stock_explanations|length }}
-            </div>
-        </div>
-
-        <div class="morning-brief-item">
             <span class="morning-brief-label">📈 Market Score</span>
             <div class="morning-brief-value">
                 {{ market.score or 0 }} / 100<br>
@@ -355,21 +348,51 @@
         </div>
 
         <div class="morning-brief-item">
-            <span class="morning-brief-label">⚙️ Opdatering</span>
+            <span class="morning-brief-label">⭐ Top Pick</span>
             <div class="morning-brief-value">
-                Dashboard: hvert 15. minut<br>
-                Nyheder: hver time
+                {% if today_take.top_pick_stock %}
+                    {{ today_take.top_pick_stock }}<br>
+                    {{ today_take.top_pick_signal }}
+                    · Score {{ today_take.top_pick_score }}
+                {% else %}
+                    Ingen Top Pick
+                {% endif %}
             </div>
         </div>
 
         <div class="morning-brief-item">
-            <span class="morning-brief-label">🕒 Sidst opdateret</span>
+            <span class="morning-brief-label">🚨 AI Alerts</span>
             <div class="morning-brief-value">
-                {{ updated_at }}
+                {{ today_take.alerts }}
+
+                {% if today_take.alert_stocks %}
+                    <div style="margin-top:6px; font-size:12px; color:#b91c1c;">
+                        {{ today_take.alert_stocks|join(", ") }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">📊 Aktuelle signaler</span>
+            <div class="morning-brief-value">
+                {{ performance.buy }} BUY<br>
+                {{ performance.hold }} HOLD
+                · {{ performance.watch }} WATCH
             </div>
         </div>
 
     </div>
+
+    <p style="
+        margin:12px 0 0;
+        color:#6b7280;
+        font-size:12px;
+    ">
+        🕒 Sidst opdateret: {{ updated_at }}
+        · Dashboard hvert 15. minut
+        · Nyheder hver time
+    </p>
 
     <p style="
         margin:16px 0 0;
@@ -379,6 +402,146 @@
         AI-vurderinger er beslutningsstøtte og bør ikke betragtes som investeringsrådgivning.
     </p>
 
+</div>
+
+<div class="card" style="margin-bottom:24px; border-left:6px solid #7c3aed;">
+    <h2>
+        📢 AI Today’s Take
+        <span
+            class="info-icon"
+            data-tooltip="Kort fortolkning af dagens Market Score, Top Pick, alerts, signaler og nyhedsbillede.">
+            ?
+        </span>
+    </h2>
+
+    {% if today_take %}
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:14px;
+            flex-wrap:wrap;
+            margin-bottom:14px;
+        ">
+            <p style="font-size:18px; font-weight:700; margin:0;">
+                {{ today_take.headline }}
+            </p>
+
+            {% if today_take.risk_level == "Lav" %}
+                {% set risk_color = "#166534" %}
+                {% set risk_bg = "#dcfce7" %}
+            {% elif today_take.risk_level == "Moderat" %}
+                {% set risk_color = "#a16207" %}
+                {% set risk_bg = "#fef9c3" %}
+            {% else %}
+                {% set risk_color = "#b91c1c" %}
+                {% set risk_bg = "#fee2e2" %}
+            {% endif %}
+
+            <span style="
+                background:{{ risk_bg }};
+                color:{{ risk_color }};
+                padding:8px 16px;
+                border-radius:999px;
+                font-weight:700;
+            ">
+                Risiko: {{ today_take.risk_level }}
+            </span>
+        </div>
+
+        <p style="margin:0 0 18px; color:#4b5563; line-height:1.7;">
+            {{ today_take.summary }}
+        </p>
+
+        <div class="morning-brief-grid">
+            <div class="morning-brief-item">
+                <span class="morning-brief-label">⭐ Top Pick</span>
+
+                {% if today_take.top_pick_stock %}
+                    <div class="morning-brief-value">
+                        <strong>{{ today_take.top_pick_stock }}</strong><br>
+
+                        <span class="top-pick-signal {{ today_take.top_pick_signal|lower }}">
+                            {{ today_take.top_pick_signal }}
+                        </span>
+
+                        <span style="margin-left:6px;">
+                            Score {{ today_take.top_pick_score }}
+                        </span>
+
+                        <div style="margin-top:6px;">
+                            {{ today_take.top_pick_stars }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="morning-brief-value">
+                        Ingen Top Pick tilgængelig.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="morning-brief-item">
+                <span class="morning-brief-label">🚨 Alerts</span>
+
+                <div class="morning-brief-value">
+                    {{ today_take.alerts }}
+
+                    {% if today_take.alert_stocks %}
+                        <div style="
+                            margin-top:8px;
+                            display:flex;
+                            flex-wrap:wrap;
+                            gap:6px;
+                        ">
+                            {% for stock in today_take.alert_stocks %}
+                                <span style="
+                                    display:inline-block;
+                                    padding:3px 8px;
+                                    border-radius:999px;
+                                    background:#fee2e2;
+                                    color:#b91c1c;
+                                    font-size:12px;
+                                    font-weight:700;
+                                ">
+                                    {{ stock }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="morning-brief-item">
+                <span class="morning-brief-label">📊 Signaler</span>
+                <div class="morning-brief-value">
+                    {{ today_take.signals }}
+                </div>
+            </div>
+
+            <div class="morning-brief-item">
+                <span class="morning-brief-label">📰 Nyheder</span>
+                <div class="morning-brief-value">
+                    {{ today_take.news }}
+                </div>
+            </div>
+        </div>
+
+        <div style="
+            margin-top:18px;
+            padding:14px 16px;
+            background:#f8fafc;
+            border-left:4px solid #7c3aed;
+            border-radius:8px;
+            line-height:1.7;
+        ">
+            <strong>📌 AI anbefaler</strong><br>
+            {{ today_take.recommendation }}
+        </div>
+    {% else %}
+        <p style="color:#888;">
+            Today’s Take er ikke tilgængelig endnu.
+        </p>
+    {% endif %}
 </div>
 
 <div class="card" style="border-left:6px solid #2563eb; margin-bottom:24px;">

@@ -33,6 +33,7 @@ def command_center():
     performance = cache.get("performance", {})
     ai_news = cache.get("ai_news", {})
     stock_explanations = cache.get("stock_explanations", [])
+    today_take = cache.get("today_take", {})
 
     return render_template(
         "command_center.html",
@@ -48,6 +49,7 @@ def command_center():
         performance=performance,
         ai_news=ai_news,
         stock_explanations=stock_explanations,
+        today_take=today_take,
     )
     
 @command_center_bp.route("/market-score-history")
