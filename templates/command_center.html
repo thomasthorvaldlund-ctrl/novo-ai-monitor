@@ -304,11 +304,82 @@
 
 {% block content %}
 
-<h1>AI Command Center</h1>
 
-<p style="color:#6b7280; margin-top:-10px; margin-bottom:20px;">
-    🕒 Sidst opdateret: <strong>{{ updated_at }}</strong>
-</p>
+<div class="card" style="
+    margin-bottom:24px;
+    border-left:6px solid #2563eb;
+">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:20px;
+        flex-wrap:wrap;
+    ">
+        <div>
+            <h1 style="margin:0;">
+                🤖 Stock AI Monitor v1.3
+            </h1>
+
+            <p style="
+                margin:8px 0 0;
+                color:#4b5563;
+                line-height:1.6;
+            ">
+                AI-drevet analyse- og beslutningsplatform til overvågning
+                af aktier, nyheder, signaler, portefølje og markedsrisiko.
+            </p>
+        </div>
+
+        <span class="status">
+            🟢 AI Online
+        </span>
+    </div>
+
+    <div class="morning-brief-grid" style="margin-top:20px;">
+
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">📊 Overvågede aktier</span>
+            <div class="morning-brief-value">
+                {{ stock_explanations|length }}
+            </div>
+        </div>
+
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">📈 Market Score</span>
+            <div class="morning-brief-value">
+                {{ market.score or 0 }} / 100<br>
+                {{ market.status or "Ukendt" }}
+            </div>
+        </div>
+
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">⚙️ Opdatering</span>
+            <div class="morning-brief-value">
+                Dashboard: hvert 15. minut<br>
+                Nyheder: hver time
+            </div>
+        </div>
+
+        <div class="morning-brief-item">
+            <span class="morning-brief-label">🕒 Sidst opdateret</span>
+            <div class="morning-brief-value">
+                {{ updated_at }}
+            </div>
+        </div>
+
+    </div>
+
+    <p style="
+        margin:16px 0 0;
+        color:#6b7280;
+        font-size:13px;
+    ">
+        AI-vurderinger er beslutningsstøtte og bør ikke betragtes som investeringsrådgivning.
+    </p>
+
+</div>
 
 <div class="card" style="border-left:6px solid #2563eb; margin-bottom:24px;">
     <h2>
@@ -352,7 +423,7 @@
         <div class="morning-brief-item">
             <span class="morning-brief-label">🔔 AI Alerts</span>
             <div class="morning-brief-value">
-                {{ brief.alerts|length }}
+                {{ brief.alert_count or 0 }}
             </div>
         </div>
 
@@ -780,7 +851,7 @@
         <p><b>AI Service:</b> {{ system_health.ai }}</p>
     </div>
 
-    <div class="card">
+    <div class="card" style="grid-column:1 / -1;">
         <h2>
             🧩 AI Explain
             <span
@@ -791,6 +862,12 @@
         </h2>
 
         {% if stock_explanations %}
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(3, minmax(0, 1fr));
+                gap:18px;
+            ">
             {% for explanation in stock_explanations[:5] %}
                 <div style="
                     margin-bottom:16px;
@@ -842,6 +919,7 @@
 
                 </div>
             {% endfor %}
+            </div>
         {% else %}
             <p style="color:#888;">
                 Ingen AI-forklaringer tilgængelige.

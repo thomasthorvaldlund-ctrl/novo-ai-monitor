@@ -10,10 +10,14 @@ from openai_service import client
 def get_morning_brief():
     ranking = combined_stock_score(client)["combined_ranking"]
 
-    market = get_market_score()
+    market = get_market_score(ranking)
     portfolio = get_portfolio_summary()
     top_picks = get_top_picks(ranking)
     alerts = get_ai_alerts()
+    alert_count = sum(
+        1 for alert in alerts
+        if alert.get("level") != "green"
+    )
     health = get_system_health()
 
     top = top_picks[0] if top_picks else None
@@ -23,5 +27,6 @@ def get_morning_brief():
         "portfolio": portfolio,
         "top_pick": top,
         "alerts": alerts,
+        "alert_count": alert_count,
         "health": health,
     }
