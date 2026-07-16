@@ -35,7 +35,10 @@ from market_dashboard_routes import market_dashboard_bp
 from watchlist_routes import watchlist_bp
 from combined_score_routes import combined_score_bp
 from command_center_routes import command_center_bp
-from stock_screener_service import stock_screener as service_stock_screener
+from stock_screener_service import (
+    WATCHLIST,
+    stock_screener as service_stock_screener,
+)
 from stock_news_service import stock_news_ai_score as service_stock_news_ai_score
 from job_status_routes import job_status_bp
 from job_status_routes import job_status_bp
@@ -652,7 +655,13 @@ def test_alert():
 
 @app.route("/risk-check")
 def risk_check():
-    stock = yf.Ticker("NOVO-B.CO")
+    selected_stock = request.args.get("stock", "NOVO").upper()
+
+    if selected_stock not in WATCHLIST:
+        selected_stock = "NOVO"
+
+    ticker = WATCHLIST[selected_stock]
+    stock = yf.Ticker(ticker)
     data = stock.history(period="10d")
 
     latest = data["Close"].iloc[-1]
@@ -674,23 +683,33 @@ def risk_check():
 
     if alarm_sent:
         message = (
-            "🚨 NOVO RISIKOALARM 🚨\n"
+            f"🚨 {selected_stock} RISIKOALARM 🚨\n"
             "Risiko: HØJ\n\n"
             + "\n".join(reasons)
         )
         send_telegram(message)
 
-    return {
-        "stock": "Novo Nordisk",
-        "price": round(float(latest), 2),
-        "daily_change": round(float(daily_change), 2),
-        "weekly_change": round(float(weekly_change), 2),
-        "alarm_sent": alarm_sent,
-        "reasons": reasons
-    }
+    return render_template(
+        "risk_check.html",
+        stock=selected_stock,
+        ticker=ticker,
+        watchlist=WATCHLIST,
+        selected_stock=selected_stock,
+        price=round(float(latest), 2),
+        daily_change=round(float(daily_change), 2),
+        weekly_change=round(float(weekly_change), 2),
+        alarm_sent=alarm_sent,
+        reasons=reasons,
+        updated_at=datetime.now().strftime("%d-%m-%Y %H:%M"),
+    )
 
 @app.route("/news-check")
 def news_check():
+
+    selected_stock = request.args.get("stock", "NOVO").upper()
+
+    if selected_stock not in WATCHLIST:
+        selected_stock = "NOVO"
 
     seen_file = "/root/novo-ai-monitor/seen_news.txt"
 
@@ -700,9 +719,37 @@ def news_check():
     except:
         seen = set()
 
-    feed = feedparser.parse(
-        "https://news.google.com/rss/search?q=Novo+Nordisk+stock+OR+Wegovy+OR+Ozempic&hl=en-US&gl=US&ceid=US:en"
+    news_queries = {
+        "NOVO": "Novo Nordisk stock OR Wegovy OR Ozempic",
+        "DSV": "DSV stock OR DSV logistics",
+        "VESTAS": "Vestas stock OR wind turbines",
+        "GENMAB": "Genmab stock OR Genmab cancer",
+        "CARLSBERG": "Carlsberg stock OR Carlsberg earnings",
+        "MAERSK": "Maersk stock OR shipping logistics",
+        "ORSTED": "Orsted stock OR offshore wind",
+        "PANDORA": "Pandora stock OR Pandora jewelry",
+        "APPLE": "Apple stock OR AAPL",
+        "MICROSOFT": "Microsoft stock OR MSFT",
+        "NVIDIA": "NVIDIA stock OR NVDA OR AI chips",
+        "ASML": "ASML stock OR semiconductor lithography",
+        "TESLA": "Tesla stock OR TSLA",
+        "AMAZON": "Amazon stock OR AMZN",
+        "META": "Meta stock OR META platforms",
+        "GOOGLE": "Alphabet stock OR GOOGL OR Google",
+    }
+
+    query = news_queries.get(
+        selected_stock,
+        f"{selected_stock} stock",
     )
+
+    feed_url = (
+        "https://news.google.com/rss/search?"
+        f"q={quote_plus(query)}"
+        "&hl=en-US&gl=US&ceid=US:en"
+    )
+
+    feed = feedparser.parse(feed_url)
 
     negative_words = [
         "falls", "drops", "lawsuit", "warning", "cuts",
@@ -711,24 +758,41 @@ def news_check():
         "Eli Lilly", "price war"
     ]
 
-    matches = []
+    negative_articles = []
+    new_negative_articles = []
+    articles = []
 
     for entry in feed.entries[:10]:
-        title = entry.title
+        title = entry.get("title", "")
         title_lower = title.lower()
 
-        if (
-            title not in seen
-            and any(word.lower() in title_lower for word in negative_words)
-        ):
-            matches.append(title)
-            seen.add(title)
+        article = {
+            "title": title,
+            "link": entry.get("link", ""),
+            "published": entry.get("published", ""),
+        }
+        articles.append(article)
 
-    if matches:
+        is_negative = any(
+            word.lower() in title_lower
+            for word in negative_words
+        )
+
+        if is_negative:
+            negative_articles.append(article)
+
+            if title not in seen:
+                new_negative_articles.append(article)
+                seen.add(title)
+
+    if new_negative_articles:
         message = (
-            "📰 NOVO NYHEDSALARM\n"
-            "Muligt negativt nyhedssignal:\n\n"
-            + "\n\n".join(matches[:5])
+            f"📰 {selected_stock} NYHEDSALARM\n"
+            "Nyt muligt negativt nyhedssignal:\n\n"
+            + "\n\n".join(
+                item.get("title", "")
+                for item in new_negative_articles[:5]
+            )
         )
         send_telegram(message)
 
@@ -736,11 +800,18 @@ def news_check():
         for title in seen:
             f.write(title + "\n")
 
-    return {
-        "checked_articles": len(feed.entries[:10]),
-        "negative_matches": matches[:5],
-        "alarm_sent": bool(matches)
-    }
+    return render_template(
+        "news_check.html",
+        checked_articles=len(articles),
+        articles=articles,
+        negative_matches=negative_articles[:5],
+        new_negative_matches=new_negative_articles[:5],
+        alarm_sent=bool(new_negative_articles),
+        updated_at=datetime.now().strftime("%d-%m-%Y %H:%M"),
+        watchlist=WATCHLIST,
+        selected_stock=selected_stock,
+        query=query,
+    )
 
 @app.route("/ai-news-check")
 def ai_news_check():
@@ -1163,12 +1234,17 @@ def save_history():
 
     for stock_name, ticker, logfile in [
         ("NOVO", "NOVO-B.CO", "/root/novo-ai-monitor/last_ai_news_check.log"),
-        ("DSV", "DSV.CO", "/root/novo-ai-monitor/last_dsv_ai_news_check.log")
+        ("DSV", "DSV.CO", "/root/novo-ai-monitor/last_dsv_ai_news_check.log"),
+        ("NVIDIA", "NVDA", None),
+        ("ASML", "ASML.AS", None),
     ]:
 
         data = get_stock_data(ticker)
 
-        ai_risk = extract_ai_risk(logfile)
+        if logfile:
+            ai_risk = extract_ai_risk(logfile)
+        else:
+            ai_risk = data["risk_level"]
 
         total_risk = data["risk_level"]
         if levels[ai_risk] > levels[total_risk]:

@@ -544,6 +544,276 @@
     {% endif %}
 </div>
 
+<div class="card" style="margin-bottom:24px; border-left:6px solid #0f766e;">
+    <h2>
+        📊 Earnings Intelligence
+        <span
+            class="info-icon"
+            data-tooltip="Finder og klassificerer regnskabsnyheder blandt de seneste markedsartikler.">
+            ?
+        </span>
+    </h2>
+
+    {% if earnings %}
+        <div class="morning-brief-grid">
+
+            <details class="morning-brief-item" style="cursor:pointer;">
+                <summary style="
+                    list-style:none;
+                    cursor:pointer;
+                ">
+                    <span class="morning-brief-label">
+                        🧾 Regnskabsrelaterede artikler
+                    </span>
+                    <div class="morning-brief-value">
+                        {{ earnings.total or 0 }}
+                    </div>
+                    <div style="margin-top:5px; font-size:12px; color:#2563eb;">
+                        Vis artikler ↓
+                    </div>
+                </summary>
+
+                <div style="margin-top:12px;">
+                    {% for item in earnings.all_articles %}
+                        <div style="
+                            padding:8px 0;
+                            border-top:1px solid #e5e7eb;
+                        ">
+                            {% if item.link %}
+                                <a
+                                    href="{{ item.link }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="
+                                        color:#2563eb;
+                                        font-weight:600;
+                                        text-decoration:none;
+                                    "
+                                >
+                                    {{ item.title }} ↗
+                                </a>
+                            {% else %}
+                                {{ item.title }}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <span style="color:#888;">Ingen artikler.</span>
+                    {% endfor %}
+                </div>
+            </details>
+
+            <details class="morning-brief-item" style="cursor:pointer;">
+                <summary style="
+                    list-style:none;
+                    cursor:pointer;
+                ">
+                    <span class="morning-brief-label">
+                        🏢 Direkte selskabsregnskaber
+                    </span>
+                    <div class="morning-brief-value">
+                        {{ earnings.company_reports or 0 }}
+                    </div>
+                    <div style="margin-top:5px; font-size:12px; color:#2563eb;">
+                        Vis regnskaber ↓
+                    </div>
+                </summary>
+
+                <div style="margin-top:12px;">
+                    {% for item in earnings.company_report_articles %}
+                        <div style="
+                            padding:8px 0;
+                            border-top:1px solid #e5e7eb;
+                        ">
+                            {% if item.link %}
+                                <a
+                                    href="{{ item.link }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="
+                                        color:#2563eb;
+                                        font-weight:600;
+                                        text-decoration:none;
+                                    "
+                                >
+                                    {{ item.title }} ↗
+                                </a>
+                            {% else %}
+                                {{ item.title }}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <span style="color:#888;">
+                            Ingen direkte selskabsregnskaber.
+                        </span>
+                    {% endfor %}
+                </div>
+            </details>
+
+            <details class="morning-brief-item" style="cursor:pointer;">
+                <summary style="
+                    list-style:none;
+                    cursor:pointer;
+                ">
+                    <span class="morning-brief-label">
+                        📰 Markedsomtale
+                    </span>
+                    <div class="morning-brief-value">
+                        {{ earnings.market_coverage or 0 }}
+                    </div>
+                    <div style="margin-top:5px; font-size:12px; color:#2563eb;">
+                        Vis omtale ↓
+                    </div>
+                </summary>
+
+                <div style="margin-top:12px;">
+                    {% for item in earnings.market_coverage_articles %}
+                        <div style="
+                            padding:8px 0;
+                            border-top:1px solid #e5e7eb;
+                        ">
+                            {% if item.link %}
+                                <a
+                                    href="{{ item.link }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="
+                                        color:#2563eb;
+                                        font-weight:600;
+                                        text-decoration:none;
+                                    "
+                                >
+                                    {{ item.title }} ↗
+                                </a>
+                            {% else %}
+                                {{ item.title }}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <span style="color:#888;">Ingen markedsomtale.</span>
+                    {% endfor %}
+                </div>
+            </details>
+
+        </div>
+
+        {% if earnings.latest_company_reports %}
+            <div style="margin-top:16px;">
+                <strong>Seneste direkte regnskabsnyheder</strong>
+
+                <ul style="margin-bottom:0;">
+                    {% for item in earnings.latest_company_reports %}
+                        <li style="margin-top:10px;">
+                            {% if item.link %}
+                                <a
+                                    href="{{ item.link }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="
+                                        color:#2563eb;
+                                        font-weight:600;
+                                        text-decoration:none;
+                                    "
+                                >
+                                    {{ item.title }} ↗
+                                </a>
+                            {% else %}
+                                <span style="font-weight:600;">
+                                    {{ item.title }}
+                                </span>
+                            {% endif %}
+
+                            {% if item.published %}
+                                <div style="
+                                    margin-top:3px;
+                                    color:#6b7280;
+                                    font-size:12px;
+                                ">
+                                    {{ item.published }}
+                                </div>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <p style="margin:16px 0 0; color:#6b7280;">
+                Ingen direkte selskabsregnskaber fundet blandt de seneste artikler.
+            </p>
+        {% endif %}
+
+        {% if earnings_ai %}
+            <div style="margin-top:20px;">
+                <strong>🤖 AI-regnskabsvurdering</strong>
+
+                {% for item in earnings_ai %}
+                    {% set analysis = item.analysis %}
+
+                    {% if analysis.sentiment == "Positive" %}
+                        {% set sentiment_bg = "#dcfce7" %}
+                        {% set sentiment_color = "#166534" %}
+                    {% elif analysis.sentiment == "Negative" %}
+                        {% set sentiment_bg = "#fee2e2" %}
+                        {% set sentiment_color = "#b91c1c" %}
+                    {% else %}
+                        {% set sentiment_bg = "#fef9c3" %}
+                        {% set sentiment_color = "#a16207" %}
+                    {% endif %}
+
+                    <div style="
+                        margin-top:12px;
+                        padding:14px 16px;
+                        background:#f8fafc;
+                        border:1px solid #e5e7eb;
+                        border-radius:10px;
+                    ">
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:12px;
+                            flex-wrap:wrap;
+                        ">
+                            <strong>{{ analysis.company }}</strong>
+
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <span style="
+                                    padding:4px 10px;
+                                    border-radius:999px;
+                                    background:{{ sentiment_bg }};
+                                    color:{{ sentiment_color }};
+                                    font-size:12px;
+                                    font-weight:700;
+                                ">
+                                    {{ analysis.sentiment }}
+                                </span>
+
+                                <span style="
+                                    padding:4px 10px;
+                                    border-radius:999px;
+                                    background:#e0f2fe;
+                                    color:#0369a1;
+                                    font-size:12px;
+                                    font-weight:700;
+                                ">
+                                    Impact: {{ analysis.impact }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <p style="margin:10px 0 0; color:#4b5563; line-height:1.6;">
+                            {{ analysis.summary }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p style="color:#888;">
+            Earnings Intelligence er ikke tilgængelig endnu.
+        </p>
+    {% endif %}
+</div>
+
 <div class="card" style="border-left:6px solid #2563eb; margin-bottom:24px;">
     <h2>
         ☀️ AI Morning Brief
@@ -977,7 +1247,7 @@
         </h2>
 
         <p><b>Samlet værdi:</b> {{ portfolio.value }}</p>
-        <p><b>Samlet gevinst:</b> {{ portfolio.daily_change }}</p>
+        <p><b>Samlet gevinst:</b> {{ portfolio.total_profit }}</p>
         <p><b>Samlet afkast:</b> {{ portfolio.total_return }}</p>
         <p><b>Positioner:</b> {{ portfolio.positions }}</p>
 
@@ -1112,6 +1382,8 @@
     <select id="stockSelector">
         <option value="NOVO">Novo Nordisk</option>
         <option value="DSV">DSV</option>
+        <option value="ASML">ASML</option>
+        <option value="NVIDIA">NVIDIA</option>
     </select>
 
     <p style="margin-top:18px;">

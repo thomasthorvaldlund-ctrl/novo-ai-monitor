@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}News Check{% endblock %}
+
+{% block content %}
+
+<h1>📰 News Check</h1>
+
+<p style="color:#6b7280; margin-top:-8px; margin-bottom:18px;">
+    Overvåger de seneste Novo Nordisk-relaterede nyheder for mulige negative signaler.
+</p>
+
+<form method="get" action="/news-check" style="
+    display:flex;
+    align-items:end;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+">
+    <div>
+        <label for="stock" style="
+            display:block;
+            margin-bottom:6px;
+            color:#4b5563;
+            font-weight:600;
+        ">
+            Vælg aktie
+        </label>
+
+        <select
+            id="stock"
+            name="stock"
+            style="
+                min-width:240px;
+                padding:10px 12px;
+                border:1px solid #d1d5db;
+                border-radius:8px;
+                background:white;
+                font-size:14px;
+            "
+        >
+            {% for name, ticker in watchlist.items() %}
+                <option
+                    value="{{ name }}"
+                    {% if name == selected_stock %}selected{% endif %}
+                >
+                    {{ name }} · {{ ticker }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit" style="
+        padding:10px 16px;
+        border:none;
+        border-radius:8px;
+        background:#2563eb;
+        color:white;
+        font-weight:700;
+        cursor:pointer;
+    ">
+        Hent nyheder
+    </button>
+</form>
+
+<p style="
+    margin:0 0 6px;
+    color:#4b5563;
+    font-size:13px;
+">
+    Søger efter: <strong>{{ query }}</strong>
+</p>
+
+<p style="
+    margin:0 0 22px;
+    color:#6b7280;
+    font-size:12px;
+">
+    🕒 Sidst opdateret: {{ updated_at }}
+</p>
+
+<div class="card" style="
+    margin-bottom:24px;
+    border-left:6px solid {% if alarm_sent %}#dc2626{% else %}#16a34a{% endif %};
+">
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0,1fr));
+        gap:16px;
+    ">
+        <details style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+            cursor:pointer;
+        ">
+            <summary style="list-style:none; cursor:pointer;">
+                <span class="morning-brief-label">
+                    🧾 Kontrollerede artikler
+                </span>
+
+                <div class="morning-brief-value">
+                    {{ checked_articles }}
+                </div>
+
+                <div style="
+                    margin-top:5px;
+                    color:#2563eb;
+                    font-size:12px;
+                ">
+                    Vis artikler ↓
+                </div>
+            </summary>
+
+            <div style="margin-top:12px;">
+                {% for item in articles %}
+                    <div style="
+                        padding:10px 0;
+                        border-top:1px solid #e5e7eb;
+                    ">
+                        {% if item.link %}
+                            <a
+                                href="{{ item.link }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="
+                                    color:#2563eb;
+                                    font-weight:600;
+                                    text-decoration:none;
+                                "
+                            >
+                                {{ item.title }} ↗
+                            </a>
+                        {% else %}
+                            <strong>{{ item.title }}</strong>
+                        {% endif %}
+
+                        {% if item.published %}
+                            <div style="
+                                margin-top:4px;
+                                color:#6b7280;
+                                font-size:12px;
+                            ">
+                                {{ item.published }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <span style="color:#888;">
+                        Ingen artikler fundet.
+                    </span>
+                {% endfor %}
+            </div>
+        </details>
+
+        <details style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+            cursor:pointer;
+        ">
+            <summary style="list-style:none; cursor:pointer;">
+                <span class="morning-brief-label">
+                    ⚠️ Negative fund
+                </span>
+
+                <div
+                    class="morning-brief-value"
+                    style="color:{% if negative_matches %}#dc2626{% else %}#16a34a{% endif %};"
+                >
+                    {{ negative_matches|length }}
+                </div>
+
+                <div style="
+                    margin-top:5px;
+                    color:#2563eb;
+                    font-size:12px;
+                ">
+                    Vis negative fund ↓
+                </div>
+            </summary>
+
+            <div style="margin-top:12px;">
+                {% for item in negative_matches %}
+                    <div style="
+                        padding:10px 0;
+                        border-top:1px solid #e5e7eb;
+                    ">
+                        {% if item.link %}
+                            <a
+                                href="{{ item.link }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="
+                                    color:#dc2626;
+                                    font-weight:600;
+                                    text-decoration:none;
+                                "
+                            >
+                                {{ item.title }} ↗
+                            </a>
+                        {% else %}
+                            <strong>{{ item.title }}</strong>
+                        {% endif %}
+
+                        {% if item.published %}
+                            <div style="
+                                margin-top:4px;
+                                color:#6b7280;
+                                font-size:12px;
+                            ">
+                                {{ item.published }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <span style="color:#888;">
+                        Ingen nye negative fund.
+                    </span>
+                {% endfor %}
+            </div>
+        </details>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <span class="morning-brief-label">🚨 Alarmstatus</span>
+            <div class="morning-brief-value">
+                {% if alarm_sent %}
+                    Alarm sendt
+                {% else %}
+                    Ingen alarm
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if negative_matches %}
+        <div style="margin-top:22px;">
+            <h2 style="margin-bottom:12px;">
+                Mulige negative nyhedssignaler
+            </h2>
+
+            {% for item in negative_matches %}
+                <div style="
+                    padding:14px 0;
+                    border-top:1px solid #e5e7eb;
+                ">
+                    {% if item.link %}
+                        <a
+                            href="{{ item.link }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                                color:#2563eb;
+                                font-weight:700;
+                                text-decoration:none;
+                            "
+                        >
+                            {{ item.title }} ↗
+                        </a>
+                    {% else %}
+                        <strong>{{ item.title }}</strong>
+                    {% endif %}
+
+                    {% if item.published %}
+                        <div style="
+                            margin-top:5px;
+                            color:#6b7280;
+                            font-size:12px;
+                        ">
+                            {{ item.published }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="
+            margin-top:22px;
+            padding:14px 16px;
+            background:#dcfce7;
+            border-left:4px solid #16a34a;
+            border-radius:8px;
+        ">
+            Ingen nye negative nyhedssignaler blev fundet blandt de seneste artikler.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

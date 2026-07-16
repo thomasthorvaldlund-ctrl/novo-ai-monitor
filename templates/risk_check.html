@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Risk Check{% endblock %}
+
+{% block content %}
+
+<h1>⚠️ Risk Check</h1>
+
+<p style="color:#6b7280; margin-top:-8px; margin-bottom:18px;">
+    Automatisk risikovurdering baseret på den seneste dags- og ugeudvikling.
+</p>
+
+<form method="get" action="/risk-check" style="
+    display:flex;
+    align-items:end;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+">
+    <div>
+        <label for="stock" style="
+            display:block;
+            margin-bottom:6px;
+            color:#4b5563;
+            font-weight:600;
+        ">
+            Vælg aktie
+        </label>
+
+        <select
+            id="stock"
+            name="stock"
+            style="
+                min-width:220px;
+                padding:10px 12px;
+                border:1px solid #d1d5db;
+                border-radius:8px;
+                background:white;
+                font-size:14px;
+            "
+        >
+            {% for name, stock_ticker in watchlist.items() %}
+                <option
+                    value="{{ name }}"
+                    {% if name == selected_stock %}selected{% endif %}
+                >
+                    {{ name }} · {{ stock_ticker }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button
+        type="submit"
+        style="
+            padding:10px 16px;
+            border:none;
+            border-radius:8px;
+            background:#2563eb;
+            color:white;
+            font-weight:700;
+            cursor:pointer;
+        "
+    >
+        Analysér aktie
+    </button>
+</form>
+
+<p style="
+    margin:-12px 0 18px;
+    color:#6b7280;
+    font-size:12px;
+">
+    🕒 Sidst opdateret: {{ updated_at }}
+</p>
+
+<div class="card" style="border-left:6px solid {% if alarm_sent %}#dc2626{% else %}#16a34a{% endif %};">
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:16px;
+        flex-wrap:wrap;
+    ">
+        <div>
+            <h2 style="margin-bottom:6px;">{{ stock }}</h2>
+            <div style="color:#6b7280;">Aktuel kurs</div>
+        </div>
+
+        <div style="font-size:38px; font-weight:700;">
+            {{ "%.2f"|format(price) }} DKK
+        </div>
+    </div>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:16px;
+        margin-top:22px;
+    ">
+        <div style="
+        background:#f8fafc;
+        border:1px solid #e5e7eb;
+        border-radius:10px;
+        padding:16px;
+    ">
+            <span class="morning-brief-label">📅 Dagens ændring</span>
+            <div class="morning-brief-value"
+                 style="color:{% if daily_change < 0 %}#dc2626{% else %}#16a34a{% endif %};">
+                {{ "%.2f"|format(daily_change) }}%
+            </div>
+        </div>
+
+        <div style="
+        background:#f8fafc;
+        border:1px solid #e5e7eb;
+        border-radius:10px;
+        padding:16px;
+    ">
+            <span class="morning-brief-label">📈 Ugens ændring</span>
+            <div class="morning-brief-value"
+                 style="color:{% if weekly_change < 0 %}#dc2626{% else %}#16a34a{% endif %};">
+                {{ "%.2f"|format(weekly_change) }}%
+            </div>
+        </div>
+
+        <div style="
+        background:#f8fafc;
+        border:1px solid #e5e7eb;
+        border-radius:10px;
+        padding:16px;
+    ">
+            <span class="morning-brief-label">🚨 Alarmstatus</span>
+            <div class="morning-brief-value">
+                {% if alarm_sent %}
+                    Høj risiko
+                {% else %}
+                    Ingen alarm
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if reasons %}
+        <div style="
+            margin-top:20px;
+            padding:14px 16px;
+            background:#fee2e2;
+            border-left:4px solid #dc2626;
+            border-radius:8px;
+        ">
+            <strong>Årsager</strong>
+            <ul style="margin-bottom:0;">
+                {% for reason in reasons %}
+                    <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div style="
+            margin-top:20px;
+            padding:14px 16px;
+            background:#dcfce7;
+            border-left:4px solid #16a34a;
+            border-radius:8px;
+        ">
+            Ingen af de aktuelle alarmgrænser er overskredet.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

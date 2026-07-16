@@ -62,7 +62,7 @@ def get_portfolio_summary():
 
     return {
         "value": f"{total_value:,.2f} DKK",
-        "daily_change": f"{total_profit:,.2f} DKK",
+        "total_profit": f"{total_profit:,.2f} DKK",
         "total_return": f"{total_profit_pct:.2f}%",
         "positions": len(positions),
         "position_details": position_details,

@@ -18,6 +18,11 @@ def load_portfolio_rows(portfolio_file=PORTFOLIO_FILE):
                 "ticker": row["ticker"],
                 "qty": float(row["qty"]),
                 "buy_price": float(row["buy_price"]),
+                "cost_dkk": (
+                    float(row["cost_dkk"])
+                    if row.get("cost_dkk")
+                    else None
+                ),
             })
 
     return positions
@@ -38,7 +43,11 @@ def get_portfolio_positions(portfolio_file=PORTFOLIO_FILE):
         buy_price_dkk = convert_to_dkk(row["buy_price"], currency, fx_rates)
 
         value_dkk = latest_dkk * row["qty"]
-        cost_dkk = buy_price_dkk * row["qty"]
+
+        if row.get("cost_dkk") is not None:
+            cost_dkk = row["cost_dkk"]
+        else:
+            cost_dkk = buy_price_dkk * row["qty"]
         profit_dkk = value_dkk - cost_dkk
         profit_pct = (profit_dkk / cost_dkk) * 100 if cost_dkk else 0
 

@@ -7,25 +7,28 @@ from currency_service import (
 )
 
 
+WATCHLIST = {
+    "NOVO": "NOVO-B.CO",
+    "DSV": "DSV.CO",
+    "VESTAS": "VWS.CO",
+    "GENMAB": "GMAB.CO",
+    "CARLSBERG": "CARL-B.CO",
+    "MAERSK": "MAERSK-B.CO",
+    "ORSTED": "ORSTED.CO",
+    "PANDORA": "PNDORA.CO",
+    "APPLE": "AAPL",
+    "MICROSOFT": "MSFT",
+    "NVIDIA": "NVDA",
+    "ASML": "ASML.AS",
+    "TESLA": "TSLA",
+    "AMAZON": "AMZN",
+    "META": "META",
+    "GOOGLE": "GOOGL",
+}
+
+
 def stock_screener():
-    watchlist = {
-        "NOVO": "NOVO-B.CO",
-        "DSV": "DSV.CO",
-        "VESTAS": "VWS.CO",
-        "GENMAB": "GMAB.CO",
-        "CARLSBERG": "CARL-B.CO",
-        "MAERSK": "MAERSK-B.CO",
-        "ORSTED": "ORSTED.CO",
-        "PANDORA": "PNDORA.CO",
-        "APPLE": "AAPL",
-        "MICROSOFT": "MSFT",
-        "NVIDIA": "NVDA",
-        "ASML": "ASML.AS",
-        "TESLA": "TSLA",
-        "AMAZON": "AMZN",
-        "META": "META",
-        "GOOGLE": "GOOGL"
-    }
+    watchlist = WATCHLIST
 
     fx_rates = get_fx_rates()
     results = []

@@ -58,15 +58,28 @@ def get_news_sentiment(limit=20):
     feed = feedparser.parse(NEWS_FEED_URL)
     entries = feed.entries[:limit]
     headlines = []
+    articles = []
 
     positive = 0
     negative = 0
     neutral = 0
 
     for entry in entries:
-        headlines.append(entry.get("title", ""))
-        
-        title = entry.get("title", "").lower()
+        title_text = entry.get("title", "")
+        summary_text = entry.get("summary", "")
+        link = entry.get("link", "")
+        published = entry.get("published", "")
+
+        headlines.append(title_text)
+
+        articles.append({
+            "title": title_text,
+            "summary": summary_text,
+            "link": link,
+            "published": published,
+        })
+
+        title = title_text.lower()
 
         has_positive = any(word in title for word in POSITIVE_WORDS)
         has_negative = any(word in title for word in NEGATIVE_WORDS)
@@ -98,11 +111,15 @@ def get_news_sentiment(limit=20):
         "negative": negative,
         "checked_articles": checked_articles,
         "headlines": headlines,
+        "articles": articles,
     }
     
-def get_ai_news_sentiment():
+def get_ai_news_sentiment(news=None):
     """
     AI-baseret analyse af de seneste nyhedsoverskrifter.
+
+    Eksisterende nyhedsdata kan sendes ind, så RSS-feedet
+    ikke behøver at blive hentet flere gange.
     """
 
     if client is None:
@@ -112,7 +129,8 @@ def get_ai_news_sentiment():
             "summary": "OpenAI-klient ikke tilgængelig.",
         }
 
-    news = get_news_sentiment()
+    if news is None:
+        news = get_news_sentiment()
 
     headlines = "\n".join(news["headlines"])
 
@@ -157,6 +175,28 @@ Overskrifter:
         ],
     )
 
-    ai_result = json.loads(response.choices[0].message.content)
+    content = response.choices[0].message.content
+
+    if not content:
+        return {
+            "score": news.get("score", 50),
+            "status": "Neutral",
+            "summary": (
+                "AI-nyhedsanalysen returnerede intet svar. "
+                "Den regelbaserede nyhedsscore bruges midlertidigt."
+            ),
+        }
+
+    try:
+        ai_result = json.loads(content)
+    except (json.JSONDecodeError, TypeError):
+        return {
+            "score": news.get("score", 50),
+            "status": "Neutral",
+            "summary": (
+                "AI-nyhedsanalysen returnerede et ugyldigt svar. "
+                "Den regelbaserede nyhedsscore bruges midlertidigt."
+            ),
+        }
 
     return ai_result
