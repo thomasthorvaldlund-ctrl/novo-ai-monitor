@@ -59,10 +59,47 @@ def get_portfolio_summary():
             "comment": decision["comment"],
         })
 
+    portfolio_scores = [
+        p["score"]
+        for p in position_details
+    ]
+
+    portfolio_score_value = (
+        round(sum(portfolio_scores) / len(portfolio_scores), 1)
+        if portfolio_scores
+        else 0
+    )
+
+    best_position = max(
+        position_details,
+        key=lambda x: x["score"],
+        default={}
+    )
+
+    weakest_position = min(
+        position_details,
+        key=lambda x: x["score"],
+        default={}
+    )
+
+    if portfolio_score_value >= 75:
+        portfolio_risk = "Low"
+    elif portfolio_score_value >= 60:
+        portfolio_risk = "Medium"
+    else:
+        portfolio_risk = "High"
+
     return {
         "value": f"{total_value:,.2f} DKK",
         "total_profit": f"{total_profit:,.2f} DKK",
         "total_return": f"{total_profit_pct:.2f}%",
         "positions": len(positions),
         "position_details": position_details,
+
+        "portfolio_score": portfolio_score_value,
+        "portfolio_risk": portfolio_risk,
+        "best_position": best_position.get("stock", ""),
+        "best_position_score": best_position.get("score", 0),
+        "weakest_position": weakest_position.get("stock", ""),
+        "weakest_position_score": weakest_position.get("score", 0),
     }
