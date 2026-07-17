@@ -1,5 +1,6 @@
 from flask import Blueprint
-from portfolio import get_portfolio_summary
+from portfolio import get_portfolio_summary as get_raw_portfolio_summary
+from portfolio_summary_service import get_portfolio_summary as get_ai_portfolio_summary
 from dashboard_cache_service import load_dashboard_cache
 from ai_decision_service import get_ai_decision
 
@@ -7,7 +8,8 @@ portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 
 @portfolio_manager_bp.route("/portfolio-manager-page")
 def portfolio_manager_page():
-    data = get_portfolio_summary()
+    data = get_raw_portfolio_summary()
+    ai_data = get_ai_portfolio_summary()
     holdings = data["positions"]
     
     cache = load_dashboard_cache()
@@ -22,6 +24,13 @@ def portfolio_manager_page():
     total_profit = data["total_profit"]
     total_profit_pct = data["total_profit_pct"]
     total_color = "green" if total_profit >= 0 else "red"
+    portfolio_score = ai_data.get("portfolio_score", 0)
+    portfolio_risk = ai_data.get("portfolio_risk", "Ukendt")
+    best_position = ai_data.get("best_position", "-")
+    best_position_score = ai_data.get("best_position_score", 0)
+    weakest_position = ai_data.get("weakest_position", "-")
+    weakest_position_score = ai_data.get("weakest_position_score", 0)
+    portfolio_comment = ai_data.get("portfolio_comment", "Ingen AI-kommentar tilgængelig.")
 
     rows = ""
 
@@ -71,6 +80,28 @@ def portfolio_manager_page():
                 <p><b>Samlet gevinst/tab:</b> <span style="color:{total_color}; font-weight:bold;">{total_profit:.2f} DKK ({total_profit_pct:.2f}%)</span></p>
                 <p><b>Datakilde:</b> portfolio.py + portfolio.csv</p>
             </div>
+            
+            <div class="card">
+    <h2>🤖 AI Portfolio Overview</h2>
+
+    <p><b>Portfolio Score:</b> {portfolio_score:.1f}/100</p>
+    <p><b>Risikoniveau:</b> {portfolio_risk}</p>
+
+    <p>
+        <b>Stærkeste position:</b>
+        {best_position} — Score {best_position_score:.1f}
+    </p>
+
+    <p>
+        <b>Svageste position:</b>
+        {weakest_position} — Score {weakest_position_score:.1f}
+    </p>
+
+    <div style="background:#f8fafc; padding:16px; border-left:4px solid #2563eb; border-radius:8px;">
+        <b>AI-vurdering:</b><br>
+        {portfolio_comment}
+    </div>
+</div>
 
             <table>
                 <tr>
