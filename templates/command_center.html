@@ -1254,7 +1254,7 @@
         {% for p in portfolio.position_details %}
             <hr>
             <b>{{ p.stock }}</b> {{ p.stars }}<br>
-            {{ p.signal }} · {{ p.profit_pct }} · {{ p.weight_pct }}<br>
+            {{ p.signal }} · Afkast: {{ p.profit_pct }} · Vægt: {{ p.weight_pct }}<br>
             <span style="color:#6b7280;">{{ p.comment }}</span>
         {% endfor %}
     </div>

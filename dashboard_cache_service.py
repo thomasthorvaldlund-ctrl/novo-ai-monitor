@@ -1,7 +1,7 @@
 import json
 import os
 
-CACHE_FILE = "dashboard_cache.json"
+CACHE_FILE = "/root/novo-ai-monitor/dashboard_cache.json"
 
 
 def load_dashboard_cache():

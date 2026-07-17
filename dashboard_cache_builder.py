@@ -63,6 +63,7 @@ def build_dashboard_cache():
     
     data = {
     "updated_at": datetime.now().strftime("%d-%m-%Y %H:%M"),
+    "combined_ranking": ranking,
     "market": market,
     "summary": get_market_summary(),
     "alerts": get_ai_alerts(),

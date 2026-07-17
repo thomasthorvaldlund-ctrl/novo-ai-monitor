@@ -661,6 +661,7 @@ def risk_check():
         selected_stock = "NOVO"
 
     ticker = WATCHLIST[selected_stock]
+    currency = get_currency(ticker)
     stock = yf.Ticker(ticker)
     data = stock.history(period="10d")
 
@@ -696,6 +697,7 @@ def risk_check():
         watchlist=WATCHLIST,
         selected_stock=selected_stock,
         price=round(float(latest), 2),
+        currency=currency,
         daily_change=round(float(daily_change), 2),
         weekly_change=round(float(weekly_change), 2),
         alarm_sent=alarm_sent,

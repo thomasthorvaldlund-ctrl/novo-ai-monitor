@@ -1,5 +1,7 @@
 from flask import Blueprint
 from portfolio import get_portfolio_summary
+from dashboard_cache_service import load_dashboard_cache
+from ai_decision_service import get_ai_decision
 
 portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 
@@ -7,6 +9,14 @@ portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 def portfolio_manager_page():
     data = get_portfolio_summary()
     holdings = data["positions"]
+    
+    cache = load_dashboard_cache()
+    ranking = cache.get("combined_ranking", [])
+
+    score_map = {
+        item.get("stock"): item.get("combined_score", 0)
+        for item in ranking
+    }
 
     total_value = data["total_value"]
     total_profit = data["total_profit"]
@@ -17,6 +27,9 @@ def portfolio_manager_page():
 
     for h in holdings:
         color = "green" if h["profit_dkk"] >= 0 else "red"
+        
+        score = score_map.get(h["stock"], 0)
+        decision = get_ai_decision(score)
 
         rows += f"""
         <tr>
@@ -28,6 +41,11 @@ def portfolio_manager_page():
             <td>{h['value_dkk']:.2f} DKK</td>
             <td style="color:{color}; font-weight:bold;">{h['profit_dkk']:.2f} DKK ({h['profit_pct']:.2f}%)</td>
             <td>{h['weight_pct']:.1f}%</td>
+            
+            <td>
+                <b>{decision['signal']}</b><br>
+                <small>{decision['stars']} · Score: {score:.1f}</small>
+            </td>
         </tr>
         """
 
@@ -64,6 +82,7 @@ def portfolio_manager_page():
                     <th>Værdi</th>
                     <th>Gevinst/tab</th>
                     <th>Vægt</th>
+                    <th>AI Signal</th>
                 </tr>
                 {rows}
             </table>
