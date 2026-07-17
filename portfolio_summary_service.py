@@ -3,7 +3,6 @@ from openai_service import client
 from ai_decision_service import get_ai_decision
 from portfolio import get_portfolio_summary as get_real_portfolio_summary
 
-from portfolio import get_portfolio_summary as get_real_portfolio_summary
 
 def portfolio_score(profit_pct):
     if profit_pct >= 8:
