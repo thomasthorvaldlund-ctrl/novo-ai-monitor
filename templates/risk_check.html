@@ -133,7 +133,7 @@
             <span class="morning-brief-label">🚨 Alarmstatus</span>
             <div class="morning-brief-value">
                 {% if alarm_sent %}
-                    Høj risiko
+                    Kortsigtet kursrisiko: Høj
                 {% else %}
                     Ingen alarm
                 {% endif %}
@@ -167,6 +167,46 @@
             Ingen af de aktuelle alarmgrænser er overskredet.
         </div>
     {% endif %}
+
+    <div style="
+        margin-top:22px;
+        padding:18px;
+        background:#f8fafc;
+        border:1px solid #e5e7eb;
+        border-radius:10px;
+    ">
+        <h3 style="margin-top:0;">🤖 AI-vurdering</h3>
+
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:12px;
+        ">
+            <div>
+                <div style="color:#6b7280; font-size:13px;">AI-signal</div>
+                <strong>{{ ai_signal }}</strong>
+            </div>
+
+            <div>
+                <div style="color:#6b7280; font-size:13px;">Combined Score</div>
+                <strong>{{ "%.1f"|format(combined_score) }}</strong>
+            </div>
+
+            <div>
+                <div style="color:#6b7280; font-size:13px;">Sikkerhed</div>
+                <strong>{{ ai_confidence }}%</strong>
+            </div>
+
+            <div>
+                <div style="color:#6b7280; font-size:13px;">AI-risiko</div>
+                <strong>{{ ai_risk }}</strong>
+            </div>
+        </div>
+
+        <p style="margin-bottom:0; margin-top:16px; color:#4b5563;">
+            {{ ai_comment }}
+        </p>
+    </div>
 </div>
 
 {% endblock %}

@@ -19,6 +19,7 @@ from flask import (
 from combined_score_service import (
     combined_stock_score as service_combined_score
 )
+from ai_decision_service import get_ai_decision
 matplotlib.use("Agg")
 
 import os
@@ -690,6 +691,16 @@ def risk_check():
         )
         send_telegram(message)
 
+    combined_data = combined_stock_score()
+    combined_item = next(
+        (item for item in combined_data.get("combined_ranking", [])
+         if item.get("stock") == selected_stock),
+        None,
+    )
+
+    combined_score = combined_item.get("combined_score", 0) if combined_item else 0
+    ai_decision = get_ai_decision(combined_score)
+
     return render_template(
         "risk_check.html",
         stock=selected_stock,
@@ -702,6 +713,12 @@ def risk_check():
         weekly_change=round(float(weekly_change), 2),
         alarm_sent=alarm_sent,
         reasons=reasons,
+        combined_score=combined_score,
+        ai_signal=ai_decision.get("signal"),
+        ai_confidence=ai_decision.get("confidence"),
+        ai_risk=ai_decision.get("risk"),
+        ai_comment=ai_decision.get("comment"),
+
         updated_at=datetime.now().strftime("%d-%m-%Y %H:%M"),
     )
 
