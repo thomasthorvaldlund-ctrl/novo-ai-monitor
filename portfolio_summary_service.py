@@ -101,6 +101,39 @@ def get_portfolio_summary():
     else:
         portfolio_comment = "Ingen tilstrækkelige data til AI-porteføljevurdering."
 
+    increase = [
+        p["stock"]
+        for p in position_details
+        if p["score"] >= 70
+    ]
+
+    hold = [
+        p["stock"]
+        for p in position_details
+        if 55 <= p["score"] < 70
+    ]
+
+    reduce = [
+        p["stock"]
+        for p in position_details
+        if p["score"] < 55
+    ]
+
+    high_weight_positions = [
+        p["stock"]
+        for p in position_details
+        if float(p["weight_pct"].replace("%", "")) >= 30
+    ]
+
+    if high_weight_positions:
+        diversification = (
+            "Høj koncentration i: "
+            + ", ".join(high_weight_positions)
+            + ". Overvej bedre spredning."
+        )
+    else:
+        diversification = "Porteføljen har en fornuftig vægtfordeling."
+
     return {
         "value": f"{total_value:,.2f} DKK",
         "total_profit": f"{total_profit:,.2f} DKK",
@@ -115,4 +148,10 @@ def get_portfolio_summary():
         "weakest_position": weakest_position.get("stock", ""),
         "weakest_position_score": weakest_position.get("score", 0),
         "portfolio_comment": portfolio_comment,
+        "recommendations": {
+            "increase": increase,
+            "hold": hold,
+            "reduce": reduce,
+            "diversification": diversification,
+        },
     }

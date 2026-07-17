@@ -11,6 +11,11 @@ def portfolio_manager_page():
     data = get_raw_portfolio_summary()
     ai_data = get_ai_portfolio_summary()
     holdings = data["positions"]
+    recommendations = ai_data.get("recommendations", {})
+    increase = recommendations.get("increase", [])
+    hold = recommendations.get("hold", [])
+    reduce = recommendations.get("reduce", [])
+    diversification = recommendations.get("diversification", "")
     
     cache = load_dashboard_cache()
     ranking = cache.get("combined_ranking", [])
@@ -100,6 +105,21 @@ def portfolio_manager_page():
     <div style="background:#f8fafc; padding:16px; border-left:4px solid #2563eb; border-radius:8px;">
         <b>AI-vurdering:</b><br>
         {portfolio_comment}
+    </div>
+</div>
+
+<div class="card">
+    <h2>💡 AI Recommendations</h2>
+
+    <p><b>🟢 Overvej at øge:</b> {", ".join(increase) if increase else "-"}</p>
+
+    <p><b>🟡 Behold:</b> {", ".join(hold) if hold else "-"}</p>
+
+    <p><b>🔴 Overvej at reducere:</b> {", ".join(reduce) if reduce else "-"}</p>
+
+    <div style="margin-top:16px; padding:14px; background:#fff7ed; border-left:4px solid #f59e0b; border-radius:8px;">
+        <b>Diversificering</b><br>
+        {diversification}
     </div>
 </div>
 
