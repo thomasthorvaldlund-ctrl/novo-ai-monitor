@@ -89,6 +89,18 @@ def get_portfolio_summary():
     else:
         portfolio_risk = "High"
 
+    if best_position and weakest_position:
+        portfolio_comment = (
+            f"Porteføljen har en {portfolio_risk.lower()} risiko med en "
+            f"samlet AI-score på {portfolio_score_value}. "
+            f"{best_position.get('stock')} er stærkeste position med score "
+            f"{best_position.get('score')}, mens "
+            f"{weakest_position.get('stock')} bør overvåges med score "
+            f"{weakest_position.get('score')}."
+        )
+    else:
+        portfolio_comment = "Ingen tilstrækkelige data til AI-porteføljevurdering."
+
     return {
         "value": f"{total_value:,.2f} DKK",
         "total_profit": f"{total_profit:,.2f} DKK",
@@ -102,4 +114,5 @@ def get_portfolio_summary():
         "best_position_score": best_position.get("score", 0),
         "weakest_position": weakest_position.get("stock", ""),
         "weakest_position_score": weakest_position.get("score", 0),
+        "portfolio_comment": portfolio_comment,
     }
