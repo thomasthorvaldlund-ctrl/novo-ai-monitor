@@ -74,6 +74,84 @@
     🕒 Sidst opdateret: {{ updated_at }}
 </p>
 
+<div class="card" style="
+    margin-bottom:20px;
+    border-left:6px solid
+        {% if ai_signal == "BUY" %}#16a34a
+        {% elif ai_signal == "SELL" %}#dc2626
+        {% elif ai_signal == "WATCH" %}#f59e0b
+        {% else %}#2563eb
+        {% endif %};
+">
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:16px;
+        flex-wrap:wrap;
+    ">
+        <div>
+            <div style="color:#6b7280; font-size:13px; margin-bottom:4px;">
+                🎯 AI-anbefaling
+            </div>
+            <div style="font-size:30px; font-weight:700;
+                color:
+                {% if ai_signal == "BUY" %}#16a34a
+                {% elif ai_signal == "WATCH" %}#f59e0b
+                {% elif ai_signal == "SELL" %}#dc2626
+                {% else %}#2563eb
+                {% endif %};">
+                {{ ai_signal }}
+            </div>
+        </div>
+
+        <div style="text-align:right;">
+            <div style="color:#6b7280; font-size:13px;">Sikkerhed</div>
+            <div style="font-size:24px; font-weight:700;">
+                {{ ai_confidence }}%
+            </div>
+        </div>
+    </div>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:12px;
+        margin-top:18px;
+    ">
+        <div>
+            <div style="color:#6b7280; font-size:13px;">Combined Score</div>
+            <strong>{{ "%.1f"|format(combined_score) }}</strong>
+        </div>
+
+        <div>
+            <div style="color:#6b7280; font-size:13px;">AI-risiko</div>
+            <strong style="
+color:
+{% if ai_risk == "Low" %}#16a34a
+{% elif ai_risk == "Medium" %}#f59e0b
+{% elif ai_risk == "High" %}#dc2626
+{% endif %};
+">{{ ai_risk }}</strong>
+        </div>
+
+        <div>
+            <div style="color:#6b7280; font-size:13px;">Vurdering</div>
+            <strong>{{ ai_rating }}</strong>
+        </div>
+    </div>
+
+    <div style="
+        margin-top:16px;
+        padding:12px 14px;
+        background:#f8fafc;
+        border-radius:8px;
+        color:#4b5563;
+    ">
+        {{ ai_comment }}
+    </div>
+</div>
+
 <div class="card" style="border-left:6px solid {% if alarm_sent %}#dc2626{% else %}#16a34a{% endif %};">
     <div style="
         display:flex;
@@ -176,32 +254,6 @@
         border-radius:10px;
     ">
         <h3 style="margin-top:0;">🤖 AI-vurdering</h3>
-
-        <div style="
-            display:grid;
-            grid-template-columns:repeat(4,1fr);
-            gap:12px;
-        ">
-            <div>
-                <div style="color:#6b7280; font-size:13px;">AI-signal</div>
-                <strong>{{ ai_signal }}</strong>
-            </div>
-
-            <div>
-                <div style="color:#6b7280; font-size:13px;">Combined Score</div>
-                <strong>{{ "%.1f"|format(combined_score) }}</strong>
-            </div>
-
-            <div>
-                <div style="color:#6b7280; font-size:13px;">Sikkerhed</div>
-                <strong>{{ ai_confidence }}%</strong>
-            </div>
-
-            <div>
-                <div style="color:#6b7280; font-size:13px;">AI-risiko</div>
-                <strong>{{ ai_risk }}</strong>
-            </div>
-        </div>
 
         <div style="
             display:grid;
