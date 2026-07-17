@@ -203,6 +203,54 @@
             </div>
         </div>
 
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:12px;
+            margin-top:18px;
+        ">
+            <div style="
+                background:#ffffff;
+                border:1px solid #e5e7eb;
+                border-radius:8px;
+                padding:14px;
+            ">
+                <div style="color:#6b7280; font-size:13px;">Teknisk score</div>
+                <strong>{{ "%.1f"|format(technical_score) }}</strong>
+            </div>
+
+            <div style="
+                background:#ffffff;
+                border:1px solid #e5e7eb;
+                border-radius:8px;
+                padding:14px;
+            ">
+                <div style="color:#6b7280; font-size:13px;">Nyhedsscore</div>
+                <strong>{{ "%.1f"|format(news_score) }}</strong>
+            </div>
+
+            <div style="
+                background:#ffffff;
+                border:1px solid #e5e7eb;
+                border-radius:8px;
+                padding:14px;
+            ">
+                <div style="color:#6b7280; font-size:13px;">Samlet vurdering</div>
+                <strong>{{ ai_rating }}</strong>
+            </div>
+        </div>
+
+        <div style="
+            margin-top:16px;
+            padding:14px 16px;
+            background:#ffffff;
+            border-left:4px solid #2563eb;
+            border-radius:8px;
+        ">
+            <div style="font-weight:600; margin-bottom:6px;">AI-analyse</div>
+            <div style="color:#4b5563;">{{ ai_analysis }}</div>
+        </div>
+
         <p style="margin-bottom:0; margin-top:16px; color:#4b5563;">
             {{ ai_comment }}
         </p>

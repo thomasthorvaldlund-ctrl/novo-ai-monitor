@@ -719,6 +719,11 @@ def risk_check():
         reasons=reasons,
         combined_score=combined_score,
         ai_signal=ai_decision.get("signal"),
+        technical_score=combined_item.get("technical_score", 0) if combined_item else 0,
+        news_score=combined_item.get("news_score", 0) if combined_item else 0,
+        ai_rating=combined_item.get("rating", "Ingen vurdering") if combined_item else "Ingen vurdering",
+        ai_analysis=combined_item.get("ai_analysis", "Ingen AI-analyse tilgængelig.") if combined_item else "Ingen AI-analyse tilgængelig.",
+
         ai_confidence=ai_decision.get("confidence"),
         ai_risk=ai_decision.get("risk"),
         ai_comment=ai_decision.get("comment"),
