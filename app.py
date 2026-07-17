@@ -20,6 +20,7 @@ from combined_score_service import (
     combined_stock_score as service_combined_score
 )
 from ai_decision_service import get_ai_decision
+from dashboard_cache_service import load_dashboard_cache
 matplotlib.use("Agg")
 
 import os
@@ -691,10 +692,13 @@ def risk_check():
         )
         send_telegram(message)
 
-    combined_data = combined_stock_score()
+    dashboard_cache = load_dashboard_cache()
     combined_item = next(
-        (item for item in combined_data.get("combined_ranking", [])
-         if item.get("stock") == selected_stock),
+        (
+            item
+            for item in dashboard_cache.get("combined_ranking", [])
+            if item.get("stock") == selected_stock
+        ),
         None,
     )
 
