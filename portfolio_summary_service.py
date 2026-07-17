@@ -43,6 +43,10 @@ def get_portfolio_summary():
 
         decision = get_ai_decision(score)
 
+        target_weight = 100 / len(positions) if positions else 0
+        weight_difference = round(target_weight - p.get("weight_pct", 0), 1)
+        rebalance_amount = round(total_value * weight_difference / 100, 2)
+
         position_details.append({
             "stock": p.get("stock"),
             "ticker": p.get("ticker"),
@@ -50,6 +54,9 @@ def get_portfolio_summary():
             "profit": f'{p.get("profit_dkk", 0):,.2f} DKK',
             "profit_pct": f'{profit_pct:.2f}%',
             "weight_pct": f'{p.get("weight_pct", 0):.2f}%',
+            "target_weight": f"{target_weight:.2f}%",
+            "weight_difference": weight_difference,
+            "rebalance_amount": rebalance_amount,
             "score": score,
             "signal": decision["signal"],
             "stars": decision["stars"],

@@ -10,6 +10,7 @@ portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 def portfolio_manager_page():
     data = get_raw_portfolio_summary()
     ai_data = get_ai_portfolio_summary()
+    
     holdings = data["positions"]
     recommendations = ai_data.get("recommendations", {})
     increase = recommendations.get("increase", [])
@@ -38,6 +39,23 @@ def portfolio_manager_page():
     portfolio_comment = ai_data.get("portfolio_comment", "Ingen AI-kommentar tilgængelig.")
 
     rows = ""
+    rebalancer_rows = ""
+
+    for position in rebalancer:
+        color = "#16a34a" if position["rebalance_amount"] > 0 else "#dc2626"
+
+        rebalancer_rows += f"""
+
+        <tr>
+            <td><b>{position['stock']}</b></td>
+            <td>{position['weight_pct']:.2f}%</td>
+            <td>{position['target_weight']}</td>
+            <td>{position['weight_difference']:+.2f}%</td>
+            <td style="color:{color}; font-weight:bold;">
+                {position['rebalance_amount']:+,.2f} DKK
+            </td>
+        </tr>
+        """
 
     for h in holdings:
         color = "green" if h["profit_dkk"] >= 0 else "red"
@@ -121,6 +139,23 @@ def portfolio_manager_page():
         <b>Diversificering</b><br>
         {diversification}
     </div>
+</div>
+
+<div class="card">
+    <h2>⚖️ AI Portfolio Rebalancer</h2>
+
+    <table>
+        <tr>
+            <th>Aktie</th>
+            <th>Nuværende vægt</th>
+            <th>Målvægt</th>
+            <th>Forskel</th>
+            <th>AI forslag</th>
+        </tr>
+
+        {rebalancer_rows}
+
+    </table>
 </div>
 
             <table>
