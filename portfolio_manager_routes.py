@@ -104,7 +104,24 @@ def portfolio_manager_page():
                 <p><b>Samlet gevinst/tab:</b> <span style="color:{total_color}; font-weight:bold;">{total_profit:.2f} DKK ({total_profit_pct:.2f}%)</span></p>
                 <p><b>Datakilde:</b> portfolio.py + portfolio.csv</p>
             </div>
-            
+    
+    <div class="card">
+        <h2>⚖️ AI Portfolio Rebalancer</h2>
+
+        <table>
+            <tr>
+                <th>Aktie</th>
+                <th>Nuværende vægt</th>
+                <th>Målvægt</th>
+                <th>Forskel</th>
+                <th>AI forslag</th>
+            </tr>
+
+            {rebalancer_rows}
+
+        </table>
+    </div>
+                   
             <div class="card">
     <h2>🤖 AI Portfolio Overview</h2>
 
@@ -140,23 +157,6 @@ def portfolio_manager_page():
         <b>Diversificering</b><br>
         {diversification}
     </div>
-</div>
-
-<div class="card">
-    <h2>⚖️ AI Portfolio Rebalancer</h2>
-
-    <table>
-        <tr>
-            <th>Aktie</th>
-            <th>Nuværende vægt</th>
-            <th>Målvægt</th>
-            <th>Forskel</th>
-            <th>AI forslag</th>
-        </tr>
-
-        {rebalancer_rows}
-
-    </table>
 </div>
 
             <table>
