@@ -10,6 +10,7 @@ portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 def portfolio_manager_page():
     data = get_raw_portfolio_summary()
     ai_data = get_ai_portfolio_summary()
+    rebalancer = ai_data.get("position_details", [])
     
     holdings = data["positions"]
     recommendations = ai_data.get("recommendations", {})
@@ -48,7 +49,7 @@ def portfolio_manager_page():
 
         <tr>
             <td><b>{position['stock']}</b></td>
-            <td>{position['weight_pct']:.2f}%</td>
+            <td>{position['weight_pct']}</td>
             <td>{position['target_weight']}</td>
             <td>{position['weight_difference']:+.2f}%</td>
             <td style="color:{color}; font-weight:bold;">
