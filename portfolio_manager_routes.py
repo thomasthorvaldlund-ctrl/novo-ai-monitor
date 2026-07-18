@@ -3,6 +3,7 @@ from portfolio import get_portfolio_summary as get_raw_portfolio_summary
 from portfolio_summary_service import get_portfolio_summary as get_ai_portfolio_summary
 from dashboard_cache_service import load_dashboard_cache
 from ai_decision_service import get_ai_decision
+from portfolio_history_service import save_portfolio_history, load_portfolio_history
 
 portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 
@@ -94,6 +95,8 @@ def portfolio_manager_page():
             th {{ background:#111827; color:white; padding:14px; text-align:left; }}
             td {{ padding:14px; border-bottom:1px solid #e5e7eb; }}
         </style>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     </head>
     <body>
         <div class="container">
@@ -103,6 +106,20 @@ def portfolio_manager_page():
                 <p><b>Samlet værdi:</b> {total_value:.2f} DKK</p>
                 <p><b>Samlet gevinst/tab:</b> <span style="color:{total_color}; font-weight:bold;">{total_profit:.2f} DKK ({total_profit_pct:.2f}%)</span></p>
                 <p><b>Datakilde:</b> portfolio.py + portfolio.csv</p>
+                <table>
+                <tr>
+                    <th>Aktie</th>
+                    <th>Ticker</th>
+                    <th>Antal</th>
+                    <th>Købskurs</th>
+                    <th>Aktuel kurs</th>
+                    <th>Værdi</th>
+                    <th>Gevinst/tab</th>
+                    <th>Vægt</th>
+                    <th>AI Signal</th>
+                </tr>
+                {rows}
+            </table>
             </div>
     
     <div class="card">
@@ -122,6 +139,11 @@ def portfolio_manager_page():
         </table>
     </div>
                    
+    <div class="card">
+        <h2>📈 Portfolio Performance</h2>
+        <canvas id="portfolioHistoryChart" height="100"></canvas>
+    </div>
+
             <div class="card">
     <h2>🤖 AI Portfolio Overview</h2>
 
@@ -159,23 +181,44 @@ def portfolio_manager_page():
     </div>
 </div>
 
-            <table>
-                <tr>
-                    <th>Aktie</th>
-                    <th>Ticker</th>
-                    <th>Antal</th>
-                    <th>Købskurs</th>
-                    <th>Aktuel kurs</th>
-                    <th>Værdi</th>
-                    <th>Gevinst/tab</th>
-                    <th>Vægt</th>
-                    <th>AI Signal</th>
-                </tr>
-                {rows}
-            </table>
-
             <p>Rediger beholdninger i: /root/novo-ai-monitor/portfolio.csv</p>
         </div>
+    <script>
+        fetch("/portfolio-history")
+            .then(response => response.json())
+            .then(history => {{
+                const labels = history.map(row => row.datetime);
+                const values = history.map(row => Number(row.total_value));
+
+                new Chart(document.getElementById("portfolioHistoryChart"), {{
+                    type: "line",
+                    data: {{
+                        labels: labels,
+                        datasets: [{{
+                            label: "Samlet porteføljeværdi (DKK)",
+                            data: values,
+                            borderWidth: 2,
+                            tension: 0.25,
+                            fill: false
+                        }}]
+                    }},
+                    options: {{
+                        responsive: true,
+                        scales: {{
+                            y: {{
+                                beginAtZero: false
+                            }}
+                        }}
+                    }}
+                }});
+            }});
+    </script>
+
     </body>
     </html>
     """
+
+@portfolio_manager_bp.route("/portfolio-history")
+def portfolio_history():
+    history = load_portfolio_history()
+    return history
