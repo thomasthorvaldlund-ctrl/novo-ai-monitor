@@ -22,6 +22,7 @@ from earnings_ai_service import analyze_earnings_articles
 from market_score_history_service import save_market_score
 from ai_explain_service import explain_stock
 from today_take_service import get_today_take
+from ai_executive_summary_service import get_ai_executive_summary
 
 def build_dashboard_cache():
 
@@ -49,6 +50,17 @@ def build_dashboard_cache():
 
     top_pick = top_picks[0] if top_picks else None
 
+    portfolio = get_portfolio_summary()
+    alerts = get_ai_alerts()
+
+    executive_summary = get_ai_executive_summary(
+        market=market,
+        top_picks=top_picks,
+        portfolio=portfolio,
+        alerts=alerts,
+        stock_explanations=stock_explanations,
+    )
+
     today_take = get_today_take(
         market=market,
         top_pick=top_pick,
@@ -66,13 +78,14 @@ def build_dashboard_cache():
     "combined_ranking": ranking,
     "market": market,
     "summary": get_market_summary(),
-    "alerts": get_ai_alerts(),
-    "portfolio": get_portfolio_summary(),
+    "alerts": alerts,
+    "portfolio": portfolio,
     "system_health": get_system_health(),
     "top_picks": top_picks,
     "analyst": get_ai_analyst(),
     "morning_brief": get_morning_brief(),
     "today_take": today_take,
+    "executive_summary": executive_summary,
     "performance": performance,
     "ai_news": ai_news,
     "earnings": earnings,

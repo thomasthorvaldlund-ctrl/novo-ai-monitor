@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block title %}AI Command Center{% endblock %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/command_center_v2.css') }}">
+
+<style>
+
+    .top-picks-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .top-pick-row {
+        padding: 12px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .top-pick-row:last-child {
+        border-bottom: none;
+    }
+
+    .top-pick-main,
+    .top-pick-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .top-pick-main {
+        margin-bottom: 6px;
+    }
+
+    .top-pick-score {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2563eb;
+    }
+
+    .top-pick-trend {
+        margin-left: 4px;
+    }
+
+    .top-pick-meta {
+        font-size: 13px;
+    }
+
+    .top-pick-stars {
+        letter-spacing: 1px;
+    }
+
+    .top-pick-signal {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .top-pick-signal.buy {
+        background: #dff7e3;
+        color: #187a3d;
+    }
+
+    .top-pick-signal.hold {
+        background: #fff4cc;
+        color: #8a6d00;
+    }
+
+    .top-pick-signal.watch {
+        background: #ffe8cc;
+        color: #b45309;
+    }
+
+    .top-pick-signal.sell {
+        background: #ffe2e2;
+        color: #b91c1c;
+    }
+
+    .command-center-grid {
+        align-items: stretch;
+    }
+
+    .command-center-grid > .card {
+        height: 100%;
+        box-sizing: border-box;
+    
+    }
+    .score {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #2563eb;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #166534;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .card p {
+        line-height: 1.6;
+    }
+
+    .signal-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+
+    .signal-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .signal-tag.buy {
+        background: #dff7e3;
+        color: #187a3d;
+    }
+
+    .signal-tag.hold {
+        background: #fff4cc;
+        color: #8a6d00;
+    }
+
+    .signal-tag.watch {
+        background: #ffe8cc;
+        color: #b45309;
+    }
+
+    .signal-tag.sell {
+        background: #ffe2e2;
+        color: #b91c1c;
+    }
+
+    .market-score-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .market-score-main {
+        text-align: center;
+        margin-top: 18px;
+    }
+
+    .market-score-scale {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .market-score-bar {
+        height: 10px;
+        margin-top: 8px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .market-score-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(
+            90deg,
+            #ef4444 0%,
+            #f59e0b 50%,
+            #22c55e 100%
+        );
+    }
+    
+    .morning-brief-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .morning-brief-item {
+        min-width: 0;
+        padding: 12px 14px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+    }
+
+    .morning-brief-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .morning-brief-value {
+        color: #374151;
+        font-size: 14px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 1100px) {
+        .morning-brief-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 750px) {
+        .morning-brief-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 500px) {
+        .morning-brief-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .info-icon {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        text-align: center;
+        margin-left: 6px;
+        border-radius: 50%;
+        background: #e5e7eb;
+        color: #4b5563;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: help;
+        position: relative;
+        vertical-align: middle;
+    }
+
+    .info-icon:hover {
+        background: #d1d5db;
+    }
+
+    .info-icon::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 50%;
+        bottom: 130%;
+        transform: translateX(-50%);
+        width: 260px;
+        padding: 10px 12px;
+        background: #111827;
+        color: white;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.5;
+        text-align: left;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease;
+        z-index: 1000;
+    }
+
+    .info-icon:hover::after {
+        opacity: 1;
+    }
+
+    .market-score-components {
+        margin-top: 22px;
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .market-score-component {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 9px;
+        color: #374151;
+        font-size: 13px;
+    }
+
+    .market-score-component strong {
+        color: #111827;
+    }
+
+    .market-score-alert-count {
+        margin-top: 12px;
+        color: #6b7280;
+        font-size: 12px;
+        text-align: center;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="max-width:1400px;margin:30px auto;padding:0 20px;">
+
+    <h1 style="margin-bottom:10px;">
+        🤖 Stock AI Monitor <span style="color:#2563eb;">v2.0</span>
+    </h1>
+
+    <p style="
+        background:#eef6ff;
+        border-left:5px solid #2563eb;
+        padding:16px;
+        border-radius:8px;
+        margin-bottom:30px;
+    ">
+        🚧 Version 2.0 er under udvikling.
+        Denne side bygges fra bunden, mens v1.3 fortsætter uændret.
+    </p>
+
+
+
+<!-- V2: Executive Summary START -->
+
+<section id="executive-summary" class="dashboard-card">
+
+    <h2>🧠 AI Executive Summary</h2>
+
+    <div class="summary-grid">
+
+        <div class="summary-box">
+            <div class="summary-title">📈 Market Score</div>
+            <div class="summary-value">
+                {{ market.score if market else "-" }}
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-title">⭐ Top Pick</div>
+
+            {% if top_picks %}
+                <div class="summary-value summary-value-text">
+                    {{ top_picks[0].stock }}
+                </div>
+
+                <div class="summary-meta">
+                    {{ top_picks[0].signal }} · {{ top_picks[0].score }}
+                </div>
+            {% else %}
+                <div class="summary-value">-</div>
+            {% endif %}
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-title">💼 Portfolio</div>
+
+            {% if portfolio %}
+                <div class="summary-value summary-value-text">
+                    {{ portfolio.value }}
+                </div>
+
+                <div class="summary-meta">
+                    {{ portfolio.positions }} positioner
+                </div>
+            {% else %}
+                <div class="summary-value">-</div>
+            {% endif %}
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-title">🚨 Alerts</div>
+
+            {% set alert_count = market.critical_alerts or 0 %}
+
+            <div class="summary-value">
+                {{ alert_count }}
+            </div>
+
+            <div class="summary-meta">
+                {% if alert_count == 1 %}
+                    kritisk alert
+                {% else %}
+                    kritiske alerts
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-title">🤖 AI Status</div>
+
+            <div class="summary-value summary-value-text">
+                <span class="status-dot">●</span> Online
+            </div>
+        </div>
+
+    </div>
+
+    <div class="summary-recommendation">
+
+        <div class="executive-title">
+            🧠 AI Executive Brief
+        </div>
+
+        {% if executive_summary %}
+
+            <div class="executive-summary-headline">
+                {{ executive_summary.headline }}
+            </div>
+
+            <p class="executive-summary-text">
+                {{ executive_summary.summary }}
+            </p>
+
+            <p class="executive-summary-action">
+                <strong>Anbefaling:</strong>
+                {{ executive_summary.recommendation }}
+            </p>
+
+            <div class="executive-summary-meta">
+
+                {% if top_picks %}
+                <span class="summary-badge">
+                    ⭐ {{ top_picks[0].stock }}
+                </span>
+                {% endif %}
+
+                <span class="summary-badge">
+                    📊 Score {{ top_picks[0].score if top_picks else "-" }}
+                </span>
+
+                <span class="summary-badge
+                    {% if executive_summary.risk_level == 'Lav' %}
+                        badge-green
+                    {% elif executive_summary.risk_level == 'Høj' %}
+                        badge-red
+                    {% else %}
+                        badge-yellow
+                    {% endif %}
+                ">
+                    {% if executive_summary.risk_level == 'Lav' %}
+                        🟢
+                    {% elif executive_summary.risk_level == 'Høj' %}
+                        🔴
+                    {% else %}
+                        🟡
+                    {% endif %}
+                    Risiko {{ executive_summary.risk_level }}
+                </span>
+
+                <span class="summary-badge
+                    {% if executive_summary.confidence >= 80 %}
+                        badge-green
+                    {% elif executive_summary.confidence >= 60 %}
+                        badge-yellow
+                    {% else %}
+                        badge-red
+                    {% endif %}
+                ">
+                    🎯 Confidence {{ executive_summary.confidence }}%
+                </span>
+
+            </div>
+
+        {% else %}
+
+            <p>Executive Summary er ikke tilgængelig endnu.</p>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+<!-- V2: Executive Summary END -->
+
+
+</div>
+
+{% endblock %}
+

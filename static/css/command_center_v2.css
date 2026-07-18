@@ -1,0 +1,242 @@
+/* =====================================================
+   Stock AI Monitor v2.0
+   ===================================================== */
+
+.dashboard-card{
+    background:#fff;
+    border-radius:16px;
+    padding:18px;
+    margin:18px 0;
+    border:1px solid #e5e7eb;
+    box-shadow:0 8px 24px rgba(15,23,42,.06);
+}
+
+.dashboard-card h2{
+    margin:0 0 18px;
+    font-size:28px;
+    font-weight:700;
+    color:#111827;
+}
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
+}
+
+.summary-box{
+    min-height:110px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+    transition:.2s;
+}
+
+.summary-box:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.summary-title{
+    font-size:13px;
+    color:#64748b;
+    margin-bottom:8px;
+}
+
+.summary-value{
+    font-size:28px;
+    font-weight:700;
+    color:#111827;
+}
+
+.summary-recommendation{
+    margin-top:14px;
+    padding:12px;
+    background:#eff6ff;
+    border-left:5px solid #2563eb;
+    border-radius:10px;
+}
+
+.summary-recommendation strong{
+    display:block;
+    margin-bottom:8px;
+    font-size:18px;
+}
+
+/* Executive Summary: Top Pick */
+.top-pick-summary-name{
+    font-size:24px;
+    font-weight:700;
+    line-height:1.15;
+    color:#111827;
+}
+
+.top-pick-summary-meta{
+    margin-top:5px;
+    font-size:12px;
+    font-weight:600;
+    color:#64748b;
+}
+
+/* Executive Summary: Portfolio */
+.portfolio-summary-value{
+    font-size:22px;
+    font-weight:700;
+    line-height:1.2;
+    color:#111827;
+}
+
+.portfolio-summary-meta{
+    margin-top:5px;
+    font-size:12px;
+    font-weight:600;
+    color:#64748b;
+}
+
+/* Executive Summary: Alerts */
+.alerts-summary-value{
+    font-size:20px;
+    font-weight:700;
+    line-height:1.15;
+    color:#111827;
+}
+
+.alerts-summary-meta{
+    margin-top:3px;
+    font-size:11px;
+    font-weight:500;
+    color:#64748b;
+}
+
+
+/* ---------- Executive Summary ---------- */
+
+.executive-summary-headline {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 650;
+    color: #1e293b;
+}
+
+.executive-summary-text {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #475569;
+}
+
+.executive-summary-action {
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #0f172a;
+}
+
+.executive-summary-meta {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+
+/* ===== V2 Typography refinement ===== */
+
+.dashboard-card > h2 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.summary-box {
+    padding: 16px 18px;
+    border-radius: 14px;
+}
+
+.summary-title {
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.3;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+}
+
+.summary-value {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.15;
+    color: #0f172a;
+}
+
+.summary-value-text {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.summary-meta {
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #64748b;
+}
+
+.status-dot {
+    color: #16a34a;
+    font-size: 13px;
+    vertical-align: 1px;
+}
+
+.summary-recommendation > strong:first-child {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.executive-summary-headline {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.executive-summary-action strong {
+    font-weight: 600;
+}
+
+.executive-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+}
+
+.summary-badge {
+    display: inline-block;
+    margin-right: 8px;
+    margin-top: 8px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+.badge-green {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-yellow {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
