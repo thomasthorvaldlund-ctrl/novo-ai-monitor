@@ -477,6 +477,74 @@
 
 </section>
 
+
+<!-- AI Explain Center START -->
+
+<section class="card">
+
+    <h2>
+        🧩 AI Explain Center
+        <span
+            class="info-icon"
+            data-tooltip="Forklarer hvorfor AI vurderer aktier positivt eller negativt baseret på score, teknik, nyheder og momentum.">
+            ?
+        </span>
+    </h2>
+
+
+    <div class="explain-grid">
+
+        {% for item in stock_explanations[:6] %}
+
+        <div class="explain-card">
+
+            <div class="explain-header">
+
+                <strong>{{ item.stock }}</strong>
+
+                <span class="summary-badge">
+                    📊 {{ item.score }}
+                </span>
+
+            </div>
+
+
+            <div class="explain-headline">
+                {{ item.headline }}
+            </div>
+
+
+            <div class="explain-row">
+                <b>Primær årsag:</b><br>
+                {{ item.primary_reason }}
+            </div>
+
+
+            <div class="explain-row">
+                <b>Positive faktorer:</b><br>
+
+                {% for p in item.positives[:2] %}
+                    ✓ {{ p }}<br>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="explain-confidence">
+                🎯 Confidence {{ item.confidence }}%
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<!-- AI Explain Center END -->
+
+
 <!-- V2: Executive Summary END -->
 
 

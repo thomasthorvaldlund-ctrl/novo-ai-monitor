@@ -91,6 +91,9 @@ def portfolio_manager_page():
             body {{ font-family: Arial, sans-serif; background:#eef2f7; padding:40px; }}
             .container {{ max-width:1200px; margin:auto; }}
             .card {{ background:white; padding:24px; border-radius:14px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); }}
+            .chart-grid {{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }}
+            .chart-grid .card {{ margin-bottom:0; }}
+            @media (max-width:900px) {{ .chart-grid {{ grid-template-columns:1fr; }} }}
             table {{ width:100%; border-collapse:collapse; background:white; border-radius:14px; overflow:hidden; }}
             th {{ background:#111827; color:white; padding:14px; text-align:left; }}
             td {{ padding:14px; border-bottom:1px solid #e5e7eb; }}
@@ -138,13 +141,33 @@ def portfolio_manager_page():
 
         </table>
     </div>
-                   
+    
+<div style="display:flex; gap:10px; margin-bottom:20px;">
+    <button onclick="loadPortfolioCharts(7)">7 dage</button>
+    <button onclick="loadPortfolioCharts(30)">30 dage</button>
+    <button onclick="loadPortfolioCharts(90)">90 dage</button>
+    <button onclick="loadPortfolioCharts(3650)">Alle</button>
+</div>
+    
+    <div class="chart-grid">               
     <div class="card">
-        <h2>📈 Portfolio Performance</h2>
-        <canvas id="portfolioHistoryChart" height="100"></canvas>
-    </div>
+    <h2>📈 Porteføljeværdi</h2>
+    <canvas id="portfolioValueChart" height="80"></canvas>
+</div>
 
-            <div class="card">
+<div class="card">
+    <h2>💰 Gevinst / tab</h2>
+    <canvas id="portfolioProfitChart" height="80"></canvas>
+</div>
+
+<div class="card">
+    <h2>📊 Afkast (%)</h2>
+    <canvas id="portfolioReturnChart" height="80"></canvas>
+</div>
+
+</div>
+
+<div class="card">
     <h2>🤖 AI Portfolio Overview</h2>
 
     <p><b>Portfolio Score:</b> {portfolio_score:.1f}/100</p>
@@ -184,13 +207,23 @@ def portfolio_manager_page():
             <p>Rediger beholdninger i: /root/novo-ai-monitor/portfolio.csv</p>
         </div>
     <script>
-        fetch("/portfolio-history")
+    let portfolioValueChart;
+    let portfolioProfitChart;
+    let portfolioReturnChart;
+        function loadPortfolioCharts(days = 3650) {{
+            fetch(`/portfolio-history?days=${{days}}`)
             .then(response => response.json())
             .then(history => {{
-                const labels = history.map(row => row.datetime);
+                const labels = history.map(row => row.datetime.slice(5, 16));
                 const values = history.map(row => Number(row.total_value));
+                const profitValues = history.map(row => Number(row.total_profit));
+                const profitPctValues = history.map(row => Number(row.total_profit_pct));
 
-                new Chart(document.getElementById("portfolioHistoryChart"), {{
+                if (portfolioValueChart) portfolioValueChart.destroy();
+                if (portfolioProfitChart) portfolioProfitChart.destroy();
+                if (portfolioReturnChart) portfolioReturnChart.destroy();
+
+                portfolioValueChart = new Chart(document.getElementById("portfolioValueChart"), {{
                     type: "line",
                     data: {{
                         labels: labels,
@@ -211,14 +244,75 @@ def portfolio_manager_page():
                         }}
                     }}
                 }});
+
+                portfolioProfitChart = new Chart(document.getElementById("portfolioProfitChart"), {{
+                    type: "line",
+                    data: {{
+                        labels: labels,
+                        datasets: [{{
+                            label: "Gevinst / tab (DKK)",
+                            data: profitValues,
+                            borderWidth: 2,
+                            tension: 0.25,
+                            fill: false
+                        }}]
+                    }},
+                    options: {{
+                        responsive: true,
+                        scales: {{
+                            y: {{
+                                beginAtZero: false
+                            }}
+                        }}
+                    }}
+                }});
+
+                portfolioReturnChart = new Chart(document.getElementById("portfolioReturnChart"), {{
+                    type: "line",
+                    data: {{
+                        labels: labels,
+                        datasets: [{{
+                            label: "Afkast (%)",
+                            data: profitPctValues,
+                            borderWidth: 2,
+                            tension: 0.25,
+                            fill: false
+                        }}]
+                    }},
+                    options: {{
+                        responsive: true,
+                        scales: {{
+                            y: {{
+                                beginAtZero: false
+                            }}
+                        }}
+                    }}
+                }});
+              
             }});
+        }}
+    loadPortfolioCharts();
     </script>
 
     </body>
     </html>
     """
 
+from flask import request
+
 @portfolio_manager_bp.route("/portfolio-history")
 def portfolio_history():
+    days = request.args.get("days", default=3650, type=int)
+
     history = load_portfolio_history()
+    
+    from datetime import datetime, timedelta
+
+    cutoff = datetime.now() - timedelta(days=days)
+
+    history = [
+        row for row in history
+        if datetime.strptime(row["datetime"], "%Y-%m-%d %H:%M:%S") >= cutoff
+    ]
+
     return history

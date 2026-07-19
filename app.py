@@ -121,10 +121,12 @@ def before_request():
         "/stock-news-ai-score",
         "/stock-screener-report",
         "/history-data",
+        "/portfolio-history",
         "/update-dashboard-cache",
         "/job-status",
         "/signal-history",
         "/market-score-history",
+        "/command-center-v2",
     ]:
         return
 

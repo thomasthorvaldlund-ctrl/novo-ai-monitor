@@ -56,6 +56,51 @@ def command_center():
         earnings_ai=earnings_ai,
     )
     
+
+
+# Stock AI Monitor v2.0 testside
+@command_center_bp.route("/command-center-v2")
+def command_center_v2():
+    cache = load_dashboard_cache()
+    updated_at = cache.get("updated_at", "Ukendt")
+
+    system_health = cache.get("system_health", get_system_health())
+    market = cache.get("market", get_market_score())
+    summary = cache.get("summary", get_market_summary())
+    alerts = cache.get("alerts", get_ai_alerts())
+    portfolio = cache.get("portfolio", get_portfolio_summary())
+
+    top_picks = cache.get("top_picks", [])
+    analyst = cache.get("analyst", "AI Analyst er ikke tilgængelig endnu.")
+    brief = cache.get("morning_brief", {})
+    performance = cache.get("performance", {})
+    ai_news = cache.get("ai_news", {})
+    stock_explanations = cache.get("stock_explanations", [])
+    today_take = cache.get("today_take", {})
+    earnings = cache.get("earnings", {})
+    earnings_ai = cache.get("earnings_ai", [])
+    executive_summary = cache.get("executive_summary", {})
+
+    return render_template(
+        "command_center_v2.html",
+        system_health=system_health,
+        market=market,
+        top_picks=top_picks,
+        summary=summary,
+        alerts=alerts,
+        portfolio=portfolio,
+        analyst=analyst,
+        brief=brief,
+        updated_at=updated_at,
+        performance=performance,
+        ai_news=ai_news,
+        stock_explanations=stock_explanations,
+        today_take=today_take,
+        earnings=earnings,
+        earnings_ai=earnings_ai,
+        executive_summary=executive_summary,
+    )
+
 @command_center_bp.route("/market-score-history")
 def market_score_history():
     return {
