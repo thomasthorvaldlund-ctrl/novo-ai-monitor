@@ -24,6 +24,7 @@ from ai_explain_service import explain_stock
 from today_take_service import get_today_take
 from ai_executive_summary_service import get_ai_executive_summary
 from ai_copilot_service import get_ai_copilot
+from ai_copilot_history_service import save_copilot_snapshot
 
 def build_dashboard_cache():
 
@@ -70,6 +71,8 @@ def build_dashboard_cache():
         stock_explanations=stock_explanations,
         performance=performance,
     )
+
+    save_copilot_snapshot(ai_copilot)
 
     today_take = get_today_take(
         market=market,
