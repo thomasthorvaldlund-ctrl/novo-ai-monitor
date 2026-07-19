@@ -429,3 +429,33 @@
     font-size: 14px;
 }
 
+
+
+/* AI Copilot Timeline */
+
+.ai-copilot-timeline-card {
+    margin-top: 20px;
+}
+
+.copilot-timeline {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.timeline-item {
+    background: #f8fafc;
+    border-left: 4px solid #2563eb;
+    border-radius: 12px;
+    padding: 12px 14px;
+    line-height: 1.35;
+}
+
+.timeline-item div {
+    margin-bottom: 2px;
+}
+
+.timeline-item div:last-child {
+    margin-bottom: 0;
+}
+
