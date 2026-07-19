@@ -328,6 +328,10 @@
 
 <!-- V2: Executive Summary START -->
 
+
+
+
+
 <section id="executive-summary" class="dashboard-card">
 
     <h2>🧠 AI Executive Summary</h2>
@@ -476,6 +480,55 @@
     </div>
 
 </section>
+
+<!-- AI Copilot START -->
+
+<section class="card ai-copilot-card">
+
+    <h2>🧠 AI Copilot</h2>
+
+    <div class="copilot-grid">
+
+        <div>
+            <b>Status</b>
+            <p>{{ ai_copilot.headline }}</p>
+        </div>
+
+        <div>
+            <b>Marked</b>
+            <p>{{ ai_copilot.market_status }}</p>
+        </div>
+
+        <div>
+            <b>⭐ Bedste mulighed</b>
+            <p>{{ ai_copilot.best_opportunity }}</p>
+        </div>
+
+        <div>
+            <b>⚠️ Risiko</b>
+            <p>{{ ai_copilot.risk_warning }}</p>
+        </div>
+
+        <div>
+            <b>💼 Portfolio</b>
+            <p>{{ ai_copilot.portfolio_comment }}</p>
+        </div>
+
+        <div>
+            <b>🤖 AI anbefaling</b>
+            <p>{{ ai_copilot.recommendation }}</p>
+        </div>
+
+    </div>
+
+    <div class="copilot-confidence">
+        🎯 AI Confidence: {{ ai_copilot.confidence }}%
+        · Risiko: {{ ai_copilot.risk_level }}
+    </div>
+
+</section>
+
+<!-- AI Copilot END -->
 
 
 <!-- AI Explain Center START -->

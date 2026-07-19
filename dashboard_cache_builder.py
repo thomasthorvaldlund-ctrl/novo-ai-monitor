@@ -23,6 +23,7 @@ from market_score_history_service import save_market_score
 from ai_explain_service import explain_stock
 from today_take_service import get_today_take
 from ai_executive_summary_service import get_ai_executive_summary
+from ai_copilot_service import get_ai_copilot
 
 def build_dashboard_cache():
 
@@ -61,6 +62,15 @@ def build_dashboard_cache():
         stock_explanations=stock_explanations,
     )
 
+    ai_copilot = get_ai_copilot(
+        market=market,
+        portfolio=portfolio,
+        top_picks=top_picks,
+        alerts=alerts,
+        stock_explanations=stock_explanations,
+        performance=performance,
+    )
+
     today_take = get_today_take(
         market=market,
         top_pick=top_pick,
@@ -86,6 +96,7 @@ def build_dashboard_cache():
     "morning_brief": get_morning_brief(),
     "today_take": today_take,
     "executive_summary": executive_summary,
+    "ai_copilot": ai_copilot,
     "performance": performance,
     "ai_news": ai_news,
     "earnings": earnings,
