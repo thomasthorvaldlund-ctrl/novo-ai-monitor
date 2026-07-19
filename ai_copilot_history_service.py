@@ -22,7 +22,7 @@ def load_copilot_history():
         return []
 
 
-def save_copilot_snapshot(copilot_data):
+def save_copilot_snapshot(copilot_data, changes=None):
     """
     Gemmer dagens AI Copilot vurdering.
     """
@@ -40,6 +40,16 @@ def save_copilot_snapshot(copilot_data):
         ),
         "confidence": copilot_data.get(
             "confidence"
+        ),
+        "status": (
+            changes.get("status")
+            if changes
+            else "neutral"
+        ),
+        "changes": (
+            changes.get("changes", [])
+            if changes
+            else []
         ),
     }
 

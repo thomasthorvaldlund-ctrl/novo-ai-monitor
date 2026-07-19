@@ -90,7 +90,10 @@ def build_dashboard_cache():
         ai_copilot,
     )
 
-    save_copilot_snapshot(ai_copilot)
+    save_copilot_snapshot(
+        ai_copilot,
+        ai_copilot_changes,
+    )
 
     ai_copilot_timeline = get_copilot_timeline()
 
