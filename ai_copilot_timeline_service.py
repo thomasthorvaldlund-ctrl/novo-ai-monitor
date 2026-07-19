@@ -33,25 +33,33 @@ def get_copilot_timeline(limit=30):
             ),
         })
 
-    # Fjern gentagelser
+    # Fjern gentagelser og skjul passive analyser
     filtered = []
 
     last_signature = None
+    neutral_added = False
 
     for item in reversed(timeline):
 
         changes = item.get("changes", [])
 
-        if not changes or changes == [
-            "Ingen væsentlige ændringer siden sidste analyse."
-        ]:
-            changes_signature = ("neutral",)
-        else:
-            changes_signature = tuple(changes)
+        is_neutral = (
+            not changes
+            or changes == [
+                "Ingen væsentlige ændringer siden sidste analyse."
+            ]
+        )
+
+        # Gem kun én neutral status
+        if is_neutral:
+            if neutral_added:
+                continue
+
+            neutral_added = True
 
         signature = (
             item.get("status"),
-            changes_signature,
+            tuple(changes),
             item.get("confidence"),
             item.get("risk_level"),
         )
