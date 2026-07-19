@@ -538,6 +538,19 @@
         · Risiko: {{ ai_copilot.risk_level }}
     </div>
 
+
+    <div class="copilot-update">
+
+        <b>🔄 AI Copilot Update</b>
+
+        <ul>
+        {% for change in ai_copilot_changes.changes %}
+            <li>✓ {{ change }}</li>
+        {% endfor %}
+        </ul>
+
+    </div>
+
 </section>
 
 <!-- AI Copilot END -->

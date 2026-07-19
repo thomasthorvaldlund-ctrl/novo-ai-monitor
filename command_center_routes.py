@@ -81,6 +81,7 @@ def command_center_v2():
     earnings_ai = cache.get("earnings_ai", [])
     executive_summary = cache.get("executive_summary", {})
     ai_copilot = cache.get("ai_copilot", {})
+    ai_copilot_changes = cache.get("ai_copilot_changes", {})
 
     return render_template(
         "command_center_v2.html",
@@ -101,6 +102,7 @@ def command_center_v2():
         earnings_ai=earnings_ai,
         executive_summary=executive_summary,
         ai_copilot=ai_copilot,
+        ai_copilot_changes=ai_copilot_changes,
     )
 
 @command_center_bp.route("/market-score-history")

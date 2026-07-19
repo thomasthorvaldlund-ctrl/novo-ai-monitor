@@ -355,6 +355,29 @@
 }
 
 
+
+.copilot-update {
+    margin-top: 12px;
+    padding: 16px;
+    background: #f8fafc;
+    border-left: 4px solid #2563eb;
+    border-radius: 12px;
+}
+
+.copilot-update b {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.copilot-update ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.copilot-update li {
+    margin-bottom: 4px;
+}
+
 .copilot-confidence {
     margin-top: 20px;
     padding: 14px 18px;
