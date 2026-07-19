@@ -539,13 +539,29 @@
     </div>
 
 
-    <div class="copilot-update">
+    <div class="copilot-update 
+        {% if ai_copilot_changes.status == 'positive' %}
+            copilot-positive
+        {% elif ai_copilot_changes.status == 'negative' %}
+            copilot-negative
+        {% else %}
+            copilot-neutral
+        {% endif %}
+    ">
 
-        <b>🔄 AI Copilot Update</b>
+        <b>
+            {% if ai_copilot_changes.status == 'positive' %}
+                🟢 AI Copilot forbedret
+            {% elif ai_copilot_changes.status == 'negative' %}
+                🔴 AI Copilot advarsel
+            {% else %}
+                🔄 AI Copilot Update
+            {% endif %}
+        </b>
 
         <ul>
         {% for change in ai_copilot_changes.changes %}
-            <li>✓ {{ change }}</li>
+            <li>{{ change }}</li>
         {% endfor %}
         </ul>
 
@@ -567,7 +583,7 @@
 
     {% if ai_copilot_timeline %}
 
-        {% for item in ai_copilot_timeline[-5:] | reverse %}
+        {% for item in ai_copilot_timeline[-4:] | reverse %}
 
         <div class="timeline-item">
 

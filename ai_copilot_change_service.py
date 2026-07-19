@@ -7,6 +7,7 @@ def compare_copilot_snapshots(previous, current):
     if not previous or not current:
         return {
             "changed": False,
+            "status": "neutral",
             "changes": [
                 "Ingen tidligere AI Copilot analyse til sammenligning."
             ],
@@ -40,8 +41,30 @@ def compare_copilot_snapshots(previous, current):
             f"{current.get('confidence')}"
         )
 
+    status = "neutral"
+
+    if changes:
+        old_confidence = previous.get("confidence", 0)
+        new_confidence = current.get("confidence", 0)
+
+        old_risk = previous.get("risk_level")
+        new_risk = current.get("risk_level")
+
+        if new_confidence > old_confidence:
+            status = "positive"
+
+        if new_confidence < old_confidence:
+            status = "negative"
+
+        if old_risk == "Moderat" and new_risk == "Lav":
+            status = "positive"
+
+        if old_risk == "Lav" and new_risk in ["Moderat", "Høj"]:
+            status = "negative"
+
     return {
         "changed": len(changes) > 0,
+        "status": status,
         "changes": changes if changes else [
             "Ingen væsentlige ændringer siden sidste analyse."
         ],
