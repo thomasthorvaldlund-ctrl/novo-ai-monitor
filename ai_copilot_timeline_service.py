@@ -23,6 +23,44 @@ def get_copilot_timeline(limit=30):
             "best_opportunity": item.get(
                 "best_opportunity"
             ),
+            "status": item.get(
+                "status",
+                "neutral"
+            ),
+            "changes": item.get(
+                "changes",
+                []
+            ),
         })
 
-    return timeline
+    # Fjern gentagelser
+    filtered = []
+
+    last_signature = None
+
+    for item in reversed(timeline):
+
+        changes = item.get("changes", [])
+
+        if not changes or changes == [
+            "Ingen væsentlige ændringer siden sidste analyse."
+        ]:
+            changes_signature = ("neutral",)
+        else:
+            changes_signature = tuple(changes)
+
+        signature = (
+            item.get("status"),
+            changes_signature,
+            item.get("confidence"),
+            item.get("risk_level"),
+        )
+
+        if signature != last_signature:
+            filtered.append(item)
+            last_signature = signature
+
+    # Vend tilbage til kronologisk rækkefølge
+    filtered.reverse()
+
+    return filtered
