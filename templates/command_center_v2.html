@@ -491,6 +491,11 @@
         </span>
     </h2>
 
+    <p class="section-description">
+        AI overvåger {{ stock_explanations|length }} aktier og viser de {{ stock_explanations[:6]|length }} højeste rangerede kandidater baseret på samlet AI-score.
+        Analysen kombinerer tekniske signaler, nyhedsbillede, momentum og AI-confidence.
+    </p>
+
 
     <div class="explain-grid">
 
@@ -502,8 +507,23 @@
 
                 <strong>{{ item.stock }}</strong>
 
-                <span class="summary-badge">
-                    📊 {{ item.score }}
+                <span class="summary-badge
+                    {% if item.score >= 70 %}
+                        badge-green
+                    {% elif item.score >= 50 %}
+                        badge-yellow
+                    {% else %}
+                        badge-red
+                    {% endif %}
+                ">
+                    {% if item.score >= 70 %}
+                        🟢
+                    {% elif item.score >= 50 %}
+                        🟡
+                    {% else %}
+                        🔴
+                    {% endif %}
+                    Score {{ item.score|int }}
                 </span>
 
             </div>
