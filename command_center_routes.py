@@ -106,3 +106,18 @@ def market_score_history():
     return {
         "history": load_market_score_history()
     }    
+
+@command_center_bp.route("/ai-stock-library")
+def ai_stock_library():
+
+    cache = load_dashboard_cache()
+
+    stock_explanations = cache.get(
+        "stock_explanations",
+        []
+    )
+
+    return render_template(
+        "ai_stock_library.html",
+        stock_explanations=stock_explanations,
+    )

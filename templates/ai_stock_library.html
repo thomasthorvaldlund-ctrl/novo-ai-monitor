@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/command_center_v2.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="card">
+
+<h1>🧠 AI Stock Library</h1>
+
+<p class="section-description">
+    AI overvåger {{ stock_explanations|length }} aktier.
+    Her vises den komplette AI-analyse af alle overvågede aktier baseret på
+    Combined Score, tekniske signaler, nyheder, momentum og AI-confidence.
+</p>
+
+
+<div class="explain-grid">
+
+{% for item in stock_explanations %}
+
+<div class="explain-card">
+
+    <div class="explain-header">
+
+        <strong>{{ item.stock }}</strong>
+
+        <span class="summary-badge
+            {% if item.score >= 70 %}
+                badge-green
+            {% elif item.score >= 50 %}
+                badge-yellow
+            {% else %}
+                badge-red
+            {% endif %}
+        ">
+            {% if item.score >= 70 %}
+                🟢
+            {% elif item.score >= 50 %}
+                🟡
+            {% else %}
+                🔴
+            {% endif %}
+            Score {{ item.score|int }}
+        </span>
+
+    </div>
+
+
+    <div class="explain-signal
+        {% if item.score >= 70 %}
+            signal-buy
+        {% elif item.score >= 50 %}
+            signal-hold
+        {% else %}
+            signal-watch
+        {% endif %}
+    ">
+
+        {% if item.score >= 70 %}
+            ⭐ BUY
+        {% elif item.score >= 50 %}
+            ⏸ HOLD
+        {% else %}
+            👀 WATCH
+        {% endif %}
+
+    </div>
+
+
+    <div class="explain-headline">
+        {{ item.headline }}
+    </div>
+
+
+    <div class="explain-row">
+        <b>📈 Teknik:</b>
+        {{ item.technical }}
+    </div>
+
+
+    <div class="explain-row">
+        <b>📰 Nyheder:</b>
+        {{ item.news }}
+    </div>
+
+
+    <div class="explain-row">
+        <b>Primær årsag:</b><br>
+        {{ item.primary_reason }}
+    </div>
+
+
+    <div class="explain-row">
+        <b>Positive faktorer:</b><br>
+
+        {% for p in item.positives %}
+            ✓ {{ p }}<br>
+        {% endfor %}
+
+    </div>
+
+
+    <div class="explain-confidence">
+        🎯 Confidence {{ item.confidence }}%
+    </div>
+
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</section>
+
+{% endblock %}

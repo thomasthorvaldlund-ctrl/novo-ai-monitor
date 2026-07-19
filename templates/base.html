@@ -18,31 +18,47 @@
         }
 
         .sidebar {
-            width: 230px;
+            width: 250px;
             background: #111827;
             color: white;
             padding: 24px 18px;
         }
 
         .sidebar h2 {
-            font-size: 20px;
+            font-size: 21px;
             margin-top: 0;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-version {
+            font-size: 12px;
+            color: #93c5fd;
             margin-bottom: 25px;
+        }
+
+        .sidebar-section {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin: 20px 12px 8px;
+            letter-spacing: 1px;
         }
 
         .nav-link {
             display: block;
             color: #d1d5db;
             text-decoration: none;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            padding: 11px 12px;
+            border-radius: 10px;
+            margin-bottom: 6px;
             font-size: 15px;
+            transition: 0.2s;
         }
 
         .nav-link:hover {
             background: #1f2937;
             color: white;
+            transform: translateX(3px);
         }
 
         .main-content {
@@ -105,15 +121,65 @@
 <div class="app-shell">
 
     <aside class="sidebar">
-        <h2>Stock AI Monitor</h2>
 
-        <a class="nav-link" href="/command-center">🏠 Command Center</a>
-        <a class="nav-link" href="/portfolio-manager-page">💼 Portfolio</a>
-        <a class="nav-link" href="/history">📈 History</a>
-        <a class="nav-link" href="/risk-check">⚠️ Risk Check</a>
-        <a class="nav-link" href="/news-check">📰 News Check</a>
-        <a class="nav-link" href="/job-status">⚙️ Scheduler & Jobs</a>
-        <a class="nav-link" href="/signal-history">📈 Signal History</a>
+        <h2>🤖 Stock AI Monitor</h2>
+
+        <div class="sidebar-version">
+            v2.0 AI Platform
+        </div>
+
+
+        <div class="sidebar-section">
+            AI Intelligence
+        </div>
+
+        <a class="nav-link" href="/command-center">
+            🏠 Command Center
+        </a>
+
+        <a class="nav-link" href="/ai-stock-library">
+            📚 AI Stock Library
+        </a>
+
+
+        <div class="sidebar-section">
+            Portfolio
+        </div>
+
+        <a class="nav-link" href="/portfolio-manager-page">
+            💼 Portfolio Manager
+        </a>
+
+        <a class="nav-link" href="/history">
+            📈 History
+        </a>
+
+
+        <div class="sidebar-section">
+            Monitoring
+        </div>
+
+        <a class="nav-link" href="/risk-check">
+            ⚠️ Risk Check
+        </a>
+
+        <a class="nav-link" href="/news-check">
+            📰 News Check
+        </a>
+
+        <a class="nav-link" href="/signal-history">
+            📡 Signal History
+        </a>
+
+
+        <div class="sidebar-section">
+            System
+        </div>
+
+        <a class="nav-link" href="/job-status">
+            ⚙️ Scheduler & Jobs
+        </a>
+
     </aside>
 
     <main class="main-content">
