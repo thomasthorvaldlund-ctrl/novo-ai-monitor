@@ -61,6 +61,12 @@
             transform: translateX(3px);
         }
 
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+        }
+
         .main-content {
             flex: 1;
             padding: 36px;
@@ -133,11 +139,11 @@
             AI Intelligence
         </div>
 
-        <a class="nav-link" href="/command-center">
+        <a class="nav-link {% if request.path in ['/command-center', '/command-center-v2'] %}active{% endif %}" href="/command-center">
             🏠 Command Center
         </a>
 
-        <a class="nav-link" href="/ai-stock-library">
+        <a class="nav-link {% if request.path == '/ai-stock-library' %}active{% endif %}" href="/ai-stock-library">
             📚 AI Stock Library
         </a>
 
@@ -146,11 +152,11 @@
             Portfolio
         </div>
 
-        <a class="nav-link" href="/portfolio-manager-page">
+        <a class="nav-link {% if request.path == '/portfolio-manager-page' %}active{% endif %}" href="/portfolio-manager-page">
             💼 Portfolio Manager
         </a>
 
-        <a class="nav-link" href="/history">
+        <a class="nav-link {% if request.path == '/history' %}active{% endif %}" href="/history">
             📈 History
         </a>
 
@@ -159,15 +165,15 @@
             Monitoring
         </div>
 
-        <a class="nav-link" href="/risk-check">
+        <a class="nav-link {% if request.path == '/risk-check' %}active{% endif %}" href="/risk-check">
             ⚠️ Risk Check
         </a>
 
-        <a class="nav-link" href="/news-check">
+        <a class="nav-link {% if request.path == '/news-check' %}active{% endif %}" href="/news-check">
             📰 News Check
         </a>
 
-        <a class="nav-link" href="/signal-history">
+        <a class="nav-link {% if request.path == '/signal-history' %}active{% endif %}" href="/signal-history">
             📡 Signal History
         </a>
 
@@ -176,7 +182,7 @@
             System
         </div>
 
-        <a class="nav-link" href="/job-status">
+        <a class="nav-link {% if request.path == '/job-status' %}active{% endif %}" href="/job-status">
             ⚙️ Scheduler & Jobs
         </a>
 
