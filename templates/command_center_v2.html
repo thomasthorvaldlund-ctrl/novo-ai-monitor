@@ -529,6 +529,19 @@
             </div>
 
 
+            <div class="explain-signal">
+
+                {% if item.score >= 70 %}
+                    ⭐ BUY
+                {% elif item.score >= 50 %}
+                    ⏸ HOLD
+                {% else %}
+                    👀 WATCH
+                {% endif %}
+
+            </div>
+
+
             <div class="explain-headline">
                 {{ item.headline }}
             </div>
@@ -559,6 +572,10 @@
         {% endfor %}
 
     </div>
+
+    <a href="/ai-stock-library" class="explain-library-link">
+        📚 Se alle {{ stock_explanations|length }} AI-analyser →
+    </a>
 
 </section>
 
