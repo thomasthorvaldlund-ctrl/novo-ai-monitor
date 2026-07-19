@@ -556,6 +556,54 @@
 <!-- AI Copilot END -->
 
 
+
+<!-- AI Copilot Timeline START -->
+
+<section class="card ai-copilot-timeline-card">
+
+    <h2>📈 AI Copilot Timeline</h2>
+
+    <div class="copilot-timeline">
+
+    {% if ai_copilot_timeline %}
+
+        {% for item in ai_copilot_timeline[-5:] | reverse %}
+
+        <div class="timeline-item">
+
+            <div>
+                🕒 {{ item.date }}
+            </div>
+
+            <div>
+                🎯 Confidence: {{ item.confidence }}%
+            </div>
+
+            <div>
+                ⚠️ Risiko: {{ item.risk_level }}
+            </div>
+
+            <div>
+                ⭐ {{ item.best_opportunity }}
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>Ingen AI Copilot historik endnu.</p>
+
+    {% endif %}
+
+    </div>
+
+</section>
+
+<!-- AI Copilot Timeline END -->
+
+
 <!-- AI Explain Center START -->
 
 <section class="card">
