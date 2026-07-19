@@ -585,18 +585,42 @@
 
         {% for item in ai_copilot_timeline[-4:] | reverse %}
 
-        <div class="timeline-item">
+        <div class="timeline-item 
+            {% if item.status == 'positive' %}
+                timeline-positive
+            {% elif item.status == 'negative' %}
+                timeline-negative
+            {% else %}
+                timeline-neutral
+            {% endif %}
+        ">
 
             <div>
                 🕒 {{ item.date }}
             </div>
 
-            <div>
-                🎯 Confidence: {{ item.confidence }}%
+            <div class="timeline-status">
+                {% if item.status == 'positive' %}
+                    🟢 Forbedring
+                {% elif item.status == 'negative' %}
+                    🔴 Advarsel
+                {% else %}
+                    🔵 Stabil analyse
+                {% endif %}
             </div>
 
-            <div>
-                ⚠️ Risiko: {{ item.risk_level }}
+            {% if item.changes and item.status != 'neutral' %}
+            <div class="timeline-changes">
+                {% for change in item.changes %}
+                    ✓ {{ change }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="timeline-meta">
+                🎯 {{ item.confidence }}%
+                ·
+                ⚠️ {{ item.risk_level }}
             </div>
 
             <div>
