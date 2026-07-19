@@ -521,6 +521,18 @@
 
     </div>
 
+    <div class="copilot-factors">
+
+        <b>🧠 AI vurderer baseret på</b>
+
+        <ul>
+        {% for factor in ai_copilot.factors %}
+            <li>✓ {{ factor }}</li>
+        {% endfor %}
+        </ul>
+
+    </div>
+
     <div class="copilot-confidence">
         🎯 AI Confidence: {{ ai_copilot.confidence }}%
         · Risiko: {{ ai_copilot.risk_level }}

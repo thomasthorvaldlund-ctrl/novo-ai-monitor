@@ -129,6 +129,42 @@ def get_ai_copilot(
         )
 
 
+    # AI reasoning factors
+    factors = []
+
+    factors.append(
+        f"Market Score: {market_score}"
+    )
+
+    if top_picks:
+        factors.append(
+            f"Top kandidat: {best_stock}"
+        )
+
+    if isinstance(performance, dict):
+        factors.append(
+            f"{performance.get('buy', 0)} BUY-signaler registreret"
+        )
+
+        factors.append(
+            f"{performance.get('hold', 0)} HOLD-signaler registreret"
+        )
+
+    if critical_alerts:
+        factors.append(
+            f"{len(critical_alerts)} aktive AI-alerts"
+        )
+    else:
+        factors.append(
+            "Ingen kritiske AI-alerts"
+        )
+
+    if isinstance(portfolio, dict):
+        factors.append(
+            f"Portfolio: {positions} positioner"
+        )
+
+
     return {
         "headline": market_status,
         "market_status": market_text,
@@ -138,4 +174,5 @@ def get_ai_copilot(
         "recommendation": recommendation,
         "confidence": confidence,
         "risk_level": risk_level,
+        "factors": factors,
     }

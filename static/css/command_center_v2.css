@@ -374,3 +374,35 @@
 
 }
 
+
+
+/* =========================
+   AI Copilot Factors
+========================= */
+
+.copilot-factors {
+    margin-top: 20px;
+    padding: 18px 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+.copilot-factors b {
+    display: block;
+    color: #334155;
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+.copilot-factors ul {
+    margin: 0;
+    padding-left: 22px;
+}
+
+.copilot-factors li {
+    margin-bottom: 6px;
+    color: #475569;
+    font-size: 14px;
+}
+
