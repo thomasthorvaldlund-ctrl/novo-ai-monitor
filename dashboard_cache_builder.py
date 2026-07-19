@@ -29,6 +29,7 @@ from ai_copilot_history_service import (
     load_copilot_history,
 )
 from ai_copilot_change_service import compare_copilot_snapshots
+from ai_copilot_timeline_service import get_copilot_timeline
 
 def build_dashboard_cache():
 
@@ -91,6 +92,8 @@ def build_dashboard_cache():
 
     save_copilot_snapshot(ai_copilot)
 
+    ai_copilot_timeline = get_copilot_timeline()
+
     today_take = get_today_take(
         market=market,
         top_pick=top_pick,
@@ -118,6 +121,7 @@ def build_dashboard_cache():
     "executive_summary": executive_summary,
     "ai_copilot": ai_copilot,
     "ai_copilot_changes": ai_copilot_changes,
+    "ai_copilot_timeline": ai_copilot_timeline,
     "performance": performance,
     "ai_news": ai_news,
     "earnings": earnings,
