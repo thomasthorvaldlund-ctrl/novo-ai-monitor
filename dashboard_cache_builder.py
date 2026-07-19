@@ -24,7 +24,11 @@ from ai_explain_service import explain_stock
 from today_take_service import get_today_take
 from ai_executive_summary_service import get_ai_executive_summary
 from ai_copilot_service import get_ai_copilot
-from ai_copilot_history_service import save_copilot_snapshot
+from ai_copilot_history_service import (
+    save_copilot_snapshot,
+    load_copilot_history,
+)
+from ai_copilot_change_service import compare_copilot_snapshots
 
 def build_dashboard_cache():
 
@@ -72,6 +76,19 @@ def build_dashboard_cache():
         performance=performance,
     )
 
+    history = load_copilot_history()
+
+    previous_copilot = (
+        history[-1]
+        if history
+        else None
+    )
+
+    ai_copilot_changes = compare_copilot_snapshots(
+        previous_copilot,
+        ai_copilot,
+    )
+
     save_copilot_snapshot(ai_copilot)
 
     today_take = get_today_take(
@@ -100,6 +117,7 @@ def build_dashboard_cache():
     "today_take": today_take,
     "executive_summary": executive_summary,
     "ai_copilot": ai_copilot,
+    "ai_copilot_changes": ai_copilot_changes,
     "performance": performance,
     "ai_news": ai_news,
     "earnings": earnings,
