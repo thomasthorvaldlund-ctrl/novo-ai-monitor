@@ -214,7 +214,18 @@ def portfolio_manager_page():
             fetch(`/portfolio-history?days=${{days}}`)
             .then(response => response.json())
             .then(history => {{
-                const labels = history.map(row => row.datetime.slice(5, 16));
+
+                // Gruppér historik til én værdi pr. dag
+                const daily = {{}};
+
+                history.forEach(row => {{
+                    const day = row.datetime.slice(0, 10);
+                    daily[day] = row;
+                }});
+
+                history = Object.values(daily);
+
+                const labels = history.map(row => row.datetime.slice(5, 10));
                 const values = history.map(row => Number(row.total_value));
                 const profitValues = history.map(row => Number(row.total_profit));
                 const profitPctValues = history.map(row => Number(row.total_profit_pct));
