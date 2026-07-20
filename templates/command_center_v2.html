@@ -758,6 +758,50 @@
 
 <!-- AI Explain Center END -->
 
+<!-- AI Engine Status START -->
+
+<section class="card ai-engine-status-card">
+
+    <h2>🤖 AI Engine Status</h2>
+
+    <div class="ai-engine-status">
+
+        <div>
+            🟢 Status:
+            <b>{{ ai_engine_status.status }}</b>
+        </div>
+
+        <div>
+            📦 Version:
+            <b>{{ ai_engine_status.version }}</b>
+        </div>
+
+        <div>
+            🕒 Sidste opdatering:
+            <b>{{ ai_engine_status.last_update }}</b>
+        </div>
+
+        <div>
+            📊 Signalhistorik:
+            <b>{{ ai_engine_status.signal_count }}</b>
+        </div>
+
+    </div>
+
+
+    <h3>Aktive AI-moduler</h3>
+
+    <ul>
+    {% for module in ai_engine_status.modules %}
+        <li>✅ {{ module }}</li>
+    {% endfor %}
+    </ul>
+
+</section>
+
+<!-- AI Engine Status END -->
+
+
 
 <!-- V2: Executive Summary END -->
 

@@ -12,6 +12,7 @@ from portfolio_summary_service import get_portfolio_summary
 from ai_analyst_service import get_ai_analyst
 from morning_brief_service import get_morning_brief
 from market_score_history_service import load_market_score_history
+from ai_engine_status_service import get_ai_engine_status
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -84,6 +85,8 @@ def command_center_v2():
     ai_copilot_timeline = cache.get("ai_copilot_timeline", [])
     ai_copilot_changes = cache.get("ai_copilot_changes", {})
 
+    ai_engine_status = get_ai_engine_status()
+
     return render_template(
         "command_center_v2.html",
         system_health=system_health,
@@ -105,6 +108,7 @@ def command_center_v2():
         ai_copilot=ai_copilot,
         ai_copilot_timeline=ai_copilot_timeline,
         ai_copilot_changes=ai_copilot_changes,
+        ai_engine_status=ai_engine_status,
     )
 
 @command_center_bp.route("/market-score-history")
