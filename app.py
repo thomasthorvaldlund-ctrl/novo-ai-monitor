@@ -14,6 +14,7 @@ from flask import (
     jsonify,
     request,
     Response,
+    redirect,
 )
 
 from combined_score_service import (
@@ -243,6 +244,8 @@ def format_dkk(amount):
 
 @app.route("/")
 def home():
+    return redirect("/command-center-v2")
+
     stock = yf.Ticker("NOVO-B.CO")
     data = stock.history(period="10d")
 
