@@ -242,8 +242,10 @@ def portfolio_manager_page():
                             label: "Samlet porteføljeværdi (DKK)",
                             data: values,
                             borderWidth: 2,
-                            tension: 0.25,
-                            fill: false
+                            tension: 0.4,
+                            fill: false,
+                            borderColor: "#3b82f6",
+                            backgroundColor: "#3b82f6"
                         }}]
                     }},
                     options: {{
@@ -264,8 +266,16 @@ def portfolio_manager_page():
                             label: "Gevinst / tab (DKK)",
                             data: profitValues,
                             borderWidth: 2,
-                            tension: 0.25,
-                            fill: false
+                            tension: 0.4,
+                            fill: false,
+                            borderColor: function(context) {{
+                                const value = context.raw;
+                                return value >= 0 ? "#16a34a" : "#dc2626";
+                            }},
+                            backgroundColor: function(context) {{
+                                const value = context.raw;
+                                return value >= 0 ? "#16a34a" : "#dc2626";
+                            }}
                         }}]
                     }},
                     options: {{
@@ -286,8 +296,16 @@ def portfolio_manager_page():
                             label: "Afkast (%)",
                             data: profitPctValues,
                             borderWidth: 2,
-                            tension: 0.25,
-                            fill: false
+                            tension: 0.4,
+                            fill: false,
+                            borderColor: function(context) {{
+                                const value = context.raw;
+                                return value >= 0 ? "#16a34a" : "#dc2626";
+                            }},
+                            backgroundColor: function(context) {{
+                                const value = context.raw;
+                                return value >= 0 ? "#16a34a" : "#dc2626";
+                            }}
                         }}]
                     }},
                     options: {{
