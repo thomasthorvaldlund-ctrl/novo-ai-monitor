@@ -1,10 +1,10 @@
 from datetime import datetime
 from pathlib import Path
-import json
+
+from signal_history_service import load_signal_history
 
 
 CACHE_FILE = Path("dashboard_cache.json")
-HISTORY_FILE = Path("signal_history.json")
 
 
 def get_ai_engine_status():
@@ -23,20 +23,10 @@ def get_ai_engine_status():
         except Exception:
             last_update = None
 
-    signal_count = 0
-
-    if HISTORY_FILE.exists():
-        try:
-            with open(
-                HISTORY_FILE,
-                "r",
-                encoding="utf-8"
-            ) as f:
-                data = json.load(f)
-                signal_count = len(data)
-
-        except Exception:
-            signal_count = 0
+    try:
+        signal_count = len(load_signal_history())
+    except Exception:
+        signal_count = 0
 
     return {
         "status": "online",
