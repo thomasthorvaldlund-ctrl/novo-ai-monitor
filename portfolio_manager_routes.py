@@ -18,6 +18,7 @@ def portfolio_manager_page():
     increase = recommendations.get("increase", [])
     hold = recommendations.get("hold", [])
     reduce = recommendations.get("reduce", [])
+    reduce_details = recommendations.get("reduce_details", [])
     diversification = recommendations.get("diversification", "")
     
     cache = load_dashboard_cache()
@@ -196,7 +197,34 @@ def portfolio_manager_page():
 
     <p><b>🟡 Behold:</b> {", ".join(hold) if hold else "-"}</p>
 
-    <p><b>🔴 Overvej at reducere:</b> {", ".join(reduce) if reduce else "-"}</p>
+    <p><b>🟠 Overvej justering:</b></p>
+
+    {{% for item in reduce_details %}}
+    <div style="margin:12px 0; padding:14px; background:#fff7ed; border-left:4px solid #f59e0b; border-radius:8px;">
+
+        <b>{{{{ item.stock }}}}</b><br>
+
+        AI-score:
+        {{{{ item.score }}}}/100
+        <br>
+
+        Signal:
+        {{{{ item.signal }}}}
+        <br>
+
+        Risiko:
+        {{{{ item.risk }}}}
+        <br>
+
+        Confidence:
+        {{{{ item.confidence }}}}%
+        <br>
+
+        Årsag:
+        {{{{ item.comment }}}}
+
+    </div>
+    {{% endfor %}}
 
     <div style="margin-top:16px; padding:14px; background:#fff7ed; border-left:4px solid #f59e0b; border-radius:8px;">
         <b>Diversificering</b><br>

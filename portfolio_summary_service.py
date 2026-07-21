@@ -126,6 +126,12 @@ def get_portfolio_summary():
         if p["score"] < 55
     ]
 
+    reduce_details = [
+        p
+        for p in position_details
+        if p["score"] < 55
+    ]
+
     high_weight_positions = [
         p["stock"]
         for p in position_details
@@ -159,6 +165,7 @@ def get_portfolio_summary():
             "increase": increase,
             "hold": hold,
             "reduce": reduce,
+            "reduce_details": reduce_details,
             "diversification": diversification,
         },
     }

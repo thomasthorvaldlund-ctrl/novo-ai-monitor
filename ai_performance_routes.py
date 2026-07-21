@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template_string
 
-from ai_performance_service import get_ai_performance_summary, get_time_based_statistics
+from ai_performance_service import get_ai_performance_summary, get_time_based_statistics, get_analyzed_stocks
 
 
 ai_performance_bp = Blueprint(
@@ -15,6 +15,7 @@ def ai_performance_page():
 
     summary = get_ai_performance_summary()
     statistics = get_time_based_statistics()
+    stocks = get_analyzed_stocks()
 
     chart_data = {
         "labels": ["1 dag", "3 dage", "5 dage"],
@@ -115,6 +116,35 @@ def ai_performance_page():
     </p>
 
     </div>
+
+    <div class="card">
+
+    <h2>📋 Aktier analyseret</h2>
+
+    <p>
+    AI Performance bygger på historiske signaler fra disse aktier.
+    Listen opdateres automatisk, når nye aktier analyseres.
+    </p>
+
+    <p>
+    <b>Antal analyserede aktier:</b>
+    {{ stocks|length }}
+    </p>
+
+    <p>
+    {% for stock in stocks %}
+        <span style="display:inline-block;
+                     background:#eef2f7;
+                     padding:5px 10px;
+                     margin:3px;
+                     border-radius:8px;">
+            {{ stock }}
+        </span>
+    {% endfor %}
+    </p>
+
+    </div>
+
 
     <div class="card">
 
@@ -341,5 +371,6 @@ new Chart(ctx, {
         html,
         summary=summary,
         statistics=statistics,
-        chart_data=chart_data
+        chart_data=chart_data,
+        stocks=stocks
     )
