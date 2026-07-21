@@ -309,3 +309,27 @@ def get_ai_performance_summary():
         "data_quality": data_quality,
     }
 
+
+
+def get_analyzed_stocks():
+    """
+    Returnerer unikke aktier fra AI signal historikken.
+    """
+
+    signals = load_signals()
+
+    excluded = {
+        "TEST",
+        "TEST2",
+        "TEST_TELEGRAM"
+    }
+
+    stocks = sorted(
+        set(
+            row["stock"]
+            for row in signals
+            if row["stock"] not in excluded
+        )
+    )
+
+    return stocks

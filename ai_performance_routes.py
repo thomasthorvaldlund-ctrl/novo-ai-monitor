@@ -80,7 +80,76 @@ def ai_performance_page():
 
     <h1>📈 AI Performance Dashboard</h1>
 
+
     <div class="card">
+
+    <h2>🤖 Hvad måler AI Performance Dashboard?</h2>
+
+    <p>
+    Dette dashboard måler, hvor godt Stock AI Monitor's
+    aktiesignaler har fungeret historisk.
+    </p>
+
+    <p>
+    Når AI-systemet analyserer en aktie, gemmes signalet
+    sammen med AI score, confidence, risiko og tidspunkt.
+    Efterfølgende sammenlignes signalet med den faktiske
+    kursudvikling efter 1, 3 og 5 dage.
+    </p>
+
+    <p>
+    Formålet er ikke at forudsige fremtiden med sikkerhed,
+    men at gøre AI-modellen målbar og løbende forbedre
+    kvaliteten af dens beslutninger.
+    </p>
+
+
+    <h3>Sådan fungerer processen:</h3>
+
+    <p>
+    🧠 AI analyse
+    → 📌 Signal gemmes
+    → 📈 Kursudvikling måles
+    → 📊 Performance beregnes
+    → 🚀 AI kvalitet evalueres
+    </p>
+
+    </div>
+
+    <div class="card">
+
+    <h2>📊 Sådan læses performance-grafen</h2>
+
+    <p>
+    Grafen viser, hvordan de forskellige AI-signaler
+    historisk har udviklet sig efter signalet blev oprettet.
+    </p>
+
+    <p>
+    <b>Perioder:</b>
+    </p>
+
+    <ul>
+        <li><b>1 dag:</b> Korttidseffekten efter AI-signalet.</li>
+        <li><b>3 dage:</b> Om signalet fortsætter med at fungere på kort sigt.</li>
+        <li><b>5 dage:</b> Den mere langsigtede udvikling efter signalet.</li>
+    </ul>
+
+    <p>
+    <b>Signaler:</b>
+    </p>
+
+    <ul>
+        <li>🟢 <b>BUY:</b> AI vurderer højere sandsynlighed for positiv udvikling.</li>
+        <li>🟡 <b>HOLD:</b> Ingen tydeligt købssignal eller salgssignal.</li>
+        <li>🟠 <b>WATCH:</b> Interessant udvikling, men med højere usikkerhed.</li>
+    </ul>
+
+    <p>
+    Performance-data bruges til at evaluere og forbedre AI-modellen.
+    Historiske resultater er ikke en garanti for fremtidige afkast.
+    </p>
+
 
     <h2>Performance graf</h2>
 
@@ -213,9 +282,47 @@ new Chart(ctx, {
         responsive: true,
 
         plugins: {
+
+            title: {
+                display: true,
+                text: '📊 Historisk AI signal-performance (%)'
+            },
+
             legend: {
                 position: 'top'
+            },
+
+            tooltip: {
+
+                callbacks: {
+
+                    label: function(context) {
+                        return context.dataset.label +
+                            ': ' +
+                            context.raw.toFixed(2) +
+                            '%';
+                    }
+
+                }
+
             }
+
+        },
+
+        scales: {
+
+            y: {
+
+                title: {
+
+                    display: true,
+
+                    text: 'Afkast (%)'
+
+                }
+
+            }
+
         }
 
     }
