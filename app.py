@@ -46,6 +46,7 @@ from stock_news_service import stock_news_ai_score as service_stock_news_ai_scor
 from job_status_routes import job_status_bp
 from job_status_routes import job_status_bp
 from signal_history_routes import signal_history_bp
+from ai_performance_routes import ai_performance_bp
 import requests
 
 
@@ -62,6 +63,7 @@ app.register_blueprint(combined_score_bp)
 app.register_blueprint(command_center_bp)
 app.register_blueprint(job_status_bp)
 app.register_blueprint(signal_history_bp)
+app.register_blueprint(ai_performance_bp)
 
 USERS = {
     "thomas": "59autoKamp19#",
@@ -128,6 +130,7 @@ def before_request():
         "/signal-history",
         "/market-score-history",
         "/command-center-v2",
+        "/ai-performance",
     ]:
         return
 
