@@ -16,6 +16,22 @@ def ai_performance_page():
     summary = get_ai_performance_summary()
     statistics = get_time_based_statistics()
 
+    chart_data = {
+        "labels": ["1 dag", "3 dage", "5 dage"],
+        "datasets": []
+    }
+
+    for signal, periods in statistics.items():
+
+        chart_data["datasets"].append({
+            "label": signal,
+            "data": [
+                periods["1d"]["average_return"],
+                periods["3d"]["average_return"],
+                periods["5d"]["average_return"]
+            ]
+        })
+
     html = """
     <html>
     <head>
@@ -64,6 +80,15 @@ def ai_performance_page():
 
     <h1>📈 AI Performance Dashboard</h1>
 
+    <div class="card">
+
+    <h2>Performance graf</h2>
+
+    <canvas id="performanceChart"></canvas>
+
+    </div>
+
+
 
     <div class="card">
 
@@ -93,6 +118,33 @@ def ai_performance_page():
         Datakvalitet:
         {{summary.data_quality}}
         </p>
+
+    </div>
+
+
+    <div class="card">
+
+    <h2>🧠 AI Performance Confidence</h2>
+
+    <p>
+    Analyserede signaler:
+    <b>{{summary.tested_signals}}</b>
+    </p>
+
+    <p>
+    Datakvalitet:
+    {{summary.data_quality}}
+    </p>
+
+    <p>
+    Status:
+    ⚠️ Tidlig læring
+    </p>
+
+    <p>
+    Anbefaling:
+    Vent på 100+ signaler før stærke konklusioner.
+    </p>
 
     </div>
 
@@ -138,12 +190,49 @@ def ai_performance_page():
     </div>
 
 
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx = document.getElementById(
+    'performanceChart'
+);
+
+new Chart(ctx, {
+
+    type: 'bar',
+
+    data: {
+        labels: {{chart_data.labels | tojson}},
+        datasets: {{chart_data.datasets | tojson}}
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        }
+
+    }
+
+});
+
+</script>
+
+
     </body>
+
     </html>
     """
 
     return render_template_string(
         html,
         summary=summary,
-        statistics=statistics
+        statistics=statistics,
+        chart_data=chart_data
     )
