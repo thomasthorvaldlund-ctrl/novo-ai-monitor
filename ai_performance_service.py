@@ -209,3 +209,58 @@ def get_time_based_performance():
 
     return results
 
+def get_time_based_statistics():
+    """
+    Samler tidsbaseret performance efter signaltype.
+    """
+
+    data = get_time_based_performance()
+
+    statistics = {}
+
+    for row in data:
+
+        signal = row["signal"]
+
+        if signal not in statistics:
+            statistics[signal] = {
+                "1d": [],
+                "3d": [],
+                "5d": []
+            }
+
+        for period, value in row["returns"].items():
+            statistics[signal][period].append(value)
+
+    result = {}
+
+    for signal, periods in statistics.items():
+
+        result[signal] = {}
+
+        for period, values in periods.items():
+
+            if not values:
+                continue
+
+            positive = [
+                x for x in values
+                if x > 0
+            ]
+
+            result[signal][period] = {
+                "count": len(values),
+                "average_return": round(
+                    sum(values) / len(values),
+                    2
+                ),
+                "positive": len(positive),
+                "negative": len(values) - len(positive),
+                "success_rate": round(
+                    len(positive) / len(values) * 100,
+                    1
+                )
+            }
+
+    return result
+
