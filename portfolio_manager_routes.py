@@ -219,8 +219,17 @@ def portfolio_manager_page():
                 const daily = {{}};
 
                 history.forEach(row => {{
+
                     const day = row.datetime.slice(0, 10);
-                    daily[day] = row;
+
+                    if (
+                        row.total_value &&
+                        row.total_value !== "nan" &&
+                        !isNaN(Number(row.total_value))
+                    ) {{
+                        daily[day] = row;
+                    }}
+
                 }});
 
                 history = Object.values(daily);
