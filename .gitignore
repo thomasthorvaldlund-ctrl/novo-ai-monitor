@@ -23,3 +23,6 @@ stock_news_ai_cache.json
 seen_news.txt
 archive/
 dashboard_cache.json
+# Development backups
+*.backup*
+*.bak*
