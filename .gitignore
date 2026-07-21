@@ -31,6 +31,13 @@ stock_news_ai_cache.json
 seen_news.txt
 archive/
 dashboard_cache.json
+
 # Development backups
 *.backup*
 *.bak*
+
+# Runtime AI history
+ai_copilot_history.json
+
+# Backup data files
+*_backup.csv
