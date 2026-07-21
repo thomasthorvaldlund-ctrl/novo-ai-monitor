@@ -91,3 +91,43 @@ def get_ai_performance():
     }
 
     return summary
+
+def get_signal_statistics():
+    """
+    Beregner performance opdelt efter AI signal.
+    """
+
+    data = get_ai_performance()
+
+    statistics = {}
+
+    grouped = defaultdict(list)
+
+    for row in data["signals"]:
+        grouped[row["signal"]].append(
+            row["change_pct"]
+        )
+
+    for signal, returns in grouped.items():
+
+        positive = [
+            r for r in returns
+            if r > 0
+        ]
+
+        statistics[signal] = {
+            "count": len(returns),
+            "average_return": round(
+                sum(returns) / len(returns),
+                2
+            ),
+            "positive": len(positive),
+            "negative": len(returns) - len(positive),
+            "success_rate": round(
+                len(positive) / len(returns) * 100,
+                1
+            ),
+        }
+
+    return statistics
+
