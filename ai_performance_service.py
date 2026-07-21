@@ -264,3 +264,48 @@ def get_time_based_statistics():
 
     return result
 
+def get_ai_performance_summary():
+    """
+    Laver en samlet oversigt til dashboard.
+    """
+
+    statistics = get_time_based_statistics()
+
+    best_signal = None
+    best_period = None
+    best_return = None
+
+    for signal, periods in statistics.items():
+
+        for period, data in periods.items():
+
+            avg = data.get(
+                "average_return",
+                0
+            )
+
+            if (
+                best_return is None
+                or avg > best_return
+            ):
+                best_return = avg
+                best_signal = signal
+                best_period = period
+
+    tested_signals = len(
+        get_time_based_performance()
+    )
+
+    data_quality = "God"
+    
+    if tested_signals < 100:
+        data_quality = "Lav - få evaluerede signaler"
+
+    return {
+        "tested_signals": tested_signals,
+        "best_signal": best_signal,
+        "best_period": best_period,
+        "best_return": best_return,
+        "data_quality": data_quality,
+    }
+
