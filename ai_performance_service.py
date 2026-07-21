@@ -131,3 +131,81 @@ def get_signal_statistics():
 
     return statistics
 
+def get_time_based_performance():
+    """
+    Beregner performance efter 1, 3 og 5 dage
+    efter et AI signal.
+    """
+
+    signals = load_signals()
+    prices = load_prices()
+
+    periods = {
+        "1d": 1,
+        "3d": 3,
+        "5d": 5,
+    }
+
+    results = []
+
+    for signal in signals:
+
+        stock = signal["stock"]
+
+        if stock not in prices:
+            continue
+
+        signal_date = datetime.strptime(
+            signal["datetime"][:10],
+            "%Y-%m-%d"
+        )
+
+        stock_prices = prices[stock]
+
+        start_price = stock_prices.get(
+            signal_date.strftime("%Y-%m-%d")
+        )
+
+        if start_price is None:
+            continue
+
+        row = {
+            "stock": stock,
+            "date": signal_date.strftime("%Y-%m-%d"),
+            "signal": signal["signal"],
+            "score": float(signal["score"]),
+            "returns": {}
+        }
+
+        for label, days in periods.items():
+
+            target_date = (
+                signal_date
+                .date()
+                .toordinal()
+                + days
+            )
+
+            future_dates = [
+                datetime.strptime(d, "%Y-%m-%d").date()
+                for d in stock_prices.keys()
+                if datetime.strptime(d, "%Y-%m-%d").date().toordinal()
+                >= target_date
+            ]
+
+            if future_dates:
+                closest = min(future_dates)
+
+                price = stock_prices[
+                    closest.strftime("%Y-%m-%d")
+                ]
+
+                row["returns"][label] = round(
+                    ((price - start_price) / start_price) * 100,
+                    2
+                )
+
+        results.append(row)
+
+    return results
+
