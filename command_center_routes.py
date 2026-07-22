@@ -55,6 +55,7 @@ def command_center():
         today_take=today_take,
         earnings=earnings,
         earnings_ai=earnings_ai,
+        earnings_risks=earnings_risks,
     )
     
 

@@ -1238,6 +1238,71 @@
 
     <div class="card">
         <h2>
+            📅 Kommende regnskaber
+            <span
+                class="info-icon"
+                data-tooltip="Viser kommende regnskaber og AI-vurderet risiko baseret på signal, score og antal dage til regnskabet.">
+                ?
+            </span>
+        </h2>
+
+        {% if earnings_risks %}
+
+            {% for item in earnings_risks %}
+
+                <div style="
+                    margin-bottom:12px;
+                    padding:12px;
+                    background:#f8fafc;
+                    border-left:4px solid
+                    {% if item.risk == 'High' %}
+                        #dc2626
+                    {% elif item.risk == 'Medium' %}
+                        #f59e0b
+                    {% else %}
+                        #16a34a
+                    {% endif %};
+                    border-radius:8px;
+                ">
+
+                    <b>{{ item.stock }}</b><br>
+
+                    Regnskab om:
+                    {{ item.days_left }} dage
+                    <br>
+
+                    Signal:
+                    {{ item.signal }}
+                    <br>
+
+                    Score:
+                    {{ item.score }}/100
+                    <br>
+
+                    Risiko:
+                    {{ item.risk }}
+                    <br>
+
+                    <span style="color:#6b7280;">
+                        {{ item.message }}
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p style="color:#888;">
+                Ingen kommende regnskaber.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+    <div class="card">
+        <h2>
             💼 Portfolio
             <span
                 class="info-icon"
