@@ -26,9 +26,19 @@ def calculate_earnings_risk(stock, score, days_left):
             risk = "Low"
             message = "Regnskab nærmer sig."
 
+    if days_left <= 2:
+        alert_level = "HIGH"
+    elif days_left <= 7:
+        alert_level = "ALERT"
+    elif days_left <= 14:
+        alert_level = "WATCH"
+    else:
+        alert_level = "NORMAL"
+
     return {
         "stock": stock,
         "days_left": days_left,
+        "alert_level": alert_level,
         "signal": decision["signal"],
         "score": score,
         "risk": risk,
