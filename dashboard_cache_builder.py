@@ -19,6 +19,7 @@ from news_sentiment_service import (
 )
 from earnings_intelligence_service import get_earnings_summary
 from earnings_ai_service import analyze_earnings_articles
+from earnings_risk_service import get_earnings_risks
 from market_score_history_service import save_market_score
 from ai_explain_service import explain_stock
 from today_take_service import get_today_take
@@ -59,6 +60,7 @@ def build_dashboard_cache():
 
     portfolio = get_portfolio_summary()
     alerts = get_ai_alerts()
+    earnings_risks = get_earnings_risks()
 
     executive_summary = get_ai_executive_summary(
         market=market,
@@ -129,6 +131,7 @@ def build_dashboard_cache():
     "ai_news": ai_news,
     "earnings": earnings,
     "earnings_ai": earnings_ai,
+    "earnings_risks": earnings_risks,
     "stock_explanations": stock_explanations,
 }
 
