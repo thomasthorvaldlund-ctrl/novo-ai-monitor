@@ -1,5 +1,6 @@
 from combined_score_service import combined_stock_score
 from openai_service import client
+from earnings_risk_service import get_earnings_risks
 
 
 def get_ai_alerts():
@@ -16,6 +17,22 @@ def get_ai_alerts():
                 "level": "red",
                 "title": f"{stock['stock']}",
                 "message": f"Combined Score er lav ({score})."
+            })
+
+
+    earnings_risks = get_earnings_risks()
+
+    for item in earnings_risks:
+        if item["risk"] == "High":
+            alerts.append({
+                "level": "red",
+                "title": f"{item['stock']} - Regnskab nærmer sig",
+                "message": (
+                    f"Regnskab om {item['days_left']} dage. "
+                    f"Signal: {item['signal']}. "
+                    f"AI-score: {item['score']}. "
+                    f"{item['message']}"
+                )
             })
 
     if not alerts:
