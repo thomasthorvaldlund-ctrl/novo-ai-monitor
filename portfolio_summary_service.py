@@ -107,13 +107,27 @@ def get_portfolio_summary():
         portfolio_risk = "Low"
 
     if best_position and weakest_position:
+
+        signal = weakest_position.get("signal")
+
+        if signal == "REDUCE":
+            weakest_comment = "bør vurderes til reduktion"
+        elif signal == "WATCH":
+            weakest_comment = "bør overvåges tæt"
+        elif signal == "HOLD":
+            weakest_comment = "kan beholdes"
+        elif signal == "BUY":
+            weakest_comment = "viser et positivt signal"
+        else:
+            weakest_comment = "bør vurderes nærmere"
+
         portfolio_comment = (
             f"Porteføljen har en {portfolio_risk.lower()} risiko med en "
             f"samlet AI-score på {portfolio_score_value}. "
             f"{best_position.get('stock')} er stærkeste position med score "
             f"{best_position.get('score')}, mens "
-            f"{weakest_position.get('stock')} bør overvåges med score "
-            f"{weakest_position.get('score')}."
+            f"{weakest_position.get('stock')} {weakest_comment} "
+            f"med score {weakest_position.get('score')}."
         )
     else:
         portfolio_comment = "Ingen tilstrækkelige data til AI-porteføljevurdering."
