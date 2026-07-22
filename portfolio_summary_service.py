@@ -89,12 +89,22 @@ def get_portfolio_summary():
         default={}
     )
 
-    if portfolio_score_value >= 75:
-        portfolio_risk = "Low"
-    elif portfolio_score_value >= 60:
+    signals = [
+        p["signal"]
+        for p in position_details
+    ]
+
+    reduce_count = signals.count("REDUCE")
+    watch_count = signals.count("WATCH")
+
+    if reduce_count >= 2:
+        portfolio_risk = "High"
+    elif reduce_count == 1:
+        portfolio_risk = "Medium"
+    elif watch_count >= 2:
         portfolio_risk = "Medium"
     else:
-        portfolio_risk = "High"
+        portfolio_risk = "Low"
 
     if best_position and weakest_position:
         portfolio_comment = (
