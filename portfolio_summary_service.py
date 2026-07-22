@@ -111,25 +111,31 @@ def get_portfolio_summary():
     increase = [
         p["stock"]
         for p in position_details
-        if p["score"] >= 70
+        if p["signal"] == "BUY"
     ]
 
     hold = [
         p["stock"]
         for p in position_details
-        if 55 <= p["score"] < 70
+        if p["signal"] == "HOLD"
+    ]
+
+    watch = [
+        p["stock"]
+        for p in position_details
+        if p["signal"] == "WATCH"
     ]
 
     reduce = [
         p["stock"]
         for p in position_details
-        if p["score"] < 55
+        if p["signal"] == "REDUCE"
     ]
 
     reduce_details = [
         p
         for p in position_details
-        if p["score"] < 55
+        if p["signal"] == "REDUCE"
     ]
 
     high_weight_positions = [
@@ -164,6 +170,7 @@ def get_portfolio_summary():
         "recommendations": {
             "increase": increase,
             "hold": hold,
+            "watch": watch,
             "reduce": reduce,
             "reduce_details": reduce_details,
             "diversification": diversification,

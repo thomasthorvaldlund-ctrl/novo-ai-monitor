@@ -17,6 +17,7 @@ def portfolio_manager_page():
     recommendations = ai_data.get("recommendations", {})
     increase = recommendations.get("increase", [])
     hold = recommendations.get("hold", [])
+    watch = recommendations.get("watch", [])
     reduce = recommendations.get("reduce", [])
     reduce_details = recommendations.get("reduce_details", [])
     diversification = recommendations.get("diversification", "")
@@ -43,6 +44,7 @@ def portfolio_manager_page():
 
     rows = ""
     rebalancer_rows = ""
+    reduce_cards = ""
 
     for position in rebalancer:
         color = "#16a34a" if position["rebalance_amount"] > 0 else "#dc2626"
@@ -58,6 +60,34 @@ def portfolio_manager_page():
                 {position['rebalance_amount']:+,.2f} DKK
             </td>
         </tr>
+        """
+
+    for item in reduce_details:
+        reduce_cards += f"""
+        <div style="margin:12px 0; padding:14px; background:#fff7ed; border-left:4px solid #dc2626; border-radius:8px;">
+
+            <b>{item['stock']}</b><br>
+
+            AI-score:
+            {item['score']}/100
+            <br>
+
+            Signal:
+            {item['signal']}
+            <br>
+
+            Risiko:
+            {item['risk']}
+            <br>
+
+            Confidence:
+            {item['confidence']}%
+            <br>
+
+            Årsag:
+            {item['comment']}
+
+        </div>
         """
 
     for h in holdings:
@@ -197,34 +227,11 @@ def portfolio_manager_page():
 
     <p><b>🟡 Behold:</b> {", ".join(hold) if hold else "-"}</p>
 
-    <p><b>🟠 Overvej justering:</b></p>
+    <p><b>🟠 Overvåg tæt:</b> {", ".join(watch) if watch else "-"}</p>
 
-    {{% for item in reduce_details %}}
-    <div style="margin:12px 0; padding:14px; background:#fff7ed; border-left:4px solid #f59e0b; border-radius:8px;">
+    <p><b>🔴 Reducer:</b></p>
 
-        <b>{{{{ item.stock }}}}</b><br>
-
-        AI-score:
-        {{{{ item.score }}}}/100
-        <br>
-
-        Signal:
-        {{{{ item.signal }}}}
-        <br>
-
-        Risiko:
-        {{{{ item.risk }}}}
-        <br>
-
-        Confidence:
-        {{{{ item.confidence }}}}%
-        <br>
-
-        Årsag:
-        {{{{ item.comment }}}}
-
-    </div>
-    {{% endfor %}}
+    {reduce_cards}
 
     <div style="margin-top:16px; padding:14px; background:#fff7ed; border-left:4px solid #f59e0b; border-radius:8px;">
         <b>Diversificering</b><br>
