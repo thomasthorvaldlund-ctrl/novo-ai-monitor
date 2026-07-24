@@ -81,6 +81,20 @@ def build_dashboard_cache():
         performance=performance,
     )
 
+    ai_copilot.update({
+        "risk_score": ai_risk_dashboard.get(
+            "risk_score",
+            0
+        ),
+        "overall_risk": ai_risk_dashboard.get(
+            "overall_risk"
+        ),
+        "risk_reasons": ai_risk_dashboard.get(
+            "risk_reasons",
+            []
+        ),
+    })
+
     history = load_copilot_history()
 
     previous_copilot = (
