@@ -495,12 +495,12 @@
         </div>
 
         <div>
-            <b>Marked</b>
+            <b>📊 Markedsvurdering</b>
             <p>{{ ai_copilot.market_status }}</p>
         </div>
 
         <div>
-            <b>⭐ Bedste mulighed</b>
+            <b>⭐ Bedste mulighed lige nu</b>
             <p>{{ ai_copilot.best_opportunity }}</p>
         </div>
 
@@ -518,18 +518,6 @@
             <b>🤖 AI anbefaling</b>
             <p>{{ ai_copilot.recommendation }}</p>
         </div>
-
-    </div>
-
-    <div class="copilot-factors">
-
-        <b>🧠 AI vurderer baseret på</b>
-
-        <ul>
-        {% for factor in ai_copilot.factors %}
-            <li>✓ {{ factor }}</li>
-        {% endfor %}
-        </ul>
 
     </div>
 
@@ -837,6 +825,174 @@
 </section>
 
 <!-- Earnings Risk END -->
+
+
+
+<!-- AI Risk Dashboard START -->
+
+<section class="dashboard-card">
+
+    <h2>
+        🛡️ AI Risk Dashboard
+        <span
+            class="info-icon"
+            data-tooltip="Samlet AI-risikovurdering baseret på markedssignaler, nyheder, regnskaber og portefølje.">
+            ?
+        </span>
+    </h2>
+
+
+    {% if ai_risk_dashboard %}
+
+    <div class="summary-grid">
+
+
+        <div class="summary-box">
+
+            <div class="summary-title">
+                Samlet risiko
+            </div>
+
+            <div class="summary-value summary-value-text">
+
+                {% if ai_risk_dashboard.overall_risk == "Høj" %}
+                    🔴
+                {% elif ai_risk_dashboard.overall_risk == "Moderat" %}
+                    🟡
+                {% else %}
+                    🟢
+                {% endif %}
+
+                {{ ai_risk_dashboard.overall_risk }}
+
+            </div>
+
+            <div class="summary-meta">
+                Risiko score:
+                {{ ai_risk_dashboard.risk_score }}/100
+            </div>
+
+        </div>
+
+
+
+        <div class="summary-box">
+
+            <div class="summary-title">
+                📉 Teknisk risiko
+            </div>
+
+            <div class="summary-value">
+                {{ ai_risk_dashboard.technical_risk.score }}
+            </div>
+
+            <div class="summary-meta">
+                {{ ai_risk_dashboard.technical_risk.level }}
+            </div>
+
+        </div>
+
+
+
+        <div class="summary-box">
+
+            <div class="summary-title">
+                📰 Nyhedsrisiko
+            </div>
+
+            <div class="summary-value">
+                {{ ai_risk_dashboard.news_risk.score }}
+            </div>
+
+            <div class="summary-meta">
+                {{ ai_risk_dashboard.news_risk.level }}
+            </div>
+
+        </div>
+
+
+
+        <div class="summary-box">
+
+            <div class="summary-title">
+                📅 Regnskabsrisiko
+            </div>
+
+            <div class="summary-value">
+                {{ ai_risk_dashboard.earnings_risk.score }}
+            </div>
+
+            <div class="summary-meta">
+                {{ ai_risk_dashboard.earnings_risk.level }}
+            </div>
+
+        </div>
+
+
+
+        <div class="summary-box">
+
+            <div class="summary-title">
+                💼 Porteføljerisiko
+            </div>
+
+            <div class="summary-value">
+                {{ ai_risk_dashboard.portfolio_risk.score }}
+            </div>
+
+            <div class="summary-meta">
+                {{ ai_risk_dashboard.portfolio_risk.level }}
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="summary-recommendation">
+
+        🤖 {{ ai_risk_dashboard.ai_summary }}
+
+    </div>
+
+
+    <div class="summary-recommendation">
+
+        <div class="executive-title">
+            🧠 Hvorfor viser AI denne risiko?
+        </div>
+
+
+        <ul>
+        {% for reason in ai_risk_dashboard.risk_reasons %}
+            <li>
+                {{ reason }}
+            </li>
+        {% endfor %}
+        </ul>
+
+
+        <p>
+            <strong>AI vurdering:</strong><br>
+            {{ ai_risk_dashboard.risk_explanation }}
+        </p>
+
+    </div>
+
+
+    {% else %}
+
+        <p>
+            AI Risk Dashboard er ikke tilgængelig endnu.
+        </p>
+
+    {% endif %}
+
+
+</section>
+
+<!-- AI Risk Dashboard END -->
 
 
 <!-- AI Engine Status START -->
