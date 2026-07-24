@@ -35,9 +35,19 @@ def calculate_earnings_risk(stock, score, days_left):
     else:
         alert_level = "NORMAL"
 
+    if days_left < 0:
+        date_message = "Regnskab var i går"
+    elif days_left == 0:
+        date_message = "Regnskab er i dag"
+    elif days_left == 1:
+        date_message = "Regnskab i morgen"
+    else:
+        date_message = f"Regnskab om {days_left} dage"
+
     return {
         "stock": stock,
         "days_left": days_left,
+        "date_message": date_message,
         "alert_level": alert_level,
         "signal": decision["signal"],
         "score": score,
