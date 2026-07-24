@@ -2,6 +2,8 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/command_center_v2.css') }}">
+
+
 {% endblock %}
 
 {% block content %}
@@ -21,7 +23,10 @@
 
 {% for item in stock_explanations %}
 
-<div class="explain-card">
+<div
+    id="stock-{{ item.stock|upper }}"
+    class="explain-card{% if selected_stock == item.stock|upper %} explain-card-selected{% endif %}"
+>
 
     <div class="explain-header">
 
@@ -115,5 +120,23 @@
 </div>
 
 </section>
+
+
+{% if selected_stock %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const selectedCard = document.getElementById(
+        "stock-{{ selected_stock|e }}"
+    );
+
+    if (selectedCard) {
+        selectedCard.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+});
+</script>
+{% endif %}
 
 {% endblock %}

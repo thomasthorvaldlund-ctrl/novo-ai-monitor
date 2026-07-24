@@ -345,7 +345,11 @@
             </div>
         </a>
 
-        <a href="/ai-stock-library" class="summary-box summary-box-link" aria-label="Åbn ⭐ Top Pick">
+        <a
+    href="{% if top_picks %}/ai-stock-library?stock={{ top_picks[0].stock }}{% else %}/ai-stock-library{% endif %}"
+    class="summary-box summary-box-link"
+    aria-label="Åbn ⭐ Top Pick"
+>
             <div class="summary-title">⭐ Top Pick</div>
 
             {% if top_picks %}

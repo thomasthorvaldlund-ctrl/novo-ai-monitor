@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 
 from dashboard_cache_service import load_dashboard_cache
 from system_health_service import get_system_health
@@ -94,7 +94,10 @@ def ai_stock_library():
         []
     )
 
+    selected_stock = request.args.get("stock", "").strip().upper()
+
     return render_template(
         "ai_stock_library.html",
         stock_explanations=stock_explanations,
+        selected_stock=selected_stock,
     )
