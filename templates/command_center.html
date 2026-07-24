@@ -1255,10 +1255,12 @@
                     padding:12px;
                     background:#f8fafc;
                     border-left:4px solid
-                    {% if item.risk == 'High' %}
+                    {% if item.alert_level == 'HIGH' %}
                         #dc2626
-                    {% elif item.risk == 'Medium' %}
+                    {% elif item.alert_level == 'ALERT' %}
                         #f59e0b
+                    {% elif item.alert_level == 'WATCH' %}
+                        #eab308
                     {% else %}
                         #16a34a
                     {% endif %};
@@ -1267,8 +1269,7 @@
 
                     <b>{{ item.stock }}</b><br>
 
-                    Regnskab om:
-                    {{ item.days_left }} dage
+                    {{ item.date_message }}
                     <br>
 
                     Signal:
@@ -1279,8 +1280,8 @@
                     {{ item.score }}/100
                     <br>
 
-                    Risiko:
-                    {{ item.risk }}
+                    Niveau:
+                    {{ item.alert_level }}
                     <br>
 
                     <span style="color:#6b7280;">
