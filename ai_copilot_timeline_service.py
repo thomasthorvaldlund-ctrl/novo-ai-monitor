@@ -1,3 +1,4 @@
+from ai_copilot_timeline_events_service import build_timeline_events
 from ai_copilot_history_service import load_copilot_history
 
 
@@ -30,6 +31,12 @@ def get_copilot_timeline(limit=30):
             "changes": item.get(
                 "changes",
                 []
+            ),
+            "events": build_timeline_events(
+                item.get(
+                    "changes",
+                    []
+                )
             ),
         })
 
