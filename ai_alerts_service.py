@@ -61,7 +61,7 @@ def get_ai_alerts():
                 "message": (
                     f"AI-score: {item['score']}. "
                     f"Signal: {item['signal']}. "
-                    f"Regnskab om {item['days_left']} dage. "
+                    f"{item['date_message']}. "
                     f"{item['message']}"
                 )
             })
