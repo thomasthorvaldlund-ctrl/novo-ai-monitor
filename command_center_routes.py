@@ -37,6 +37,7 @@ def command_center():
     today_take = cache.get("today_take", {})
     earnings = cache.get("earnings", {})
     earnings_ai = cache.get("earnings_ai", [])
+    earnings_risks = cache.get("earnings_risks", [])
 
     return render_template(
         "command_center.html",
