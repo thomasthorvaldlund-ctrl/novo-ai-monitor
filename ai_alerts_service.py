@@ -11,10 +11,10 @@ def get_ai_alerts():
 
     earnings_risks = get_earnings_risks()
 
-    high_earnings_stocks = {
+    priority_earnings_stocks = {
         item["stock"]: item
         for item in earnings_risks
-        if item["risk"] == "High"
+        if item["alert_level"] in ["HIGH", "ALERT"]
     }
 
     for stock in ranking:
@@ -23,8 +23,8 @@ def get_ai_alerts():
 
         if score < 45:
 
-            if name in high_earnings_stocks:
-                item = high_earnings_stocks[name]
+            if name in priority_earnings_stocks:
+                item = priority_earnings_stocks[name]
 
                 alerts.append({
                     "level": "red",
@@ -44,22 +44,24 @@ def get_ai_alerts():
                     "message": f"Combined Score er lav ({score})."
                 })
 
+    existing_alert_stocks = [
+        a["title"].split(" - ")[0]
+        for a in alerts
+    ]
+
     for item in earnings_risks:
 
         if (
-            item["risk"] == "High"
-            and item["stock"] not in [
-                a["title"].split(" - ")[0]
-                for a in alerts
-            ]
+            item["alert_level"] in ["HIGH", "ALERT"]
+            and item["stock"] not in existing_alert_stocks
         ):
             alerts.append({
                 "level": "red",
-                "title": f"{item['stock']} - Regnskab nærmer sig",
+                "title": f"{item['stock']} - Høj risiko før regnskab",
                 "message": (
-                    f"Regnskab om {item['days_left']} dage. "
-                    f"Signal: {item['signal']}. "
                     f"AI-score: {item['score']}. "
+                    f"Signal: {item['signal']}. "
+                    f"Regnskab om {item['days_left']} dage. "
                     f"{item['message']}"
                 )
             })
