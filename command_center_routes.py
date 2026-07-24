@@ -82,6 +82,7 @@ def command_center_v2():
     today_take = cache.get("today_take", {})
     earnings = cache.get("earnings", {})
     earnings_ai = cache.get("earnings_ai", [])
+    earnings_risks = cache.get("earnings_risks", [])
     executive_summary = cache.get("executive_summary", {})
     ai_copilot = cache.get("ai_copilot", {})
     ai_copilot_timeline = cache.get("ai_copilot_timeline", [])
@@ -106,6 +107,7 @@ def command_center_v2():
         today_take=today_take,
         earnings=earnings,
         earnings_ai=earnings_ai,
+        earnings_risks=earnings_risks,
         executive_summary=executive_summary,
         ai_copilot=ai_copilot,
         ai_copilot_timeline=ai_copilot_timeline,

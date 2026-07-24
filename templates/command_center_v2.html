@@ -758,6 +758,87 @@
 
 <!-- AI Explain Center END -->
 
+
+<!-- Earnings Risk START -->
+
+<section class="dashboard-card">
+
+    <h2>
+        📅 Kommende regnskaber
+        <span
+            class="info-icon"
+            data-tooltip="Viser kommende regnskaber og AI-vurderet risiko baseret på signal, score og tid til regnskab.">
+            ?
+        </span>
+    </h2>
+
+
+    {% if earnings_risks %}
+
+        <div class="summary-grid">
+
+        {% for item in earnings_risks %}
+
+            <div class="summary-box">
+
+                <div class="summary-title">
+
+                    {{ item.stock }}
+
+                    {% if item.alert_level == 'HIGH' %}
+                        🔴 HIGH
+                    {% elif item.alert_level == 'ALERT' %}
+                        🟠 ALERT
+                    {% elif item.alert_level == 'WATCH' %}
+                        🟡 WATCH
+                    {% else %}
+                        🟢 NORMAL
+                    {% endif %}
+
+                </div>
+
+
+                <div class="summary-meta">
+                    {{ item.date_message }}
+                </div>
+
+
+                <div class="summary-meta">
+                    Signal:
+                    {{ item.signal }}
+                </div>
+
+
+                <div class="summary-meta">
+                    AI Score:
+                    {{ item.score }}/100
+                </div>
+
+
+                <div class="summary-meta">
+                    {{ item.message }}
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <p>
+            Ingen kommende regnskaber.
+        </p>
+
+    {% endif %}
+
+</section>
+
+<!-- Earnings Risk END -->
+
+
 <!-- AI Engine Status START -->
 
 <section class="card ai-engine-status-card">
