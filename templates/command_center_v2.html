@@ -338,14 +338,14 @@
 
     <div class="summary-grid">
 
-        <div class="summary-box">
+        <a href="/combined-stock-score-page" class="summary-box summary-box-link" aria-label="Åbn 📈 Market Score">
             <div class="summary-title">📈 Market Score</div>
             <div class="summary-value">
                 {{ market.score if market else "-" }}
             </div>
-        </div>
+        </a>
 
-        <div class="summary-box">
+        <a href="/ai-stock-library" class="summary-box summary-box-link" aria-label="Åbn ⭐ Top Pick">
             <div class="summary-title">⭐ Top Pick</div>
 
             {% if top_picks %}
@@ -359,9 +359,9 @@
             {% else %}
                 <div class="summary-value">-</div>
             {% endif %}
-        </div>
+        </a>
 
-        <div class="summary-box">
+        <a href="/portfolio-manager-page" class="summary-box summary-box-link" aria-label="Åbn 💼 Portfolio">
             <div class="summary-title">💼 Portfolio</div>
 
             {% if portfolio %}
@@ -375,9 +375,9 @@
             {% else %}
                 <div class="summary-value">-</div>
             {% endif %}
-        </div>
+        </a>
 
-        <div class="summary-box">
+        <a href="/portfolio-alerts" class="summary-box summary-box-link" aria-label="Åbn 🚨 Alerts">
             <div class="summary-title">🚨 Alerts</div>
 
             {% set alert_count = market.critical_alerts or 0 %}
@@ -393,15 +393,15 @@
                     kritiske alerts
                 {% endif %}
             </div>
-        </div>
+        </a>
 
-        <div class="summary-box">
+        <a href="#ai-engine-status" class="summary-box summary-box-link" aria-label="Åbn 🤖 AI Status">
             <div class="summary-title">🤖 AI Status</div>
 
             <div class="summary-value summary-value-text">
                 <span class="status-dot">●</span> Online
             </div>
-        </div>
+        </a>
 
     </div>
 
@@ -597,10 +597,19 @@
                 {% endif %}
             </div>
 
-            {% if item.changes and item.status != 'neutral' %}
-            <div class="timeline-changes">
-                {% for change in item.changes %}
-                    ✓ {{ change }}
+            {% if item.events %}
+            <div class="timeline-events">
+                {% for event in item.events %}
+                <div class="timeline-event timeline-event-{{ event.type }}">
+                    <span class="timeline-event-icon">
+                        {{ event.icon }}
+                    </span>
+
+                    <div class="timeline-event-content">
+                        <strong>{{ event.title }}</strong>
+                        <span>{{ event.description }}</span>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
             {% endif %}
@@ -997,7 +1006,7 @@
 
 <!-- AI Engine Status START -->
 
-<section class="card ai-engine-status-card">
+<section id="ai-engine-status" class="card ai-engine-status-card">
 
     <h2>🤖 AI Engine Status</h2>
 

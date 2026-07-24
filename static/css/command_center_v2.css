@@ -590,12 +590,42 @@
 }
 
 
-.timeline-changes {
-    background: rgba(255,255,255,0.6);
-    padding: 8px 10px;
-    border-radius: 8px;
+.timeline-events {
+    display: grid;
+    gap: 8px;
     margin-bottom: 10px;
+}
+
+.timeline-event {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    background: rgba(255, 255, 255, 0.72);
+    padding: 9px 10px;
+    border-radius: 8px;
+}
+
+.timeline-event-icon {
+    flex: 0 0 auto;
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+.timeline-event-content {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.timeline-event-content strong {
+    color: #0f172a;
     font-size: 0.9rem;
+}
+
+.timeline-event-content span {
+    color: #475569;
+    font-size: 0.84rem;
+    line-height: 1.4;
 }
 
 
@@ -611,5 +641,31 @@
     font-weight: 700;
     color: #0f172a;
     padding-top: 6px;
+}
+
+/* Executive Summary clickable cards */
+.summary-box-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.summary-box-link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    border-color: #93c5fd;
+}
+
+.summary-box-link:focus-visible {
+    outline: 3px solid #60a5fa;
+    outline-offset: 3px;
+}
+
+#ai-engine-status {
+    scroll-margin-top: 24px;
 }
 
