@@ -39,7 +39,6 @@ from watchlist_routes import watchlist_bp
 from combined_score_routes import combined_score_bp
 from command_center_routes import command_center_bp
 from stock_screener_service import (
-    WATCHLIST,
     stock_screener as service_stock_screener,
 )
 from stock_news_service import stock_news_ai_score as service_stock_news_ai_score

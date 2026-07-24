@@ -5,30 +5,11 @@ from currency_service import (
     get_currency,
     convert_to_dkk,
 )
-
-
-WATCHLIST = {
-    "NOVO": "NOVO-B.CO",
-    "DSV": "DSV.CO",
-    "VESTAS": "VWS.CO",
-    "GENMAB": "GMAB.CO",
-    "CARLSBERG": "CARL-B.CO",
-    "MAERSK": "MAERSK-B.CO",
-    "ORSTED": "ORSTED.CO",
-    "PANDORA": "PNDORA.CO",
-    "APPLE": "AAPL",
-    "MICROSOFT": "MSFT",
-    "NVIDIA": "NVDA",
-    "ASML": "ASML.AS",
-    "TESLA": "TSLA",
-    "AMAZON": "AMZN",
-    "META": "META",
-    "GOOGLE": "GOOGL",
-}
+from stock_universe_service import get_active_stocks
 
 
 def stock_screener():
-    watchlist = WATCHLIST
+    watchlist = get_active_stocks()
 
     fx_rates = get_fx_rates()
     results = []
