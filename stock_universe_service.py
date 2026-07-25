@@ -11,6 +11,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "Novo Nordisk stock OR Wegovy OR Ozempic",
         "active": True,
     },
     "DSV": {
@@ -18,6 +19,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "DSV stock OR DSV logistics",
         "active": True,
     },
     "VESTAS": {
@@ -25,6 +27,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "Vestas stock OR wind turbines",
         "active": True,
     },
     "GENMAB": {
@@ -32,6 +35,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "Genmab stock OR Genmab cancer",
         "active": True,
     },
     "CARLSBERG": {
@@ -39,6 +43,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "Carlsberg stock OR Carlsberg earnings",
         "active": True,
     },
     "MAERSK": {
@@ -46,6 +51,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "Maersk stock OR shipping logistics",
         "active": True,
     },
     "ORSTED": {
@@ -53,6 +59,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "Orsted stock OR offshore wind",
         "active": True,
     },
     "PANDORA": {
@@ -60,6 +67,7 @@ STOCK_UNIVERSE = {
         "country": "Denmark",
         "market": "Nasdaq Copenhagen",
         "currency": "DKK",
+        "news_query": "Pandora stock OR Pandora jewelry",
         "active": True,
     },
     "APPLE": {
@@ -67,6 +75,7 @@ STOCK_UNIVERSE = {
         "country": "United States",
         "market": "NASDAQ",
         "currency": "USD",
+        "news_query": "Apple stock OR AAPL",
         "active": True,
     },
     "MICROSOFT": {
@@ -74,6 +83,7 @@ STOCK_UNIVERSE = {
         "country": "United States",
         "market": "NASDAQ",
         "currency": "USD",
+        "news_query": "Microsoft stock OR MSFT",
         "active": True,
     },
     "NVIDIA": {
@@ -81,6 +91,7 @@ STOCK_UNIVERSE = {
         "country": "United States",
         "market": "NASDAQ",
         "currency": "USD",
+        "news_query": "NVIDIA stock OR NVDA OR AI chips",
         "active": True,
     },
     "ASML": {
@@ -88,6 +99,7 @@ STOCK_UNIVERSE = {
         "country": "Netherlands",
         "market": "Euronext Amsterdam",
         "currency": "EUR",
+        "news_query": "ASML stock OR semiconductor lithography",
         "active": True,
     },
     "TESLA": {
@@ -95,6 +107,7 @@ STOCK_UNIVERSE = {
         "country": "United States",
         "market": "NASDAQ",
         "currency": "USD",
+        "news_query": "Tesla stock OR TSLA",
         "active": True,
     },
     "AMAZON": {
@@ -102,6 +115,7 @@ STOCK_UNIVERSE = {
         "country": "United States",
         "market": "NASDAQ",
         "currency": "USD",
+        "news_query": "Amazon stock OR AMZN",
         "active": True,
     },
     "META": {
@@ -109,6 +123,7 @@ STOCK_UNIVERSE = {
         "country": "United States",
         "market": "NASDAQ",
         "currency": "USD",
+        "news_query": "Meta stock OR META platforms",
         "active": True,
     },
     "GOOGLE": {
@@ -116,6 +131,7 @@ STOCK_UNIVERSE = {
         "country": "United States",
         "market": "NASDAQ",
         "currency": "USD",
+        "news_query": "Alphabet stock OR GOOGL OR Google",
         "active": True,
     },
 }
@@ -216,3 +232,19 @@ def get_stock_universe_statistics():
         "countries": countries,
         "markets": markets,
     }
+
+
+def get_news_query(name):
+    """
+    Returnerer Google News-søgestrengen for en aktie.
+
+    Hvis aktien ikke har en specifik søgestreng,
+    bruges et generisk fallback baseret på aktiens navn.
+    """
+    stock_name = name.upper()
+    stock = get_stock_metadata(stock_name)
+
+    if stock is None:
+        return f"{stock_name} stock"
+
+    return stock.get("news_query") or f"{stock_name} stock"

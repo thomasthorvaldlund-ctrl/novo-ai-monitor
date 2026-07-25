@@ -47,6 +47,11 @@ from job_status_routes import job_status_bp
 from signal_history_routes import signal_history_bp
 from ai_performance_routes import ai_performance_bp
 from stock_universe_routes import stock_universe_bp
+from stock_universe_service import (
+    get_active_stocks,
+    get_news_query,
+    get_stock_metadata,
+)
 import requests
 
 
@@ -673,10 +678,13 @@ def test_alert():
 def risk_check():
     selected_stock = request.args.get("stock", "NOVO").upper()
 
-    if selected_stock not in WATCHLIST:
-        selected_stock = "NOVO"
+    stock_metadata = get_stock_metadata(selected_stock)
 
-    ticker = WATCHLIST[selected_stock]
+    if stock_metadata is None:
+        selected_stock = "NOVO"
+        stock_metadata = get_stock_metadata(selected_stock)
+
+    ticker = stock_metadata["ticker"]
     currency = get_currency(ticker)
     stock = yf.Ticker(ticker)
     data = stock.history(period="10d")
@@ -723,7 +731,7 @@ def risk_check():
         "risk_check.html",
         stock=selected_stock,
         ticker=ticker,
-        watchlist=WATCHLIST,
+        watchlist=get_active_stocks(),
         selected_stock=selected_stock,
         price=round(float(latest), 2),
         currency=currency,
@@ -750,8 +758,11 @@ def news_check():
 
     selected_stock = request.args.get("stock", "NOVO").upper()
 
-    if selected_stock not in WATCHLIST:
+    stock_metadata = get_stock_metadata(selected_stock)
+
+    if stock_metadata is None:
         selected_stock = "NOVO"
+        stock_metadata = get_stock_metadata(selected_stock)
 
     seen_file = "/root/novo-ai-monitor/seen_news.txt"
 
@@ -761,29 +772,7 @@ def news_check():
     except:
         seen = set()
 
-    news_queries = {
-        "NOVO": "Novo Nordisk stock OR Wegovy OR Ozempic",
-        "DSV": "DSV stock OR DSV logistics",
-        "VESTAS": "Vestas stock OR wind turbines",
-        "GENMAB": "Genmab stock OR Genmab cancer",
-        "CARLSBERG": "Carlsberg stock OR Carlsberg earnings",
-        "MAERSK": "Maersk stock OR shipping logistics",
-        "ORSTED": "Orsted stock OR offshore wind",
-        "PANDORA": "Pandora stock OR Pandora jewelry",
-        "APPLE": "Apple stock OR AAPL",
-        "MICROSOFT": "Microsoft stock OR MSFT",
-        "NVIDIA": "NVIDIA stock OR NVDA OR AI chips",
-        "ASML": "ASML stock OR semiconductor lithography",
-        "TESLA": "Tesla stock OR TSLA",
-        "AMAZON": "Amazon stock OR AMZN",
-        "META": "Meta stock OR META platforms",
-        "GOOGLE": "Alphabet stock OR GOOGL OR Google",
-    }
-
-    query = news_queries.get(
-        selected_stock,
-        f"{selected_stock} stock",
-    )
+    query = get_news_query(selected_stock)
 
     feed_url = (
         "https://news.google.com/rss/search?"
@@ -850,7 +839,7 @@ def news_check():
         new_negative_matches=new_negative_articles[:5],
         alarm_sent=bool(new_negative_articles),
         updated_at=datetime.now().strftime("%d-%m-%Y %H:%M"),
-        watchlist=WATCHLIST,
+        watchlist=get_active_stocks(),
         selected_stock=selected_stock,
         query=query,
     )
