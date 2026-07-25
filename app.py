@@ -164,9 +164,19 @@ def get_stock_data(ticker):
     stock = yf.Ticker(ticker)
     data = stock.history(period="10d")
 
-    latest = data["Close"].iloc[-1]
-    yesterday = data["Close"].iloc[-2]
-    week_ago = data["Close"].iloc[-6]
+    if data.empty or "Close" not in data.columns:
+        raise ValueError(f"Ingen kursdata fundet for {ticker}")
+
+    close_prices = data["Close"].dropna()
+
+    if len(close_prices) < 6:
+        raise ValueError(
+            f"For få gyldige kurspunkter for {ticker}: {len(close_prices)}"
+        )
+
+    latest = float(close_prices.iloc[-1])
+    yesterday = float(close_prices.iloc[-2])
+    week_ago = float(close_prices.iloc[-6])
 
     daily_change = ((latest - yesterday) / yesterday) * 100
     weekly_change = ((latest - week_ago) / week_ago) * 100
@@ -1263,12 +1273,13 @@ def save_history():
 
     today = datetime.now().strftime("%Y-%m-%d")
 
-    for stock_name, ticker, logfile in [
-        ("NOVO", "NOVO-B.CO", "/root/novo-ai-monitor/last_ai_news_check.log"),
-        ("DSV", "DSV.CO", "/root/novo-ai-monitor/last_dsv_ai_news_check.log"),
-        ("NVIDIA", "NVDA", None),
-        ("ASML", "ASML.AS", None),
+    for stock_name, logfile in [
+        ("NOVO", "/root/novo-ai-monitor/last_ai_news_check.log"),
+        ("DSV", "/root/novo-ai-monitor/last_dsv_ai_news_check.log"),
+        ("NVIDIA", None),
+        ("ASML", None),
     ]:
+        ticker = get_stock_metadata(stock_name)["ticker"]
 
         data = get_stock_data(ticker)
 
