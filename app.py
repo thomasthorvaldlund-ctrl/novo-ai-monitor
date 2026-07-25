@@ -46,6 +46,7 @@ from job_status_routes import job_status_bp
 from job_status_routes import job_status_bp
 from signal_history_routes import signal_history_bp
 from ai_performance_routes import ai_performance_bp
+from stock_universe_routes import stock_universe_bp
 import requests
 
 
@@ -63,6 +64,7 @@ app.register_blueprint(command_center_bp)
 app.register_blueprint(job_status_bp)
 app.register_blueprint(signal_history_bp)
 app.register_blueprint(ai_performance_bp)
+app.register_blueprint(stock_universe_bp)
 
 USERS = {
     "thomas": "59autoKamp19#",
@@ -86,6 +88,9 @@ def before_request():
     if request.path.startswith("/static/"):
         return
     
+    if request.path.startswith("/stock-universe/"):
+        return
+
     if request.path in [
         "/test-alert",
         "/risk-check",
@@ -130,6 +135,8 @@ def before_request():
         "/market-score-history",
         "/command-center-v2",
         "/ai-performance",
+        "/stock-universe",
+        "/stock-universe-filter",
     ]:
         return
 
