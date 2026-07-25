@@ -1099,8 +1099,11 @@ Overskrifter:
 def daily_report():
     import json
 
-    novo = get_stock_data("NOVO-B.CO")
-    dsv = get_stock_data("DSV.CO")
+    novo_ticker = get_stock_metadata("NOVO")["ticker"]
+    dsv_ticker = get_stock_metadata("DSV")["ticker"]
+
+    novo = get_stock_data(novo_ticker)
+    dsv = get_stock_data(dsv_ticker)
 
     def extract_ai_risk(path):
         try:
