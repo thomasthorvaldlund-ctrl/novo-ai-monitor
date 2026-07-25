@@ -1175,14 +1175,14 @@ def smart_alerts():
     stocks = [
         {
             "name": "NOVO",
-            "ticker": "NOVO-B.CO",
-            "ai_log": "/root/novo-ai-monitor/last_ai_news_check.log"
+            "ticker": get_stock_metadata("NOVO")["ticker"],
+            "ai_log": "/root/novo-ai-monitor/last_ai_news_check.log",
         },
         {
             "name": "DSV",
-            "ticker": "DSV.CO",
-            "ai_log": "/root/novo-ai-monitor/last_dsv_ai_news_check.log"
-        }
+            "ticker": get_stock_metadata("DSV")["ticker"],
+            "ai_log": "/root/novo-ai-monitor/last_dsv_ai_news_check.log",
+        },
     ]
 
     alerts = []
