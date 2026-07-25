@@ -1,6 +1,8 @@
 from flask import Blueprint
 import yfinance as yf
 
+from stock_universe_service import get_stock_metadata
+
 portfolio_analysis_bp = Blueprint("portfolio_analysis", __name__)
 
 def portfolio_analysis():
@@ -9,8 +11,11 @@ def portfolio_analysis():
     dsv_qty = 4
     dsv_buy_price = 1588.5
     
-    novo_price = float(yf.Ticker("NOVO-B.CO").history(period="10d")["Close"].iloc[-1])
-    dsv_price = float(yf.Ticker("DSV.CO").history(period="10d")["Close"].iloc[-1])
+    novo_ticker = get_stock_metadata("NOVO")["ticker"]
+    dsv_ticker = get_stock_metadata("DSV")["ticker"]
+
+    novo_price = float(yf.Ticker(novo_ticker).history(period="10d")["Close"].iloc[-1])
+    dsv_price = float(yf.Ticker(dsv_ticker).history(period="10d")["Close"].iloc[-1])
     
     novo_value = novo_qty * novo_price
     dsv_value = dsv_qty * dsv_price
