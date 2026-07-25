@@ -493,7 +493,8 @@ Overskrifter:
 
 @app.route("/status-report")
 def status_report():
-    stock = yf.Ticker("NOVO-B.CO")
+    ticker = get_stock_metadata("NOVO")["ticker"]
+    stock = yf.Ticker(ticker)
     data = stock.history(period="10d")
 
     latest = data["Close"].iloc[-1]
@@ -582,7 +583,8 @@ def status_report():
 def chart():
     chart_file = "/tmp/novo_chart.png"
 
-    stock = yf.Ticker("NOVO-B.CO")
+    ticker = get_stock_metadata("NOVO")["ticker"]
+    stock = yf.Ticker(ticker)
     data = stock.history(period="1mo")
 
     plt.figure(figsize=(8,4))
@@ -599,7 +601,8 @@ def chart():
 
 @app.route("/dsv-chart")
 def dsv_chart():
-    stock = yf.Ticker("DSV.CO")
+    ticker = get_stock_metadata("DSV")["ticker"]
+    stock = yf.Ticker(ticker)
     data = stock.history(period="1mo")
 
     plt.figure(figsize=(8,4))
@@ -617,7 +620,8 @@ def dsv_chart():
 
 @app.route("/dsv")
 def dsv_status():
-    stock = yf.Ticker("DSV.CO")
+    ticker = get_stock_metadata("DSV")["ticker"]
+    stock = yf.Ticker(ticker)
     data = stock.history(period="10d")
 
     latest = data["Close"].iloc[-1]
@@ -1039,11 +1043,13 @@ def portfolio_alerts():
     except FileNotFoundError:
         sent_today = set()
 
-    stock = yf.Ticker("NOVO-B.CO")
+    novo_ticker = get_stock_metadata("NOVO")["ticker"]
+    stock = yf.Ticker(novo_ticker)
     data = stock.history(period="10d")
     latest = data["Close"].iloc[-1]
 
-    dsv = yf.Ticker("DSV.CO")
+    dsv_ticker = get_stock_metadata("DSV")["ticker"]
+    dsv = yf.Ticker(dsv_ticker)
     dsv_data = dsv.history(period="10d")
     dsv_latest = dsv_data["Close"].iloc[-1]
 
@@ -1206,22 +1212,8 @@ def stock_news_ai_score():
             return json.load(f)
 
     watchlist = {
-        "NOVO": "Novo Nordisk stock Wegovy Ozempic",
-        "DSV": "DSV stock transport logistics",
-        "VESTAS": "Vestas stock wind energy",
-        "GENMAB": "Genmab stock biotech",
-        "CARLSBERG": "Carlsberg stock beverage",
-        "MAERSK": "Maersk stock shipping logistics",
-        "ORSTED": "Orsted stock renewable energy",
-        "PANDORA": "Pandora stock jewelry",
-        "APPLE": "Apple stock",
-        "MICROSOFT": "Microsoft stock AI cloud",
-        "NVIDIA": "Nvidia stock AI chips",
-        "ASML": "ASML stock semiconductors",
-        "TESLA": "Tesla stock electric vehicles",
-        "AMAZON": "Amazon stock cloud ecommerce",
-        "META": "Meta stock AI advertising",
-        "GOOGLE": "Alphabet Google stock AI cloud"
+        stock_name: get_news_query(stock_name)
+        for stock_name in get_active_stocks()
     }
 
     results = []
