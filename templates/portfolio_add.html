@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Tilføj aktie · Stock AI Monitor
+{% endblock %}
+
+
+{% block content %}
+<div class="page-shell">
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1 class="page-title">➕ Tilføj aktie</h1>
+            <p class="page-description">
+                Indtast oplysningerne om den position, der skal føjes til porteføljen.
+            </p>
+        </div>
+
+        <div class="page-actions">
+            <a class="btn btn-secondary" href="/portfolio-settings">
+                Tilbage
+            </a>
+        </div>
+    </header>
+
+    <section class="card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Positionsoplysninger</h2>
+                <p class="card-description">
+                    Formularen gemmer endnu ikke data. Det tilkobler vi i næste trin.
+                </p>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div>
+                    <label for="stock">Aktie</label>
+
+                    <input
+                        id="stock"
+                        name="stock"
+                        type="text"
+                        autocomplete="off"
+                        placeholder="Søg efter aktie..."
+                    >
+
+                    <div
+                        id="stock-results"
+                        style="
+                            border:1px solid #ddd;
+                            border-radius:6px;
+                            margin-top:4px;
+                            max-height:220px;
+                            overflow-y:auto;
+                            display:none;
+                            background:white;
+                        ">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="ticker">Ticker</label>
+                    <input
+                        id="ticker"
+                        name="ticker"
+                        type="text"
+                        placeholder="Eksempel: NOVO-B.CO"
+                    >
+                </div>
+
+                <div>
+                    <label for="qty">Antal</label>
+                    <input
+                        id="qty"
+                        name="qty"
+                        type="number"
+                        step="0.0001"
+                        min="0"
+                        placeholder="Eksempel: 10"
+                    >
+                </div>
+
+                <div>
+                    <label for="buy_price">Købspris</label>
+                    <input
+                        id="buy_price"
+                        name="buy_price"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="Eksempel: 296.38"
+                    >
+                </div>
+
+                <div>
+                    <label for="currency">Valuta</label>
+                    <select id="currency" name="currency">
+                        <option value="DKK">DKK</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="SEK">SEK</option>
+                        <option value="NOK">NOK</option>
+                    </select>
+                </div>
+
+                <div class="page-actions">
+                    <a class="btn btn-secondary" href="/portfolio-settings">
+                        Annuller
+                    </a>
+
+                    <button class="btn btn-primary" type="button" disabled>
+                        Gem aktie
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/stock_picker.css') }}"
+>
+
+<script
+    src="{{ url_for('static', filename='js/stock_picker.js') }}"
+></script>
+
+{% endblock %}
+

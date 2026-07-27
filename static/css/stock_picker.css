@@ -1,0 +1,88 @@
+.stock-picker {
+    position: relative;
+    width: 100%;
+}
+
+.stock-picker-results {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #d8dee9;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+}
+
+.stock-picker-results[hidden] {
+    display: none;
+}
+
+.stock-picker-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 14px;
+    border: 0;
+    border-bottom: 1px solid #edf0f5;
+    background: #ffffff;
+    color: #172033;
+    text-align: left;
+    cursor: pointer;
+}
+
+.stock-picker-result:last-child {
+    border-bottom: 0;
+}
+
+.stock-picker-result:hover,
+.stock-picker-result:focus {
+    background: #f4f7fb;
+    outline: none;
+}
+
+.stock-picker-result-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stock-picker-result-main strong,
+.stock-picker-result-main small {
+    display: block;
+}
+
+.stock-picker-result-main small {
+    margin-top: 3px;
+    color: #6b7280;
+}
+
+.stock-picker-flag {
+    font-size: 20px;
+}
+
+.stock-picker-currency {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stock-picker-message {
+    padding: 12px 14px;
+    color: #64748b;
+}
+
+/* Sikrer at gamle globale regler ikke skjuler søgeresultaterne */
+#stock-results {
+    display: block !important;
+    position: absolute;
+    z-index: 1000;
+}
+
+#stock-results[hidden] {
+    display: none !important;
+}

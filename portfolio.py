@@ -86,3 +86,107 @@ def get_portfolio_summary(portfolio_file=PORTFOLIO_FILE):
         "total_profit": total_profit,
         "total_profit_pct": total_profit_pct,
     }
+
+
+def save_portfolio_rows(positions, portfolio_file=PORTFOLIO_FILE):
+    fieldnames = ["stock", "ticker", "qty", "buy_price", "cost_dkk"]
+
+    with open(portfolio_file, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for position in positions:
+            writer.writerow({
+                "stock": position["stock"],
+                "ticker": position["ticker"],
+                "qty": position["qty"],
+                "buy_price": position["buy_price"],
+                "cost_dkk": (
+                    position.get("cost_dkk")
+                    if position.get("cost_dkk") is not None
+                    else ""
+                ),
+            })
+
+
+def add_portfolio_position(
+    stock,
+    ticker,
+    qty,
+    buy_price,
+    cost_dkk=None,
+    portfolio_file=PORTFOLIO_FILE,
+):
+    positions = load_portfolio_rows(portfolio_file)
+
+    stock = stock.strip().upper()
+    ticker = ticker.strip().upper()
+
+    if any(p["ticker"].upper() == ticker for p in positions):
+        raise ValueError(f"Ticker {ticker} findes allerede i porteføljen")
+
+    positions.append({
+        "stock": stock,
+        "ticker": ticker,
+        "qty": float(qty),
+        "buy_price": float(buy_price),
+        "cost_dkk": float(cost_dkk) if cost_dkk not in (None, "") else None,
+    })
+
+    save_portfolio_rows(positions, portfolio_file)
+
+
+def update_portfolio_position(
+    original_ticker,
+    stock,
+    ticker,
+    qty,
+    buy_price,
+    cost_dkk=None,
+    portfolio_file=PORTFOLIO_FILE,
+):
+    positions = load_portfolio_rows(portfolio_file)
+
+    original_ticker = original_ticker.strip().upper()
+    ticker = ticker.strip().upper()
+    updated = False
+
+    for position in positions:
+        if position["ticker"].upper() == original_ticker:
+            position.update({
+                "stock": stock.strip().upper(),
+                "ticker": ticker,
+                "qty": float(qty),
+                "buy_price": float(buy_price),
+                "cost_dkk": (
+                    float(cost_dkk)
+                    if cost_dkk not in (None, "")
+                    else None
+                ),
+            })
+            updated = True
+            break
+
+    if not updated:
+        raise ValueError(f"Ticker {original_ticker} blev ikke fundet")
+
+    if sum(p["ticker"].upper() == ticker for p in positions) > 1:
+        raise ValueError(f"Ticker {ticker} findes allerede i porteføljen")
+
+    save_portfolio_rows(positions, portfolio_file)
+
+
+def delete_portfolio_position(ticker, portfolio_file=PORTFOLIO_FILE):
+    positions = load_portfolio_rows(portfolio_file)
+    ticker = ticker.strip().upper()
+
+    filtered = [
+        position
+        for position in positions
+        if position["ticker"].upper() != ticker
+    ]
+
+    if len(filtered) == len(positions):
+        raise ValueError(f"Ticker {ticker} blev ikke fundet")
+
+    save_portfolio_rows(filtered, portfolio_file)

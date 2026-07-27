@@ -33,6 +33,7 @@ import yfinance as yf
 from stock_utils import get_history
 from portfolio import get_portfolio_summary
 from portfolio_manager_routes import portfolio_manager_bp
+from portfolio_settings_routes import portfolio_settings_bp
 from portfolio_analysis_routes import portfolio_analysis_bp
 from market_dashboard_routes import market_dashboard_bp
 from watchlist_routes import watchlist_bp
@@ -62,6 +63,7 @@ app = Flask(__name__)
 from routes.system_status import system_status_bp
 app.register_blueprint(system_status_bp)
 app.register_blueprint(portfolio_manager_bp)
+app.register_blueprint(portfolio_settings_bp)
 app.register_blueprint(portfolio_analysis_bp)
 app.register_blueprint(market_dashboard_bp)
 app.register_blueprint(watchlist_bp)
