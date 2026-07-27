@@ -14,6 +14,7 @@ def load_portfolio_rows(portfolio_file=PORTFOLIO_FILE):
 
         for row in reader:
             positions.append({
+                "id": int(row["id"]) if row.get("id") else None,
                 "stock": row["stock"],
                 "ticker": row["ticker"],
                 "qty": float(row["qty"]),
@@ -89,7 +90,7 @@ def get_portfolio_summary(portfolio_file=PORTFOLIO_FILE):
 
 
 def save_portfolio_rows(positions, portfolio_file=PORTFOLIO_FILE):
-    fieldnames = ["stock", "ticker", "qty", "buy_price", "cost_dkk"]
+    fieldnames = ["id", "stock", "ticker", "qty", "buy_price", "cost_dkk"]
 
     with open(portfolio_file, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -97,6 +98,7 @@ def save_portfolio_rows(positions, portfolio_file=PORTFOLIO_FILE):
 
         for position in positions:
             writer.writerow({
+                "id": position.get("id"),
                 "stock": position["stock"],
                 "ticker": position["ticker"],
                 "qty": position["qty"],
@@ -122,8 +124,8 @@ def add_portfolio_position(
     stock = stock.strip().upper()
     ticker = ticker.strip().upper()
 
-    if any(p["ticker"].upper() == ticker for p in positions):
-        raise ValueError(f"Ticker {ticker} findes allerede i porteføljen")
+    if not stock or not ticker:
+        raise ValueError("Aktie og ticker skal udfyldes")
 
     positions.append({
         "stock": stock,
@@ -137,7 +139,7 @@ def add_portfolio_position(
 
 
 def update_portfolio_position(
-    original_ticker,
+    position_id,
     stock,
     ticker,
     qty,
@@ -147,12 +149,11 @@ def update_portfolio_position(
 ):
     positions = load_portfolio_rows(portfolio_file)
 
-    original_ticker = original_ticker.strip().upper()
     ticker = ticker.strip().upper()
     updated = False
 
     for position in positions:
-        if position["ticker"].upper() == original_ticker:
+        if str(position.get("id")) == str(position_id):
             position.update({
                 "stock": stock.strip().upper(),
                 "ticker": ticker,
@@ -168,25 +169,21 @@ def update_portfolio_position(
             break
 
     if not updated:
-        raise ValueError(f"Ticker {original_ticker} blev ikke fundet")
-
-    if sum(p["ticker"].upper() == ticker for p in positions) > 1:
-        raise ValueError(f"Ticker {ticker} findes allerede i porteføljen")
+        raise ValueError(f"Position {position_id} blev ikke fundet")
 
     save_portfolio_rows(positions, portfolio_file)
 
 
-def delete_portfolio_position(ticker, portfolio_file=PORTFOLIO_FILE):
+def delete_portfolio_position(position_id, portfolio_file=PORTFOLIO_FILE):
     positions = load_portfolio_rows(portfolio_file)
-    ticker = ticker.strip().upper()
 
     filtered = [
         position
         for position in positions
-        if position["ticker"].upper() != ticker
+        if str(position.get("id")) != str(position_id)
     ]
 
     if len(filtered) == len(positions):
-        raise ValueError(f"Ticker {ticker} blev ikke fundet")
+        raise ValueError(f"Position {position_id} blev ikke fundet")
 
     save_portfolio_rows(filtered, portfolio_file)

@@ -41,6 +41,17 @@ def save_copilot_snapshot(copilot_data, changes=None):
         "confidence": copilot_data.get(
             "confidence"
         ),
+        "risk_score": copilot_data.get(
+            "risk_score",
+            0
+        ),
+        "overall_risk": copilot_data.get(
+            "overall_risk"
+        ),
+        "risk_reasons": copilot_data.get(
+            "risk_reasons",
+            []
+        ),
         "status": (
             changes.get("status")
             if changes

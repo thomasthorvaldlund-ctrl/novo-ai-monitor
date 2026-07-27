@@ -26,13 +26,13 @@
             <div>
                 <h2 class="card-title">Positionsoplysninger</h2>
                 <p class="card-description">
-                    Formularen gemmer endnu ikke data. Det tilkobler vi i næste trin.
+                    Udfyld felterne og gem positionen i porteføljen.
                 </p>
             </div>
         </div>
 
         <div class="card-body">
-            <form>
+            <form method="POST" action="/portfolio-add">
                 <div>
                     <label for="stock">Aktie</label>
 
@@ -108,7 +108,7 @@
                         Annuller
                     </a>
 
-                    <button class="btn btn-primary" type="button" disabled>
+                    <button class="btn btn-primary" type="submit">
                         Gem aktie
                     </button>
                 </div>

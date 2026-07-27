@@ -301,13 +301,19 @@
                                     ✏️ Rediger
                                 </button>
 
-                                <button
-                                    class="action-button delete"
-                                    type="button"
-                                    disabled
-                                >
-                                    🗑️ Slet
-                                </button>
+                                <form method="POST" action="/portfolio-delete" style="display:inline;">
+                                    <input
+                                        type="hidden"
+                                        name="position_id"
+                                        value="{{ position.id }}"
+                                    >
+                                    <button
+                                        class="action-button delete"
+                                        type="submit"
+                                    >
+                                        🗑️ Slet
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

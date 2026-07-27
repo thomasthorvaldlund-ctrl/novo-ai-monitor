@@ -11,6 +11,33 @@
 <section class="card">
 
 <h1>🧠 AI Stock Library</h1>
+<div class="library-filter-bar">
+    <a href="/ai-stock-library"
+       class="library-filter{% if not selected_signal %} active{% endif %}">
+        Alle
+    </a>
+
+    <a href="/ai-stock-library?signal=BUY"
+       class="library-filter{% if selected_signal == 'BUY' %} active{% endif %}">
+        BUY ({{ performance.buy }})
+    </a>
+
+    <a href="/ai-stock-library?signal=HOLD"
+       class="library-filter{% if selected_signal == 'HOLD' %} active{% endif %}">
+        HOLD ({{ performance.hold }})
+    </a>
+
+    <a href="/ai-stock-library?signal=WATCH"
+       class="library-filter{% if selected_signal == 'WATCH' %} active{% endif %}">
+        WATCH ({{ performance.watch }})
+    </a>
+
+    <a href="/ai-stock-library?signal=SELL"
+       class="library-filter{% if selected_signal == 'SELL' %} active{% endif %}">
+        SELL ({{ performance.sell }})
+    </a>
+</div>
+
 
 <p class="section-description">
     AI overvåger {{ stock_explanations|length }} aktier.

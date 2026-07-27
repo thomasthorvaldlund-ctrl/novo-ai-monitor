@@ -95,9 +95,35 @@ def ai_stock_library():
     )
 
     selected_stock = request.args.get("stock", "").strip().upper()
+    selected_signal = request.args.get("signal", "").strip().upper()
+
+    performance = cache.get("performance", {})
+
+    signal_stocks = {
+        "BUY": performance.get("buy_stocks", []),
+        "HOLD": performance.get("hold_stocks", []),
+        "WATCH": performance.get("watch_stocks", []),
+        "SELL": performance.get("sell_stocks", []),
+    }
+
+    if selected_signal in signal_stocks:
+        allowed_stocks = {
+            stock.strip().upper()
+            for stock in signal_stocks[selected_signal]
+        }
+
+        stock_explanations = [
+            item
+            for item in stock_explanations
+            if item.get("stock", "").strip().upper() in allowed_stocks
+        ]
+    else:
+        selected_signal = ""
 
     return render_template(
         "ai_stock_library.html",
         stock_explanations=stock_explanations,
         selected_stock=selected_stock,
+        selected_signal=selected_signal,
+        performance=performance,
     )

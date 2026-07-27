@@ -1,6 +1,10 @@
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, redirect, render_template, request
 
-from portfolio import get_portfolio_summary
+from portfolio import (
+    add_portfolio_position,
+    delete_portfolio_position,
+    get_portfolio_summary,
+)
 from stock_search_service import search_stocks
 
 portfolio_settings_bp = Blueprint(
@@ -25,6 +29,37 @@ def portfolio_settings_page():
 @portfolio_settings_bp.route("/portfolio-add")
 def portfolio_add_page():
     return render_template("portfolio_add.html")
+
+
+@portfolio_settings_bp.route("/portfolio-add", methods=["POST"])
+def portfolio_add_position():
+    try:
+        add_portfolio_position(
+            stock=request.form.get("stock", ""),
+            ticker=request.form.get("ticker", ""),
+            qty=request.form.get("qty", ""),
+            buy_price=request.form.get("buy_price", ""),
+        )
+    except (TypeError, ValueError) as error:
+        return render_template(
+            "portfolio_add.html",
+            error=str(error),
+            form_data=request.form,
+        ), 400
+
+    return redirect("/portfolio-settings")
+
+
+@portfolio_settings_bp.route("/portfolio-delete", methods=["POST"])
+def portfolio_delete_position():
+    position_id = request.form.get("position_id")
+
+    try:
+        delete_portfolio_position(position_id)
+    except ValueError as error:
+        return str(error), 400
+
+    return redirect("/portfolio-settings")
 
 @portfolio_settings_bp.route("/api/stocks")
 def stock_search_api():

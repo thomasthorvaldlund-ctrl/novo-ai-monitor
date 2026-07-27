@@ -1,5 +1,3 @@
-stock,ticker,qty,buy_price,cost_dkk
-NOVO,NOVO-B.CO,23,296.38,6906
-DSV,DSV.CO,5,1596.20,8071
-NVIDIA,NVDA,5,193.10,6432
-ASML,ASML.AS,1,1660.00,12546
+id,stock,ticker,qty,buy_price,cost_dkk
+1,NOVO,NOVO-B.CO,23.0,296.38,6906.0
+2,NVIDIA,NVDA,5.0,193.1,6432.0
