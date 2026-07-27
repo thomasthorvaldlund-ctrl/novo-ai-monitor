@@ -6,303 +6,7 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/command_center_v2.css') }}">
 
-<style>
 
-    .top-picks-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .top-pick-row {
-        padding: 12px 0;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .top-pick-row:last-child {
-        border-bottom: none;
-    }
-
-    .top-pick-main,
-    .top-pick-meta {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-    }
-
-    .top-pick-main {
-        margin-bottom: 6px;
-    }
-
-    .top-pick-score {
-        font-size: 18px;
-        font-weight: 700;
-        color: #2563eb;
-    }
-
-    .top-pick-trend {
-        margin-left: 4px;
-    }
-
-    .top-pick-meta {
-        font-size: 13px;
-    }
-
-    .top-pick-stars {
-        letter-spacing: 1px;
-    }
-
-    .top-pick-signal {
-        display: inline-block;
-        padding: 3px 9px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    .top-pick-signal.buy {
-        background: #dff7e3;
-        color: #187a3d;
-    }
-
-    .top-pick-signal.hold {
-        background: #fff4cc;
-        color: #8a6d00;
-    }
-
-    .top-pick-signal.watch {
-        background: #ffe8cc;
-        color: #b45309;
-    }
-
-    .top-pick-signal.sell {
-        background: #ffe2e2;
-        color: #b91c1c;
-    }
-
-    .command-center-grid {
-        align-items: stretch;
-    }
-
-    .command-center-grid > .card {
-        height: 100%;
-        box-sizing: border-box;
-    
-    }
-    .score {
-        font-size: 48px;
-        font-weight: bold;
-        margin: 10px 0;
-        color: #2563eb;
-    }
-
-    .status {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 999px;
-        background: #dcfce7;
-        color: #166534;
-        font-weight: bold;
-        font-size: 14px;
-    }
-
-    .card p {
-        line-height: 1.6;
-    }
-
-    .signal-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 14px;
-    }
-
-    .signal-tag {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 1.4;
-    }
-
-    .signal-tag.buy {
-        background: #dff7e3;
-        color: #187a3d;
-    }
-
-    .signal-tag.hold {
-        background: #fff4cc;
-        color: #8a6d00;
-    }
-
-    .signal-tag.watch {
-        background: #ffe8cc;
-        color: #b45309;
-    }
-
-    .signal-tag.sell {
-        background: #ffe2e2;
-        color: #b91c1c;
-    }
-
-    .market-score-card {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .market-score-main {
-        text-align: center;
-        margin-top: 18px;
-    }
-
-    .market-score-scale {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 28px;
-        color: #6b7280;
-        font-size: 12px;
-    }
-
-    .market-score-bar {
-        height: 10px;
-        margin-top: 8px;
-        background: #e5e7eb;
-        border-radius: 999px;
-        overflow: hidden;
-    }
-
-    .market-score-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(
-            90deg,
-            #ef4444 0%,
-            #f59e0b 50%,
-            #22c55e 100%
-        );
-    }
-    
-    .morning-brief-grid {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 14px;
-    }
-
-    .morning-brief-item {
-        min-width: 0;
-        padding: 12px 14px;
-        background: #f8fafc;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-    }
-
-    .morning-brief-label {
-        display: block;
-        margin-bottom: 6px;
-        color: #111827;
-        font-weight: 700;
-    }
-
-    .morning-brief-value {
-        color: #374151;
-        font-size: 14px;
-        line-height: 1.5;
-        overflow-wrap: anywhere;
-    }
-
-    @media (max-width: 1100px) {
-        .morning-brief-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 750px) {
-        .morning-brief-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 500px) {
-        .morning-brief-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .info-icon {
-        display: inline-block;
-        width: 18px;
-        height: 18px;
-        line-height: 18px;
-        text-align: center;
-        margin-left: 6px;
-        border-radius: 50%;
-        background: #e5e7eb;
-        color: #4b5563;
-        font-size: 12px;
-        font-weight: bold;
-        cursor: help;
-        position: relative;
-        vertical-align: middle;
-    }
-
-    .info-icon:hover {
-        background: #d1d5db;
-    }
-
-    .info-icon::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        left: 50%;
-        bottom: 130%;
-        transform: translateX(-50%);
-        width: 260px;
-        padding: 10px 12px;
-        background: #111827;
-        color: white;
-        border-radius: 8px;
-        font-size: 12px;
-        line-height: 1.5;
-        text-align: left;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .2s ease;
-        z-index: 1000;
-    }
-
-    .info-icon:hover::after {
-        opacity: 1;
-    }
-
-    .market-score-components {
-        margin-top: 22px;
-        padding-top: 16px;
-        border-top: 1px solid #e5e7eb;
-    }
-
-    .market-score-component {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 9px;
-        color: #374151;
-        font-size: 13px;
-    }
-
-    .market-score-component strong {
-        color: #111827;
-    }
-
-    .market-score-alert-count {
-        margin-top: 12px;
-        color: #6b7280;
-        font-size: 12px;
-        text-align: center;
-    }
-
-</style>
 {% endblock %}
 
 {% block content %}
@@ -324,6 +28,24 @@
         Denne side bygges fra bunden, mens v1.3 fortsætter uændret.
     </p>
 
+    <div class="global-stock-search">
+        <div class="global-stock-search-inner">
+            <span class="global-stock-search-icon">🔎</span>
+
+            <input
+                id="global-stock-search-input"
+                type="search"
+                placeholder="Søg efter en aktie, f.eks. NOVO, META eller VESTAS"
+                autocomplete="off"
+                aria-label="Søg efter aktie"
+            >
+
+            <div id="global-stock-search-results"
+                 class="global-stock-search-results"
+                 hidden>
+            </div>
+        </div>
+    </div>
 
 
 <!-- V2: Executive Summary START -->
@@ -405,6 +127,34 @@
             <div class="summary-value summary-value-text">
                 <span class="status-dot">●</span> Online
             </div>
+        </a>
+
+    </div>
+
+    <div class="signal-summary-grid">
+
+        <a href="/ai-stock-library?signal=BUY"
+           class="signal-summary-card signal-summary-buy"
+           aria-label="Vis BUY-aktier">
+            <div class="signal-summary-title">🟢 BUY</div>
+            <div class="signal-summary-value">{{ performance.buy or 0 }}</div>
+            <div class="signal-summary-meta">aktier</div>
+        </a>
+
+        <a href="/ai-stock-library?signal=HOLD"
+           class="signal-summary-card signal-summary-hold"
+           aria-label="Vis HOLD-aktier">
+            <div class="signal-summary-title">🟡 HOLD</div>
+            <div class="signal-summary-value">{{ performance.hold or 0 }}</div>
+            <div class="signal-summary-meta">aktier</div>
+        </a>
+
+        <a href="/ai-stock-library?signal=WATCH"
+           class="signal-summary-card signal-summary-watch"
+           aria-label="Vis WATCH-aktier">
+            <div class="signal-summary-title">👀 WATCH</div>
+            <div class="signal-summary-value">{{ performance.watch or 0 }}</div>
+            <div class="signal-summary-meta">aktier</div>
         </a>
 
     </div>
@@ -1012,40 +762,39 @@
 
 <section id="ai-engine-status" class="card ai-engine-status-card">
 
-    <h2>🤖 AI Engine Status</h2>
+    <div class="ai-engine-status-header">
+        <h2>🤖 AI Engine Status</h2>
+    </div>
 
-    <div class="ai-engine-status">
+    <div class="ai-engine-status-row">
 
-        <div>
-            🟢 Status:
+        <div class="ai-engine-status-item">
+            <span>🟢 Status</span>
             <b>{{ ai_engine_status.status }}</b>
         </div>
 
-        <div>
-            📦 Version:
+        <div class="ai-engine-status-item">
+            <span>📦 Version</span>
             <b>{{ ai_engine_status.version }}</b>
         </div>
 
-        <div>
-            🕒 Sidste opdatering:
+        <div class="ai-engine-status-item">
+            <span>🕒 Sidste opdatering</span>
             <b>{{ ai_engine_status.last_update }}</b>
         </div>
 
-        <div>
-            📊 Signalhistorik:
+        <div class="ai-engine-status-item">
+            <span>📊 Signalhistorik</span>
             <b>{{ ai_engine_status.signal_count }}</b>
         </div>
 
+        <div class="ai-engine-modules-inline">
+            {% for module in ai_engine_status.modules %}
+                <span class="ai-engine-module">✅ {{ module }}</span>
+            {% endfor %}
+        </div>
+
     </div>
-
-
-    <h3>Aktive AI-moduler</h3>
-
-    <ul>
-    {% for module in ai_engine_status.modules %}
-        <li>✅ {{ module }}</li>
-    {% endfor %}
-    </ul>
 
 </section>
 
@@ -1057,6 +806,100 @@
 
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("global-stock-search-input");
+    const resultsBox = document.getElementById("global-stock-search-results");
+
+    if (!input || !resultsBox) {
+        return;
+    }
+
+    const stocks = [
+        {% for item in stock_explanations %}
+        {
+            stock: {{ item.stock|tojson }},
+            headline: {{ item.headline|default("", true)|tojson }},
+            score: {{ item.score|default(0, true)|tojson }},
+            url: "/ai-stock-library?stock={{ item.stock|urlencode }}"
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    function hideResults() {
+        resultsBox.hidden = true;
+        resultsBox.innerHTML = "";
+    }
+
+    function renderResults(matches) {
+        if (!matches.length) {
+            resultsBox.innerHTML = `
+                <div class="global-stock-search-empty">
+                    Ingen aktier fundet
+                </div>
+            `;
+            resultsBox.hidden = false;
+            return;
+        }
+
+        resultsBox.innerHTML = matches.map(item => `
+            <a class="global-stock-search-result" href="${item.url}">
+                <span class="global-stock-search-result-main">
+                    <b>${item.stock}</b>
+                    <span>${item.headline || "AI-analyse"}</span>
+                </span>
+                <span class="global-stock-search-score">
+                    ${item.score}
+                </span>
+            </a>
+        `).join("");
+
+        resultsBox.hidden = false;
+    }
+
+    input.addEventListener("input", function () {
+        const query = input.value.trim().toUpperCase();
+
+        if (!query) {
+            hideResults();
+            return;
+        }
+
+        const matches = stocks
+            .filter(item =>
+                item.stock.toUpperCase().includes(query) ||
+                item.headline.toUpperCase().includes(query)
+            )
+            .slice(0, 8);
+
+        renderResults(matches);
+    });
+
+    input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            const firstResult = resultsBox.querySelector(
+                ".global-stock-search-result"
+            );
+
+            if (firstResult) {
+                window.location.href = firstResult.href;
+            }
+        }
+
+        if (event.key === "Escape") {
+            input.value = "";
+            hideResults();
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!event.target.closest(".global-stock-search-inner")) {
+            hideResults();
+        }
+    });
+});
+</script>
 
 {% endblock %}
 
