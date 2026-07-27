@@ -52,6 +52,7 @@ from stock_universe_service import (
     get_news_query,
     get_stock_metadata,
 )
+from stock_news_cache_builder import build_stock_news_ai_cache
 import requests
 
 
@@ -94,6 +95,15 @@ def before_request():
         return
     
     if request.path.startswith("/stock-universe/"):
+        return
+
+    if (
+        request.path in {
+            "/update-stock-news-ai-cache",
+            "/update-stock-screener-cache",
+        }
+        and request.remote_addr in {"127.0.0.1", "::1"}
+    ):
         return
 
     if request.path in [
@@ -1204,112 +1214,12 @@ def stock_screener_page():
 
 @app.route("/stock-news-ai-score")
 def stock_news_ai_score():
-    cache_file = "/root/novo-ai-monitor/stock_news_ai_cache.json"
-    cache_seconds = 21600
+    return service_stock_news_ai_score(client)
 
-    if os.path.exists(cache_file) and time.time() - os.path.getmtime(cache_file) < cache_seconds:
-        with open(cache_file, "r") as f:
-            return json.load(f)
 
-    watchlist = {
-        stock_name: get_news_query(stock_name)
-        for stock_name in get_active_stocks()
-    }
-
-    results = []
-
-    for stock_name, query in watchlist.items():
-        try:
-            feed = feedparser.parse(
-                f"https://news.google.com/rss/search?q={quote_plus(query)}&hl=en-US&gl=US&ceid=US:en"
-            )
-
-            titles = [entry.title for entry in feed.entries[:5]]
-            text = "\n".join(titles)
-
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Du er en forsigtig aktieanalytiker. Giv ikke direkte køb/salg-råd. Vurder kun nyhedssentiment og risiko."
-                    },
-                    {
-                        "role": "user",
-                        "content": f"""
-Analyser nyhedsoverskrifterne for {stock_name}.
-
-Giv svar på dansk i dette format:
-
-Nyhedsscore: 0-100
-Sentiment: Meget positiv / Positiv / Neutral / Negativ / Meget negativ
-
-Kort forklaring:
-Maks 3 linjer.
-
-Vigtigste positive signaler:
-- 
-- 
-
-Vigtigste negative signaler:
-- 
-- 
-
-Kortsigtet vurdering 1-3 måneder:
-Bullish / Neutral / Bearish
-
-Langsigtet vurdering 1-5 år:
-Bullish / Neutral / Bearish
-
-Risikofaktorer:
-- 
-- 
-
-Mulige katalysatorer:
-- 
-- 
-
-Samlet AI-vurdering:
-Stærk kandidat / Kandidat / Neutral / Svag kandidat
-
-Overskrifter:
-{text}
-"""
-                    }
-                ]
-            )
-
-            ai_text = response.choices[0].message.content
-
-            score = 50
-            for line in ai_text.splitlines():
-                if "Nyhedsscore" in line:
-                    digits = "".join(ch for ch in line if ch.isdigit())
-                    if digits:
-                        score = int(digits[:3])
-                        score = max(0, min(score, 100))
-
-            results.append({
-                "stock": stock_name,
-                "news_score": score,
-                "ai_analysis": ai_text,
-                "headlines": titles
-            })
-
-        except Exception as e:
-            results.append({
-                "stock": stock_name,
-                "error": str(e)
-            })
-
-    results = sorted(results, key=lambda x: x.get("news_score", 0), reverse=True)
-
-    output = {"news_ai_scores": results}
-
-    with open(cache_file, "w") as f:
-        json.dump(output, f)
-
-    return output
+@app.route("/update-stock-news-ai-cache")
+def update_stock_news_ai_cache():
+    return build_stock_news_ai_cache(client)
 
 
 @app.route("/stock-news-ai-page")

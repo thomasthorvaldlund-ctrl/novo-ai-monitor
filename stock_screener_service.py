@@ -1,61 +1,35 @@
-import yfinance as yf
+import json
+from pathlib import Path
 
-from currency_service import (
-    get_fx_rates,
-    get_currency,
-    convert_to_dkk,
-)
-from stock_universe_service import get_active_stocks
+
+CACHE_FILE = Path("/root/novo-ai-monitor/stock_screener_cache.json")
 
 
 def stock_screener():
-    watchlist = get_active_stocks()
+    if not CACHE_FILE.exists():
+        return {
+            "ranking": [],
+            "error": "Stock screener cache findes ikke",
+        }
 
-    fx_rates = get_fx_rates()
-    results = []
+    try:
+        with CACHE_FILE.open("r", encoding="utf-8") as f:
+            data = json.load(f)
 
-    for name, ticker in watchlist.items():
-        try:
-            stock = yf.Ticker(ticker)
-            data = stock.history(period="10d")
+    except (OSError, json.JSONDecodeError) as e:
+        return {
+            "ranking": [],
+            "error": f"Kunne ikke læse stock screener cache: {e}",
+        }
 
-            latest = float(data["Close"].iloc[-1])
-            week_ago = float(data["Close"].iloc[-6])
+    ranking = data.get("ranking", [])
 
-            currency = get_currency(ticker)
-            latest_dkk = convert_to_dkk(latest, currency, fx_rates)
+    if not isinstance(ranking, list):
+        return {
+            "ranking": [],
+            "error": "Stock screener cache har ugyldigt format",
+        }
 
-            weekly_change = ((latest - week_ago) / week_ago) * 100
-
-            score = 50
-
-            if weekly_change > 5:
-                score += 20
-            elif weekly_change > 2:
-                score += 10
-
-            if weekly_change < -5:
-                score -= 20
-
-            results.append({
-                "stock": name,
-                "price": round(latest_dkk, 2),
-                "original_price": round(latest, 2),
-                "currency": currency,
-                "weekly_change": round(weekly_change, 2),
-                "score": score
-            })
-
-        except Exception as e:
-            results.append({
-                "stock": name,
-                "error": str(e)
-            })
-
-    results = sorted(
-        results,
-        key=lambda x: x.get("score", 0),
-        reverse=True
-    )
-
-    return {"ranking": results}
+    return {
+        "ranking": ranking,
+    }
