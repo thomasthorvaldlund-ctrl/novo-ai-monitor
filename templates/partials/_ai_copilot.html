@@ -1,0 +1,80 @@
+<!-- AI Copilot START -->
+
+<section class="card ai-copilot-card">
+
+    <h2>🧠 AI Copilot</h2>
+
+    <div class="copilot-grid">
+
+        <div>
+            <b>Status</b>
+            <p>{{ ai_copilot.headline }}</p>
+        </div>
+
+        <div>
+            <b>📊 Markedsvurdering</b>
+            <p>{{ ai_copilot.market_status }}</p>
+        </div>
+
+        <div>
+            <b>⭐ Bedste mulighed lige nu</b>
+            <p>{{ ai_copilot.best_opportunity }}</p>
+        </div>
+
+        <div>
+            <b>⚠️ Risiko</b>
+            <p>{{ ai_copilot.risk_warning }}</p>
+        </div>
+
+        <div>
+            <b>💼 Portfolio</b>
+            <p>{{ ai_copilot.portfolio_comment }}</p>
+        </div>
+
+        <div>
+            <b>🤖 AI anbefaling</b>
+            <p>{{ ai_copilot.recommendation }}</p>
+        </div>
+
+    </div>
+
+    <div class="copilot-confidence">
+        🎯 AI Confidence: {{ ai_copilot.confidence }}%
+        · Risiko: {{ ai_copilot.risk_level }}
+    </div>
+
+
+    <div class="copilot-update 
+        {% if ai_copilot_changes.status == 'positive' %}
+            copilot-positive
+        {% elif ai_copilot_changes.status == 'negative' %}
+            copilot-negative
+        {% else %}
+            copilot-neutral
+        {% endif %}
+    ">
+
+        <b>
+            {% if ai_copilot_changes.status == 'positive' %}
+                🟢 AI Copilot forbedret
+            {% elif ai_copilot_changes.status == 'negative' %}
+                🔴 AI Copilot advarsel
+            {% else %}
+                🔄 AI Copilot Update
+            {% endif %}
+        </b>
+
+        <ul>
+        {% for change in ai_copilot_changes.changes %}
+            <li>{{ change }}</li>
+        {% endfor %}
+        </ul>
+
+    </div>
+
+</section>
+
+<!-- AI Copilot END -->
+
+
+

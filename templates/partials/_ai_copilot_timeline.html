@@ -1,0 +1,80 @@
+<!-- AI Copilot Timeline START -->
+
+<section class="card ai-copilot-timeline-card">
+
+    <h2>📈 AI Copilot Timeline</h2>
+
+    <div class="copilot-timeline">
+
+    {% if ai_copilot_timeline %}
+
+        {% for item in ai_copilot_timeline[-4:] | reverse %}
+
+        <div class="timeline-item 
+            {% if item.status == 'positive' %}
+                timeline-positive
+            {% elif item.status == 'negative' %}
+                timeline-negative
+            {% else %}
+                timeline-neutral
+            {% endif %}
+        ">
+
+            <div class="timeline-date">
+                🕒 {{ item.date }}
+            </div>
+
+            <div class="timeline-status">
+                {% if item.status == 'positive' %}
+                    🟢 Forbedring
+                {% elif item.status == 'negative' %}
+                    🔴 Advarsel
+                {% else %}
+                    🔵 Stabil analyse
+                {% endif %}
+            </div>
+
+            {% if item.events %}
+            <div class="timeline-events">
+                {% for event in item.events %}
+                <div class="timeline-event timeline-event-{{ event.type }}">
+                    <span class="timeline-event-icon">
+                        {{ event.icon }}
+                    </span>
+
+                    <div class="timeline-event-content">
+                        <strong>{{ event.title }}</strong>
+                        <span>{{ event.description }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="timeline-meta">
+                🎯 {{ item.confidence }}%
+                ·
+                ⚠️ {{ item.risk_level }}
+            </div>
+
+            <div class="timeline-stock">
+                ⭐ {{ item.best_opportunity }}
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>Ingen AI Copilot historik endnu.</p>
+
+    {% endif %}
+
+    </div>
+
+</section>
+
+<!-- AI Copilot Timeline END -->
+
+

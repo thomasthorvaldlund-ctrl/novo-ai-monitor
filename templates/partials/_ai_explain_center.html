@@ -1,0 +1,113 @@
+<!-- AI Explain Center START -->
+
+<section class="card">
+
+    <h2>
+        🧩 AI Explain Center
+        <span
+            class="info-icon"
+            data-tooltip="Forklarer hvorfor AI vurderer aktier positivt eller negativt baseret på score, teknik, nyheder og momentum.">
+            ?
+        </span>
+    </h2>
+
+    <p class="section-description">
+        AI overvåger {{ stock_explanations|length }} aktier og viser de {{ stock_explanations[:6]|length }} højeste rangerede kandidater baseret på samlet AI-score.
+        Analysen kombinerer tekniske signaler, nyhedsbillede, momentum og AI-confidence.
+    </p>
+
+
+    <div class="explain-grid">
+
+        {% for item in stock_explanations[:6] %}
+
+        <div class="explain-card">
+
+            <div class="explain-header">
+
+                <strong>{{ item.stock }}</strong>
+
+                <span class="summary-badge
+                    {% if item.score >= 70 %}
+                        badge-green
+                    {% elif item.score >= 50 %}
+                        badge-yellow
+                    {% else %}
+                        badge-red
+                    {% endif %}
+                ">
+                    {% if item.score >= 70 %}
+                        🟢
+                    {% elif item.score >= 50 %}
+                        🟡
+                    {% else %}
+                        🔴
+                    {% endif %}
+                    Score {{ item.score|int }}
+                </span>
+
+            </div>
+
+
+            <div class="explain-signal">
+
+                {% if item.score >= 70 %}
+                    ⭐ BUY
+                {% elif item.score >= 50 %}
+                    ⏸ HOLD
+                {% else %}
+                    👀 WATCH
+                {% endif %}
+
+            </div>
+
+
+            <div class="explain-headline">
+                {{ item.headline }}
+            </div>
+
+
+            <div class="explain-row">
+                <b>Primær årsag:</b><br>
+                {{ item.primary_reason }}
+            </div>
+
+
+            <div class="explain-row">
+                <b>Positive faktorer:</b><br>
+
+                {% for p in item.positives[:2] %}
+                    ✓ {{ p }}<br>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="explain-confidence">
+                🎯 Confidence {{ item.confidence }}%
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <a href="/ai-stock-library" class="explain-library-link">
+
+        <strong>📚 AI Stock Library</strong>
+
+        <span>
+            Se komplette AI-analyser af
+            {{ stock_explanations|length }} overvågede aktier
+        </span>
+
+        <b>
+            Åbn bibliotek →
+        </b>
+
+    </a>
+
+</section>
+
+<!-- AI Explain Center END -->
