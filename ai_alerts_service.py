@@ -1,11 +1,18 @@
 from combined_score_service import combined_stock_score
 from openai_service import client
 from earnings_risk_service import get_earnings_risks
+from portfolio_stock_service import (
+    get_monitored_stocks,
+    get_monitored_stock_names,
+)
 
 
 def get_ai_alerts():
     data = combined_stock_score(client)
     ranking = data.get("combined_ranking", [])
+
+    monitored_stocks = get_monitored_stocks()
+    monitored_stock_names = get_monitored_stock_names()
 
     alerts = []
 
@@ -18,6 +25,12 @@ def get_ai_alerts():
     }
 
     for stock in ranking:
+
+        ticker = stock.get("ticker")
+
+        if ticker not in monitored_stocks:
+            continue
+
         name = stock["stock"]
         score = stock.get("combined_score", 100)
 
@@ -50,6 +63,9 @@ def get_ai_alerts():
     ]
 
     for item in earnings_risks:
+
+        if item["stock"].upper() not in monitored_stock_names:
+            continue
 
         if (
             item["alert_level"] in ["HIGH", "ALERT"]
