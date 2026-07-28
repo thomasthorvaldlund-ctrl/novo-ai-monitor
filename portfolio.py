@@ -127,7 +127,13 @@ def add_portfolio_position(
     if not stock or not ticker:
         raise ValueError("Aktie og ticker skal udfyldes")
 
+    next_id = max(
+        [p.get("id", 0) or 0 for p in positions],
+        default=0
+    ) + 1
+
     positions.append({
+        "id": next_id,
         "stock": stock,
         "ticker": ticker,
         "qty": float(qty),

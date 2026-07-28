@@ -293,13 +293,12 @@
                         <td>{{ "{:.2f}".format(position.weight_pct) }}%</td>
                         <td>
                             <div class="action-buttons">
-                                <button
+                                <a
                                     class="action-button"
-                                    type="button"
-                                    disabled
+                                    href="/portfolio-edit/{{ position.id }}"
                                 >
                                     ✏️ Rediger
-                                </button>
+                                </a>
 
                                 <form method="POST" action="/portfolio-delete" style="display:inline;">
                                     <input
