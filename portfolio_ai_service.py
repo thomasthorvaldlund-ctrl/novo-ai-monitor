@@ -5,6 +5,26 @@ from openai_service import client
 from ai_explain_service import explain_stock
 
 
+def calculate_portfolio_signal(score, profit_pct):
+    """
+    Simpelt AI signal baseret på score og afkast.
+    """
+
+    if score >= 75:
+        return "BUY"
+
+    if score >= 65 and profit_pct is not None and profit_pct > 0:
+        return "HOLD"
+
+    if score >= 50:
+        return "HOLD"
+
+    if profit_pct is not None and profit_pct < -20:
+        return "REDUCE"
+
+    return "REDUCE"
+
+
 def get_portfolio_ai_insights():
     """
     Returnerer AI-analyse af brugerens egne porteføljeaktier.
@@ -33,6 +53,11 @@ def get_portfolio_ai_insights():
                 {}
             )
 
+            signal = calculate_portfolio_signal(
+                stock.get("combined_score", 0),
+                position.get("profit_pct"),
+            )
+
             insights.append({
                 "stock": stock.get("stock"),
                 "ticker": position.get("ticker"),
@@ -43,6 +68,7 @@ def get_portfolio_ai_insights():
                 "weight_pct": position.get("weight_pct"),
                 "combined_score": stock.get("combined_score"),
                 "rating": stock.get("rating"),
+                "signal": signal,
                 "technical_score": stock.get("technical_score"),
                 "news_score": stock.get("news_score"),
                 "explanation": explanation,
