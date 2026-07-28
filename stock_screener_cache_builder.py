@@ -8,6 +8,7 @@ from currency_service import (
     convert_to_dkk,
 )
 from stock_universe_service import get_active_stocks
+from portfolio_stock_service import get_monitored_stocks
 
 
 CACHE_FILE = "/root/novo-ai-monitor/stock_screener_cache.json"
@@ -15,6 +16,13 @@ CACHE_FILE = "/root/novo-ai-monitor/stock_screener_cache.json"
 
 def build_stock_screener_cache():
     watchlist = get_active_stocks()
+
+    portfolio_tickers = get_monitored_stocks()
+
+    for ticker in portfolio_tickers:
+        if ticker not in watchlist.values():
+            watchlist[ticker] = ticker
+
     fx_rates = get_fx_rates()
     results = []
 
