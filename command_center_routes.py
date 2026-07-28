@@ -40,6 +40,7 @@ def command_center_v2():
     performance = cache.get("performance", {})
     ai_news = cache.get("ai_news", {})
     stock_explanations = cache.get("stock_explanations", [])
+    portfolio_insights = cache.get("portfolio_insights", [])
     today_take = cache.get("today_take", {})
     earnings = cache.get("earnings", {})
     earnings_ai = cache.get("earnings_ai", [])
@@ -66,6 +67,7 @@ def command_center_v2():
         performance=performance,
         ai_news=ai_news,
         stock_explanations=stock_explanations,
+          portfolio_insights=portfolio_insights,
         today_take=today_take,
         earnings=earnings,
         earnings_ai=earnings_ai,

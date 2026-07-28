@@ -1,0 +1,62 @@
+<section class="card">
+
+    <h2>💼 AI Portfolio Insights</h2>
+
+    <p>
+        AI analyserer dine egne porteføljeaktier ud fra kursdata,
+        nyhedsscore, Combined Score og aktuelt afkast.
+    </p>
+
+    {% if portfolio_insights %}
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+
+        {% for item in portfolio_insights %}
+
+            <div style="
+                border:1px solid #ddd;
+                border-radius:10px;
+                padding:16px;
+            ">
+
+                <h3>
+                    {{ item.stock }}
+                </h3>
+
+                <p>
+                    <b>Signal:</b> {{ item.signal }}
+                </p>
+
+                <p>
+                    <b>Score:</b> {{ item.combined_score }}
+                </p>
+
+                <p>
+                    <b>Afkast:</b>
+                    {{ "%.2f"|format(item.profit_pct) }}%
+                </p>
+
+                <p>
+                    <b>Værdi:</b>
+                    {{ "%.0f"|format(item.value_dkk) }} DKK
+                </p>
+
+                <p>
+                    {{ item.explanation.conclusion }}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <p>
+            Ingen porteføljeindsigter tilgængelige.
+        </p>
+
+    {% endif %}
+
+</section>

@@ -150,6 +150,7 @@ def before_request():
         "/job-status",
         "/signal-history",
         "/market-score-history",
+          "/command-center",
         "/command-center-v2",
         "/ai-performance",
         "/stock-universe",
