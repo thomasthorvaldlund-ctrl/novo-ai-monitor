@@ -25,6 +25,28 @@ def calculate_portfolio_signal(score, profit_pct):
     return "REDUCE"
 
 
+def calculate_concentration_risk(positions):
+    """
+    Vurderer porteføljekoncentration.
+    """
+
+    if not positions:
+        return "Ingen data"
+
+    max_weight = max(
+        position.get("weight_pct", 0)
+        for position in positions
+    )
+
+    if max_weight >= 60:
+        return "Høj koncentration"
+
+    if max_weight >= 40:
+        return "Moderat koncentration"
+
+    return "Normal"
+
+
 def get_portfolio_ai_insights():
     """
     Returnerer AI-analyse af brugerens egne porteføljeaktier.
@@ -41,6 +63,10 @@ def get_portfolio_ai_insights():
 
     combined_data = combined_stock_score(client)
     ranking = combined_data.get("combined_ranking", [])
+
+    concentration_risk = calculate_concentration_risk(
+        portfolio_data.get("positions", [])
+    )
 
     insights = []
 
@@ -66,6 +92,7 @@ def get_portfolio_ai_insights():
                 "profit_dkk": position.get("profit_dkk"),
                 "profit_pct": position.get("profit_pct"),
                 "weight_pct": position.get("weight_pct"),
+                  "concentration_risk": concentration_risk,
                 "combined_score": stock.get("combined_score"),
                 "rating": stock.get("rating"),
                 "signal": signal,
