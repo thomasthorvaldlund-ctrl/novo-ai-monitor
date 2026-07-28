@@ -41,3 +41,25 @@ def get_monitored_stock_names():
                 stocks.append(stock)
 
     return stocks
+
+
+def get_monitored_stock_map():
+    """
+    Returnerer mapping mellem aktienavn og ticker.
+    """
+
+    rows = load_portfolio_rows()
+
+    stocks = {}
+
+    for row in rows:
+        stock = row.get("stock")
+        ticker = row.get("ticker")
+
+        if stock and ticker:
+            stock = stock.strip().upper()
+            ticker = ticker.strip().upper()
+
+            stocks[stock] = ticker
+
+    return stocks
