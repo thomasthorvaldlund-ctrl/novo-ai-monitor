@@ -1,0 +1,50 @@
+<section class="card">
+
+    <div class="card-header">
+        <h2>🤖 AI Rebalancing Simulator</h2>
+    </div>
+
+    {% if ai_rebalancing_plan %}
+
+        <p>
+            Simuleret investering:
+            <b>{{ ai_rebalancing_plan.investment_amount }} kr.</b>
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Aktie</th>
+                    <th>Beløb</th>
+                    <th>Begrundelse</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for item in ai_rebalancing_plan.plan %}
+                <tr>
+                    <td>
+                        <b>{{ item.stock }}</b>
+                    </td>
+
+                    <td>
+                        {{ item.amount }} kr.
+                    </td>
+
+                    <td>
+                        {{ item.reason }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <p>
+            Ingen AI rebalanceringsplan tilgængelig.
+        </p>
+
+    {% endif %}
+
+</section>
