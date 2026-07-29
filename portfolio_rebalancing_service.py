@@ -12,6 +12,8 @@ def get_rebalancing_analysis():
     positions = portfolio.get("position_details", [])
 
     if not positions:
+
+
         return {
             "risk_level": "Ukendt",
             "message": "Ingen porteføljedata tilgængelig.",
@@ -100,6 +102,25 @@ def get_rebalancing_analysis():
         )
 
 
+    if risk_level == "Høj koncentration":
+        next_action = (
+            "Brug fremtidige køb til at øge diversificeringen. "
+            "Undgå at øge de største positioner yderligere."
+        )
+
+    elif risk_level == "Moderat koncentration":
+        next_action = (
+            "Overvåg porteføljevægtene og juster gradvist "
+            "ved nye investeringer."
+        )
+
+    else:
+        next_action = (
+            "Fortsæt nuværende strategi. "
+            "Porteføljen har en passende spredning."
+        )
+
+
     return {
         "risk_level": risk_level,
         "message": message,
@@ -108,4 +129,5 @@ def get_rebalancing_analysis():
         "portfolio_risk": portfolio.get("portfolio_risk"),
         "portfolio_comment": portfolio.get("portfolio_comment"),
         "ai_summary": ai_summary,
+        "next_action": next_action,
     }
