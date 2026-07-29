@@ -200,14 +200,14 @@ def calculate_confidence_score(candidate):
 
 def calculate_ai_weights(candidates):
     """
-    Beregner vægte baseret på AI confidence.
+    Beregner vægte baseret på adjusted AI confidence.
     """
 
     if not candidates:
         return []
 
     total_confidence = sum(
-        c.get("confidence", 0)
+        c.get("adjusted_confidence", c.get("confidence", 0))
         for c in candidates
     )
 
@@ -215,7 +215,10 @@ def calculate_ai_weights(candidates):
 
     for candidate in candidates:
 
-        confidence = candidate.get("confidence", 0)
+        confidence = candidate.get(
+            "adjusted_confidence",
+            candidate.get("confidence", 0)
+        )
 
         weight = round(
             (confidence / total_confidence) * 100,
@@ -224,10 +227,92 @@ def calculate_ai_weights(candidates):
 
         weighted.append({
             "stock": candidate["stock"],
-            "score": candidate["score"],
-            "confidence": confidence,
+            "score": candidate.get("score"),
+            "confidence": candidate.get("confidence", 0),
+            "adjusted_confidence": confidence,
             "weight": weight,
-            "reason": candidate["reason"]
+            "reason": candidate.get("reason", "")
         })
 
     return weighted
+def calculate_risk_adjustments(candidates):
+    """
+    Justerer AI kandidater baseret på eksisterende
+    porteføljekoncentration.
+    """
+
+    portfolio = get_portfolio_summary()
+
+    positions = portfolio.get("position_details", [])
+
+    owned_weights = {}
+
+    for position in positions:
+
+        weight = float(
+            str(position.get("weight_pct", "0"))
+            .replace("%", "")
+        )
+
+        owned_weights[position["stock"]] = weight
+
+    adjusted = []
+
+    for candidate in candidates:
+
+        stock = candidate["stock"]
+
+        current_weight = owned_weights.get(stock, 0)
+
+        adjustment = 0
+
+        if current_weight >= 40:
+            adjustment = -30
+            reason = "Reduceret pga. høj eksisterende vægt."
+
+        elif current_weight >= 20:
+            adjustment = -15
+            reason = "Let reduceret pga. eksisterende eksponering."
+
+        else:
+            reason = "Ingen væsentlig eksisterende eksponering."
+
+        adjusted.append({
+            **candidate,
+            "risk_adjustment": adjustment,
+            "risk_reason": reason
+        })
+
+    return adjusted
+
+def apply_risk_adjustments(candidates):
+    """
+    Kombinerer AI confidence med porteføljerisiko.
+    """
+
+    adjusted = []
+
+    for candidate in candidates:
+
+        confidence = candidate.get(
+            "confidence",
+            0
+        )
+
+        adjustment = candidate.get(
+            "risk_adjustment",
+            0
+        )
+
+        adjusted_confidence = max(
+            confidence + adjustment,
+            0
+        )
+
+        adjusted.append({
+            **candidate,
+            "adjusted_confidence": adjusted_confidence
+        })
+
+    return adjusted
+
