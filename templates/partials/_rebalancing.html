@@ -1,0 +1,66 @@
+{% if rebalancing %}
+
+<div class="card">
+
+    <h2>
+        🤖 AI Rebalancing Assistant
+    </h2>
+
+    <p>
+        AI analyserer porteføljerisiko,
+        koncentration og mulige forbedringer.
+    </p>
+
+
+    <hr>
+
+
+    <p>
+        <b>Risikoniveau:</b>
+        {{ rebalancing.risk_level }}
+    </p>
+
+
+    <p>
+        {{ rebalancing.ai_summary }}
+    </p>
+
+
+    <h3>
+        Største positioner
+    </h3>
+
+    <ul>
+
+    {% for position in rebalancing.largest_positions %}
+
+        <li>
+            <b>{{ position.stock }}</b>
+            -
+            {{ position.weight_pct }}
+        </li>
+
+    {% endfor %}
+
+    </ul>
+
+
+    <h3>
+        AI forslag
+    </h3>
+
+    <ul>
+
+    {% for suggestion in rebalancing.suggestions %}
+
+        <li>
+            {{ suggestion }}
+        </li>
+
+    {% endfor %}
+
+    </ul>
+
+</div>
+
+{% endif %}

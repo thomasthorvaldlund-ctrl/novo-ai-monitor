@@ -42,6 +42,7 @@ def command_center_v2():
     stock_explanations = cache.get("stock_explanations", [])
     portfolio_insights = cache.get("portfolio_insights", [])
     portfolio_recommendations = cache.get("portfolio_recommendations", [])
+    rebalancing = cache.get("rebalancing", {})
     today_take = cache.get("today_take", {})
     earnings = cache.get("earnings", {})
     earnings_ai = cache.get("earnings_ai", [])
@@ -70,6 +71,7 @@ def command_center_v2():
         stock_explanations=stock_explanations,
         portfolio_insights=portfolio_insights,
         portfolio_recommendations=portfolio_recommendations,
+        rebalancing=rebalancing,
         today_take=today_take,
         earnings=earnings,
         earnings_ai=earnings_ai,
