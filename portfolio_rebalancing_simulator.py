@@ -57,7 +57,9 @@ def generate_rebalancing_plan(investment_amount):
         "reason": "Bevarer eksponering mod stærkeste position."
     })
 
-    candidates = get_ai_candidates()
+    candidates = filter_ai_candidates(
+        get_ai_candidates()
+    )
 
     if candidates:
 
@@ -133,6 +135,30 @@ def get_ai_candidates():
             break
 
     return candidates
+
+
+def filter_ai_candidates(candidates):
+    """
+    Filtrerer AI kandidater baseret på minimum score.
+    """
+
+    filtered = []
+
+    for candidate in candidates:
+
+        score = candidate.get("score", 0)
+
+        if score < 60:
+            continue
+
+        candidate["reason"] += (
+            " Kandidaten opfylder AI minimumscore "
+            "for nye investeringer."
+        )
+
+        filtered.append(candidate)
+
+    return filtered
 
 
 def calculate_ai_weights(candidates):
