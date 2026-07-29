@@ -95,6 +95,31 @@
                     {{ "%.1f"|format(item.weight_pct) }}%
                 </p>
 
+
+                {% if item.explanation %}
+
+                    <hr>
+
+                    <h4>
+                        🤖 AI vurdering
+                    </h4>
+
+                    <p>
+                        <b>{{ item.explanation.headline }}</b>
+                    </p>
+
+                    <p>
+                        {{ item.explanation.summary }}
+                    </p>
+
+                    <p>
+                        <b>Handling:</b>
+                        {{ item.explanation.action }}
+                    </p>
+
+                {% endif %}
+
+
                 <hr>
 
                 <p>

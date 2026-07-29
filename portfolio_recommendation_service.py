@@ -1,4 +1,5 @@
 from portfolio_ai_service import get_portfolio_ai_insights
+from portfolio_explanation_service import generate_portfolio_explanation
 
 
 def generate_portfolio_recommendations():
@@ -35,6 +36,14 @@ def generate_portfolio_recommendations():
             recommendation = "WATCH"
             reason = "Bør overvåges."
 
+
+        explanation = generate_portfolio_explanation({
+            **item,
+            "recommendation": recommendation,
+            "score": score,
+        })
+
+
         recommendations.append({
             "stock": item["stock"],
             "recommendation": recommendation,
@@ -45,6 +54,8 @@ def generate_portfolio_recommendations():
             "technical_score": item.get("technical_score"),
             "news_score": item.get("news_score"),
             "concentration_risk": item.get("concentration_risk"),
+            "explanation": explanation,
         })
+
 
     return recommendations
