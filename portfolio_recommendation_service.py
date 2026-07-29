@@ -41,6 +41,10 @@ def generate_portfolio_recommendations():
             "reason": reason,
             "score": score,
             "weight_pct": weight,
+            "profit_pct": item.get("profit_pct"),
+            "technical_score": item.get("technical_score"),
+            "news_score": item.get("news_score"),
+            "concentration_risk": item.get("concentration_risk"),
         })
 
     return recommendations

@@ -21,14 +21,64 @@
                 padding:16px;
             ">
 
-                <h3>
-                    {{ item.stock }}
-                </h3>
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-bottom:12px;
+                ">
 
-                <p>
-                    <b>Anbefaling:</b>
-                    {{ item.recommendation }}
-                </p>
+                    <h3 style="margin:0;">
+                        {{ item.stock }}
+                    </h3>
+
+                    {% if item.recommendation == "BUY" %}
+                        <span style="
+                            background:#dcfce7;
+                            color:#166534;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;
+                        ">
+                            🟢 BUY
+                        </span>
+
+                    {% elif item.recommendation == "HOLD" %}
+                        <span style="
+                            background:#fef3c7;
+                            color:#92400e;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;
+                        ">
+                            🟡 HOLD
+                        </span>
+
+                    {% elif item.recommendation == "WATCH" %}
+                        <span style="
+                            background:#dbeafe;
+                            color:#1e40af;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;
+                        ">
+                            👀 WATCH
+                        </span>
+
+                    {% else %}
+                        <span style="
+                            background:#fee2e2;
+                            color:#991b1b;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;
+                        ">
+                            🔴 {{ item.recommendation }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
 
                 <p>
                     <b>Årsag:</b>
@@ -43,6 +93,28 @@
                 <p>
                     <b>Porteføljevægt:</b>
                     {{ "%.1f"|format(item.weight_pct) }}%
+                </p>
+
+                <hr>
+
+                <p>
+                    <b>📊 Teknisk score:</b>
+                    {{ item.technical_score }}
+                </p>
+
+                <p>
+                    <b>📰 Nyhedsscore:</b>
+                    {{ item.news_score }}
+                </p>
+
+                <p>
+                    <b>📈 Afkast:</b>
+                    {{ "%.2f"|format(item.profit_pct) }}%
+                </p>
+
+                <p>
+                    <b>⚠️ Porteføljerisiko:</b>
+                    {{ item.concentration_risk }}
                 </p>
 
             </div>
