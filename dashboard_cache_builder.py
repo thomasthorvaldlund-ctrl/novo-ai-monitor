@@ -25,6 +25,7 @@ from ai_explain_service import explain_stock
 from portfolio_ai_service import get_portfolio_ai_insights
 from portfolio_recommendation_service import generate_portfolio_recommendations
 from portfolio_rebalancing_service import get_rebalancing_analysis
+from portfolio_rebalancing_simulator import generate_rebalancing_plan
 from ai_risk_dashboard_service import get_ai_risk_dashboard
 from today_take_service import get_today_take
 from ai_executive_summary_service import get_ai_executive_summary
@@ -66,6 +67,7 @@ def build_dashboard_cache():
     portfolio_insights = get_portfolio_ai_insights()
     portfolio_recommendations = generate_portfolio_recommendations()
     rebalancing = get_rebalancing_analysis()
+    ai_rebalancing_plan = generate_rebalancing_plan(5000)
     alerts = get_ai_alerts()
     earnings_risks = get_earnings_risks()
     ai_risk_dashboard = get_ai_risk_dashboard()
@@ -159,6 +161,7 @@ def build_dashboard_cache():
       "portfolio_insights": portfolio_insights,
       "portfolio_recommendations": portfolio_recommendations,
       "rebalancing": rebalancing,
+      "ai_rebalancing_plan": ai_rebalancing_plan,
 }
 
     save_dashboard_cache(data)
