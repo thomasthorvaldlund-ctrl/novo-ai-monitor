@@ -121,15 +121,23 @@ def get_ai_candidates():
         if stock["stock"] in owned:
             continue
 
-        candidates.append({
+        candidate = {
             "stock": stock["stock"],
             "score": stock.get("combined_score"),
+            "technical_score": stock.get("technical_score", 0),
+            "news_score": stock.get("news_score", 0),
             "rating": stock.get("rating"),
             "reason": (
                 f"AI score {stock.get('combined_score')} "
                 f"med rating {stock.get('rating')}."
             )
-        })
+        }
+
+        candidate["confidence"] = calculate_confidence_score(
+            candidate
+        )
+
+        candidates.append(candidate)
 
         if len(candidates) >= 3:
             break
@@ -161,16 +169,45 @@ def filter_ai_candidates(candidates):
     return filtered
 
 
+def calculate_confidence_score(candidate):
+    """
+    Beregner AI confidence baseret på score,
+    nyheder og teknisk styrke.
+    """
+
+    score = candidate.get("score", 0)
+
+    news_score = candidate.get(
+        "news_score",
+        0
+    )
+
+    technical_score = candidate.get(
+        "technical_score",
+        0
+    )
+
+    confidence = score
+
+    if news_score >= 70:
+        confidence += 5
+
+    if technical_score >= 70:
+        confidence += 5
+
+    return round(confidence, 1)
+
+
 def calculate_ai_weights(candidates):
     """
-    Beregner vægte baseret på AI score.
+    Beregner vægte baseret på AI confidence.
     """
 
     if not candidates:
         return []
 
-    total_score = sum(
-        c.get("score", 0)
+    total_confidence = sum(
+        c.get("confidence", 0)
         for c in candidates
     )
 
@@ -178,16 +215,17 @@ def calculate_ai_weights(candidates):
 
     for candidate in candidates:
 
-        score = candidate.get("score", 0)
+        confidence = candidate.get("confidence", 0)
 
         weight = round(
-            (score / total_score) * 100,
+            (confidence / total_confidence) * 100,
             1
         )
 
         weighted.append({
             "stock": candidate["stock"],
-            "score": score,
+            "score": candidate["score"],
+            "confidence": confidence,
             "weight": weight,
             "reason": candidate["reason"]
         })
