@@ -61,15 +61,24 @@ def generate_rebalancing_plan(investment_amount):
 
     if candidates:
 
-        candidate_amount = round(
-            investment_amount * 0.7 / len(candidates[:2])
-        )
+        ai_weights = calculate_ai_weights(candidates)
 
-        for candidate in candidates[:2]:
+        available_amount = investment_amount * 0.7
+
+        for candidate in ai_weights:
+
+            amount = round(
+                available_amount *
+                (candidate["weight"] / 100)
+            )
+
             plan.append({
                 "stock": candidate["stock"],
-                "amount": candidate_amount,
-                "reason": candidate["reason"]
+                "amount": amount,
+                "reason": (
+                    f"{candidate['reason']} "
+                    f"AI vægt: {candidate['weight']}%."
+                )
             })
 
     else:
@@ -124,3 +133,37 @@ def get_ai_candidates():
             break
 
     return candidates
+
+
+def calculate_ai_weights(candidates):
+    """
+    Beregner vægte baseret på AI score.
+    """
+
+    if not candidates:
+        return []
+
+    total_score = sum(
+        c.get("score", 0)
+        for c in candidates
+    )
+
+    weighted = []
+
+    for candidate in candidates:
+
+        score = candidate.get("score", 0)
+
+        weight = round(
+            (score / total_score) * 100,
+            1
+        )
+
+        weighted.append({
+            "stock": candidate["stock"],
+            "score": score,
+            "weight": weight,
+            "reason": candidate["reason"]
+        })
+
+    return weighted
