@@ -67,7 +67,10 @@ def build_dashboard_cache():
     portfolio_insights = get_portfolio_ai_insights()
     portfolio_recommendations = generate_portfolio_recommendations()
     rebalancing = get_rebalancing_analysis()
-    ai_rebalancing_plan = generate_rebalancing_plan(5000)
+    rebalancing_amount = 5000
+    ai_rebalancing_plan = generate_rebalancing_plan(
+        rebalancing_amount
+    )
     alerts = get_ai_alerts()
     earnings_risks = get_earnings_risks()
     ai_risk_dashboard = get_ai_risk_dashboard()
@@ -162,6 +165,7 @@ def build_dashboard_cache():
       "portfolio_recommendations": portfolio_recommendations,
       "rebalancing": rebalancing,
       "ai_rebalancing_plan": ai_rebalancing_plan,
+      "rebalancing_amount": rebalancing_amount,
 }
 
     save_dashboard_cache(data)
