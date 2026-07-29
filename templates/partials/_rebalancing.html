@@ -17,7 +17,41 @@
 
     <p>
         <b>Risikoniveau:</b>
-        {{ rebalancing.risk_level }}
+
+        {% if rebalancing.risk_level == "Høj koncentration" %}
+            <span style="
+                background:#fee2e2;
+                color:#991b1b;
+                padding:6px 12px;
+                border-radius:14px;
+                font-weight:bold;
+            ">
+                🔴 Høj koncentration
+            </span>
+
+        {% elif rebalancing.risk_level == "Moderat koncentration" %}
+            <span style="
+                background:#fef3c7;
+                color:#92400e;
+                padding:6px 12px;
+                border-radius:14px;
+                font-weight:bold;
+            ">
+                🟡 Moderat koncentration
+            </span>
+
+        {% else %}
+            <span style="
+                background:#dcfce7;
+                color:#166534;
+                padding:6px 12px;
+                border-radius:14px;
+                font-weight:bold;
+            ">
+                🟢 Lav koncentration
+            </span>
+
+        {% endif %}
     </p>
 
 
@@ -30,19 +64,53 @@
         Største positioner
     </h3>
 
-    <ul>
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:12px;
+    ">
 
     {% for position in rebalancing.largest_positions %}
 
-        <li>
-            <b>{{ position.stock }}</b>
-            -
-            {{ position.weight_pct }}
-        </li>
+        <div style="
+            border:1px solid #ddd;
+            border-radius:10px;
+            padding:12px;
+        ">
+
+            <h4 style="margin:0 0 8px 0;">
+                {{ position.stock }}
+            </h4>
+
+            <p>
+                <b>Vægt:</b>
+                {{ position.weight_pct }}
+            </p>
+
+            <p>
+                {% if position.weight_difference < 0 %}
+
+                    <b>⚠️ Overvægt:</b>
+                    {{ "%.1f"|format(position.weight_difference * -1) }}%
+
+                {% elif position.weight_difference > 0 %}
+
+                    <b>✅ Undervægt:</b>
+                    {{ "%.1f"|format(position.weight_difference) }}%
+
+                {% else %}
+
+                    <b>⚖️ Balance:</b>
+                    0%
+
+                {% endif %}
+            </p>
+
+        </div>
 
     {% endfor %}
 
-    </ul>
+    </div>
 
 
     <h3>
