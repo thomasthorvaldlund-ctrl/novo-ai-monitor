@@ -54,6 +54,7 @@ def generate_rebalancing_plan(investment_amount):
     plan.append({
         "stock": first,
         "amount": round(investment_amount * 0.3),
+        "weight": 30,
         "reason": "Bevarer eksponering mod stærkeste position."
     })
 
@@ -77,6 +78,7 @@ def generate_rebalancing_plan(investment_amount):
             plan.append({
                 "stock": candidate["stock"],
                 "amount": amount,
+                "weight": candidate["weight"],
                 "reason": (
                     f"{candidate['reason']} "
                     f"AI vægt: {candidate['weight']}%."

@@ -31,11 +31,32 @@
             <b>{{ ai_rebalancing_plan.investment_amount }} kr.</b>
         </p>
 
+        <div style="
+            background:#f5f9ff;
+            border-left:4px solid #2563eb;
+            padding:12px;
+            margin:15px 0;
+            border-radius:6px;
+        ">
+
+            🤖 AI-genereret investeringsplan<br>
+
+            💰 Beløb:
+            <b>{{ ai_rebalancing_plan.investment_amount }} kr.</b>
+
+            &nbsp; | &nbsp;
+
+            📊 Forslag:
+            <b>{{ ai_rebalancing_plan.plan|length }}</b> aktier
+
+        </div>
+
         <table>
             <thead>
                 <tr>
                     <th>Aktie</th>
                     <th>Beløb</th>
+                      <th>AI vægt</th>
                     <th>Begrundelse</th>
                 </tr>
             </thead>
@@ -50,6 +71,10 @@
                     <td>
                         {{ item.amount }} kr.
                     </td>
+
+                      <td>
+                          {{ item.weight }}%
+                      </td>
 
                     <td>
                         {{ item.reason }}
