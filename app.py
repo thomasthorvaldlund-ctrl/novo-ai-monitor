@@ -124,6 +124,7 @@ def before_request():
         "/stock-screener",
         "/stock-screener-page",
         "/portfolio-alerts",
+          "/simulate-rebalancing",
         "/history",
         "/stock-news-ai-page",
         "/combined-stock-score",

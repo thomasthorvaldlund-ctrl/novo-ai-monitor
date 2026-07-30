@@ -13,6 +13,7 @@ from ai_analyst_service import get_ai_analyst
 from morning_brief_service import get_morning_brief
 from market_score_history_service import load_market_score_history
 from ai_engine_status_service import get_ai_engine_status
+from portfolio_rebalancing_simulator import generate_rebalancing_plan
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -136,4 +137,53 @@ def ai_stock_library():
         selected_stock=selected_stock,
         selected_signal=selected_signal,
         performance=performance,
+    )
+
+
+@command_center_bp.route("/simulate-rebalancing")
+def simulate_rebalancing():
+
+    amount = request.args.get(
+        "amount",
+        5000
+    )
+
+    try:
+        amount = int(amount)
+    except ValueError:
+        amount = 5000
+
+    plan = generate_rebalancing_plan(amount)
+
+    cache = load_dashboard_cache()
+
+    return render_template(
+        "command_center_v2.html",
+        system_health=cache.get("system_health", {}),
+        market=cache.get("market", {}),
+        top_picks=cache.get("top_picks", []),
+        summary=cache.get("summary", {}),
+        alerts=cache.get("alerts", []),
+        portfolio=cache.get("portfolio", {}),
+        analyst=cache.get("analyst", ""),
+        brief=cache.get("morning_brief", {}),
+        updated_at=cache.get("updated_at", ""),
+        performance=cache.get("performance", {}),
+        ai_news=cache.get("ai_news", {}),
+        stock_explanations=cache.get("stock_explanations", []),
+        portfolio_insights=cache.get("portfolio_insights", []),
+        portfolio_recommendations=cache.get("portfolio_recommendations", []),
+        rebalancing=cache.get("rebalancing", {}),
+        ai_rebalancing_plan=plan,
+        rebalancing_amount=amount,
+        today_take=cache.get("today_take", {}),
+        earnings=cache.get("earnings", {}),
+        earnings_ai=cache.get("earnings_ai", []),
+        earnings_risks=cache.get("earnings_risks", []),
+        executive_summary=cache.get("executive_summary", {}),
+        ai_copilot=cache.get("ai_copilot", {}),
+        ai_copilot_timeline=cache.get("ai_copilot_timeline", []),
+        ai_copilot_changes=cache.get("ai_copilot_changes", {}),
+        ai_risk_dashboard=cache.get("ai_risk_dashboard", {}),
+        ai_engine_status=get_ai_engine_status(),
     )

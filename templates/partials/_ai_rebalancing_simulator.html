@@ -4,6 +4,26 @@
         <h2>🤖 AI Rebalancing Simulator</h2>
     </div>
 
+    <form method="get" action="/simulate-rebalancing">
+
+        <label>
+            💰 Investeringsbeløb:
+        </label>
+
+        <input
+            type="number"
+            name="amount"
+            value="{{ rebalancing_amount }}"
+            min="100"
+            step="100"
+        >
+
+        <button type="submit">
+            Beregn AI plan
+        </button>
+
+    </form>
+
     {% if ai_rebalancing_plan %}
 
         <p>
