@@ -1,0 +1,41 @@
+<div class="card">
+    <h2>🧠 AI Context Engine</h2>
+
+    <p style="color: #64748b; margin-bottom: 16px;">
+        Samler AI Prediction Engine og Learning Feedback i én samlet vurdering.
+    </p>
+
+    <div style="
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    ">
+        <div>
+            <span style="color: #64748b;">Forventet præcision</span>
+            <div style="font-size: 1.35rem; font-weight: 700;">
+                {{ ai_context.prediction_accuracy }}%
+            </div>
+        </div>
+
+        <div>
+            <span style="color: #64748b;">AI confidence</span>
+            <div style="font-size: 1.35rem; font-weight: 700;">
+                {{ ai_context.confidence }}
+            </div>
+        </div>
+
+        <div>
+            <span style="color: #64748b;">Learning-status</span>
+            <div style="font-weight: 700;">
+                {{ ai_context.learning_status }}
+            </div>
+        </div>
+
+        <div>
+            <span style="color: #64748b;">Observationer</span>
+            <div style="font-weight: 700;">
+                {{ ai_context.learning_samples }}
+            </div>
+        </div>
+    </div>
+</div>
