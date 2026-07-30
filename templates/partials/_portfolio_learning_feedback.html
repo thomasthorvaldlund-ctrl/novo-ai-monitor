@@ -1,0 +1,100 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        🔄 AI Learning Feedback Loop
+    </h2>
+
+    <p style="color:#64748b;margin-bottom:18px;">
+        Omsætter historisk signalpræcision til forsigtige læringsvægte, som senere kan bruges i nye AI-beslutninger.
+    </p>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+        gap:14px;
+        margin-bottom:18px;
+    ">
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Status
+            </div>
+
+            <div style="font-weight:700;margin-top:8px;">
+                {{ learning_feedback.status }}
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Observationer
+            </div>
+
+            <div style="font-size:28px;font-weight:700;margin-top:6px;">
+                {{ learning_feedback.total_samples }}
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Senest beregnet
+            </div>
+
+            <div style="font-weight:700;margin-top:8px;">
+                {{ learning_feedback.updated_at }}
+            </div>
+        </div>
+    </div>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+        gap:14px;
+    ">
+        {% for signal, data in learning_feedback.signal_weights.items() %}
+            <div style="
+                background:#f0fdf4;
+                border:1px solid #bbf7d0;
+                border-radius:10px;
+                padding:16px;
+            ">
+                <div style="font-weight:700;font-size:17px;">
+                    {{ signal }}
+                </div>
+
+                <div style="margin-top:10px;color:#475569;">
+                    Historisk præcision:
+                    <strong>{{ data.accuracy }}%</strong>
+                </div>
+
+                <div style="margin-top:6px;color:#475569;">
+                    Justeret læringsvægt:
+                    <strong>{{ data.adjusted_weight }}</strong>
+                </div>
+
+                <div style="margin-top:6px;color:#64748b;font-size:14px;">
+                    {{ data.samples }} observation(er)
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>

@@ -44,3 +44,4 @@ ai_copilot_history.json
 stock_screener_cache.json
 portfolio_alerts_sent.txt
 ai_learning_history.json
+ai_learning_feedback.json
