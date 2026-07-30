@@ -17,6 +17,7 @@ from portfolio_rebalancing_simulator import generate_rebalancing_plan
 from ai_portfolio_decision_service import load_portfolio_decisions
 from ai_portfolio_change_service import get_portfolio_changes
 from ai_portfolio_performance_service import get_portfolio_performance
+from ai_portfolio_analytics_service import get_portfolio_analytics
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -156,6 +157,7 @@ def ai_portfolio_lab():
         portfolio_decision_history=load_portfolio_decisions(),
         portfolio_changes=get_portfolio_changes(),
         portfolio_performance=get_portfolio_performance(),
+        portfolio_analytics=get_portfolio_analytics(),
     )
 
 
