@@ -158,7 +158,7 @@ def simulate_rebalancing():
     cache = load_dashboard_cache()
 
     return render_template(
-        "command_center_v2.html",
+        "ai_rebalancing_simulator.html",
         system_health=cache.get("system_health", {}),
         market=cache.get("market", {}),
         top_picks=cache.get("top_picks", []),

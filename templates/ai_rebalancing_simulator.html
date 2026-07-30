@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+AI Rebalancing Simulator
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="max-width:1200px;margin:30px auto;padding:0 20px;">
+
+    <h1>
+        🧮 AI Rebalancing Simulator
+    </h1>
+
+    <p style="
+        background:#eef6ff;
+        border-left:5px solid #2563eb;
+        padding:16px;
+        border-radius:8px;
+        margin-bottom:30px;
+    ">
+        Simuler hvordan AI foreslår at investere et nyt beløb
+        baseret på markedssignaler, risiko og diversificering.
+    </p>
+
+    {% include "partials/_ai_rebalancing_simulator.html" %}
+
+</div>
+
+{% endblock %}
