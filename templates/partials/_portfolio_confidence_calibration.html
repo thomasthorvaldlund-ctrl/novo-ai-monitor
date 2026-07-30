@@ -1,0 +1,63 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        🎯 AI Confidence Calibration
+    </h2>
+
+    <p style="color:#64748b;margin-bottom:18px;">
+        Sammenligner AI'ens score-niveau med den faktiske træfsikkerhed.
+        Et niveau uden beslutninger vises som manglende datagrundlag.
+    </p>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+        gap:16px;
+    ">
+        {% for level, stats in confidence_calibration.items() %}
+            <div style="
+                background:#f8fafc;
+                border:1px solid #e5e7eb;
+                border-radius:10px;
+                padding:16px;
+            ">
+                <div style="
+                    color:#334155;
+                    font-size:16px;
+                    font-weight:700;
+                    margin-bottom:12px;
+                ">
+                    {{ level }}
+                </div>
+
+                <div style="
+                    font-size:28px;
+                    font-weight:700;
+                    margin-bottom:8px;
+                ">
+                    {% if stats.total > 0 %}
+                        {{ stats.accuracy_pct }}%
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+
+                <div style="color:#64748b;font-size:14px;line-height:1.7;">
+                    Beslutninger: {{ stats.total }}<br>
+                    Korrekte: {{ stats.correct }}<br>
+
+                    {% if stats.total > 0 %}
+                        Faktisk accuracy
+                    {% else %}
+                        Ikke nok data endnu
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
