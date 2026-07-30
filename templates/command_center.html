@@ -1476,6 +1476,60 @@
 
     <div class="card">
         <h2>
+            🛡️ AI Dynamic Risk
+            <span
+                class="info-icon"
+                data-tooltip="Dynamisk AI-risiko baseret på tekniske signaler, nyheder, regnskaber og porteføljeeksponering.">
+                ?
+            </span>
+        </h2>
+
+        <p>
+            <b>Risiko:</b>
+            {{ ai_risk_dashboard.risk_score }}/100
+            ({{ ai_risk_dashboard.risk_level }})
+        </p>
+
+        <p>
+            <b>Teknisk:</b>
+            {{ ai_risk_dashboard.technical_score }}
+        </p>
+
+        <p>
+            <b>Nyheder:</b>
+            {{ ai_risk_dashboard.news_score }}
+        </p>
+
+        <p>
+            <b>Regnskab:</b>
+            {{ ai_risk_dashboard.earnings_score }}
+        </p>
+
+        <p>
+            <b>Portefølje:</b>
+            {{ ai_risk_dashboard.portfolio_score }}
+        </p>
+
+        <p style="
+            margin-top:12px;
+            padding:10px;
+            background:#f8fafc;
+            border-left:4px solid #dc2626;
+            border-radius:6px;
+        ">
+            <b>AI vurdering:</b><br>
+
+            {% for reason in ai_risk_dashboard.risk_reasons %}
+                • {{ reason }}<br>
+            {% endfor %}
+        </p>
+
+    </div>
+
+
+
+    <div class="card">
+        <h2>
             🤖 AI Analyst
             <span
                 class="info-icon"
