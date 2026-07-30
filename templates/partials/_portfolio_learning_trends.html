@@ -1,0 +1,89 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        📈 AI Learning Trends
+    </h2>
+
+    <p style="color:#64748b;margin-bottom:18px;">
+        Viser udviklingen i AI Copilots confidence fra den første til den seneste historiske vurdering.
+    </p>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+        gap:16px;
+    ">
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Første confidence
+            </div>
+
+            <div style="font-size:28px;font-weight:700;margin-top:6px;">
+                {{ learning_trends.first_accuracy }}%
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Seneste confidence
+            </div>
+
+            <div style="font-size:28px;font-weight:700;margin-top:6px;">
+                {{ learning_trends.latest_accuracy }}%
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Udvikling
+            </div>
+
+            <div style="font-size:28px;font-weight:700;margin-top:6px;">
+                {% if learning_trends.change > 0 %}+{% endif %}{{ learning_trends.change }}%
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Trend
+            </div>
+
+            <div style="font-size:22px;font-weight:700;margin-top:8px;">
+                {% if learning_trends.trend == "Forbedres" %}
+                    🟢 Forbedres
+                {% elif learning_trends.trend == "Faldende" %}
+                    🔴 Faldende
+                {% elif learning_trends.trend == "Stabil" %}
+                    🟡 Stabil
+                {% else %}
+                    ⚪ {{ learning_trends.trend }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
