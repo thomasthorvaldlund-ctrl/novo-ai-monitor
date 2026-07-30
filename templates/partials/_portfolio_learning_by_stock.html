@@ -1,0 +1,78 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        📚 AI Learning by Stock
+    </h2>
+
+    <p style="color:#64748b;margin-bottom:18px;">
+        Viser AI'ens historiske træfsikkerhed og gennemsnitlige score for hver aktie.
+    </p>
+
+    {% if learning_by_stock %}
+        <div style="overflow-x:auto;">
+            <table style="
+                width:100%;
+                border-collapse:collapse;
+                min-width:700px;
+            ">
+                <thead>
+                    <tr style="background:#f8fafc;text-align:left;">
+                        <th style="padding:12px;border-bottom:1px solid #e5e7eb;">Aktie</th>
+                        <th style="padding:12px;border-bottom:1px solid #e5e7eb;">Beslutninger</th>
+                        <th style="padding:12px;border-bottom:1px solid #e5e7eb;">Korrekte</th>
+                        <th style="padding:12px;border-bottom:1px solid #e5e7eb;">Accuracy</th>
+                        <th style="padding:12px;border-bottom:1px solid #e5e7eb;">Gns. score</th>
+                        <th style="padding:12px;border-bottom:1px solid #e5e7eb;">Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in learning_by_stock %}
+                        <tr>
+                            <td style="padding:12px;border-bottom:1px solid #f1f5f9;font-weight:700;">
+                                {{ row.stock }}
+                            </td>
+
+                            <td style="padding:12px;border-bottom:1px solid #f1f5f9;">
+                                {{ row.total }}
+                            </td>
+
+                            <td style="padding:12px;border-bottom:1px solid #f1f5f9;">
+                                {{ row.correct }}
+                            </td>
+
+                            <td style="padding:12px;border-bottom:1px solid #f1f5f9;">
+                                {{ row.accuracy }}%
+                            </td>
+
+                            <td style="padding:12px;border-bottom:1px solid #f1f5f9;">
+                                {{ row.average_score }}
+                            </td>
+
+                            <td style="padding:12px;border-bottom:1px solid #f1f5f9;">
+                                {% if row.accuracy >= 80 %}
+                                    🟢 Meget høj
+                                {% elif row.accuracy >= 60 %}
+                                    🟡 God
+                                {% elif row.accuracy >= 40 %}
+                                    🟠 Kan forbedres
+                                {% else %}
+                                    🔴 Lav
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color:#64748b;margin:0;">
+            Der er endnu ikke nok historiske beslutninger til at vise Learning by Stock.
+        </p>
+    {% endif %}
+</section>
