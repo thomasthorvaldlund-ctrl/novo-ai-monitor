@@ -1,0 +1,83 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        📈 AI Learning Timeline
+    </h2>
+
+    <p style="color:#64748b;margin-bottom:18px;">
+        Viser AI'ens aktuelle træfsikkerhed over forskellige perioder.
+        Historiske målepunkter og grafer tilføjes i næste version.
+    </p>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+        gap:16px;
+        margin-bottom:18px;
+    ">
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Seneste 7 dage
+            </div>
+
+            <div style="font-size:26px;font-weight:700;margin-top:6px;">
+                {{ learning_timeline.last_7_days }}%
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Seneste 30 dage
+            </div>
+
+            <div style="font-size:26px;font-weight:700;margin-top:6px;">
+                {{ learning_timeline.last_30_days }}%
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Seneste 90 dage
+            </div>
+
+            <div style="font-size:26px;font-weight:700;margin-top:6px;">
+                {{ learning_timeline.last_90_days }}%
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Udvikling
+            </div>
+
+            <div style="font-size:22px;font-weight:700;margin-top:6px;">
+                {{ learning_timeline.trend }}
+            </div>
+        </div>
+    </div>
+</section>
