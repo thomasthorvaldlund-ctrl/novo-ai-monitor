@@ -15,6 +15,7 @@ from market_score_history_service import load_market_score_history
 from ai_engine_status_service import get_ai_engine_status
 from portfolio_rebalancing_simulator import generate_rebalancing_plan
 from ai_portfolio_decision_service import load_portfolio_decisions
+from ai_portfolio_change_service import get_portfolio_changes
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -152,6 +153,7 @@ def ai_portfolio_lab():
         portfolio_recommendations=cache.get("portfolio_recommendations", []),
         rebalancing=cache.get("rebalancing", {}),
         portfolio_decision_history=load_portfolio_decisions(),
+        portfolio_changes=get_portfolio_changes(),
     )
 
 

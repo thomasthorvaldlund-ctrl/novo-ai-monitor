@@ -1,0 +1,63 @@
+<section class="card">
+
+    <h2>
+        🧠 AI Changes Since Last Analysis
+    </h2>
+
+    <p style="color:#6b7280;">
+        Viser ændringer i AI's seneste porteføljevurdering.
+    </p>
+
+
+    {% if portfolio_changes %}
+
+        {% for item in portfolio_changes %}
+
+        <div style="
+            padding:12px;
+            margin-bottom:12px;
+            background:#f8fafc;
+            border-left:4px solid #2563eb;
+            border-radius:6px;
+        ">
+
+            <b>{{ item.stock }}</b>
+
+            <br><br>
+
+            Signal:
+            <b>
+                {{ item.old_action }}
+                →
+                {{ item.new_action }}
+            </b>
+
+            <br>
+
+            Score:
+            {{ item.old_score }}
+            →
+            {{ item.new_score }}
+
+            <br>
+
+            Ændring:
+            {% if item.score_change > 0 %}
+                +{{ item.score_change }}
+            {% else %}
+                {{ item.score_change }}
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+            Ingen større AI ændringer siden sidste analyse.
+        </p>
+
+    {% endif %}
+
+</section>
