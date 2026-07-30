@@ -22,6 +22,7 @@ from ai_learning_service import get_learning_report
 from ai_learning_timeline_service import get_learning_timeline
 from ai_confidence_calibration_service import get_confidence_calibration
 from ai_learning_by_stock_service import get_learning_by_stock
+from ai_signal_accuracy_service import get_signal_accuracy
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -166,6 +167,7 @@ def ai_portfolio_lab():
         learning_timeline=get_learning_timeline(),
         confidence_calibration=get_confidence_calibration(),
         learning_by_stock=get_learning_by_stock(),
+        signal_accuracy=get_signal_accuracy(),
     )
 
 

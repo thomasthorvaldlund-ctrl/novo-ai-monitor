@@ -1,0 +1,72 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        📊 AI Signal Accuracy
+    </h2>
+
+    <p style="color:#64748b;margin-bottom:18px;">
+        Viser hvor præcis AI'en historisk har været for hver anbefalingstype.
+    </p>
+
+    {% if signal_accuracy %}
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+            gap:16px;
+        ">
+            {% for row in signal_accuracy %}
+                <div style="
+                    background:#f8fafc;
+                    border:1px solid #e5e7eb;
+                    border-radius:10px;
+                    padding:16px;
+                ">
+                    <div style="
+                        font-size:16px;
+                        font-weight:700;
+                        color:#334155;
+                        margin-bottom:10px;
+                    ">
+                        {{ row.signal }}
+                    </div>
+
+                    <div style="
+                        font-size:28px;
+                        font-weight:700;
+                        margin-bottom:8px;
+                    ">
+                        {{ row.accuracy }}%
+                    </div>
+
+                    <div style="
+                        color:#64748b;
+                        font-size:14px;
+                        line-height:1.7;
+                    ">
+                        Beslutninger: {{ row.total }}<br>
+                        Korrekte: {{ row.correct }}<br>
+
+                        {% if row.accuracy >= 80 %}
+                            🟢 Meget høj præcision
+                        {% elif row.accuracy >= 60 %}
+                            🟡 God præcision
+                        {% elif row.accuracy >= 40 %}
+                            🟠 Kan forbedres
+                        {% else %}
+                            🔴 Lav præcision
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color:#64748b;margin:0;">
+            Der er endnu ikke nok historiske beslutninger til at måle signalernes præcision.
+        </p>
+    {% endif %}
+</section>
