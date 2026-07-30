@@ -1,0 +1,68 @@
+<section class="card">
+
+    <h2>
+        📈 AI Portfolio Performance
+    </h2>
+
+    <p style="color:#6b7280;">
+        Måler hvordan tidligere AI-porteføljebeslutninger udvikler sig efter anbefalingen.
+    </p>
+
+
+    {% if portfolio_performance %}
+
+        {% for item in portfolio_performance %}
+
+        <div style="
+            padding:12px;
+            margin-bottom:12px;
+            background:#f8fafc;
+            border-left:4px solid #2563eb;
+            border-radius:6px;
+        ">
+
+            <b>{{ item.stock }}</b>
+
+            <br><br>
+
+            AI beslutning:
+            <b>{{ item.action }}</b>
+
+            <br>
+
+            Score:
+            {{ item.score }}
+
+            <br>
+
+            Pris ved beslutning:
+            {{ item.decision_price }}
+
+            <br>
+
+            Nuværende pris:
+            {{ item.current_price }}
+
+            <br>
+
+            Udvikling:
+            {{ item.performance_pct }}%
+
+            <br><br>
+
+            Resultat:
+            <b>{{ item.ai_result }}</b>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+            Ingen performance-data endnu.
+        </p>
+
+    {% endif %}
+
+</section>
