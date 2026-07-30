@@ -1,0 +1,81 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        🧠 AI Improvement Advisor
+    </h2>
+
+    <p style="
+        color:#64748b;
+        margin-bottom:20px;
+        line-height:1.6;
+    ">
+        {{ improvement_advisor.overall_assessment }}
+    </p>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+        gap:18px;
+    ">
+        <div style="
+            background:#f0fdf4;
+            border:1px solid #bbf7d0;
+            border-radius:10px;
+            padding:18px;
+        ">
+            <h3 style="margin-top:0;color:#166534;">
+                ✅ Styrker
+            </h3>
+
+            {% if improvement_advisor.strengths %}
+                <ul style="
+                    margin:0;
+                    padding-left:20px;
+                    color:#334155;
+                    line-height:1.8;
+                ">
+                    {% for item in improvement_advisor.strengths %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="margin:0;color:#64748b;">
+                    Der er endnu ikke nok historiske data til at identificere tydelige styrker.
+                </p>
+            {% endif %}
+        </div>
+
+        <div style="
+            background:#fff7ed;
+            border:1px solid #fed7aa;
+            border-radius:10px;
+            padding:18px;
+        ">
+            <h3 style="margin-top:0;color:#9a3412;">
+                🎯 Fokusområder
+            </h3>
+
+            {% if improvement_advisor.focus_areas %}
+                <ul style="
+                    margin:0;
+                    padding-left:20px;
+                    color:#334155;
+                    line-height:1.8;
+                ">
+                    {% for item in improvement_advisor.focus_areas %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="margin:0;color:#64748b;">
+                    Ingen tydelige forbedringsområder er identificeret endnu.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</section>
