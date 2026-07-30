@@ -26,6 +26,7 @@ from ai_signal_accuracy_service import get_signal_accuracy
 from ai_improvement_advisor_service import get_improvement_advisor
 from ai_learning_trends_service import get_learning_trends
 from ai_insight_generator_service import get_ai_insight
+from ai_pattern_detector_service import get_pattern_detection
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -174,6 +175,7 @@ def ai_portfolio_lab():
         improvement_advisor=get_improvement_advisor(),
         learning_trends=get_learning_trends(),
         ai_insight=get_ai_insight(),
+        pattern_detection=get_pattern_detection(),
     )
 
 
