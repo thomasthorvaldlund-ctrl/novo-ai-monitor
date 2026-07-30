@@ -51,6 +51,36 @@
 
         </div>
 
+          {% if ai_rebalancing_plan.analysis %}
+
+          <div style="
+              background:#f8fafc;
+              border-left:4px solid #10b981;
+              padding:12px;
+              margin:15px 0;
+              border-radius:6px;
+          ">
+
+              🤖 AI vurdering<br><br>
+
+              🧠 <b>Samlet:</b><br>
+              {{ ai_rebalancing_plan.analysis.summary }}
+
+              <br><br>
+
+              ⚠️ <b>Risiko:</b><br>
+              {{ ai_rebalancing_plan.analysis.risk_comment }}
+
+              <br><br>
+
+              📊 <b>Diversificering:</b><br>
+              {{ ai_rebalancing_plan.analysis.diversification }}
+
+          </div>
+
+          {% endif %}
+
+
         <table>
             <thead>
                 <tr>

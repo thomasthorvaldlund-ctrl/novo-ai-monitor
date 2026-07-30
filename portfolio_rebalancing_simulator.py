@@ -96,6 +96,10 @@ def generate_rebalancing_plan(investment_amount):
     return {
         "investment_amount": investment_amount,
         "plan": plan,
+        "analysis": build_rebalancing_analysis(
+            plan,
+            investment_amount
+        ),
         "message": "AI investeringsplan genereret."
     }
 
@@ -317,4 +321,28 @@ def apply_risk_adjustments(candidates):
         })
 
     return adjusted
+
+def build_rebalancing_analysis(plan, investment_amount):
+    """
+    Genererer forklaring til AI rebalanceringsplan.
+    """
+
+    count = len(plan)
+
+    return {
+        "summary": (
+            "AI foreslår en balanceret investering "
+            "baseret på eksisterende portefølje og AI-kandidater."
+        ),
+
+        "risk_comment": (
+            "Planen forsøger at reducere koncentrationsrisiko "
+            "ved at sprede nyt kapitalindskud."
+        ),
+
+        "diversification": (
+            f"Investeringen fordeles på {count} positioner "
+            f"med samlet beløb {investment_amount} kr."
+        )
+    }
 
