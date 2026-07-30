@@ -2,7 +2,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from ai_learning_timeline_service import get_learning_timeline
+from ai_portfolio_analytics_service import get_portfolio_analytics
+
 
 HISTORY_FILE = Path("ai_learning_history.json")
 
@@ -15,25 +16,33 @@ def load_learning_history():
         return []
 
     try:
-        return json.loads(HISTORY_FILE.read_text())
-    except Exception:
+        data = json.loads(HISTORY_FILE.read_text())
+
+        if isinstance(data, list):
+            return data
+
+        return []
+    except (OSError, json.JSONDecodeError):
         return []
 
 
 def save_learning_snapshot():
     """
-    Gemmer et snapshot af Learning Timeline.
+    Gemmer et snapshot af den aktuelle AI-accuracy.
     """
     history = load_learning_history()
+    analytics = get_portfolio_analytics()
 
-    timeline = get_learning_timeline()
-
-    history.append({
+    snapshot = {
         "timestamp": datetime.now().isoformat(timespec="seconds"),
-        "accuracy": timeline["last_7_days"],
-        "trend": timeline["trend"],
-    })
+        "accuracy": analytics.get("accuracy_pct", 0.0),
+    }
 
-    HISTORY_FILE.write_text(json.dumps(history, indent=2))
+    history.append(snapshot)
+
+    HISTORY_FILE.write_text(
+        json.dumps(history, indent=2),
+        encoding="utf-8",
+    )
 
     return history
