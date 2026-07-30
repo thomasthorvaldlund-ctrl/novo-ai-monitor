@@ -1,0 +1,75 @@
+<section class="card">
+
+    <h2>
+        🧠 AI Portfolio Decision History
+    </h2>
+
+    <p style="color:#6b7280;">
+        Historik over AI's tidligere porteføljevurderinger og anbefalinger.
+    </p>
+
+
+    {% if portfolio_decision_history %}
+
+        {% set latest = portfolio_decision_history[-1] %}
+
+        <div style="
+            background:#f8fafc;
+            border-left:4px solid #2563eb;
+            padding:12px;
+            border-radius:6px;
+            margin-bottom:16px;
+        ">
+
+            🕒 <b>Seneste analyse:</b>
+            {{ latest.date }}
+
+        </div>
+
+
+        {% for item in latest.decisions %}
+
+        <div style="
+            padding:12px;
+            margin-bottom:10px;
+            border-bottom:1px solid #e5e7eb;
+        ">
+
+            <b>{{ item.stock }}</b>
+
+            <span style="
+                margin-left:10px;
+                font-weight:bold;
+            ">
+                {{ item.action }}
+            </span>
+
+            <br>
+
+            Score:
+            {{ item.score }}
+
+            <br>
+
+            Vægt:
+            {{ "%.1f"|format(item.weight_pct) }}%
+
+            <br>
+
+            Årsag:
+            {{ item.reason }}
+
+        </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <p>
+            Ingen AI beslutningshistorik endnu.
+        </p>
+
+    {% endif %}
+
+</section>
