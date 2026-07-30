@@ -18,6 +18,7 @@ from ai_portfolio_decision_service import load_portfolio_decisions
 from ai_portfolio_change_service import get_portfolio_changes
 from ai_portfolio_performance_service import get_portfolio_performance
 from ai_portfolio_analytics_service import get_portfolio_analytics
+from ai_learning_service import get_learning_report
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -158,6 +159,7 @@ def ai_portfolio_lab():
         portfolio_changes=get_portfolio_changes(),
         portfolio_performance=get_portfolio_performance(),
         portfolio_analytics=get_portfolio_analytics(),
+        learning_report=get_learning_report(),
     )
 
 

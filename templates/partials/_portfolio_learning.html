@@ -1,0 +1,61 @@
+<section style="
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="margin-top:0;">
+        🧠 AI Learning Engine
+    </h2>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+        gap:16px;
+        margin-bottom:18px;
+    ">
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Aktuel accuracy
+            </div>
+
+            <div style="font-size:28px;font-weight:700;margin-top:6px;">
+                {{ learning_report.accuracy }}%
+            </div>
+        </div>
+
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Learning-status
+            </div>
+
+            <div style="font-size:22px;font-weight:700;margin-top:6px;">
+                {{ learning_report.status }}
+            </div>
+        </div>
+    </div>
+
+    <div style="
+        background:#eef6ff;
+        border-left:5px solid #2563eb;
+        border-radius:8px;
+        padding:16px;
+    ">
+        <strong>AI-anbefaling</strong>
+
+        <p style="margin:8px 0 0 0;">
+            {{ learning_report.recommendation }}
+        </p>
+    </div>
+</section>
