@@ -86,13 +86,14 @@ def get_portfolio_ai_insights():
 
             insights.append({
                 "stock": stock.get("stock"),
+                "price": stock.get("price"),
                 "ticker": position.get("ticker"),
                 "qty": position.get("qty"),
                 "value_dkk": position.get("value_dkk"),
                 "profit_dkk": position.get("profit_dkk"),
                 "profit_pct": position.get("profit_pct"),
                 "weight_pct": position.get("weight_pct"),
-                  "concentration_risk": concentration_risk,
+                "concentration_risk": concentration_risk,
                 "combined_score": stock.get("combined_score"),
                 "rating": stock.get("rating"),
                 "signal": signal,
