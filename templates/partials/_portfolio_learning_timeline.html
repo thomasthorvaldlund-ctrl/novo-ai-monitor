@@ -10,8 +10,7 @@
     </h2>
 
     <p style="color:#64748b;margin-bottom:18px;">
-        Viser AI'ens aktuelle træfsikkerhed over forskellige perioder.
-        Historiske målepunkter og grafer tilføjes i næste version.
+        Viser AI'ens træfsikkerhed over forskellige perioder og dens historiske udvikling.
     </p>
 
     <div style="
@@ -80,4 +79,79 @@
             </div>
         </div>
     </div>
+
+    <div style="
+        background:#f8fafc;
+        border:1px solid #e5e7eb;
+        border-radius:10px;
+        padding:16px;
+    ">
+        <div style="
+            font-size:15px;
+            font-weight:700;
+            margin-bottom:12px;
+        ">
+            Historisk accuracy
+        </div>
+
+        {% if learning_timeline.chart_values %}
+            <div style="position:relative;height:280px;">
+                <canvas id="aiLearningTimelineChart"></canvas>
+            </div>
+        {% else %}
+            <p style="color:#64748b;margin:0;">
+                Der er endnu ingen historiske snapshots.
+            </p>
+        {% endif %}
+    </div>
 </section>
+
+{% if learning_timeline.chart_values %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.getElementById("aiLearningTimelineChart");
+
+    if (!canvas || typeof Chart === "undefined") {
+        return;
+    }
+
+    new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: {{ learning_timeline.chart_labels | tojson }},
+            datasets: [{
+                label: "Accuracy %",
+                data: {{ learning_timeline.chart_values | tojson }},
+                borderWidth: 2,
+                tension: 0.25,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: "index"
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: 100,
+                    ticks: {
+                        callback: function (value) {
+                            return value + "%";
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}

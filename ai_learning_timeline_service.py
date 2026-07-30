@@ -29,10 +29,22 @@ def get_learning_timeline():
     else:
         trend = "Stable"
 
+    chart_labels = [
+        item.get("timestamp", "")[:10]
+        for item in history
+    ]
+
+    chart_values = [
+        item.get("accuracy", 0.0)
+        for item in history
+    ]
+
     return {
         "last_7_days": acc7,
         "last_30_days": acc30,
         "last_90_days": acc90,
         "trend": trend,
         "history": history,
+        "chart_labels": chart_labels,
+        "chart_values": chart_values,
     }
