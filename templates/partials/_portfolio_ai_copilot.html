@@ -1,0 +1,76 @@
+<section style="
+    background:linear-gradient(135deg, #eff6ff, #f8fafc);
+    border:1px solid #bfdbfe;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="
+        margin-top:0;
+        color:#1e3a8a;
+    ">
+        🤖 {{ ai_copilot.headline }}
+    </h2>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+        gap:16px;
+        margin-bottom:18px;
+    ">
+        <div>
+            <div style="color:#64748b;">
+                Strategi
+            </div>
+            <div style="
+                font-size:24px;
+                font-weight:700;
+            ">
+                {{ ai_copilot.strategy }}
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;">
+                Confidence
+            </div>
+            <div style="
+                font-size:24px;
+                font-weight:700;
+            ">
+                {{ ai_copilot.confidence }}
+            </div>
+        </div>
+    </div>
+
+    <div style="
+        background:white;
+        border-radius:10px;
+        padding:16px;
+        margin-bottom:16px;
+    ">
+        <strong>AI vurdering:</strong>
+
+        <p style="
+            margin-bottom:0;
+            color:#334155;
+            line-height:1.6;
+        ">
+            {{ ai_copilot.summary }}
+        </p>
+    </div>
+
+    <div>
+        <strong>Vigtige punkter:</strong>
+
+        <ul style="
+            margin-top:10px;
+            color:#334155;
+            line-height:1.8;
+        ">
+            {% for point in ai_copilot.key_points %}
+                <li>{{ point }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>

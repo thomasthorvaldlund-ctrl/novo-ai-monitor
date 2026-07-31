@@ -32,6 +32,7 @@ from ai_decision_optimizer_service import get_decision_optimizer
 from ai_learning_feedback_service import get_learning_feedback
 from ai_context_engine_service import get_ai_context
 from ai_strategy_engine_service import get_ai_strategy
+from ai_copilot_engine_service import get_ai_copilot
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -186,6 +187,7 @@ def ai_portfolio_lab():
         learning_feedback=get_learning_feedback(),
         ai_context=get_ai_context(),
         ai_strategy=get_ai_strategy(),
+        ai_copilot=get_ai_copilot(),
     )
 
 
