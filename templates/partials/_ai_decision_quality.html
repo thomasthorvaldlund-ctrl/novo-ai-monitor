@@ -14,7 +14,7 @@
 
     <div style="
         display:grid;
-        grid-template-columns:repeat(5, 1fr);
+        grid-template-columns:repeat(7, 1fr);
         gap:15px;
         margin-top:15px;
     ">
@@ -36,6 +36,15 @@
             {{ decision_quality.filtered_out }}
         </div>
 
+        <div>
+            <b>Gode</b><br>
+            {{ decision_quality.good_decisions }}
+        </div>
+
+        <div>
+            <b>Dårlige</b><br>
+            {{ decision_quality.bad_decisions }}
+        </div>
 
         <div>
             <b>Rå nøjagtighed</b><br>
