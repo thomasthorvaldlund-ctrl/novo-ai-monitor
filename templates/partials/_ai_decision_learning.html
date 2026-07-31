@@ -1,0 +1,99 @@
+<section class="card">
+
+    <h2>
+        🧠 AI Decision Learning
+        <span
+            class="info-icon"
+            data-tooltip="Viser hvad AI har lært fra tidligere beslutninger, kvaliteten af historikken og begrænsninger i datagrundlaget.">
+            ?
+        </span>
+    </h2>
+
+
+    {% if decision_learning %}
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(6, 1fr);
+        gap:15px;
+        margin-top:15px;
+    ">
+
+        <div>
+            <b>Beslutninger</b><br>
+            {{ decision_learning.total_decisions }}
+        </div>
+
+        <div>
+            <b>Validerede</b><br>
+            {{ decision_learning.validated_decisions }}
+        </div>
+
+        <div>
+            <b>Kvalitet</b><br>
+            {{ decision_learning.accuracy }}%
+        </div>
+
+        <div>
+            <b>Gode</b><br>
+            {{ decision_learning.good_decisions }}
+        </div>
+
+        <div>
+            <b>Dårlige</b><br>
+            {{ decision_learning.bad_decisions }}
+        </div>
+
+        <div>
+            <b>Status</b><br>
+            {{ decision_learning.status }}
+        </div>
+
+    </div>
+
+
+    <div style="
+        margin-top:15px;
+        padding:12px;
+        background:#f8fafc;
+        border-left:4px solid #2563eb;
+        border-radius:6px;
+    ">
+
+        <b>Signalfordeling:</b><br>
+
+        BUY:
+        {{ decision_learning.signal_distribution.BUY }}
+
+        |
+        HOLD:
+        {{ decision_learning.signal_distribution.HOLD }}
+
+        |
+        REDUCE:
+        {{ decision_learning.signal_distribution.REDUCE }}
+
+    </div>
+
+
+    {% for insight in decision_learning.insights %}
+
+    <p style="
+        margin-top:10px;
+        color:#374151;
+    ">
+        • {{ insight }}
+    </p>
+
+    {% endfor %}
+
+
+    {% else %}
+
+    <p>
+        Ingen AI learning-data endnu.
+    </p>
+
+    {% endif %}
+
+</section>

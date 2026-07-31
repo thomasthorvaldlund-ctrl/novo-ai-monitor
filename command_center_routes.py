@@ -78,6 +78,7 @@ def command_center_v2():
     ai_copilot_changes = cache.get("ai_copilot_changes", {})
     ai_risk_dashboard = cache.get("ai_risk_dashboard", {})
     decision_quality = cache.get("decision_quality", {})
+    decision_learning = cache.get("decision_learning", {})
 
     ai_engine_status = get_ai_engine_status()
 
@@ -110,6 +111,7 @@ def command_center_v2():
         ai_copilot_changes=ai_copilot_changes,
         ai_risk_dashboard=ai_risk_dashboard,
         decision_quality=decision_quality,
+        decision_learning=decision_learning,
         ai_engine_status=ai_engine_status,
     )
 
