@@ -97,8 +97,18 @@ def build_dashboard_cache():
 
     decision_intelligence = get_decision_intelligence()
 
+    top_stock = ranking[0] if ranking else {}
+
+    decision_snapshot = {
+        **decision_intelligence,
+        "stock": top_stock.get("stock"),
+        "price": top_stock.get("price"),
+        "score": top_stock.get("combined_score"),
+        "rating": top_stock.get("rating"),
+    }
+
     save_decision_snapshot(
-        decision_intelligence
+        decision_snapshot
     )
 
     decision_performance = get_decision_performance()

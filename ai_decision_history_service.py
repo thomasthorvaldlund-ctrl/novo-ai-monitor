@@ -34,6 +34,10 @@ def save_decision_snapshot(decision):
         "date": datetime.now().strftime(
             "%d-%m-%Y %H:%M"
         ),
+        "stock": decision.get("stock"),
+        "price": decision.get("price"),
+        "score": decision.get("score"),
+        "rating": decision.get("rating"),
         "action": decision.get("action"),
         "priority": decision.get("priority"),
         "risk": decision.get("risk"),
