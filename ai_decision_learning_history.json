@@ -1,0 +1,32 @@
+[
+  {
+    "date": "31-07-2026 20:43",
+    "total_decisions": 1,
+    "validated_decisions": 1,
+    "accuracy": 100,
+    "good_decisions": 1,
+    "bad_decisions": 0
+  },
+  {
+    "date": "31-07-2026 20:43",
+    "total_decisions": 55,
+    "validated_decisions": 26,
+    "accuracy": 100.0,
+    "good_decisions": 26,
+    "bad_decisions": 0,
+    "buy_signals": 0,
+    "hold_signals": 71,
+    "reduce_signals": 0,
+    "signal_distribution": {
+      "BUY": 0,
+      "HOLD": 71,
+      "REDUCE": 0
+    },
+    "learning_warning": "Historikken indeholder kun HOLD-beslutninger. Andre beslutningstyper kan endnu ikke vurderes.",
+    "status": "Klar til analyse",
+    "insights": [
+      "Validerede beslutninger viser høj historisk kvalitet.",
+      "Historikken indeholder kun HOLD-beslutninger. Andre beslutningstyper kan endnu ikke vurderes."
+    ]
+  }
+]
