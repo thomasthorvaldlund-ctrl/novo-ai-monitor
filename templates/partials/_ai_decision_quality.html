@@ -1,0 +1,62 @@
+<section class="card">
+
+    <h2>
+        🧠 AI Decision Quality
+        <span
+            class="info-icon"
+            data-tooltip="Måler hvor præcist AI's tidligere beslutninger har været baseret på efterfølgende kursudvikling.">
+            ?
+        </span>
+    </h2>
+
+
+    {% if decision_quality %}
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(5, 1fr);
+        gap:15px;
+        margin-top:15px;
+    ">
+
+        <div>
+            <b>Beslutninger</b><br>
+            {{ decision_quality.total_decisions }}
+        </div>
+
+
+        <div>
+            <b>Validerede</b><br>
+            {{ decision_quality.valid_decisions }}
+        </div>
+
+
+        <div>
+            <b>Filtreret</b><br>
+            {{ decision_quality.filtered_out }}
+        </div>
+
+
+        <div>
+            <b>Rå nøjagtighed</b><br>
+            {{ decision_quality.raw_accuracy }}%
+        </div>
+
+
+        <div>
+            <b>Kvalitet</b><br>
+            {{ decision_quality.quality_accuracy }}%
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <p>
+        Ingen AI beslutningsdata endnu.
+    </p>
+
+    {% endif %}
+
+</section>
