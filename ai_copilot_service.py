@@ -1,3 +1,6 @@
+from ai_context_engine_service import get_ai_context
+
+
 def get_ai_copilot(
     market,
     portfolio,
@@ -11,6 +14,8 @@ def get_ai_copilot(
     og laver en samlet investorvurdering.
     Første version er regelbaseret.
     """
+
+    ai_context = get_ai_context()
 
     market_score = 0
 
@@ -175,4 +180,7 @@ def get_ai_copilot(
         "confidence": confidence,
         "risk_level": risk_level,
         "factors": factors,
+        "learning_status": ai_context["learning_status"],
+        "learning_samples": ai_context["learning_samples"],
+        "context_confidence": ai_context["confidence"],
     }

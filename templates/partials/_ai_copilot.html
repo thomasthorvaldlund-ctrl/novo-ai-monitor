@@ -43,6 +43,29 @@
         · Risiko: {{ ai_copilot.risk_level }}
     </div>
 
+    <div class="copilot-update copilot-neutral">
+
+        <b>🧠 AI Learning Context</b>
+
+        <ul>
+            <li>
+                Status:
+                {{ ai_copilot.learning_status }}
+            </li>
+
+            <li>
+                Observationer:
+                {{ ai_copilot.learning_samples }}
+            </li>
+
+            <li>
+                Context Confidence:
+                {{ ai_copilot.context_confidence }}
+            </li>
+        </ul>
+
+    </div>
+
 
     <div class="copilot-update 
         {% if ai_copilot_changes.status == 'positive' %}
