@@ -101,3 +101,64 @@ def evaluate_decisions():
 
     return results
 
+def get_decision_quality():
+
+    results = evaluate_decisions()
+
+    if not results:
+        return {
+            "total_decisions": 0,
+            "valid_decisions": 0,
+            "filtered_out": 0,
+            "raw_accuracy": 0,
+            "quality_accuracy": 0,
+        }
+
+    total_decisions = len(results)
+
+    valid_results = [
+        item
+        for item in results
+        if item.get("valid")
+    ]
+
+    valid_decisions = len(valid_results)
+
+    filtered_out = (
+        total_decisions
+        - valid_decisions
+    )
+
+    correct_raw = sum(
+        1
+        for item in results
+        if item.get("correct")
+    )
+
+    raw_accuracy = round(
+        (correct_raw / total_decisions) * 100,
+        2
+    )
+
+    correct_valid = sum(
+        1
+        for item in valid_results
+        if item.get("correct")
+    )
+
+    if valid_decisions:
+        quality_accuracy = round(
+            (correct_valid / valid_decisions) * 100,
+            2
+        )
+    else:
+        quality_accuracy = 0
+
+    return {
+        "total_decisions": total_decisions,
+        "valid_decisions": valid_decisions,
+        "filtered_out": filtered_out,
+        "raw_accuracy": raw_accuracy,
+        "quality_accuracy": quality_accuracy,
+    }
+
