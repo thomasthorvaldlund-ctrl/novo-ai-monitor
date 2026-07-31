@@ -35,6 +35,7 @@ from ai_strategy_engine_service import get_ai_strategy
 from ai_copilot_engine_service import get_ai_copilot
 from ai_copilot_decision_service import get_copilot_decision
 from ai_decision_intelligence_service import get_decision_intelligence
+from ai_decision_performance_service import get_decision_performance
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -192,6 +193,7 @@ def ai_portfolio_lab():
         ai_copilot=get_ai_copilot(),
         copilot_decision=get_copilot_decision(),
         decision_intelligence=get_decision_intelligence(),
+          decision_performance=get_decision_performance(),
     )
 
 
