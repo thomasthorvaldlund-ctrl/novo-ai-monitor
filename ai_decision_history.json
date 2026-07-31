@@ -1,0 +1,20 @@
+[
+  {
+    "date": "31-07-2026 09:12",
+    "action": "HOLD",
+    "priority": "Medium",
+    "risk": "Moderat",
+    "confidence": "Low",
+    "recommendation": "Behold kvalitetspositioner og følg signalerne.",
+    "best_opportunity": "MICROSOFT er stærkeste kandidat med AI Score 76.0.",
+    "reasons": [
+      "AI handling: HOLD.",
+      "AI confidence: Low.",
+      "Learning status: For lidt data.",
+      "Datagrundlaget er begrænset og kræver flere observationer.",
+      "Markedsvurdering: Markedet viser blandede signaler.",
+      "AI anbefaling: Behold kvalitetspositioner og følg signalerne.",
+      "Bedste mulighed: MICROSOFT er stærkeste kandidat med AI Score 76.0."
+    ]
+  }
+]
