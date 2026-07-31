@@ -98,3 +98,61 @@ def evaluate_decisions():
 
     return results
 
+def get_decision_accuracy():
+
+    results = evaluate_decisions()
+
+    if not results:
+        return {
+            "total_decisions": 0,
+            "correct": 0,
+            "wrong": 0,
+            "accuracy": 0,
+            "by_decision": {},
+        }
+
+    total = len(results)
+
+    correct = sum(
+        1
+        for item in results
+        if item.get("correct")
+    )
+
+    wrong = total - correct
+
+    accuracy = round(
+        (correct / total) * 100,
+        2
+    )
+
+    by_decision = {}
+
+    for item in results:
+        decision = item.get("decision", "UNKNOWN")
+
+        if decision not in by_decision:
+            by_decision[decision] = {
+                "total": 0,
+                "correct": 0,
+            }
+
+        by_decision[decision]["total"] += 1
+
+        if item.get("correct"):
+            by_decision[decision]["correct"] += 1
+
+    for decision, data in by_decision.items():
+        data["accuracy"] = round(
+            (data["correct"] / data["total"]) * 100,
+            2
+        )
+
+    return {
+        "total_decisions": total,
+        "correct": correct,
+        "wrong": wrong,
+        "accuracy": accuracy,
+        "by_decision": by_decision,
+    }
+
