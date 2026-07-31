@@ -39,6 +39,7 @@ from ai_copilot_timeline_service import get_copilot_timeline
 from ai_decision_intelligence_service import get_decision_intelligence
 from ai_decision_history_service import save_decision_snapshot
 from ai_decision_performance_service import get_decision_performance
+from ai_decision_evaluation_service import get_decision_quality
 
 def build_dashboard_cache():
 
@@ -53,6 +54,7 @@ def build_dashboard_cache():
     market = get_market_score(ranking)
     top_picks = get_top_picks(ranking)
     performance = get_signal_statistics()
+    decision_quality = get_decision_quality()
 
     news_data = get_news_sentiment()
     ai_news = get_ai_news_sentiment(news_data)
@@ -180,6 +182,7 @@ def build_dashboard_cache():
     "ai_copilot_changes": ai_copilot_changes,
     "ai_copilot_timeline": ai_copilot_timeline,
     "performance": performance,
+      "decision_quality": decision_quality,
     "ai_news": ai_news,
     "earnings": earnings,
     "earnings_ai": earnings_ai,
