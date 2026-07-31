@@ -40,6 +40,7 @@ def combined_stock_score(client):
 
         results.append({
             "stock": stock_name,
+            "ticker": tech_item.get("ticker"),
             "price": tech_item.get("price"),
             "original_price": tech_item.get("original_price"),
             "currency": tech_item.get("currency"),

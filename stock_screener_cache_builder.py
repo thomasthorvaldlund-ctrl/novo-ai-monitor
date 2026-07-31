@@ -62,6 +62,7 @@ def build_stock_screener_cache():
 
             results.append({
                 "stock": name,
+                "ticker": ticker,
                 "price": round(latest_dkk, 2),
                 "original_price": round(latest, 2),
                 "currency": currency,

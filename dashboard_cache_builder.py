@@ -102,7 +102,9 @@ def build_dashboard_cache():
     decision_snapshot = {
         **decision_intelligence,
         "stock": top_stock.get("stock"),
-        "price": top_stock.get("price"),
+        "ticker": top_stock.get("ticker"),
+        "currency": top_stock.get("currency"),
+        "price": top_stock.get("original_price"),
         "score": top_stock.get("combined_score"),
         "rating": top_stock.get("rating"),
     }

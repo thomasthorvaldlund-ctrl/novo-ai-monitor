@@ -35,6 +35,8 @@ def save_decision_snapshot(decision):
             "%d-%m-%Y %H:%M"
         ),
         "stock": decision.get("stock"),
+        "ticker": decision.get("ticker"),
+        "currency": decision.get("currency"),
         "price": decision.get("price"),
         "score": decision.get("score"),
         "rating": decision.get("rating"),
