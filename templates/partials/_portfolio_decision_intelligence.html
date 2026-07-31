@@ -1,0 +1,75 @@
+<section style="
+    background:linear-gradient(135deg, #f8fafc, #eff6ff);
+    border:1px solid #bfdbfe;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+    <h2 style="
+        margin-top:0;
+        color:#1e3a8a;
+    ">
+        🧠 {{ decision_intelligence.headline }}
+    </h2>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+        gap:16px;
+        margin-bottom:18px;
+    ">
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Handling
+            </div>
+            <div style="font-size:24px;font-weight:700;">
+                {{ decision_intelligence.action }}
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Prioritet
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_intelligence.priority }}
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Risiko
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_intelligence.risk }}
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Confidence
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_intelligence.confidence }}
+            </div>
+        </div>
+    </div>
+
+    <div style="
+        background:white;
+        border-radius:10px;
+        padding:16px;
+    ">
+        <strong>Beslutningsgrundlag:</strong>
+
+        <ul style="
+            margin-top:10px;
+            color:#334155;
+            line-height:1.7;
+        ">
+            {% for reason in decision_intelligence.reasons %}
+                <li>{{ reason }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
