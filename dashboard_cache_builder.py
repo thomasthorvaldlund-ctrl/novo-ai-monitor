@@ -37,6 +37,7 @@ from ai_copilot_history_service import (
 from ai_copilot_change_service import compare_copilot_snapshots
 from ai_copilot_timeline_service import get_copilot_timeline
 from ai_decision_intelligence_service import get_decision_intelligence
+from ai_decision_history_service import save_decision_snapshot
 
 def build_dashboard_cache():
 
@@ -94,6 +95,10 @@ def build_dashboard_cache():
     )
 
     decision_intelligence = get_decision_intelligence()
+
+    save_decision_snapshot(
+        decision_intelligence
+    )
 
     ai_copilot.update({
         "risk_score": ai_risk_dashboard.get(
