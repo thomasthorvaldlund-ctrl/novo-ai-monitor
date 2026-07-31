@@ -111,6 +111,8 @@ def get_decision_quality():
             "valid_decisions": 0,
             "filtered_out": 0,
             "raw_accuracy": 0,
+            "good_decisions": 0,
+            "bad_decisions": 0,
             "quality_accuracy": 0,
         }
 
@@ -140,15 +142,20 @@ def get_decision_quality():
         2
     )
 
-    correct_valid = sum(
+    good_decisions = sum(
         1
         for item in valid_results
         if item.get("correct")
     )
 
+    bad_decisions = (
+        valid_decisions
+        - good_decisions
+    )
+
     if valid_decisions:
         quality_accuracy = round(
-            (correct_valid / valid_decisions) * 100,
+            (good_decisions / valid_decisions) * 100,
             2
         )
     else:
@@ -159,6 +166,8 @@ def get_decision_quality():
         "valid_decisions": valid_decisions,
         "filtered_out": filtered_out,
         "raw_accuracy": raw_accuracy,
+        "good_decisions": good_decisions,
+        "bad_decisions": bad_decisions,
         "quality_accuracy": quality_accuracy,
     }
 
