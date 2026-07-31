@@ -36,12 +36,15 @@ def evaluate_decisions():
             continue
 
         try:
-            metadata = get_stock_metadata(stock)
+            ticker = item.get("ticker")
 
-            if not metadata:
-                continue
+            if not ticker:
+                metadata = get_stock_metadata(stock)
 
-            ticker = metadata.get("ticker")
+                if not metadata:
+                    continue
+
+                ticker = metadata.get("ticker")
 
             if not ticker:
                 continue
@@ -61,15 +64,32 @@ def evaluate_decisions():
                 * 100
             )
 
+            decision = item.get("action")
+
+            if decision == "BUY":
+                correct = change_pct > 0
+
+            elif decision == "HOLD":
+                correct = change_pct >= -2
+
+            elif decision == "REDUCE":
+                correct = change_pct <= 0
+
+            else:
+                correct = False
+
             results.append({
                 "date": item.get("date"),
                 "stock": stock,
-                "decision": item.get("action"),
+                "decision": decision,
                 "start_price": start_price,
                 "current_price": current_price,
-                "change_pct": round(
-                    change_pct,
-                    2
+                "change_pct": round(change_pct, 2),
+                "correct": correct,
+                "performance": (
+                    "God"
+                    if correct
+                    else "Dårlig"
                 ),
             })
 
@@ -77,3 +97,4 @@ def evaluate_decisions():
             continue
 
     return results
+
