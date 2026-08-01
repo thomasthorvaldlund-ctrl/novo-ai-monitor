@@ -36,6 +36,7 @@ from ai_copilot_engine_service import get_ai_copilot
 from ai_copilot_decision_service import get_copilot_decision
 from ai_decision_intelligence_service import get_decision_intelligence
 from ai_decision_performance_service import get_decision_performance
+from ai_portfolio_executive_service import get_ai_portfolio_executive
 from ai_portfolio_overview_service import get_ai_portfolio_overview
 
 
@@ -202,6 +203,7 @@ def ai_portfolio_lab():
         copilot_decision=get_copilot_decision(),
         decision_intelligence=get_decision_intelligence(),
         decision_performance=get_decision_performance(),
+          ai_portfolio_executive=get_ai_portfolio_executive(),
         ai_portfolio_overview=get_ai_portfolio_overview(),
     )
 

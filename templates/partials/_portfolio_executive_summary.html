@@ -1,0 +1,101 @@
+<section style="
+    background:linear-gradient(135deg,#eff6ff,#f8fafc);
+    border:1px solid #bfdbfe;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+
+    <h2 style="
+        margin-top:0;
+        color:#1e3a8a;
+    ">
+        🤖 AI Portfolio Executive Summary
+    </h2>
+
+    <p style="
+        color:#64748b;
+        margin-bottom:18px;
+    ">
+        Executive Summary samler AI-systemets vigtigste vurdering,
+        strategi, handling og risikoniveau i ét samlet overblik.
+    </p>
+
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+        gap:16px;
+    ">
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Strategi
+            </div>
+            <div style="font-size:24px;font-weight:700;">
+                {{ ai_portfolio_executive.strategy }}
+            </div>
+        </div>
+
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Handling
+            </div>
+            <div style="font-size:24px;font-weight:700;">
+                {{ ai_portfolio_executive.action }}
+            </div>
+        </div>
+
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Confidence
+            </div>
+            <div style="font-size:24px;font-weight:700;">
+                {{ ai_portfolio_executive.confidence }}
+            </div>
+        </div>
+
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Risiko
+            </div>
+            <div style="font-size:24px;font-weight:700;">
+                {{ ai_portfolio_executive.risk }}
+            </div>
+        </div>
+
+    </div>
+
+
+    <div style="
+        background:white;
+        border-radius:10px;
+        padding:16px;
+        margin-top:18px;
+    ">
+
+        <strong>AI vurdering:</strong>
+
+        <p style="
+            color:#334155;
+            line-height:1.7;
+        ">
+            {{ ai_portfolio_executive.summary }}
+        </p>
+
+
+        <strong>Bedste mulighed:</strong>
+
+        <p style="
+            color:#334155;
+            margin-bottom:0;
+        ">
+            {{ ai_portfolio_executive.best_opportunity }}
+        </p>
+
+    </div>
+
+</section>
