@@ -79,6 +79,7 @@ def command_center_v2():
     ai_risk_dashboard = cache.get("ai_risk_dashboard", {})
     decision_quality = cache.get("decision_quality", {})
     decision_learning = cache.get("decision_learning", {})
+    decision_learning_trend = cache.get("decision_learning_trend", {})
 
     ai_engine_status = get_ai_engine_status()
 
@@ -112,7 +113,9 @@ def command_center_v2():
         ai_risk_dashboard=ai_risk_dashboard,
         decision_quality=decision_quality,
         decision_learning=decision_learning,
+        decision_learning_trend=decision_learning_trend,
         ai_engine_status=ai_engine_status,
+        
     )
 
 @command_center_bp.route("/market-score-history")

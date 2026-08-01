@@ -1,0 +1,58 @@
+<section class="card">
+
+    <h2>
+        📈 AI Learning Trend
+        <span
+            class="info-icon"
+            data-tooltip="Viser hvordan AI's beslutningskvalitet udvikler sig over tid baseret på historiske læringsdata.">
+            ?
+        </span>
+    </h2>
+
+
+    {% if decision_learning_trend %}
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(5, 1fr);
+        gap:15px;
+        margin-top:15px;
+    ">
+
+        <div>
+            <b>Snapshots</b><br>
+            {{ decision_learning_trend.snapshots }}
+        </div>
+
+        <div>
+            <b>Start kvalitet</b><br>
+            {{ decision_learning_trend.starting_accuracy }}%
+        </div>
+
+        <div>
+            <b>Aktuel kvalitet</b><br>
+            {{ decision_learning_trend.current_accuracy }}%
+        </div>
+
+        <div>
+            <b>Ændring</b><br>
+            {{ decision_learning_trend.change }}%
+        </div>
+
+        <div>
+            <b>Status</b><br>
+            {{ decision_learning_trend.trend }}
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <p>
+        Ingen AI learning trend-data endnu.
+    </p>
+
+    {% endif %}
+
+</section>
