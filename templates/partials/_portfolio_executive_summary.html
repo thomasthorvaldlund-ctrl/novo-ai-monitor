@@ -202,6 +202,36 @@
 
             </div>
 
+
+            <div style="
+                background:white;
+                border-radius:10px;
+                padding:16px;
+                margin-top:16px;
+            ">
+
+                <strong>🧠 AI Brain Score Explanation</strong>
+
+                <p style="
+                    color:#334155;
+                    line-height:1.7;
+                ">
+                    {{ brain_score_explanation.summary }}
+                </p>
+
+                <strong>Faktorer:</strong>
+
+                <ul style="
+                    color:#334155;
+                    line-height:1.7;
+                ">
+                    {% for factor in brain_score_explanation.factors %}
+                        <li>{{ factor }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
               <strong>📝 AI Portfolio Brain Explanation</strong>
 
               <p style="
