@@ -41,6 +41,7 @@ from ai_portfolio_overview_service import get_ai_portfolio_overview
 from ai_portfolio_brain_service import get_ai_portfolio_brain
 from ai_portfolio_brain_score_service import get_brain_score
 from ai_portfolio_brain_score_explanation_service import get_brain_score_explanation
+from ai_portfolio_confidence_calibration_service import get_confidence_calibration as get_portfolio_confidence_calibration
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -190,7 +191,8 @@ def ai_portfolio_lab():
         portfolio_analytics=get_portfolio_analytics(),
         learning_report=get_learning_report(),
         learning_timeline=get_learning_timeline(),
-        confidence_calibration=get_confidence_calibration(),
+          confidence_calibration=get_confidence_calibration(),
+        portfolio_confidence_calibration=get_portfolio_confidence_calibration(),
         learning_by_stock=get_learning_by_stock(),
         signal_accuracy=get_signal_accuracy(),
         improvement_advisor=get_improvement_advisor(),

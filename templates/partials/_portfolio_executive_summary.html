@@ -232,6 +232,63 @@
 
             </div>
 
+
+            <div style="
+                background:#f8fafc;
+                border-radius:10px;
+                padding:16px;
+                margin-top:16px;
+            ">
+
+                <strong>🧠 AI Confidence Calibration</strong>
+
+                <div style="
+                    display:grid;
+                    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+                    gap:14px;
+                    margin-top:14px;
+                ">
+
+                    <div>
+                        <div style="color:#64748b;font-size:14px;">
+                            Nuværende confidence
+                        </div>
+                        <div style="font-size:20px;font-weight:700;">
+                            {{ portfolio_confidence_calibration.current_confidence }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="color:#64748b;font-size:14px;">
+                            Kalibreret confidence
+                        </div>
+                        <div style="font-size:20px;font-weight:700;">
+                            {{ portfolio_confidence_calibration.calibrated_confidence }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="color:#64748b;font-size:14px;">
+                            Status
+                        </div>
+                        <div style="font-size:20px;font-weight:700;">
+                            {{ portfolio_confidence_calibration.status }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <p style="
+                    color:#334155;
+                    line-height:1.7;
+                    margin-bottom:0;
+                    margin-top:14px;
+                ">
+                    {{ portfolio_confidence_calibration.reason }}
+                </p>
+
+            </div>
+
               <strong>📝 AI Portfolio Brain Explanation</strong>
 
               <p style="
