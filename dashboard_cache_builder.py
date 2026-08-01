@@ -42,6 +42,7 @@ from ai_decision_performance_service import get_decision_performance
 from ai_decision_evaluation_service import get_decision_quality
 from ai_decision_learning_service import get_decision_learning
 from ai_decision_learning_history_service import save_learning_snapshot
+from ai_decision_learning_trend_service import get_learning_trend
 
 def build_dashboard_cache():
 
@@ -123,6 +124,8 @@ def build_dashboard_cache():
     save_learning_snapshot(
         decision_learning
     )
+    
+    decision_learning_trend = get_learning_trend()
 
     ai_copilot.update({
         "risk_score": ai_risk_dashboard.get(
@@ -184,24 +187,25 @@ def build_dashboard_cache():
     "today_take": today_take,
     "executive_summary": executive_summary,
     "ai_copilot": ai_copilot,
-      "decision_intelligence": decision_intelligence,
-      "decision_performance": decision_performance,
+    "decision_intelligence": decision_intelligence,
+    "decision_performance": decision_performance,
     "ai_copilot_changes": ai_copilot_changes,
     "ai_copilot_timeline": ai_copilot_timeline,
     "performance": performance,
-      "decision_quality": decision_quality,
-      "decision_learning": decision_learning,
+    "decision_quality": decision_quality,
+    "decision_learning": decision_learning,
+    "decision_learning_trend": decision_learning_trend,
     "ai_news": ai_news,
     "earnings": earnings,
     "earnings_ai": earnings_ai,
     "earnings_risks": earnings_risks,
     "ai_risk_dashboard": ai_risk_dashboard,
     "stock_explanations": stock_explanations,
-      "portfolio_insights": portfolio_insights,
-      "portfolio_recommendations": portfolio_recommendations,
-      "rebalancing": rebalancing,
-      "ai_rebalancing_plan": ai_rebalancing_plan,
-      "rebalancing_amount": rebalancing_amount,
+    "portfolio_insights": portfolio_insights,
+    "portfolio_recommendations": portfolio_recommendations,
+    "rebalancing": rebalancing,
+    "ai_rebalancing_plan": ai_rebalancing_plan,
+    "rebalancing_amount": rebalancing_amount,
 }
 
     save_dashboard_cache(data)

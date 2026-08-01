@@ -1627,8 +1627,10 @@ def trading_signals_page():
 @app.route("/update-dashboard-cache")
 def update_dashboard_cache():
     from dashboard_cache_builder import build_dashboard_cache
+    from dashboard_cache_service import save_dashboard_cache
 
-    build_dashboard_cache()
+    data = build_dashboard_cache()
+    save_dashboard_cache(data)
 
     return {"status": "dashboard cache updated"}
 
