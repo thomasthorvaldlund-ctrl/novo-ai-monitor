@@ -39,6 +39,7 @@ from ai_decision_performance_service import get_decision_performance
 from ai_portfolio_executive_service import get_ai_portfolio_executive
 from ai_portfolio_overview_service import get_ai_portfolio_overview
 from ai_portfolio_brain_service import get_ai_portfolio_brain
+from ai_portfolio_brain_score_service import get_brain_score
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -206,6 +207,7 @@ def ai_portfolio_lab():
         decision_performance=get_decision_performance(),
           ai_portfolio_executive=get_ai_portfolio_executive(),
           ai_portfolio_brain=get_ai_portfolio_brain(),
+          brain_score=get_brain_score(),
         ai_portfolio_overview=get_ai_portfolio_overview(),
     )
 

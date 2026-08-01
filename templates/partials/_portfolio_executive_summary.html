@@ -154,6 +154,54 @@
               margin-top:16px;
           ">
 
+
+            <div style="
+                background:#f8fafc;
+                border-radius:10px;
+                padding:16px;
+                margin-top:16px;
+            ">
+
+                <strong>🧠 Brain Score</strong>
+
+                <div style="
+                    display:grid;
+                    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+                    gap:14px;
+                    margin-top:14px;
+                ">
+
+                    <div>
+                        <div style="color:#64748b;font-size:14px;">
+                            Samlet score
+                        </div>
+                        <div style="font-size:24px;font-weight:700;">
+                            {{ brain_score.score }}/100
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="color:#64748b;font-size:14px;">
+                            Beslutningsstyrke
+                        </div>
+                        <div style="font-size:20px;font-weight:700;">
+                            {{ brain_score.decision_strength }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="color:#64748b;font-size:14px;">
+                            Datakvalitet
+                        </div>
+                        <div style="font-size:20px;font-weight:700;">
+                            {{ brain_score.data_quality }}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
               <strong>📝 AI Portfolio Brain Explanation</strong>
 
               <p style="
