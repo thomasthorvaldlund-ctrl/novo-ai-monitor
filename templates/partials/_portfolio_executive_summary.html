@@ -146,6 +146,65 @@
           </div>
 
 
+
+          <div style="
+              background:white;
+              border-radius:10px;
+              padding:16px;
+              margin-top:16px;
+          ">
+
+              <strong>📝 AI Portfolio Brain Explanation</strong>
+
+              <p style="
+                  color:#334155;
+                  line-height:1.7;
+                  margin-bottom:0;
+              ">
+                  {{ ai_portfolio_brain.main_reason }}
+              </p>
+
+          </div>
+
+          {% if ai_portfolio_brain.warnings %}
+          <div style="
+              background:#fff7ed;
+              border-radius:10px;
+              padding:16px;
+              margin-top:16px;
+          ">
+
+              <strong>⚠ Advarsler</strong>
+
+              <ul style="color:#334155;line-height:1.7;">
+                  {% for warning in ai_portfolio_brain.warnings %}
+                      <li>{{ warning }}</li>
+                  {% endfor %}
+              </ul>
+
+          </div>
+          {% endif %}
+
+          {% if ai_portfolio_brain.opportunities %}
+          <div style="
+              background:#f0fdf4;
+              border-radius:10px;
+              padding:16px;
+              margin-top:16px;
+          ">
+
+              <strong>⭐ Muligheder</strong>
+
+              <ul style="color:#334155;line-height:1.7;">
+                  {% for opportunity in ai_portfolio_brain.opportunities %}
+                      <li>{{ opportunity }}</li>
+                  {% endfor %}
+              </ul>
+
+          </div>
+          {% endif %}
+
+
         <strong>Bedste mulighed:</strong>
 
         <p style="
