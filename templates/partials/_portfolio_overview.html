@@ -1,0 +1,115 @@
+<section style="
+    background:linear-gradient(135deg, #eff6ff, #f8fafc);
+    border:1px solid #bfdbfe;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:24px;
+">
+
+    <h2 style="
+        margin-top:0;
+        color:#1e3a8a;
+    ">
+        🧠 AI Portfolio Overview
+    </h2>
+
+
+    <p style="
+        color:#64748b;
+        margin-bottom:18px;
+    ">
+        AI Portfolio Overview samler den overordnede vurdering af porteføljens aktuelle AI-status.
+        Modulet viser AI-score, læringsstatus, historiske observationer og udviklingen i AI-systemets vurderinger.
+    </p>
+
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+        gap:16px;
+    ">
+
+
+        <div style="
+            background:white;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                AI Score
+            </div>
+
+            <div style="font-size:28px;font-weight:700;">
+                {{ ai_portfolio_overview.score }}
+            </div>
+        </div>
+
+
+        <div style="
+            background:white;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Status
+            </div>
+
+            <div style="font-size:22px;font-weight:700;">
+                {{ ai_portfolio_overview.status }}
+            </div>
+        </div>
+
+
+        <div style="
+            background:white;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Accuracy
+            </div>
+
+            <div style="font-size:28px;font-weight:700;">
+                {{ ai_portfolio_overview.accuracy }}%
+            </div>
+        </div>
+
+
+        <div style="
+            background:white;
+            border-radius:10px;
+            padding:16px;
+        ">
+            <div style="color:#64748b;font-size:14px;">
+                Observationer
+            </div>
+
+            <div style="font-size:28px;font-weight:700;">
+                {{ ai_portfolio_overview.observations }}
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div style="
+        margin-top:16px;
+        background:white;
+        border-radius:10px;
+        padding:16px;
+        color:#334155;
+    ">
+
+        <b>Learning status:</b>
+        {{ ai_portfolio_overview.learning_status }}
+
+        <br>
+
+        <b>Trend:</b>
+        {{ ai_portfolio_overview.trend }}
+
+    </div>
+
+
+</section>
