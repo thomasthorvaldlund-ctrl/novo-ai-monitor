@@ -181,6 +181,7 @@ def get_ai_copilot(
         "risk_level": risk_level,
         "factors": factors,
         "learning_status": ai_context["learning_status"],
+        "learning_reason": ai_context["learning_reason"],
         "learning_samples": ai_context["learning_samples"],
         "context_confidence": ai_context["confidence"],
     }

@@ -20,6 +20,10 @@ def get_ai_copilot():
         f"Learning status: {context['learning_status']}."
     )
 
+    key_points.append(
+        f"Årsag: {context['learning_reason']}."
+    )
+
     if context["learning_samples"] < 5:
         key_points.append(
             "Datagrundlaget er stadig begrænset."
@@ -29,6 +33,7 @@ def get_ai_copilot():
         "headline": "AI Copilot",
         "strategy": strategy["strategy"],
         "confidence": context["confidence"],
+        "learning_reason": context["learning_reason"],
         "summary": strategy["description"],
         "key_points": key_points,
     }

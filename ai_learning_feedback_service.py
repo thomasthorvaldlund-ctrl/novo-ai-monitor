@@ -34,14 +34,27 @@ def get_learning_feedback():
 
     if total_samples < 5:
         status = "For lidt data"
+        status_reason = (
+            "AI har endnu for få historiske observationer "
+            "til at identificere stabile mønstre."
+        )
     elif total_samples < 20:
         status = "Begrænset datagrundlag"
+        status_reason = (
+            "AI har begyndende historik, men kræver flere observationer "
+            "for mere robuste læringsmønstre."
+        )
     else:
         status = "Aktiv læring"
+        status_reason = (
+            "AI har tilstrækkelig historik til at evaluere mønstre "
+            "og forbedre fremtidige vurderinger."
+        )
 
     data = {
         "updated_at": datetime.now().isoformat(timespec="seconds"),
         "status": status,
+        "status_reason": status_reason,
         "total_samples": total_samples,
         "signal_weights": weights,
     }

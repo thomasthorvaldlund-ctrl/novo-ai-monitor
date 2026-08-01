@@ -27,6 +27,7 @@ def get_ai_context():
         "headline": "AI Context Engine",
         "prediction_accuracy": prediction["expected_accuracy"],
         "learning_status": feedback["status"],
+        "learning_reason": feedback["status_reason"],
         "learning_samples": feedback["total_samples"],
         "confidence": confidence,
     }
