@@ -516,6 +516,52 @@
 
               </div>
 
+
+                <div style="
+                    background:white;
+                    border-radius:10px;
+                    padding:16px;
+                    margin-top:16px;
+                ">
+
+                    <strong>🧠 AI Learning Summary</strong>
+
+                    <p style="color:#334155;line-height:1.7;">
+                        Analyserede beslutninger:
+                        <strong>{{ memory_learning.cases_analyzed }}</strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Stærkeste signal:
+                        <strong>
+                            {{ memory_learning.strongest_signal }}
+                            ({{ memory_learning.strongest_signal_score }}%)
+                        </strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Confidence:
+                        <strong>{{ memory_learning.confidence }}</strong>
+                    </p>
+
+                    <strong>📚 AI læring</strong>
+
+                    <ul style="color:#334155;line-height:1.7;">
+                    {% for item in memory_learning.learning_points %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                    </ul>
+
+                    <strong>💡 Anbefalinger</strong>
+
+                    <ul style="color:#334155;line-height:1.7;">
+                    {% for item in memory_learning.recommendations %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                    </ul>
+
+                </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="

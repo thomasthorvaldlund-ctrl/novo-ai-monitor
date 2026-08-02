@@ -48,6 +48,7 @@ from ai_portfolio_memory_insight_service import get_memory_insights
 from ai_portfolio_memory_advisor_service import get_memory_advisor
 from ai_portfolio_memory_center_service import get_memory_center
 from ai_portfolio_memory_intelligence_service import get_memory_intelligence
+from ai_portfolio_memory_learning_service import get_memory_learning
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -197,7 +198,7 @@ def ai_portfolio_lab():
         portfolio_analytics=get_portfolio_analytics(),
         learning_report=get_learning_report(),
         learning_timeline=get_learning_timeline(),
-          confidence_calibration=get_confidence_calibration(),
+        confidence_calibration=get_confidence_calibration(),
         portfolio_confidence_calibration=get_portfolio_confidence_calibration(),
         learning_by_stock=get_learning_by_stock(),
         signal_accuracy=get_signal_accuracy(),
@@ -214,16 +215,17 @@ def ai_portfolio_lab():
         copilot_decision=get_copilot_decision(),
         decision_intelligence=get_decision_intelligence(),
         decision_performance=get_decision_performance(),
-          ai_portfolio_executive=get_ai_portfolio_executive(),
-          ai_portfolio_brain=get_ai_portfolio_brain(),
-          brain_score=get_brain_score(),
-          brain_score_explanation=get_brain_score_explanation(),
-          decision_memory=get_decision_memory(),
-          memory_trends=get_memory_trends(),
-          memory_insights=get_memory_insights(),
-          memory_advisor=get_memory_advisor(),
-          memory_center=get_memory_center(),
-          memory_intelligence=get_memory_intelligence(),
+        ai_portfolio_executive=get_ai_portfolio_executive(),
+        ai_portfolio_brain=get_ai_portfolio_brain(),
+        brain_score=get_brain_score(),
+        brain_score_explanation=get_brain_score_explanation(),
+        decision_memory=get_decision_memory(),
+        memory_trends=get_memory_trends(),
+        memory_insights=get_memory_insights(),
+        memory_advisor=get_memory_advisor(),
+        memory_center=get_memory_center(),
+        memory_intelligence=get_memory_intelligence(),
+        memory_learning=get_memory_learning(),
         ai_portfolio_overview=get_ai_portfolio_overview(),
     )
 
