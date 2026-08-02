@@ -62,12 +62,32 @@ def get_decision_memory():
                 if counter else None
             ),
 
-            "summary": (
-                f"{stock} har historisk primært været vurderet med "
-                f"{counter.most_common(1)[0][0]}-signaler."
-                if counter else
-                f"Ingen historiske data for {stock}."
-            )
+              "summary": (
+                  (
+                      f"{stock} har historisk haft en tydelig "
+                      "overvægt af REDUCE-signaler og krævet ekstra forsigtighed."
+                  )
+                  if counter.get("REDUCE", 0) >= max(
+                      counter.get("WATCH", 0),
+                      counter.get("HOLD", 0)
+                  ) * 1.2
+
+                  else
+                  (
+                      f"{stock} har historisk primært været overvåget "
+                      "af AI med WATCH-signaler."
+                  )
+                  if counter.get("WATCH", 0) >= max(
+                      counter.get("REDUCE", 0),
+                      counter.get("HOLD", 0)
+                  ) * 1.2
+
+                  else
+                  (
+                      f"{stock} viser en blandet historik med skiftende "
+                      "WATCH, HOLD og REDUCE-signaler."
+                  )
+              )
         }
 
 

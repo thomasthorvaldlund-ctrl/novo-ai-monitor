@@ -265,9 +265,19 @@
                           color:#334155;
                           margin:8px 0;
                       ">
-                          Tidligere analyser: {{ memory.total_cases }}
-                          <br>
-                          Primær vurdering: {{ memory.dominant_action }}
+                            Tidligere analyser: {{ memory.total_cases }}
+
+                            <br><br>
+
+                            <strong>Historisk mønster:</strong>
+                            <br>
+                            WATCH: {{ memory.actions.WATCH }}
+                            <br>
+                            HOLD: {{ memory.actions.HOLD }}
+                            <br>
+                            REDUCE: {{ memory.actions.REDUCE }}
+                            <br>
+                            BUY: {{ memory.actions.BUY }}
                       </p>
 
                       <div style="color:#64748b;font-size:14px;">
