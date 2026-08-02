@@ -317,6 +317,61 @@
 
               </div>
 
+
+              <div style="
+                  background:white;
+                  border-radius:10px;
+                  padding:16px;
+                  margin-top:16px;
+              ">
+
+                  <strong>🧠 AI Memory Insights</strong>
+
+                  <p style="
+                      color:#334155;
+                      line-height:1.7;
+                  ">
+                      {{ memory_insights.summary }}
+                  </p>
+
+                  {% if memory_insights.risk_alerts %}
+
+                  <strong>⚠️ Risikoobservationer</strong>
+
+                  <ul style="
+                      color:#334155;
+                      line-height:1.7;
+                  ">
+                      {% for item in memory_insights.risk_alerts %}
+                          <li>
+                              <strong>{{ item.stock }}</strong><br>
+                              {{ item.message }}
+                          </li>
+                      {% endfor %}
+                  </ul>
+
+                  {% endif %}
+
+                  {% if memory_insights.stable_stocks %}
+
+                  <strong>🟢 Stabile mønstre</strong>
+
+                  <ul style="
+                      color:#334155;
+                      line-height:1.7;
+                  ">
+                      {% for item in memory_insights.stable_stocks %}
+                          <li>
+                              <strong>{{ item.stock }}</strong><br>
+                              {{ item.message }}
+                          </li>
+                      {% endfor %}
+                  </ul>
+
+                  {% endif %}
+
+              </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="
