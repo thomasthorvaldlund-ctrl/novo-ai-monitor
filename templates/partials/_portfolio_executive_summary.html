@@ -284,6 +284,33 @@
                           {{ memory.summary }}
                       </div>
 
+                        {% if stock in memory_trends %}
+
+                        <div style="
+                            margin-top:12px;
+                            padding:12px;
+                            background:#f8fafc;
+                            border-radius:8px;
+                        ">
+
+                            <strong>📈 AI Trend</strong>
+
+                            <p style="
+                                color:#334155;
+                                margin:8px 0;
+                            ">
+                                Trend:
+                                {{ memory_trends[stock].trend }}
+                                <br><br>
+
+                                {{ memory_trends[stock].explanation }}
+                            </p>
+
+                        </div>
+
+                        {% endif %}
+
+
                   </div>
 
                   {% endfor %}

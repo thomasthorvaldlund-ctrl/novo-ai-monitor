@@ -43,6 +43,7 @@ from ai_portfolio_brain_score_service import get_brain_score
 from ai_portfolio_brain_score_explanation_service import get_brain_score_explanation
 from ai_portfolio_confidence_calibration_service import get_confidence_calibration as get_portfolio_confidence_calibration
 from ai_portfolio_decision_memory_service import get_decision_memory
+from ai_portfolio_memory_trend_service import get_memory_trends
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -214,6 +215,7 @@ def ai_portfolio_lab():
           brain_score=get_brain_score(),
           brain_score_explanation=get_brain_score_explanation(),
           decision_memory=get_decision_memory(),
+          memory_trends=get_memory_trends(),
         ai_portfolio_overview=get_ai_portfolio_overview(),
     )
 
