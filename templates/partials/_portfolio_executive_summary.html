@@ -664,6 +664,67 @@
 
                 </div>
 
+
+                <div style="
+                    background:white;
+                    border-radius:10px;
+                    padding:16px;
+                    margin-top:16px;
+                ">
+
+                    <strong>🧠 AI Confidence Intelligence</strong>
+
+                    <p style="color:#334155;line-height:1.7;">
+                        Samlet confidence:
+                        <strong>{{ confidence_intelligence.overall_confidence }}</strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Læringsstyrke:
+                        <strong>{{ confidence_intelligence.learning_strength }}</strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Calibration status:
+                        <strong>{{ confidence_intelligence.calibration_status }}</strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Beslutninger:
+                        <strong>{{ confidence_intelligence.decision_count }}</strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Validerede samples:
+                        <strong>{{ confidence_intelligence.sample_count }}</strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Stærkeste signal:
+                        <strong>
+                            {{ confidence_intelligence.best_signal }}
+                            ({{ confidence_intelligence.best_signal_score }}%)
+                        </strong>
+                    </p>
+
+                    <strong>✅ Årsager</strong>
+
+                    <ul style="color:#334155;line-height:1.7;">
+                    {% for item in confidence_intelligence.reasons %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                    </ul>
+
+                    <strong>⚠️ Advarsler</strong>
+
+                    <ul style="color:#334155;line-height:1.7;">
+                    {% for item in confidence_intelligence.warnings %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                    </ul>
+
+                </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="
