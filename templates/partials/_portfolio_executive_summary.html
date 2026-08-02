@@ -417,6 +417,58 @@
 
               </div>
 
+
+              <div style="
+                  background:white;
+                  border-radius:10px;
+                  padding:16px;
+                  margin-top:16px;
+              ">
+
+                  <strong>🧠 AI Portfolio Memory Center</strong>
+
+                  <p style="
+                      color:#334155;
+                      line-height:1.7;
+                  ">
+                      {{ memory_center.summary }}
+                  </p>
+
+                  <strong>📊 Historik</strong>
+                  <p style="color:#334155;">
+                      Tidligere AI-beslutninger:
+                      {{ memory_center.decision_memory.total_memory_cases }}
+                  </p>
+
+                  <strong>⚠️ Risikoobservationer</strong>
+
+                  {% for item in memory_center.insights.risk_alerts %}
+                  <p style="color:#334155;">
+                      <strong>{{ item.stock }}</strong><br>
+                      {{ item.message }}
+                  </p>
+                  {% endfor %}
+
+                  <strong>🟢 Stabile mønstre</strong>
+
+                  {% for item in memory_center.insights.stable_stocks %}
+                  <p style="color:#334155;">
+                      <strong>{{ item.stock }}</strong><br>
+                      {{ item.message }}
+                  </p>
+                  {% endfor %}
+
+                  <strong>🧭 AI anbefalinger</strong>
+
+                  {% for item in memory_center.advisor.advice %}
+                  <p style="color:#334155;">
+                      <strong>{{ item.stock }}</strong> →
+                      {{ item.recommendation }}
+                  </p>
+                  {% endfor %}
+
+              </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="
