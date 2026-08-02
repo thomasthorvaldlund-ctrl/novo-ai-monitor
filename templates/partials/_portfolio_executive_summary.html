@@ -608,6 +608,62 @@
 
                 </div>
 
+
+                <div style="
+                    background:white;
+                    border-radius:10px;
+                    padding:16px;
+                    margin-top:16px;
+                ">
+
+                    <strong>📊 AI Learning Analytics</strong>
+
+                    <p style="color:#334155;line-height:1.7;">
+                        Analyserede cases:
+                        <strong>{{ learning_analytics.total_cases }}</strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        Bedste signal:
+                        <strong>
+                            {{ learning_analytics.best_signal }}
+                            ({{ learning_analytics.best_signal_score }}%)
+                        </strong>
+                    </p>
+
+                    <p style="color:#334155;">
+                        AI Confidence:
+                        <strong>{{ learning_analytics.confidence }}</strong>
+                    </p>
+
+                    <strong>📈 Signal Performance</strong>
+
+                    {% for signal, data in learning_analytics.signal_performance.items() %}
+
+                    <div style="
+                        margin-top:12px;
+                        padding:12px;
+                        background:#f8fafc;
+                        border-radius:8px;
+                    ">
+
+                        <strong>{{ signal }}</strong><br>
+
+                        Type: {{ data.type }}<br>
+                        Cases: {{ data.cases }}<br>
+                        Accuracy: {{ data.accuracy }}%<br>
+                        Neutral: {{ data.neutral_rate }}%<br>
+
+                        <div style="margin-top:6px;color:#475569;">
+                            {{ data.interpretation }}
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="
