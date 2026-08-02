@@ -240,6 +240,46 @@
                 margin-top:16px;
             ">
 
+
+              <div style="
+                  background:white;
+                  border-radius:10px;
+                  padding:16px;
+                  margin-top:16px;
+              ">
+
+                  <strong>🧠 AI Decision Memory</strong>
+
+                  {% for stock, memory in decision_memory.stock_memory.items() %}
+
+                  <div style="
+                      margin-top:14px;
+                      padding:12px;
+                      background:#f8fafc;
+                      border-radius:8px;
+                  ">
+
+                      <strong>{{ stock }}</strong>
+
+                      <p style="
+                          color:#334155;
+                          margin:8px 0;
+                      ">
+                          Tidligere analyser: {{ memory.total_cases }}
+                          <br>
+                          Primær vurdering: {{ memory.dominant_action }}
+                      </p>
+
+                      <div style="color:#64748b;font-size:14px;">
+                          {{ memory.summary }}
+                      </div>
+
+                  </div>
+
+                  {% endfor %}
+
+              </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="
