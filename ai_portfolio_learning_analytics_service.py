@@ -23,14 +23,63 @@ def get_learning_analytics():
                 1
             )
 
+        neutral = stats.get("neutral", 0)
+        incorrect = stats.get("incorrect", 0)
+
+        neutral_rate = 0
+
+        if total:
+            neutral_rate = round(
+                neutral / total * 100,
+                1
+            )
+
+
+        signal_type = "Decision"
+
+        interpretation = "Historisk beslutningssignal"
+
+
+        if action == "WATCH":
+
+            signal_type = "Monitoring"
+
+            interpretation = (
+                "Primært overvågningssignal "
+                "og ikke en aktiv handelsbeslutning."
+            )
+
+
+        elif action == "REDUCE":
+
+            signal_type = "Risk Management"
+
+            interpretation = (
+                "Stærkt historisk signal til "
+                "risikoreduktion."
+            )
+
+
+        elif action == "HOLD":
+
+            signal_type = "Position Management"
+
+            interpretation = (
+                "Stabilt signal til fastholdelse "
+                "af eksisterende positioner."
+            )
+
+
         signal_performance[action] = {
+            "type": signal_type,
             "cases": total,
             "accuracy": accuracy,
+            "neutral_rate": neutral_rate,
             "correct": correct,
-            "neutral": stats.get("neutral", 0),
-            "incorrect": stats.get("incorrect", 0)
+            "neutral": neutral,
+            "incorrect": incorrect,
+            "interpretation": interpretation
         }
-
 
     best_signal = None
     best_score = -1
