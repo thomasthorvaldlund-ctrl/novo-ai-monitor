@@ -45,6 +45,7 @@ from ai_portfolio_confidence_calibration_service import get_confidence_calibrati
 from ai_portfolio_decision_memory_service import get_decision_memory
 from ai_portfolio_memory_trend_service import get_memory_trends
 from ai_portfolio_memory_insight_service import get_memory_insights
+from ai_portfolio_memory_advisor_service import get_memory_advisor
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -218,6 +219,7 @@ def ai_portfolio_lab():
           decision_memory=get_decision_memory(),
           memory_trends=get_memory_trends(),
           memory_insights=get_memory_insights(),
+          memory_advisor=get_memory_advisor(),
         ai_portfolio_overview=get_ai_portfolio_overview(),
     )
 
