@@ -469,6 +469,53 @@
 
               </div>
 
+
+              <div style="
+                  background:white;
+                  border-radius:10px;
+                  padding:16px;
+                  margin-top:16px;
+              ">
+
+                  <strong>🧠 AI Memory Intelligence</strong>
+
+                  <p style="
+                      color:#334155;
+                      line-height:1.7;
+                  ">
+                      Samlet vurdering:
+                      <strong>{{ memory_intelligence.portfolio_assessment }}</strong>
+                  </p>
+
+                  <strong>⚠️ Historiske risikopositioner</strong>
+
+                  {% for item in memory_intelligence.risk_stocks %}
+                  <p style="color:#334155;">
+                      <strong>{{ item.stock }}</strong><br>
+                      {{ item.reason }}
+                  </p>
+                  {% endfor %}
+
+                  <strong>🟢 Stabile positioner</strong>
+
+                  {% for item in memory_intelligence.stable_stocks %}
+                  <p style="color:#334155;">
+                      <strong>{{ item.stock }}</strong><br>
+                      {{ item.reason }}
+                  </p>
+                  {% endfor %}
+
+                  <div style="
+                      margin-top:12px;
+                      padding:12px;
+                      background:#f8fafc;
+                      border-radius:8px;
+                  ">
+                      {{ memory_intelligence.summary }}
+                  </div>
+
+              </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="

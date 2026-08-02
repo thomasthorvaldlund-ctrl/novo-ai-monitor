@@ -47,6 +47,7 @@ from ai_portfolio_memory_trend_service import get_memory_trends
 from ai_portfolio_memory_insight_service import get_memory_insights
 from ai_portfolio_memory_advisor_service import get_memory_advisor
 from ai_portfolio_memory_center_service import get_memory_center
+from ai_portfolio_memory_intelligence_service import get_memory_intelligence
 
 
 command_center_bp = Blueprint("command_center", __name__)
@@ -222,6 +223,7 @@ def ai_portfolio_lab():
           memory_insights=get_memory_insights(),
           memory_advisor=get_memory_advisor(),
           memory_center=get_memory_center(),
+          memory_intelligence=get_memory_intelligence(),
         ai_portfolio_overview=get_ai_portfolio_overview(),
     )
 
