@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import math
+
 from ai_portfolio_learning_analytics_service import (
     get_learning_analytics
 )
@@ -9,10 +11,21 @@ from ai_confidence_intelligence_service import (
     get_confidence_intelligence
 )
 
-
 DECISION_FILE = Path(
     "ai_portfolio_decisions.json"
 )
+
+def clean_number(value):
+    if value is None:
+        return 0
+
+    try:
+        if math.isnan(float(value)):
+            return 0
+    except:
+        pass
+
+    return value
 
 
 def load_latest_portfolio_decisions():
@@ -118,29 +131,29 @@ def get_stock_decision_intelligence():
             f"med historisk præcision på {signal_accuracy}%."
         )
 
-    score = item.get(
-        "score",
-        0
+        score = item.get(
+            "score",
+            0
         )
 
-    if score >= 70:
-        score_text = "Høj AI-score understøtter positiv vurdering."
-    elif score >= 50:
-        score_text = "Mellem AI-score indikerer neutral vurdering."
-    else:
-        score_text = "Lav AI-score indikerer øget forsigtighed."
-
+        if score >= 70:
+            score_text = "Høj AI-score understøtter positiv vurdering."
+        elif score >= 50:
+            score_text = "Mellem AI-score indikerer neutral vurdering."
+        else:
+            score_text = "Lav AI-score indikerer øget forsigtighed."
 
         explanation.append(
             score_text
         )
 
-
-        explanation.append(
-            f"Porteføljevægt: "
-            f"{item.get('weight_pct', 0):.1f}%."
+        clean_weight = clean_number(
+            item.get("weight_pct")
         )
 
+        explanation.append(
+            f"Porteføljevægt: {clean_weight:.1f}%."
+        )
 
         results.append({
 
@@ -150,17 +163,11 @@ def get_stock_decision_intelligence():
 
             "score": item.get("score"),
 
-            "weight_pct": item.get(
-                "weight_pct"
-            ),
+            "weight_pct": clean_weight,
 
-            "reason": item.get(
-                "reason"
-            ),
+            "reason": item.get("reason"),
 
-            "profit_pct": item.get(
-                "profit_pct"
-            ),
+            "profit_pct": item.get("profit_pct"),
 
             "confidence":
                 confidence.get(
@@ -176,6 +183,5 @@ def get_stock_decision_intelligence():
                 explanation
 
         })
-
 
     return results

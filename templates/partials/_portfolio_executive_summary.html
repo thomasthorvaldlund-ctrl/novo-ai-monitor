@@ -725,6 +725,53 @@
 
                 </div>
 
+
+                  <div style="
+                      background:white;
+                      border-radius:10px;
+                      padding:16px;
+                      margin-top:16px;
+                  ">
+
+                      <strong>🧠 AI Stock Decision Intelligence</strong>
+
+                      {% for item in stock_decision_intelligence %}
+
+                      <div style="
+                          margin-top:12px;
+                          padding:12px;
+                          background:#f8fafc;
+                          border-radius:8px;
+                      ">
+
+                          <strong>{{ item.stock }}</strong><br>
+
+                          Beslutning:
+                          <strong>{{ item.decision }}</strong><br>
+
+                          Score:
+                          {{ item.score }}<br>
+
+                          Vægt:
+                          {{ item.weight_pct|round(1) }}%<br>
+
+                          Confidence:
+                          {{ item.confidence }}<br>
+
+                          <strong>Forklaring:</strong>
+
+                          <ul style="color:#334155;line-height:1.7;">
+                          {% for explanation in item.explanation %}
+                              <li>{{ explanation }}</li>
+                          {% endfor %}
+                          </ul>
+
+                      </div>
+
+                      {% endfor %}
+
+                  </div>
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="

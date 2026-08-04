@@ -38,7 +38,13 @@ def get_portfolio_positions(portfolio_file=PORTFOLIO_FILE):
         currency = get_currency(ticker)
 
         data = get_history(ticker, period="10d")
-        latest = float(data["Close"].iloc[-1])
+
+        valid_prices = data["Close"].dropna()
+
+        if valid_prices.empty:
+            continue
+
+        latest = float(valid_prices.iloc[-1])
 
         latest_dkk = convert_to_dkk(latest, currency, fx_rates)
         buy_price_dkk = convert_to_dkk(row["buy_price"], currency, fx_rates)
