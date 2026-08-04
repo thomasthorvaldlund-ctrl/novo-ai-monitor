@@ -56,9 +56,10 @@ AI Portfolio Lab
             line-height:1.7;
             margin-bottom:0;
         ">
-            Et større datagrundlag giver normalt mere stabile AI-vurderinger.
-            Ved begrænset data vil systemet arbejde mere konservativt og
-            reducere sin confidence.
+            Et større historisk datagrundlag giver AI bedre mulighed for at
+            identificere mønstre og validere tidligere vurderinger.
+            Ved begrænset datagrundlag anvender systemet en mere forsigtig
+            strategi og reducerer sin confidence for at undgå overfortolkning.
         </p>
 
         <p style="
@@ -71,11 +72,91 @@ AI Portfolio Lab
 
     </div>
 
+        <div style="
+        background:#f8fafc;
+        border-left:5px solid #0f766e;
+        padding:16px;
+        border-radius:8px;
+        margin-bottom:30px;
+    ">
+
+        <strong>📊 AI Datagrundlag & Confidence</strong>
+
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+            gap:16px;
+            margin-top:16px;
+        ">
+
+            <div>
+                <div style="color:#64748b;font-size:14px;">
+                    Historiske beslutninger
+                </div>
+                <div style="font-size:22px;font-weight:700;">
+                    {{ ai_data_quality.historical_decisions }}
+                </div>
+            </div>
+
+
+            <div>
+                <div style="color:#64748b;font-size:14px;">
+                    Validerede samples
+                </div>
+                <div style="font-size:22px;font-weight:700;">
+                    {{ ai_data_quality.validated_samples }}
+                </div>
+            </div>
+
+
+            <div>
+                <div style="color:#64748b;font-size:14px;">
+                    AI Confidence
+                </div>
+                <div style="font-size:22px;font-weight:700;">
+                    {{ ai_data_quality.confidence }}
+                </div>
+            </div>
+
+
+            <div>
+                <div style="color:#64748b;font-size:14px;">
+                    Datakvalitet
+                </div>
+                <div style="font-size:22px;font-weight:700;">
+                    {{ ai_data_quality.data_quality }}
+                </div>
+            </div>
+
+        </div>
+
+
+        <p style="
+            color:#334155;
+            line-height:1.7;
+            margin-bottom:0;
+            margin-top:16px;
+        ">
+            {{ ai_data_quality.reason }}
+        </p>
+
+
+        <p style="
+            color:#64748b;
+            margin-bottom:0;
+            margin-top:10px;
+        ">
+            Kalibreringsstatus:
+            <strong>{{ ai_data_quality.calibration_status }}</strong>
+        </p>
+
+    </div>
+
     {% include "partials/_portfolio_overview.html" %}
 
-      {% include "partials/_portfolio_executive_summary.html" %}
+    {% include "partials/_portfolio_executive_summary.html" %}
 
-      {% include "partials/_portfolio_insights.html" %}
+    {% include "partials/_portfolio_insights.html" %}
 
     {% include "partials/_portfolio_recommendations.html" %}
 

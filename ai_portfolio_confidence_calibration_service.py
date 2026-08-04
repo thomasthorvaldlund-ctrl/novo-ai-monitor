@@ -17,8 +17,11 @@ def get_confidence_calibration():
         calibrated = "Low"
         status = "Konservativ"
         reason = (
-            "AI har endnu for få historiske observationer "
-            "til at øge confidence."
+            "AI vurderer fortsat konservativt, fordi systemet "
+            "endnu har begrænset historisk datagrundlag til at "
+            "validere sine beslutninger. Confidence vil gradvist "
+            "blive mere præcis, efterhånden som flere analyser "
+            "og resultater bliver opsamlet."
         )
 
     elif decisions < 50:

@@ -53,6 +53,7 @@ from ai_portfolio_learning_evolution_service import get_learning_evolution
 from ai_portfolio_learning_analytics_service import get_learning_analytics
 from ai_confidence_intelligence_service import get_confidence_intelligence
 from ai_stock_decision_intelligence_service import get_stock_decision_intelligence
+from ai_data_quality_service import get_ai_data_quality
 from ai_decision_evolution_service import get_decision_evolution
 
 
@@ -235,6 +236,7 @@ def ai_portfolio_lab():
         learning_analytics=get_learning_analytics(),
         confidence_intelligence=get_confidence_intelligence(),
         stock_decision_intelligence=get_stock_decision_intelligence(),
+        ai_data_quality=get_ai_data_quality(),
         decision_evolution=get_decision_evolution(),
         ai_portfolio_overview=get_ai_portfolio_overview(),
     )
