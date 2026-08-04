@@ -89,42 +89,30 @@ def get_decision_evolution():
                     "stock": stock,
                     "changed": True,
 
-                    "previous_action":
-                        old["action"],
+                    "previous_action": old["action"],
+                    "current_action": new["action"],
 
-                    "current_action":
-                        new["action"],
+                    "previous_score": old["score"],
+                    "current_score": new["score"],
+                    "score_change": new["score"] - old["score"],
 
-                    "previous_score":
-                        old["score"],
+                    "previous_reason": old["reason"],
+                    "current_reason": new["reason"],
 
-                    "current_score":
-                        new["score"],
+                    "changed_at": new["date"],
+                    "change_count": len(changes),
 
-                    "score_change":
-                        new["score"] - old["score"],
-
-                    "previous_reason":
-                        old["reason"],
-
-                    "current_reason":
-                        new["reason"],
-
-                    "changed_at":
-                        new["date"],
-
-                    "change_count":
-                        len(changes),
-
-                    "stability":
-                        calculate_stability(
-                            len(changes)
-                        )
+                    "stability": calculate_stability(
+                        len(changes)
+                    )
                 }
-            )
+                )
 
+    for item in results:
+        item["explanation"] = generate_evolution_explanation(item)
 
     return results
+
 def generate_evolution_explanation(item):
     """
     Genererer en menneskelig forklaring

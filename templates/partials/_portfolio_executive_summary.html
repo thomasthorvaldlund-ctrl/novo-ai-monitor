@@ -772,6 +772,54 @@
 
                   </div>
 
+                  <strong>📈 AI Decision Evolution</strong>
+
+                  {% for item in decision_evolution %}
+
+                  <div style="
+                      background:#f8fafc;
+                      border-radius:10px;
+                      padding:16px;
+                      margin-top:16px;
+                  ">
+
+                      <strong>{{ item.stock }}</strong><br>
+
+                      Ændring:
+                      <strong>
+                          {{ item.previous_action }}
+                          →
+                          {{ item.current_action }}
+                      </strong><br>
+
+                      Score:
+                      {{ item.previous_score }}
+                      →
+                      {{ item.current_score }}<br>
+
+                      Stabilitet:
+                      <strong>{{ item.stability }}</strong><br>
+
+                      Historiske ændringer:
+                      {{ item.change_count }}<br>
+
+                      Tidspunkt:
+                      {{ item.changed_at }}<br>
+
+                      <strong>Forklaring:</strong>
+
+                      <p style="
+                          color:#334155;
+                          line-height:1.7;
+                      ">
+                          {{ item.explanation }}
+                      </p>
+
+                  </div>
+
+                  {% endfor %}
+
+
                 <strong>🧠 AI Confidence Calibration</strong>
 
                 <div style="
