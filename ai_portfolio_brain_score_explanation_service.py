@@ -2,6 +2,7 @@ from ai_portfolio_brain_score_service import get_brain_score
 from ai_prediction_engine_service import get_prediction_engine
 from ai_learning_feedback_service import get_learning_feedback
 from ai_context_engine_service import get_ai_context
+from ai_confidence_label_service import normalize_confidence_label
 
 
 def get_brain_score_explanation():
@@ -37,10 +38,14 @@ def get_brain_score_explanation():
             "AI har et stabilt datagrundlag og højere beslutningssikkerhed."
         )
 
-    return {
+        return {
         "headline": "AI Brain Score Explanation",
         "score": score_data.get("score", 0),
         "decision_strength": score_data.get("decision_strength"),
+
+        "confidence":
+            normalize_confidence_label(confidence),
+
         "factors": factors,
         "summary": (
             "Brain Score vurderes ud fra historiske resultater, "

@@ -1,7 +1,7 @@
 from ai_context_engine_service import get_ai_context
 from ai_decision_performance_service import get_decision_performance
 from ai_learning_feedback_service import get_learning_feedback
-
+from ai_confidence_label_service import normalize_confidence_label
 
 def get_confidence_calibration():
 
@@ -9,12 +9,14 @@ def get_confidence_calibration():
     performance = get_decision_performance()
     feedback = get_learning_feedback()
 
-    confidence = context.get("confidence", "Unknown")
+    confidence = normalize_confidence_label(
+        context.get("confidence", "Unknown")
+    )
     samples = feedback.get("total_samples", 0)
     decisions = performance.get("total_decisions", 0)
 
     if samples < 10:
-        calibrated = "Low"
+        calibrated = "Lav"
         status = "Konservativ"
         reason = (
             "AI vurderer fortsat konservativt, fordi systemet "

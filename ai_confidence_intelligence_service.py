@@ -6,6 +6,8 @@ from ai_portfolio_learning_analytics_service import (
     get_learning_analytics
 )
 
+from ai_confidence_label_service import normalize_confidence_label
+
 
 def get_confidence_intelligence():
 
@@ -91,10 +93,12 @@ def get_confidence_intelligence():
             overall,
 
         "learning_strength":
+        normalize_confidence_label(
             learning.get(
                 "confidence",
                 "Ukendt"
-            ),
+            )
+        ),
 
         "calibration_status":
             calibration.get(
