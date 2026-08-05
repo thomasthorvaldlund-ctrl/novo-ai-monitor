@@ -158,6 +158,24 @@ def ai_stock_library():
 
     performance = cache.get("performance", {})
 
+    for item in stock_explanations:
+        stock = item.get("stock", "").strip().upper()
+
+        if stock in [s.upper() for s in performance.get("buy_stocks", [])]:
+            item["signal"] = "BUY"
+
+        elif stock in [s.upper() for s in performance.get("hold_stocks", [])]:
+            item["signal"] = "HOLD"
+
+        elif stock in [s.upper() for s in performance.get("watch_stocks", [])]:
+            item["signal"] = "WATCH"
+
+        elif stock in [s.upper() for s in performance.get("sell_stocks", [])]:
+            item["signal"] = "SELL"
+
+        else:
+            item["signal"] = "UNKNOWN"
+
     signal_stocks = {
         "BUY": performance.get("buy_stocks", []),
         "HOLD": performance.get("hold_stocks", []),

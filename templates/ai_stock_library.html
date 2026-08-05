@@ -91,12 +91,16 @@
         {% endif %}
     ">
 
-        {% if item.score >= 70 %}
+        {% if item.signal == "BUY" %}
             ⭐ BUY
-        {% elif item.score >= 50 %}
+        {% elif item.signal == "HOLD" %}
             ⏸ HOLD
-        {% else %}
+        {% elif item.signal == "WATCH" %}
             👀 WATCH
+        {% elif item.signal == "SELL" %}
+            🔴 SELL
+        {% else %}
+            ⚪ UKENDT
         {% endif %}
 
     </div>
