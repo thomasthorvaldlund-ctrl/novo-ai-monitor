@@ -39,6 +39,7 @@ from market_dashboard_routes import market_dashboard_bp
 from watchlist_routes import watchlist_bp
 from combined_score_routes import combined_score_bp
 from command_center_routes import command_center_bp
+from backup_routes import backup_bp
 from stock_screener_service import (
     stock_screener as service_stock_screener,
 )
@@ -73,6 +74,7 @@ app.register_blueprint(job_status_bp)
 app.register_blueprint(signal_history_bp)
 app.register_blueprint(ai_performance_bp)
 app.register_blueprint(stock_universe_bp)
+app.register_blueprint(backup_bp)
 
 USERS = {
     "thomas": "59autoKamp19#",
@@ -154,6 +156,7 @@ def before_request():
         "/command-center",
         "/command-center-v2",
         "/ai-portfolio-lab",
+        "/backup-manager",
         "/ai-performance",
         "/stock-universe",
         "/stock-universe-filter",

@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Aureum Backup Manager{% endblock %}
+
+{% block content %}
+
+<section class="card">
+
+    <h1>💾 Aureum Backup Manager</h1>
+
+    <p class="section-description">
+        Opretter og viser komprimerede sikkerhedskopier af Aureum AI Platform.
+        Backups indeholder kildekode, konfiguration og AI-data, men udelader
+        virtuelle miljøer, Git-historik og cachemapper.
+    </p>
+
+    <form
+        method="post"
+        action="{{ url_for('backup_manager.create_backup_route') }}"
+        style="margin-top:20px;"
+    >
+        <button type="submit" class="btn btn-primary">
+            💾 Opret ny backup
+        </button>
+    </form>
+
+</section>
+
+
+{% if latest_backup %}
+
+<section class="card">
+
+    <h2>Seneste backup</h2>
+
+    <div class="summary-grid">
+
+        <div class="summary-item">
+            <span>Version</span>
+            <strong>{{ latest_backup.version }}</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Oprettet</span>
+            <strong>{{ latest_backup.created }}</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Størrelse</span>
+            <strong>{{ latest_backup.size_mb }} MB</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Antal filer</span>
+            <strong>{{ latest_backup.file_count }}</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Python</span>
+            <strong>{{ latest_backup.python_version }}</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Status</span>
+            <strong>
+                {% if latest_backup.available %}
+                    ✅ Tilgængelig
+                {% else %}
+                    ❌ Mangler
+                {% endif %}
+            </strong>
+        </div>
+
+    </div>
+
+    <p>
+        <b>Fil:</b>
+        {{ latest_backup.file }}
+    </p>
+
+    <p>
+        <b>Git commit:</b>
+        <code>{{ latest_backup.git_commit }}</code>
+    </p>
+
+</section>
+
+{% else %}
+
+<section class="card">
+    <h2>Ingen backups endnu</h2>
+    <p>Der er endnu ikke oprettet en backup med metadata.</p>
+</section>
+
+{% endif %}
+
+
+<section class="card">
+
+    <h2>Backup-historik</h2>
+
+    {% if backups %}
+
+    <div style="overflow-x:auto;">
+
+        <table style="width:100%;border-collapse:collapse;">
+
+            <thead>
+                <tr>
+                    <th style="text-align:left;padding:10px;">Oprettet</th>
+                    <th style="text-align:left;padding:10px;">Version</th>
+                    <th style="text-align:left;padding:10px;">Fil</th>
+                    <th style="text-align:right;padding:10px;">Størrelse</th>
+                    <th style="text-align:right;padding:10px;">Filer</th>
+                    <th style="text-align:center;padding:10px;">Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for backup in backups %}
+
+                <tr style="border-top:1px solid #e2e8f0;">
+
+                    <td style="padding:10px;">
+                        {{ backup.created }}
+                    </td>
+
+                    <td style="padding:10px;">
+                        {{ backup.version }}
+                    </td>
+
+                    <td style="padding:10px;">
+                        {{ backup.file }}
+                    </td>
+
+                    <td style="padding:10px;text-align:right;">
+                        {{ backup.size_mb }} MB
+                    </td>
+
+                    <td style="padding:10px;text-align:right;">
+                        {{ backup.file_count }}
+                    </td>
+
+                    <td style="padding:10px;text-align:center;">
+                        {% if backup.available %}
+                            ✅
+                        {% else %}
+                            ❌
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <p>Ingen backuphistorik fundet.</p>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
