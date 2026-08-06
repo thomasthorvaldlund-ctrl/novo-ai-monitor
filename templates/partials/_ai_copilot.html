@@ -28,6 +28,14 @@
         </div>
         {% endif %}
 
+
+        {% if ai_copilot.data_quality_context %}
+        <div>
+            <b>📡 Datakvalitet</b>
+            <p>{{ ai_copilot.data_quality_context }}</p>
+        </div>
+        {% endif %}
+
         <div>
             <b>⭐ Bedste mulighed lige nu</b>
             <p>{{ ai_copilot.best_opportunity }}</p>
