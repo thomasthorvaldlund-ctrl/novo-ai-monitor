@@ -3,236 +3,15 @@
 {% block title %}Aureum AI Portfolio Manager{% endblock %}
 
 {% block head %}
-<style>
-body{
-            font-family:Arial,sans-serif;
-            background:#eef2f7;
-            padding:40px;
-        }
-
-        .container{
-            max-width:1200px;
-            margin:auto;
-        }
-
-        .card{
-            background:white;
-            padding:24px;
-            border-radius:14px;
-            margin-bottom:20px;
-            box-shadow:0 10px 30px rgba(0,0,0,.08);
-        }
-
-        .kpi-grid{
-            display:grid;
-            grid-template-columns:repeat(4,minmax(0,1fr));
-            gap:16px;
-            margin:20px 0;
-        }
-
-        .kpi-card{
-            background:white;
-            padding:20px;
-            border-radius:14px;
-            box-shadow:0 10px 30px rgba(0,0,0,.08);
-        }
-
-        .kpi-label{
-            color:#64748b;
-            font-size:14px;
-            margin-bottom:8px;
-        }
-
-        .kpi-value{
-            color:#111827;
-            font-size:24px;
-            font-weight:700;
-        }
-
-        .portfolio-overview-grid{
-            display:grid;
-            grid-template-columns:repeat(2,minmax(0,1fr));
-            gap:16px;
-            margin:18px 0;
-        }
-
-        .portfolio-overview-grid > div{
-            background:#f8fafc;
-            padding:16px;
-            border-radius:12px;
-            border:1px solid #e5e7eb;
-        }
-
-        .overview-value{
-            font-size:22px;
-            font-weight:700;
-            margin-top:8px;
-        }
-
-        .ai-comment{
-            background:#eff6ff;
-            border-left:4px solid #2563eb;
-            border-radius:10px;
-            padding:16px;
-        }
-
-        .ai-comment p{
-            margin:8px 0 0;
-            color:#475569;
-            line-height:1.6;
-        }
-
-        .section-intro{
-            margin-top:-6px;
-            color:#64748b;
-            line-height:1.6;
-        }
-
-        @media(max-width:900px){
-            .kpi-grid{
-                grid-template-columns:repeat(2,minmax(0,1fr));
-            }
-        }
-
-        @media(max-width:560px){
-            .kpi-grid{
-                grid-template-columns:1fr;
-            }
-        }
-
-        .table-wrap{
-            overflow-x:auto;
-        }
-
-        table{
-            width:100%;
-            border-collapse:collapse;
-            min-width:1050px;
-        }
-
-        th{
-            background:#111827;
-            color:white;
-            padding:14px;
-            text-align:left;
-        }
-
-        td{
-            padding:14px;
-            border-bottom:1px solid #e5e7eb;
-        }
-
-        .positive{
-            color:#16a34a;
-            font-weight:700;
-        }
-
-        .negative{
-            color:#dc2626;
-            font-weight:700;
-        }
-
-        tbody tr:hover{
-            background:#f8fafc;
-        }
-
-        @media(max-width:700px){
-            .card{
-                padding:16px;
-                border-radius:12px;
-            }
-
-            .table-wrap{
-                overflow:visible;
-            }
-
-            table{
-                min-width:0;
-            }
-
-            table thead{
-                display:none;
-            }
-
-            table,
-            table tbody,
-            table tr,
-            table td{
-                display:block;
-                width:100%;
-                box-sizing:border-box;
-            }
-
-            table tbody tr{
-                margin-bottom:16px;
-                padding:8px 14px;
-                border:1px solid #e2e8f0;
-                border-radius:12px;
-                background:#f8fafc;
-            }
-
-            table tbody tr:last-child{
-                margin-bottom:0;
-            }
-
-            table td{
-                display:flex;
-                justify-content:space-between;
-                align-items:flex-start;
-                gap:18px;
-                padding:11px 0;
-                text-align:right;
-                border-bottom:1px solid #e2e8f0;
-            }
-
-            table td:last-child{
-                border-bottom:0;
-            }
-
-            table td::before{
-                content:attr(data-label);
-                flex:0 0 42%;
-                color:#64748b;
-                font-size:13px;
-                font-weight:700;
-                text-align:left;
-            }
-
-            table td[colspan]{
-                display:block;
-                text-align:left;
-            }
-
-            table td[colspan]::before{
-                display:none;
-            }
-
-            .portfolio-overview-grid{
-                grid-template-columns:1fr;
-            }
-
-            .kpi-value{
-                font-size:21px;
-            }
-        }
-
-        .chart-grid{
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:20px;
-        }
-
-        @media(max-width:900px){
-            .chart-grid{
-                grid-template-columns:1fr;
-            }
-        }
-</style>
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/portfolio_manager.css') }}"
+>
 {% endblock %}
 
 {% block content %}
 
-<div class="container">
+<div class="portfolio-manager-page">
 
 <h1>💼 Portfolio Manager V4.2</h1>
 
@@ -303,7 +82,7 @@ body{
     <h2>📊 Porteføljepositioner</h2>
 
     <div class="table-wrap">
-        <table>
+        <table class="table">
             <thead>
                 <tr>
                     <th>Aktie</th>
@@ -389,7 +168,7 @@ body{
     </p>
 
     <div class="table-wrap">
-        <table>
+        <table class="table">
             <thead>
                 <tr>
                     <th>Aktie</th>

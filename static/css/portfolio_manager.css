@@ -1,0 +1,136 @@
+/* =====================================================
+   Aureum AI Portfolio Manager
+   Page-specific styles
+   ===================================================== */
+
+.portfolio-manager-page {
+    width: 100%;
+}
+
+.portfolio-manager-page .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.portfolio-manager-page .kpi-card {
+    background: var(--color-surface);
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-card);
+}
+
+.portfolio-manager-page .kpi-label {
+    margin-bottom: 8px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+}
+
+.portfolio-manager-page .kpi-value {
+    color: var(--color-text);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.portfolio-manager-page .portfolio-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: 18px 0;
+}
+
+.portfolio-manager-page .portfolio-overview-grid > div {
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+}
+
+.portfolio-manager-page .overview-value {
+    margin-top: 8px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.portfolio-manager-page .ai-comment {
+    padding: 16px;
+    background: #eff6ff;
+    border-left: 4px solid var(--color-primary);
+    border-radius: 10px;
+}
+
+.portfolio-manager-page .ai-comment p {
+    margin: 8px 0 0;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.portfolio-manager-page .section-intro {
+    margin-top: -6px;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.portfolio-manager-page .positive {
+    color: var(--color-success);
+    font-weight: 700;
+}
+
+.portfolio-manager-page .negative {
+    color: var(--color-danger);
+    font-weight: 700;
+}
+
+.portfolio-manager-page .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 900px) {
+    .portfolio-manager-page .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .portfolio-manager-page .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .portfolio-manager-page .portfolio-overview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .portfolio-manager-page .kpi-value {
+        font-size: 21px;
+    }
+}
+
+/*
+Mobile KPI layout stays 2 × 2.
+This rule is more specific than the older one-column rule.
+*/
+@media (max-width: 560px) {
+    .portfolio-manager-page .kpi-grid.grid-mobile-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .portfolio-manager-page .kpi-card {
+        padding: 14px;
+    }
+
+    .portfolio-manager-page .kpi-label {
+        font-size: 12px;
+        line-height: 1.3;
+    }
+
+    .portfolio-manager-page .kpi-value {
+        font-size: 18px;
+        overflow-wrap: anywhere;
+    }
+}

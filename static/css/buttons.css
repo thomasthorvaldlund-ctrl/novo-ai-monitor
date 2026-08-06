@@ -1,0 +1,170 @@
+/* =====================================================
+   Aureum AI Button System
+   ===================================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-medium);
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 650;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.22);
+    outline-offset: 2px;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+}
+
+/* Primary */
+
+.btn-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.18);
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}
+
+/* Secondary */
+
+.btn-secondary {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* Success */
+
+.btn-success {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background: #15803d;
+    border-color: #15803d;
+}
+
+/* Warning */
+
+.btn-warning {
+    background: var(--color-warning);
+    border-color: var(--color-warning);
+    color: #ffffff;
+}
+
+.btn-warning:hover {
+    background: #b45309;
+    border-color: #b45309;
+}
+
+/* Danger */
+
+.btn-danger {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+}
+
+/* Ghost */
+
+.btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-text-muted);
+}
+
+.btn-ghost:hover {
+    background: #f1f5f9;
+    color: var(--color-text);
+}
+
+/* Sizes */
+
+.btn-sm {
+    min-height: 34px;
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    border-radius: var(--radius-small);
+}
+
+.btn-lg {
+    min-height: 48px;
+    padding: 13px 20px;
+    font-size: 1rem;
+}
+
+/* Layout helpers */
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (max-width: 640px) {
+    .btn {
+        min-height: 44px;
+    }
+
+    .btn-group-mobile-stack {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-group-mobile-stack .btn {
+        width: 100%;
+    }
+}
