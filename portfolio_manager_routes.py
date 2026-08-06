@@ -434,11 +434,34 @@ def portfolio_manager_v2_test():
     ai_data = get_ai_portfolio_summary()
     cache = load_dashboard_cache()
 
+    ranking = cache.get("combined_ranking", [])
+
+    score_map = {
+        item.get("stock"): item.get("combined_score", 0)
+        for item in ranking
+    }
+
+    holdings = []
+
+    for position in data.get("positions", []):
+        stock = position.get("stock")
+        score = score_map.get(stock, 0)
+        decision = get_ai_decision(score)
+
+        holdings.append({
+            **position,
+            "score": score,
+            "signal": decision.get("signal", "UNKNOWN"),
+            "stars": decision.get("stars", ""),
+        })
+
     return render_template(
         "portfolio_manager_v2.html",
         data=data,
         ai_data=ai_data,
         market_data_status=cache.get("market_data_status", {}),
+        holdings=holdings,
+        rebalancer=ai_data.get("position_details", []),
         total_value=data.get("total_value", 0),
         total_profit=data.get("total_profit", 0),
         total_profit_pct=data.get("total_profit_pct", 0),

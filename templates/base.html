@@ -105,17 +105,83 @@
             color: #6b7280;
         }
 
+        .mobile-menu-button {
+            display: none;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 1200;
+            width: 46px;
+            height: 46px;
+            border: 0;
+            border-radius: 12px;
+            background: #111827;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
+        }
+
+        .sidebar-overlay {
+            display: none;
+        }
+
         @media (max-width: 800px) {
+            body.sidebar-open {
+                overflow: hidden;
+            }
+
             .app-shell {
                 display: block;
             }
 
+            .mobile-menu-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
             .sidebar {
-                width: auto;
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 1100;
+                width: min(280px, 82vw);
+                box-sizing: border-box;
+                overflow-y: auto;
+                transform: translateX(-105%);
+                transition: transform 0.22s ease;
+                box-shadow: 18px 0 40px rgba(15, 23, 42, 0.28);
+            }
+
+            body.sidebar-open .sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay {
+                position: fixed;
+                inset: 0;
+                z-index: 1000;
+                background: rgba(15, 23, 42, 0.55);
+            }
+
+            body.sidebar-open .sidebar-overlay {
+                display: block;
             }
 
             .main-content {
-                padding: 20px;
+                padding: 76px 14px 24px;
+            }
+
+            .main-content > .container {
+                width: 100%;
+                max-width: none;
+            }
+
+            h1 {
+                font-size: 26px;
+                line-height: 1.2;
             }
         }
     </style>
@@ -132,9 +198,27 @@
 </head>
 
 <body>
+
+<button
+    id="mobile-menu-button"
+    class="mobile-menu-button"
+    type="button"
+    aria-label="Åbn navigation"
+    aria-controls="sidebar"
+    aria-expanded="false"
+>
+    ☰
+</button>
+
+<div
+    id="sidebar-overlay"
+    class="sidebar-overlay"
+    aria-hidden="true"
+></div>
+
 <div class="app-shell">
 
-    <aside class="sidebar">
+    <aside id="sidebar" class="sidebar">
 
         <h2>🤖 Stock AI Monitor</h2>
 
@@ -219,5 +303,57 @@
 </div>
 
 {% block scripts %}{% endblock %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const body = document.body;
+    const button = document.getElementById("mobile-menu-button");
+    const overlay = document.getElementById("sidebar-overlay");
+    const sidebar = document.getElementById("sidebar");
+
+    if (!button || !overlay || !sidebar) {
+        return;
+    }
+
+    function setMenu(open) {
+        body.classList.toggle("sidebar-open", open);
+        button.setAttribute("aria-expanded", String(open));
+        button.setAttribute(
+            "aria-label",
+            open ? "Luk navigation" : "Åbn navigation"
+        );
+        button.textContent = open ? "✕" : "☰";
+    }
+
+    button.addEventListener("click", function () {
+        setMenu(!body.classList.contains("sidebar-open"));
+    });
+
+    overlay.addEventListener("click", function () {
+        setMenu(false);
+    });
+
+    sidebar.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+            if (window.innerWidth <= 800) {
+                setMenu(false);
+            }
+        });
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            setMenu(false);
+        }
+    });
+
+    window.addEventListener("resize", function () {
+        if (window.innerWidth > 800) {
+            setMenu(false);
+        }
+    });
+});
+</script>
+
 </body>
 </html>

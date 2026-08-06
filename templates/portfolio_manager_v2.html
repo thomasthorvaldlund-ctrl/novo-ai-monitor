@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <title>Portfolio Manager</title>
+{% extends "base.html" %}
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% block title %}Aureum AI Portfolio Manager{% endblock %}
 
-    <style>
-        body{
+{% block head %}
+<style>
+body{
             font-family:Arial,sans-serif;
             background:#eef2f7;
             padding:40px;
@@ -85,6 +82,12 @@
             line-height:1.6;
         }
 
+        .section-intro{
+            margin-top:-6px;
+            color:#64748b;
+            line-height:1.6;
+        }
+
         @media(max-width:900px){
             .kpi-grid{
                 grid-template-columns:repeat(2,minmax(0,1fr));
@@ -97,9 +100,14 @@
             }
         }
 
+        .table-wrap{
+            overflow-x:auto;
+        }
+
         table{
             width:100%;
             border-collapse:collapse;
+            min-width:1050px;
         }
 
         th{
@@ -114,6 +122,100 @@
             border-bottom:1px solid #e5e7eb;
         }
 
+        .positive{
+            color:#16a34a;
+            font-weight:700;
+        }
+
+        .negative{
+            color:#dc2626;
+            font-weight:700;
+        }
+
+        tbody tr:hover{
+            background:#f8fafc;
+        }
+
+        @media(max-width:700px){
+            .card{
+                padding:16px;
+                border-radius:12px;
+            }
+
+            .table-wrap{
+                overflow:visible;
+            }
+
+            table{
+                min-width:0;
+            }
+
+            table thead{
+                display:none;
+            }
+
+            table,
+            table tbody,
+            table tr,
+            table td{
+                display:block;
+                width:100%;
+                box-sizing:border-box;
+            }
+
+            table tbody tr{
+                margin-bottom:16px;
+                padding:8px 14px;
+                border:1px solid #e2e8f0;
+                border-radius:12px;
+                background:#f8fafc;
+            }
+
+            table tbody tr:last-child{
+                margin-bottom:0;
+            }
+
+            table td{
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-start;
+                gap:18px;
+                padding:11px 0;
+                text-align:right;
+                border-bottom:1px solid #e2e8f0;
+            }
+
+            table td:last-child{
+                border-bottom:0;
+            }
+
+            table td::before{
+                content:attr(data-label);
+                flex:0 0 42%;
+                color:#64748b;
+                font-size:13px;
+                font-weight:700;
+                text-align:left;
+            }
+
+            table td[colspan]{
+                display:block;
+                text-align:left;
+            }
+
+            table td[colspan]::before{
+                display:none;
+            }
+
+            .portfolio-overview-grid{
+                grid-template-columns:1fr;
+            }
+
+            .kpi-value{
+                font-size:21px;
+            }
+        }
+
         .chart-grid{
             display:grid;
             grid-template-columns:repeat(3,1fr);
@@ -125,10 +227,10 @@
                 grid-template-columns:1fr;
             }
         }
-    </style>
-</head>
+</style>
+{% endblock %}
 
-<body>
+{% block content %}
 
 <div class="container">
 
@@ -136,7 +238,7 @@
 
 {{ market_data_status_html|safe }}
 
-<div class="kpi-grid">
+<div class="kpi-grid grid-mobile-2">
 
     <div class="kpi-card">
         <div class="kpi-label">💰 Samlet værdi</div>
@@ -197,9 +299,151 @@
     </div>
 </div>
 
+<div class="card">
+    <h2>📊 Porteføljepositioner</h2>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Aktie</th>
+                    <th>Ticker</th>
+                    <th>Antal</th>
+                    <th>Købskurs</th>
+                    <th>Aktuel kurs</th>
+                    <th>Værdi</th>
+                    <th>Gevinst/tab</th>
+                    <th>Vægt</th>
+                    <th>AI-signal</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for position in holdings %}
+                <tr>
+                    <td data-label="Aktie"><strong>{{ position.stock }}</strong></td>
+                    <td data-label="Ticker">{{ position.ticker }}</td>
+                    <td data-label="Antal">{{ position.qty }}</td>
+
+                    <td data-label="Købskurs">
+                        {{ "{:.2f}".format(position.buy_price) }}
+                        {{ position.currency }}
+                        <br>
+                        <small>
+                            {{ "{:.2f}".format(position.buy_price_dkk) }} DKK
+                        </small>
+                    </td>
+
+                    <td data-label="Aktuel kurs">
+                        {{ "{:.2f}".format(position.latest) }}
+                        {{ position.currency }}
+                        <br>
+                        <small>
+                            {{ "{:.2f}".format(position.latest_dkk) }} DKK
+                        </small>
+                    </td>
+
+                    <td data-label="Værdi">
+                        {{ "{:,.2f}".format(position.value_dkk) }} DKK
+                    </td>
+
+                    <td
+                        data-label="Gevinst/tab"
+                        class="{% if position.profit_dkk >= 0 %}positive{% else %}negative{% endif %}"
+                    >
+                        {{ "{:+,.2f}".format(position.profit_dkk) }} DKK
+                        <br>
+                        <small>
+                            {{ "{:+.2f}".format(position.profit_pct) }}%
+                        </small>
+                    </td>
+
+                    <td data-label="Vægt">
+                        {{ "{:.1f}".format(position.weight_pct) }}%
+                    </td>
+
+                    <td data-label="AI-signal">
+                        <strong>{{ position.signal }}</strong>
+                        <br>
+                        <small>
+                            {{ position.stars }} · Score {{ "{:.1f}".format(position.score) }}
+                        </small>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9">Ingen porteføljepositioner fundet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h2>⚖️ AI Portfolio Rebalancer</h2>
+
+    <p class="section-intro">
+        Viser forskellen mellem nuværende vægt og AI's foreslåede målvægt.
+        Positive beløb betyder øgning, mens negative beløb betyder reduktion.
+    </p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Aktie</th>
+                    <th>Signal</th>
+                    <th>Nuværende vægt</th>
+                    <th>Målvægt</th>
+                    <th>Forskel</th>
+                    <th>AI-forslag</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for position in rebalancer %}
+                <tr>
+                    <td data-label="Aktie">
+                        <strong>{{ position.stock }}</strong>
+                        <br>
+                        <small>{{ position.ticker }}</small>
+                    </td>
+
+                    <td data-label="Signal">
+                        <strong>{{ position.signal }}</strong>
+                        <br>
+                        <small>
+                            {{ position.stars }} · Score {{ "{:.1f}".format(position.score) }}
+                        </small>
+                    </td>
+
+                    <td data-label="Nuværende vægt">{{ position.weight_pct }}</td>
+                    <td data-label="Målvægt">{{ position.target_weight }}</td>
+
+                    <td data-label="Forskel">
+                        {{ "{:+.2f}".format(position.weight_difference) }}%
+                    </td>
+
+                    <td
+                        data-label="AI-forslag"
+                        class="{% if position.rebalance_amount >= 0 %}positive{% else %}negative{% endif %}"
+                    >
+                        {{ "{:+,.2f}".format(position.rebalance_amount) }} DKK
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">Ingen rebalanceringsdata tilgængelig.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <!-- Resten af Portfolio Manager flyttes hertil i næste trin -->
 
 </div>
 
-</body>
-</html>
+{% endblock %}
