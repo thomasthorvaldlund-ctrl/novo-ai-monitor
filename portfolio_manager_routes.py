@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 from portfolio import get_portfolio_summary as get_raw_portfolio_summary
 from portfolio_summary_service import get_portfolio_summary as get_ai_portfolio_summary
 from dashboard_cache_service import load_dashboard_cache
@@ -426,6 +426,33 @@ def portfolio_manager_page():
     """
 
 from flask import request
+
+
+@portfolio_manager_bp.route("/portfolio-manager-v2-test")
+def portfolio_manager_v2_test():
+    data = get_raw_portfolio_summary()
+    ai_data = get_ai_portfolio_summary()
+    cache = load_dashboard_cache()
+
+    return render_template(
+        "portfolio_manager_v2.html",
+        data=data,
+        ai_data=ai_data,
+        market_data_status=cache.get("market_data_status", {}),
+        total_value=data.get("total_value", 0),
+        total_profit=data.get("total_profit", 0),
+        total_profit_pct=data.get("total_profit_pct", 0),
+        portfolio_score=ai_data.get("portfolio_score", 0),
+        portfolio_risk=ai_data.get("portfolio_risk", "Ukendt"),
+        best_position=ai_data.get("best_position", "-"),
+        best_position_score=ai_data.get("best_position_score", 0),
+        weakest_position=ai_data.get("weakest_position", "-"),
+        weakest_position_score=ai_data.get("weakest_position_score", 0),
+        portfolio_comment=ai_data.get(
+            "portfolio_comment",
+            "Ingen AI-kommentar tilgængelig.",
+        ),
+    )
 
 @portfolio_manager_bp.route("/portfolio-history")
 def portfolio_history():

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Manager</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body{
+            font-family:Arial,sans-serif;
+            background:#eef2f7;
+            padding:40px;
+        }
+
+        .container{
+            max-width:1200px;
+            margin:auto;
+        }
+
+        .card{
+            background:white;
+            padding:24px;
+            border-radius:14px;
+            margin-bottom:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.08);
+        }
+
+        .kpi-grid{
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:16px;
+            margin:20px 0;
+        }
+
+        .kpi-card{
+            background:white;
+            padding:20px;
+            border-radius:14px;
+            box-shadow:0 10px 30px rgba(0,0,0,.08);
+        }
+
+        .kpi-label{
+            color:#64748b;
+            font-size:14px;
+            margin-bottom:8px;
+        }
+
+        .kpi-value{
+            color:#111827;
+            font-size:24px;
+            font-weight:700;
+        }
+
+        .portfolio-overview-grid{
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:16px;
+            margin:18px 0;
+        }
+
+        .portfolio-overview-grid > div{
+            background:#f8fafc;
+            padding:16px;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+        }
+
+        .overview-value{
+            font-size:22px;
+            font-weight:700;
+            margin-top:8px;
+        }
+
+        .ai-comment{
+            background:#eff6ff;
+            border-left:4px solid #2563eb;
+            border-radius:10px;
+            padding:16px;
+        }
+
+        .ai-comment p{
+            margin:8px 0 0;
+            color:#475569;
+            line-height:1.6;
+        }
+
+        @media(max-width:900px){
+            .kpi-grid{
+                grid-template-columns:repeat(2,minmax(0,1fr));
+            }
+        }
+
+        @media(max-width:560px){
+            .kpi-grid{
+                grid-template-columns:1fr;
+            }
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th{
+            background:#111827;
+            color:white;
+            padding:14px;
+            text-align:left;
+        }
+
+        td{
+            padding:14px;
+            border-bottom:1px solid #e5e7eb;
+        }
+
+        .chart-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:20px;
+        }
+
+        @media(max-width:900px){
+            .chart-grid{
+                grid-template-columns:1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💼 Portfolio Manager V4.2</h1>
+
+{{ market_data_status_html|safe }}
+
+<div class="kpi-grid">
+
+    <div class="kpi-card">
+        <div class="kpi-label">💰 Samlet værdi</div>
+        <div class="kpi-value">
+            {{ "{:,.2f}".format(total_value) }} DKK
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-label">📈 Samlet gevinst/tab</div>
+        <div class="kpi-value"
+             style="color:{% if total_profit >= 0 %}#16a34a{% else %}#dc2626{% endif %};">
+            {{ "{:+,.2f}".format(total_profit) }} DKK
+        </div>
+        <small>{{ "{:+.2f}".format(total_profit_pct) }}%</small>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-label">⭐ Porteføljescore</div>
+        <div class="kpi-value">
+            {{ "{:.1f}".format(portfolio_score) }}/100
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-label">⚠️ Risikoniveau</div>
+        <div class="kpi-value">
+            {{ portfolio_risk }}
+        </div>
+    </div>
+
+</div>
+
+<div class="card">
+    <h2>🤖 AI Portfolio Overview</h2>
+
+    <div class="portfolio-overview-grid">
+        <div>
+            <strong>Stærkeste position</strong>
+            <div class="overview-value">
+                {{ best_position }}
+            </div>
+            <small>Score {{ "{:.1f}".format(best_position_score) }}</small>
+        </div>
+
+        <div>
+            <strong>Svageste position</strong>
+            <div class="overview-value">
+                {{ weakest_position }}
+            </div>
+            <small>Score {{ "{:.1f}".format(weakest_position_score) }}</small>
+        </div>
+    </div>
+
+    <div class="ai-comment">
+        <strong>AI-vurdering</strong>
+        <p>{{ portfolio_comment }}</p>
+    </div>
+</div>
+
+<!-- Resten af Portfolio Manager flyttes hertil i næste trin -->
+
+</div>
+
+</body>
+</html>

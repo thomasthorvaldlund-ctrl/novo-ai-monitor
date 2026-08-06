@@ -139,6 +139,7 @@ def before_request():
         "/watchlist-page",
         "/trading-signals-page",
         "/portfolio-manager-page",
+        "/portfolio-manager-v2-test",
         "/combined-stock-score-page",
         "/stock-news-ai-score",
         "/stock-screener-report",
