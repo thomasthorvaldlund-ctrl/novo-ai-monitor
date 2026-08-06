@@ -1,0 +1,64 @@
+<!-- Global Market Status START -->
+
+<section class="card global-market-status-card">
+
+    <h2>🌍 Global Market Status</h2>
+
+    <p class="section-description">
+        Aktuel status for de vigtigste globale markeder.
+        Aureum AI viser om markedet er åbent, lukket eller påvirket af helligdage.
+    </p>
+
+
+    <div class="global-market-grid">
+
+        {% for market in market_dashboard_status %}
+
+        <div class="global-market-item">
+
+            <div class="global-market-title">
+                {{ market.flag }}
+                <strong>
+                    {{ market.name }}
+                </strong>
+            </div>
+
+
+            <div class="global-market-status
+                {% if market.status == 'OPEN' %}
+                    market-open
+                {% elif market.status == 'HOLIDAY' %}
+                    market-holiday
+                {% else %}
+                    market-closed
+                {% endif %}
+            ">
+
+                {{ market.label }}
+
+            </div>
+
+
+            <small>
+                {{ market.exchange }}
+                ·
+                {{ market.local_time }}
+            </small>
+
+
+            {% if market.reason %}
+            <small>
+                Årsag:
+                {{ market.reason }}
+            </small>
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<!-- Global Market Status END -->

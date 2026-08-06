@@ -55,6 +55,7 @@ from ai_portfolio_learning_analytics_service import get_learning_analytics
 from ai_confidence_intelligence_service import get_confidence_intelligence
 from ai_stock_decision_intelligence_service import get_stock_decision_intelligence
 from ai_data_quality_service import get_ai_data_quality
+from market_dashboard_service import get_market_dashboard_status
 from ai_decision_evolution_service import get_decision_evolution
 
 
@@ -102,6 +103,7 @@ def command_center_v2():
     decision_quality = cache.get("decision_quality", {})
     decision_learning = cache.get("decision_learning", {})
     decision_learning_trend = cache.get("decision_learning_trend", {})
+    market_dashboard_status = get_market_dashboard_status()
 
     ai_engine_status = get_ai_engine_status()
 
@@ -138,6 +140,7 @@ def command_center_v2():
         decision_quality=decision_quality,
         decision_learning=decision_learning,
         decision_learning_trend=decision_learning_trend,
+        market_dashboard_status=market_dashboard_status,
         ai_engine_status=ai_engine_status,
         
     )
