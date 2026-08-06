@@ -8,6 +8,7 @@ def get_ai_copilot(
     alerts,
     stock_explanations,
     performance,
+    market_intelligence=None,
 ):
     """
     AI Copilot samler eksisterende AI-signaler
@@ -35,6 +36,25 @@ def get_ai_copilot(
         market_status = "Forsigtig markedsvurdering"
         market_text = "Markedet viser svagere signaler."
         risk_level = "Høj"
+
+
+    
+    # Market Intelligence Context
+    market_context_text = None
+
+    if market_intelligence:
+        market_condition = market_intelligence.get(
+            "market_condition"
+        )
+
+        data_context = market_intelligence.get(
+            "data_context"
+        )
+
+        market_context_text = (
+            f"{market_condition}. "
+            f"{data_context}"
+        )
 
 
     # Bedste mulighed
@@ -173,6 +193,7 @@ def get_ai_copilot(
     return {
         "headline": market_status,
         "market_status": market_text,
+          "market_context": market_context_text,
         "best_opportunity": best_opportunity,
         "risk_warning": risk_warning,
         "portfolio_comment": portfolio_comment,

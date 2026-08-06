@@ -31,6 +31,7 @@ from ai_dynamic_risk_service import calculate_dynamic_risk
 from today_take_service import get_today_take
 from ai_executive_summary_service import get_ai_executive_summary
 from ai_copilot_service import get_ai_copilot
+from market_intelligence_service import get_market_intelligence
 from ai_copilot_history_service import (
     save_copilot_snapshot,
     load_copilot_history,
@@ -92,6 +93,8 @@ def build_dashboard_cache():
         stock_explanations=stock_explanations,
     )
 
+    market_intelligence = get_market_intelligence()
+
     ai_copilot = get_ai_copilot(
         market=market,
         portfolio=portfolio,
@@ -99,6 +102,7 @@ def build_dashboard_cache():
         alerts=alerts,
         stock_explanations=stock_explanations,
         performance=performance,
+        market_intelligence=market_intelligence,
     )
 
     decision_intelligence = get_decision_intelligence()
@@ -140,6 +144,7 @@ def build_dashboard_cache():
             "risk_reasons",
             []
         ),
+        "market_intelligence": market_intelligence,
     })
 
     history = load_copilot_history()

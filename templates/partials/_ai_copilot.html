@@ -20,6 +20,14 @@
             <p>{{ ai_copilot.market_status }}</p>
         </div>
 
+
+        {% if ai_copilot.market_context %}
+        <div>
+            <b>🌍 Markedsforhold</b>
+            <p>{{ ai_copilot.market_context }}</p>
+        </div>
+        {% endif %}
+
         <div>
             <b>⭐ Bedste mulighed lige nu</b>
             <p>{{ ai_copilot.best_opportunity }}</p>
