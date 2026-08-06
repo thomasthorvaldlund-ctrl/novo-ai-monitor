@@ -1416,3 +1416,30 @@
 .executive-status-weak {
     color: #dc2626;
 }
+
+/* ===== Executive Action Card ===== */
+
+.executive-action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.executive-action-summary {
+    margin: 12px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.executive-action-link {
+    margin-top: auto;
+    padding-top: 14px;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.executive-action-card:hover .executive-action-link {
+    color: #1d4ed8;
+}

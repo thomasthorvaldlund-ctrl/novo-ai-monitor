@@ -20,7 +20,7 @@
     <div class="executive-dashboard-grid">
 
         <a
-            class="executive-metric executive-metric-link"
+            class="executive-metric executive-metric-link executive-action-card"
             href="/portfolio-manager-v2-test"
             aria-label="Åbn Portfolio Manager"
         >
@@ -34,13 +34,21 @@
                 <small class="executive-metric-status executive-status-{{ portfolio_health.level }}">
                     {{ portfolio_health.status }}
                 </small>
+
+                <p class="executive-action-summary">
+                    {{ portfolio_health.conclusion }}
+                </p>
+
+                <span class="executive-action-link">
+                    Åbn Portfolio Manager →
+                </span>
             {% else %}
                 <strong>Ikke tilgængelig</strong>
             {% endif %}
         </a>
 
         <a
-            class="executive-metric executive-metric-link"
+            class="executive-metric executive-metric-link executive-action-card"
             href="/combined-stock-score-page"
             aria-label="Åbn Market Score"
         >
@@ -62,12 +70,27 @@
                 ">
                     {{ market.status }}
                 </small>
+
+                <p class="executive-action-summary">
+                    {{ market.critical_alerts }} kritiske alerts.
+                    Nyheder: {{ market.news_positive }} positive,
+                    {{ market.news_neutral }} neutrale og
+                    {{ market.news_negative }} negative.
+                </p>
+
+                <span class="executive-action-link">
+                    Åbn Market Score →
+                </span>
             {% else %}
                 <strong>Ikke tilgængelig</strong>
             {% endif %}
         </a>
 
-        <div class="executive-metric">
+        <a
+            class="executive-metric executive-metric-link executive-action-card"
+            href="#ai-copilot"
+            aria-label="Gå til AI Copilot"
+        >
             <span>🤖 AI Confidence</span>
 
             {% if ai_copilot %}
@@ -86,13 +109,21 @@
                 ">
                     Risiko: {{ ai_copilot.risk_level }}
                 </small>
+
+                <p class="executive-action-summary">
+                    {{ ai_copilot.recommendation }}
+                </p>
+
+                <span class="executive-action-link">
+                    Se AI Copilot →
+                </span>
             {% else %}
                 <strong>Ikke tilgængelig</strong>
             {% endif %}
-        </div>
+        </a>
 
         <a
-            class="executive-metric executive-metric-link"
+            class="executive-metric executive-metric-link executive-action-card"
             href="/portfolio-alerts"
             aria-label="Åbn aktive AI-alerts"
         >
@@ -106,17 +137,33 @@
                 <small class="executive-metric-status executive-status-weak">
                     Kræver opmærksomhed
                 </small>
+
+                <p class="executive-action-summary">
+                    {{ alerts[0].message }}
+                </p>
+
+                <span class="executive-action-link">
+                    Åbn AI Alerts →
+                </span>
             {% else %}
                 <strong>Ingen aktive alerts</strong>
 
                 <small class="executive-metric-status executive-status-good">
                     Alt roligt
                 </small>
+
+                <p class="executive-action-summary">
+                    Der er ingen kritiske AI-alerts lige nu.
+                </p>
+
+                <span class="executive-action-link">
+                    Se alert-status →
+                </span>
             {% endif %}
         </a>
 
         <a
-            class="executive-metric executive-metric-link"
+            class="executive-metric executive-metric-link executive-action-card"
             href="{% if top_picks %}/ai-stock-library?stock={{ top_picks[0].stock }}{% else %}/ai-stock-library{% endif %}"
             aria-label="Åbn bedste AI-mulighed"
         >
@@ -131,8 +178,26 @@
                     {{ top_picks[0].signal }}
                     · Score {{ "{:.1f}".format(top_picks[0].score) }}
                 </small>
+
+                <p class="executive-action-summary">
+                    {{ top_picks[0].comment }}
+                    Risiko: {{ top_picks[0].risk }}.
+                    AI-confidence: {{ top_picks[0].confidence }}%.
+                </p>
+
+                <span class="executive-action-link">
+                    Åbn aktieanalyse →
+                </span>
             {% else %}
                 <strong>Ingen kandidat</strong>
+
+                <p class="executive-action-summary">
+                    Der er ingen stærk AI-kandidat lige nu.
+                </p>
+
+                <span class="executive-action-link">
+                    Åbn Stock Library →
+                </span>
             {% endif %}
         </a>
 
