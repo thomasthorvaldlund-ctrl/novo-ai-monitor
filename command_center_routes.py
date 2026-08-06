@@ -9,6 +9,7 @@ from combined_score_service import combined_stock_score as service_combined_scor
 from openai_service import client
 from ai_alerts_service import get_ai_alerts
 from portfolio_summary_service import get_portfolio_summary
+from portfolio_health_service import get_portfolio_health
 from ai_analyst_service import get_ai_analyst
 from morning_brief_service import get_morning_brief
 from market_score_history_service import load_market_score_history
@@ -76,6 +77,7 @@ def command_center_v2():
     summary = cache.get("summary", get_market_summary())
     alerts = cache.get("alerts", get_ai_alerts())
     portfolio = cache.get("portfolio", get_portfolio_summary())
+    portfolio_health = get_portfolio_health(portfolio)
 
     top_picks = cache.get("top_picks", [])
     analyst = cache.get("analyst", "AI Analyst er ikke tilgængelig endnu.")
@@ -112,6 +114,7 @@ def command_center_v2():
         summary=summary,
         alerts=alerts,
         portfolio=portfolio,
+        portfolio_health=portfolio_health,
         analyst=analyst,
         brief=brief,
         updated_at=updated_at,

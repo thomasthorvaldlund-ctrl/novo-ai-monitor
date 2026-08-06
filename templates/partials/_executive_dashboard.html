@@ -1,0 +1,141 @@
+<section class="card executive-dashboard-card">
+
+    <div class="executive-dashboard-header">
+
+        <div>
+            <div class="executive-dashboard-eyebrow">
+                Executive Dashboard
+            </div>
+
+            <h2>🧭 AI Decision Overview</h2>
+
+            <p>
+                Det vigtigste overblik over portefølje, marked,
+                AI-vurdering og anbefalede handlinger.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="executive-dashboard-grid">
+
+        <a
+            class="executive-metric executive-metric-link"
+            href="/portfolio-manager-v2-test"
+            aria-label="Åbn Portfolio Manager"
+        >
+            <span>🩺 Portfolio Health</span>
+
+            {% if portfolio_health %}
+                <strong>
+                    {{ "{:.1f}".format(portfolio_health.score) }}
+                </strong>
+
+                <small class="executive-metric-status executive-status-{{ portfolio_health.level }}">
+                    {{ portfolio_health.status }}
+                </small>
+            {% else %}
+                <strong>Ikke tilgængelig</strong>
+            {% endif %}
+        </a>
+
+        <a
+            class="executive-metric executive-metric-link"
+            href="/combined-stock-score-page"
+            aria-label="Åbn Market Score"
+        >
+            <span>🌍 Market Health</span>
+
+            {% if market %}
+                <strong>
+                    {{ market.score }}
+                </strong>
+
+                <small class="executive-metric-status
+                    {% if market.score >= 70 %}
+                        executive-status-good
+                    {% elif market.score >= 50 %}
+                        executive-status-medium
+                    {% else %}
+                        executive-status-weak
+                    {% endif %}
+                ">
+                    {{ market.status }}
+                </small>
+            {% else %}
+                <strong>Ikke tilgængelig</strong>
+            {% endif %}
+        </a>
+
+        <div class="executive-metric">
+            <span>🤖 AI Confidence</span>
+
+            {% if ai_copilot %}
+                <strong>
+                    {{ ai_copilot.confidence }}%
+                </strong>
+
+                <small class="executive-metric-status
+                    {% if ai_copilot.confidence >= 80 %}
+                        executive-status-good
+                    {% elif ai_copilot.confidence >= 60 %}
+                        executive-status-medium
+                    {% else %}
+                        executive-status-weak
+                    {% endif %}
+                ">
+                    Risiko: {{ ai_copilot.risk_level }}
+                </small>
+            {% else %}
+                <strong>Ikke tilgængelig</strong>
+            {% endif %}
+        </div>
+
+        <a
+            class="executive-metric executive-metric-link"
+            href="/portfolio-alerts"
+            aria-label="Åbn aktive AI-alerts"
+        >
+            <span>⚠️ Highest Priority</span>
+
+            {% if alerts %}
+                <strong>
+                    {{ alerts[0].title }}
+                </strong>
+
+                <small class="executive-metric-status executive-status-weak">
+                    Kræver opmærksomhed
+                </small>
+            {% else %}
+                <strong>Ingen aktive alerts</strong>
+
+                <small class="executive-metric-status executive-status-good">
+                    Alt roligt
+                </small>
+            {% endif %}
+        </a>
+
+        <a
+            class="executive-metric executive-metric-link"
+            href="{% if top_picks %}/ai-stock-library?stock={{ top_picks[0].stock }}{% else %}/ai-stock-library{% endif %}"
+            aria-label="Åbn bedste AI-mulighed"
+        >
+            <span>⭐ Best Opportunity</span>
+
+            {% if top_picks %}
+                <strong>
+                    {{ top_picks[0].stock }}
+                </strong>
+
+                <small class="executive-metric-status executive-status-good">
+                    {{ top_picks[0].signal }}
+                    · Score {{ "{:.1f}".format(top_picks[0].score) }}
+                </small>
+            {% else %}
+                <strong>Ingen kandidat</strong>
+            {% endif %}
+        </a>
+
+    </div>
+
+</section>
