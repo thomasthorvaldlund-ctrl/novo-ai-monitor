@@ -125,6 +125,66 @@
 </section>
 {% endif %}
 
+<section class="portfolio-evolution-card card">
+    <div class="portfolio-evolution-header">
+        <div>
+            <div class="portfolio-health-eyebrow">
+                📈 AI Portfolio Evolution
+            </div>
+
+            <h2>Udvikling over tid</h2>
+
+            {% if portfolio_health_history|length >= 2 %}
+                {% set first = portfolio_health_history[0] %}
+                {% set latest = portfolio_health_history[-1] %}
+                {% set change = latest.score - first.score %}
+
+                <p>
+                    Portfolio Health er ændret med
+                    <strong class="{% if change >= 0 %}positive{% else %}negative{% endif %}">
+                        {{ "{:+.1f}".format(change) }} point
+                    </strong>
+                    siden første måling.
+                </p>
+            {% else %}
+                <p>
+                    Første Portfolio Health-måling er gemt.
+                    Evolution bliver tilgængelig, når der findes mindst to daglige målinger.
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="portfolio-evolution-count">
+            <strong>{{ portfolio_health_history|length }}</strong>
+            <span>målinger</span>
+        </div>
+    </div>
+
+    {% if portfolio_health_history %}
+        <div class="portfolio-evolution-latest">
+            <div>
+                <span>Seneste dato</span>
+                <strong>{{ portfolio_health_history[-1].date }}</strong>
+            </div>
+
+            <div>
+                <span>Health Score</span>
+                <strong>{{ "{:.1f}".format(portfolio_health_history[-1].score) }}</strong>
+            </div>
+
+            <div>
+                <span>AI-confidence</span>
+                <strong>{{ "{:.1f}".format(portfolio_health_history[-1].confidence_score) }}%</strong>
+            </div>
+
+            <div>
+                <span>Risiko</span>
+                <strong>{{ portfolio_health_history[-1].risk }}</strong>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
 <div class="card">
     <h2>🤖 AI Portfolio Overview</h2>
 
