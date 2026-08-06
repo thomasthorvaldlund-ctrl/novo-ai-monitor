@@ -190,10 +190,33 @@ def get_ai_copilot(
         )
 
 
+    # Data Quality Context
+    data_quality_context = None
+
+    if market_intelligence:
+        data_quality = market_intelligence.get(
+            "data_quality",
+            {}
+        )
+
+        if data_quality:
+            quality_items = []
+
+            for name, quality in data_quality.items():
+                quality_items.append(
+                    f"{name}: {quality.get('label')}"
+                )
+
+            data_quality_context = " · ".join(
+                quality_items
+            )
+
+
     return {
         "headline": market_status,
         "market_status": market_text,
           "market_context": market_context_text,
+        "data_quality_context": data_quality_context,
         "best_opportunity": best_opportunity,
         "risk_warning": risk_warning,
         "portfolio_comment": portfolio_comment,
