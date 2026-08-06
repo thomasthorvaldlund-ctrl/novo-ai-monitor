@@ -51,6 +51,80 @@
 
 </div>
 
+{% if portfolio_health %}
+<section class="portfolio-health-card card">
+
+    <div class="portfolio-health-header">
+        <div>
+            <div class="portfolio-health-eyebrow">
+                🩺 AI Portfolio Health
+            </div>
+
+            <h2>
+                {{ portfolio_health.status }}
+            </h2>
+
+            <p>
+                {{ portfolio_health.conclusion }}
+            </p>
+        </div>
+
+        <div class="portfolio-health-score portfolio-health-{{ portfolio_health.level }}">
+            <strong>
+                {{ "{:.1f}".format(portfolio_health.score) }}
+            </strong>
+            <span>/100</span>
+        </div>
+    </div>
+
+    <div class="portfolio-health-progress">
+        <div
+            class="portfolio-health-progress-fill portfolio-health-{{ portfolio_health.level }}"
+            style="width: {{ portfolio_health.score }}%;"
+        ></div>
+    </div>
+
+    <div class="portfolio-health-metrics">
+
+        <div class="portfolio-health-metric">
+            <span>Risiko</span>
+            <strong class="health-text-{{ portfolio_health.risk.level }}">
+                {{ portfolio_health.risk.label }}
+            </strong>
+        </div>
+
+        <div class="portfolio-health-metric">
+            <span>Diversificering</span>
+            <strong class="health-text-{{ portfolio_health.diversification.level }}">
+                {{ portfolio_health.diversification.label }}
+            </strong>
+        </div>
+
+        <div class="portfolio-health-metric">
+            <span>Momentum</span>
+            <strong class="health-text-{{ portfolio_health.momentum.level }}">
+                {{ portfolio_health.momentum.label }}
+            </strong>
+        </div>
+
+        <div class="portfolio-health-metric">
+            <span>AI-confidence</span>
+            <strong class="health-text-{{ portfolio_health.confidence.level }}">
+                {{ "{:.1f}".format(portfolio_health.confidence.score) }}%
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="portfolio-health-observations">
+        {% for observation in portfolio_health.observations %}
+            <div>• {{ observation }}</div>
+        {% endfor %}
+    </div>
+
+</section>
+{% endif %}
+
 <div class="card">
     <h2>🤖 AI Portfolio Overview</h2>
 

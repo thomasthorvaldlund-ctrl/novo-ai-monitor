@@ -134,3 +134,165 @@ This rule is more specific than the older one-column rule.
         overflow-wrap: anywhere;
     }
 }
+
+/* ===== AI Portfolio Health ===== */
+
+.portfolio-health-card {
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.portfolio-health-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.portfolio-health-eyebrow {
+    margin-bottom: 6px;
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.portfolio-health-header h2 {
+    margin: 0;
+}
+
+.portfolio-health-header p {
+    max-width: 720px;
+    margin: 8px 0 0;
+    color: var(--color-text-muted);
+}
+
+.portfolio-health-score {
+    flex: 0 0 auto;
+    min-width: 112px;
+    padding: 16px;
+    border-radius: var(--radius-large);
+    text-align: center;
+}
+
+.portfolio-health-score strong {
+    display: block;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.portfolio-health-score span {
+    color: var(--color-text-muted);
+    font-size: 13px;
+}
+
+.portfolio-health-progress {
+    height: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+    background: #e2e8f0;
+    border-radius: 999px;
+}
+
+.portfolio-health-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+}
+
+.portfolio-health-good {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.portfolio-health-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.portfolio-health-weak {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.portfolio-health-progress-fill.portfolio-health-good {
+    background: var(--color-success);
+}
+
+.portfolio-health-progress-fill.portfolio-health-medium {
+    background: var(--color-warning);
+}
+
+.portfolio-health-progress-fill.portfolio-health-weak {
+    background: var(--color-danger);
+}
+
+.portfolio-health-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.portfolio-health-metric {
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+}
+
+.portfolio-health-metric span,
+.portfolio-health-metric strong {
+    display: block;
+}
+
+.portfolio-health-metric span {
+    margin-bottom: 5px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.health-text-good {
+    color: var(--color-success);
+}
+
+.health-text-medium {
+    color: var(--color-warning);
+}
+
+.health-text-weak {
+    color: var(--color-danger);
+}
+
+.portfolio-health-observations {
+    display: grid;
+    gap: 6px;
+    margin-top: 18px;
+    color: #475569;
+    font-size: 14px;
+}
+
+@media (max-width: 800px) {
+    .portfolio-health-header {
+        flex-direction: column;
+    }
+
+    .portfolio-health-score {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .portfolio-health-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .portfolio-health-card {
+        padding: 16px;
+    }
+
+    .portfolio-health-metrics {
+        grid-template-columns: 1fr;
+    }
+}

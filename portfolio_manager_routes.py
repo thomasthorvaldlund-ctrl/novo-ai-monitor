@@ -4,6 +4,7 @@ from portfolio_summary_service import get_portfolio_summary as get_ai_portfolio_
 from dashboard_cache_service import load_dashboard_cache
 from ai_decision_service import get_ai_decision
 from portfolio_history_service import save_portfolio_history, load_portfolio_history
+from portfolio_health_service import get_portfolio_health
 
 portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 
@@ -433,6 +434,7 @@ def portfolio_manager_v2_test():
     data = get_raw_portfolio_summary()
     ai_data = get_ai_portfolio_summary()
     cache = load_dashboard_cache()
+    portfolio_health = get_portfolio_health(ai_data)
 
     ranking = cache.get("combined_ranking", [])
 
@@ -462,6 +464,7 @@ def portfolio_manager_v2_test():
         market_data_status=cache.get("market_data_status", {}),
         holdings=holdings,
         rebalancer=ai_data.get("position_details", []),
+        portfolio_health=portfolio_health,
         total_value=data.get("total_value", 0),
         total_profit=data.get("total_profit", 0),
         total_profit_pct=data.get("total_profit_pct", 0),
