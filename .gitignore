@@ -57,3 +57,4 @@ backups/
 
 # Generated recovery files
 recovery/
+portfolio_health_history.csv
