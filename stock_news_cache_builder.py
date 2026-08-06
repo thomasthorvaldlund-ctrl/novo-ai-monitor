@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 from stock_universe_service import get_active_stocks, get_news_query
 
 
-CACHE_FILE = "/root/novo-ai-monitor/stock_news_ai_cache.json"
+CACHE_FILE = "/root/aureum-ai-platform/stock_news_ai_cache.json"
 
 
 def build_stock_news_ai_cache(client):

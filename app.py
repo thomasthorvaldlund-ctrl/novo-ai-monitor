@@ -380,7 +380,7 @@ def news_check():
         selected_stock = "NOVO"
         stock_metadata = get_stock_metadata(selected_stock)
 
-    seen_file = "/root/novo-ai-monitor/seen_news.txt"
+    seen_file = "/root/aureum-ai-platform/seen_news.txt"
 
     try:
         with open(seen_file, "r") as f:
@@ -690,7 +690,7 @@ Overskrifter:
 
     ai_text = response.choices[0].message.content
 
-    with open("/root/novo-ai-monitor/last_dsv_ai_news_check.log", "w") as f:
+    with open("/root/aureum-ai-platform/last_dsv_ai_news_check.log", "w") as f:
         import json
         json.dump({
             "ai_analysis": ai_text,
@@ -732,8 +732,8 @@ def daily_report():
 
     levels = {"Lav": 1, "Moderat": 2, "Høj": 3, "Kritisk": 4}
 
-    novo_ai_risk = extract_ai_risk("/root/novo-ai-monitor/last_ai_news_check.log")
-    dsv_ai_risk = extract_ai_risk("/root/novo-ai-monitor/last_dsv_ai_news_check.log")
+    novo_ai_risk = extract_ai_risk("/root/aureum-ai-platform/last_ai_news_check.log")
+    dsv_ai_risk = extract_ai_risk("/root/aureum-ai-platform/last_dsv_ai_news_check.log")
 
     novo_total_risk = novo["risk_level"]
     if levels[novo_ai_risk] > levels[novo_total_risk]:
@@ -769,7 +769,7 @@ def smart_alerts():
     import json
     from datetime import datetime
 
-    state_file = "/root/novo-ai-monitor/smart_alert_state.json"
+    state_file = "/root/aureum-ai-platform/smart_alert_state.json"
     today = datetime.now().strftime("%Y-%m-%d")
 
     try:
@@ -799,12 +799,12 @@ def smart_alerts():
         {
             "name": "NOVO",
             "ticker": get_stock_metadata("NOVO")["ticker"],
-            "ai_log": "/root/novo-ai-monitor/last_ai_news_check.log",
+            "ai_log": "/root/aureum-ai-platform/last_ai_news_check.log",
         },
         {
             "name": "DSV",
             "ticker": get_stock_metadata("DSV")["ticker"],
-            "ai_log": "/root/novo-ai-monitor/last_dsv_ai_news_check.log",
+            "ai_log": "/root/aureum-ai-platform/last_dsv_ai_news_check.log",
         },
     ]
 
@@ -887,8 +887,8 @@ def save_history():
     today = datetime.now().strftime("%Y-%m-%d")
 
     for stock_name, logfile in [
-        ("NOVO", "/root/novo-ai-monitor/last_ai_news_check.log"),
-        ("DSV", "/root/novo-ai-monitor/last_dsv_ai_news_check.log"),
+        ("NOVO", "/root/aureum-ai-platform/last_ai_news_check.log"),
+        ("DSV", "/root/aureum-ai-platform/last_dsv_ai_news_check.log"),
         ("NVIDIA", None),
         ("ASML", None),
     ]:
@@ -905,7 +905,7 @@ def save_history():
         if levels[ai_risk] > levels[total_risk]:
             total_risk = ai_risk
 
-        with open("/root/novo-ai-monitor/history.csv", "a", newline="") as f:
+        with open("/root/aureum-ai-platform/history.csv", "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([
                 today,
@@ -956,7 +956,7 @@ def history():
     rows = []
 
     try:
-        with open("/root/novo-ai-monitor/history.csv", "r") as f:
+        with open("/root/aureum-ai-platform/history.csv", "r") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
     except Exception:
@@ -1050,7 +1050,7 @@ def history_chart():
 @app.route("/portfolio-alerts")
 def portfolio_alerts():
     today = datetime.now().strftime("%Y-%m-%d")
-    sent_file = "/root/novo-ai-monitor/portfolio_alerts_sent.txt"
+    sent_file = "/root/aureum-ai-platform/portfolio_alerts_sent.txt"
 
     try:
         with open(sent_file, "r") as f:

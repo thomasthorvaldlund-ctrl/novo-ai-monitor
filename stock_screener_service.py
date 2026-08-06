@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 
-CACHE_FILE = Path("/root/novo-ai-monitor/stock_screener_cache.json")
+CACHE_FILE = Path("/root/aureum-ai-platform/stock_screener_cache.json")
 
 
 def stock_screener():

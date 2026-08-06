@@ -8,11 +8,11 @@ system_status_bp = Blueprint("system_status", __name__)
 @system_status_bp.route("/system-status-page")
 def system_status_page():
     files = {
-        "AI cache": "/root/novo-ai-monitor/stock_news_ai_cache.json",
-        "Historik log": "/root/novo-ai-monitor/history_save.log",
-        "Combined report log": "/root/novo-ai-monitor/combined_report.log",
-        "Smart alerts log": "/root/novo-ai-monitor/last_smart_alerts.log",
-        "Portfolio alerts log": "/root/novo-ai-monitor/portfolio_alerts.log",
+        "AI cache": "/root/aureum-ai-platform/stock_news_ai_cache.json",
+        "Historik log": "/root/aureum-ai-platform/history_save.log",
+        "Combined report log": "/root/aureum-ai-platform/combined_report.log",
+        "Smart alerts log": "/root/aureum-ai-platform/last_smart_alerts.log",
+        "Portfolio alerts log": "/root/aureum-ai-platform/portfolio_alerts.log",
     }
 
     rows = ""

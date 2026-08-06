@@ -3,7 +3,7 @@ from stock_utils import get_history
 from currency import get_fx_rates, get_currency, convert_to_dkk
 
 
-PORTFOLIO_FILE = "/root/novo-ai-monitor/portfolio.csv"
+PORTFOLIO_FILE = "/root/aureum-ai-platform/portfolio.csv"
 
 
 def load_portfolio_rows(portfolio_file=PORTFOLIO_FILE):

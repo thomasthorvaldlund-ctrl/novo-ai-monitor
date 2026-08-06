@@ -239,7 +239,7 @@ def portfolio_manager_page():
     </div>
 </div>
 
-            <p>Rediger beholdninger i: /root/novo-ai-monitor/portfolio.csv</p>
+            <p>Rediger beholdninger i: /root/aureum-ai-platform/portfolio.csv</p>
         </div>
     <script>
     let portfolioValueChart;

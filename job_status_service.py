@@ -21,7 +21,7 @@ def get_job_statuses():
     statuses = []
 
     for name, log_file in JOBS:
-        path = os.path.join("/root/novo-ai-monitor", log_file)
+        path = os.path.join("/root/aureum-ai-platform", log_file)
 
         if os.path.exists(path):
             modified = datetime.fromtimestamp(os.path.getmtime(path)).strftime("%d-%m-%Y %H:%M")
