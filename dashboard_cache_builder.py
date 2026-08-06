@@ -6,6 +6,7 @@ from combined_score_service import combined_stock_score
 from top_picks_service import get_top_picks
 from openai_service import client
 from market_score_service import get_market_score
+from market_data_status_service import get_market_data_status
 from market_summary_service import get_market_summary
 from ai_alerts_service import get_ai_alerts
 from portfolio_summary_service import get_portfolio_summary
@@ -177,6 +178,7 @@ def build_dashboard_cache():
     "updated_at": datetime.now().strftime("%d-%m-%Y %H:%M"),
     "combined_ranking": ranking,
     "market": market,
+    "market_data_status": get_market_data_status(),
     "summary": get_market_summary(),
     "alerts": alerts,
     "portfolio": portfolio,

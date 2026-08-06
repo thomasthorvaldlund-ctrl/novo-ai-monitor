@@ -9,7 +9,7 @@ from flask import (
     url_for,
 )
 
-from backup_service import create_backup, list_backups
+from backup_service import create_backup, create_full_backup, list_backups
 
 
 backup_bp = Blueprint(
@@ -33,6 +33,15 @@ def backup_manager():
 @backup_bp.route("/backup-manager/create", methods=["POST"])
 def create_backup_route():
     create_backup()
+
+    return redirect(
+        url_for("backup_manager.backup_manager")
+    )
+
+
+@backup_bp.route("/backup-manager/create-full", methods=["POST"])
+def create_full_backup_route():
+    create_full_backup()
 
     return redirect(
         url_for("backup_manager.backup_manager")

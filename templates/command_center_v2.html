@@ -14,7 +14,7 @@
 <div class="container" style="max-width:1400px;margin:30px auto;padding:0 20px;">
 
     <h1 style="margin-bottom:10px;">
-        🤖 Stock AI Monitor <span style="color:#2563eb;">v2.0</span>
+        🤖 Aureum AI · Stock Monitor <span style="color:#2563eb;">v2.0</span>
     </h1>
 
     <p style="
@@ -28,6 +28,106 @@
         porteføljeovervågning og AI-baserede beslutningsværktøjer ét sted.
         Nye funktioner udvikles løbende.
     </p>
+
+    {% if market_data_status %}
+
+    <div style="
+        background:
+            {% if market_data_status.status == 'Live' %}
+                #ecfdf5
+            {% elif market_data_status.status == 'Forsinket' %}
+                #fff7ed
+            {% else %}
+                #fef2f2
+            {% endif %};
+        border-left:5px solid {{ market_data_status.status_color }};
+        padding:16px;
+        border-radius:8px;
+        margin-bottom:30px;
+    ">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:20px;
+            flex-wrap:wrap;
+            align-items:flex-start;
+        ">
+
+            <div>
+                <h3 style="margin:0 0 10px 0;">
+                    📈 Market Data Status
+                </h3>
+
+                <p style="margin:4px 0;">
+                    <b>Status:</b>
+                    {{ market_data_status.status }}
+                </p>
+
+                <p style="margin:4px 0;">
+                    <b>Datakilde:</b>
+                    {{ market_data_status.provider }}
+                </p>
+
+                <p style="margin:4px 0;">
+                    <b>Seneste markedsdata:</b>
+                    {{ market_data_status.last_market_update }}
+                </p>
+
+                {% if market_data_status.age_minutes is not none %}
+                <p style="margin:4px 0;">
+                    <b>Forsinkelse:</b>
+                    {{ market_data_status.age_minutes }} minutter
+                </p>
+                {% endif %}
+            </div>
+
+            <div style="
+                flex:1;
+                min-width:280px;
+                max-width:700px;
+                background:rgba(255,255,255,0.7);
+                padding:14px;
+                border-radius:8px;
+            ">
+
+                {% if market_data_status.status == "Live" %}
+
+                    <b>✅ Markedsdata opdateres normalt.</b>
+
+                    <p style="margin:8px 0 0 0;">
+                        Aktiekurserne opdateres som forventet.
+                    </p>
+
+                {% elif market_data_status.status == "Forsinket" %}
+
+                    <b>⚠️ Den eksterne datakilde er forsinket.</b>
+
+                    <p style="margin:8px 0 0 0;">
+                        Aktiekurser kan være ældre end normalt.
+                        Aureum AI fungerer fortsat normalt og opdaterer automatisk,
+                        når nye markedsdata bliver tilgængelige.
+                    </p>
+
+                {% else %}
+
+                    <b>⚠️ Den eksterne dataleverandør leverer ikke nyere markedsdata.</b>
+
+                    <p style="margin:8px 0 0 0;">
+                        Aureum AI fungerer normalt.
+                        Forsinkelsen skyldes et eksternt dataproblem, og platformen
+                        opdaterer automatisk aktiekurserne, så snart nye data modtages.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
 
     <div style="
         background:#f8fafc;

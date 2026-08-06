@@ -24,6 +24,7 @@ def portfolio_manager_page():
     
     cache = load_dashboard_cache()
     ranking = cache.get("combined_ranking", [])
+    market_data_status = cache.get("market_data_status", {})
 
     score_map = {
         item.get("stock"): item.get("combined_score", 0)
@@ -114,6 +115,57 @@ def portfolio_manager_page():
         </tr>
         """
 
+    market_status = market_data_status.get("status", "Ukendt")
+    market_provider = market_data_status.get("provider", "Ukendt")
+    market_last_update = market_data_status.get("last_market_update", "-")
+    market_age = market_data_status.get("age_minutes")
+
+    if market_status == "Live":
+        market_status_color = "#16a34a"
+        market_status_background = "#ecfdf5"
+        market_status_message = "Markedsdata opdateres normalt."
+    elif market_status == "Forsinket":
+        market_status_color = "#f59e0b"
+        market_status_background = "#fff7ed"
+        market_status_message = (
+            "Aktiekurser kan være lidt forsinkede på grund af den eksterne dataleverandør."
+        )
+    else:
+        market_status_color = "#dc2626"
+        market_status_background = "#fef2f2"
+        market_status_message = (
+            "Aktiekurserne er forsinkede på grund af et eksternt dataproblem. "
+            "Aureum AI fungerer normalt og opdaterer automatisk, når nye data modtages."
+        )
+
+    market_age_text = (
+        f"{market_age} min"
+        if market_age is not None
+        else "Ukendt"
+    )
+
+    market_data_status_html = f"""
+    <div style="
+        background:{market_status_background};
+        border-left:5px solid {market_status_color};
+        padding:12px 16px;
+        border-radius:10px;
+        margin-bottom:20px;
+    ">
+        <b>📈 Markedsdata:</b>
+        <span style="color:{market_status_color};font-weight:bold;">
+            {market_status}
+        </span>
+        · Seneste data: {market_last_update}
+        · Forsinkelse: {market_age_text}
+        · Kilde: {market_provider}
+
+        <div style="margin-top:6px;color:#475569;font-size:14px;">
+            {market_status_message}
+        </div>
+    </div>
+    """
+
     return f"""
     <html>
     <head>
@@ -135,6 +187,8 @@ def portfolio_manager_page():
     <body>
         <div class="container">
             <h1>💼 Portfolio Manager V4.2</h1>
+
+            {market_data_status_html}
 
             <div class="card">
                 <p><b>Samlet værdi:</b> {total_value:.2f} DKK</p>

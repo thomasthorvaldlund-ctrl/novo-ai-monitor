@@ -11522,5 +11522,3892 @@
         "profit_pct": 2.4442534083530174
       }
     ]
+  },
+  {
+    "date": "04-08-2026 16:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 66.0,
+        "decision_price": 1363.02,
+        "weight_pct": 49.115672053644,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.170579536224995
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.884327946356,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 17:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 66.0,
+        "decision_price": 1365.82,
+        "weight_pct": 49.14138606842828,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.2798718112503025
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.85861393157172,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 17:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 66.0,
+        "decision_price": 1369.39,
+        "weight_pct": 49.20291547628716,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.541839403639325
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.79708452371284,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 17:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 66.0,
+        "decision_price": 1371.37,
+        "weight_pct": 49.22119192469614,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.619775501130292
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.77880807530386,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 17:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 66.0,
+        "decision_price": 1371.24,
+        "weight_pct": 49.25465197976529,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.762604388667957
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.745348020234715,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 18:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 66.0,
+        "decision_price": 1373.96,
+        "weight_pct": 49.23023972421283,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.658378717725666
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.76976027578717,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 18:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1369.12,
+        "weight_pct": 49.24702015828421,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.73001032107414
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.75297984171579,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 18:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1374.41,
+        "weight_pct": 49.35188348281244,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 7.178721528199859
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.64811651718756,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 18:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1380.02,
+        "weight_pct": 49.313506232301705,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 7.014289487207762
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.686493767698295,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 19:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1379.85,
+        "weight_pct": 49.37957005468665,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 7.297502861544686
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.62042994531335,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 19:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1380.89,
+        "weight_pct": 49.35166948414549,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 7.177803933758859
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.64833051585451,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 19:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1379.69,
+        "weight_pct": 49.32422132383621,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 7.060174551515414
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.67577867616379,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 19:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1378.55,
+        "weight_pct": 49.364254911294104,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 7.231781557368492
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.635745088705896,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 20:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1377.44,
+        "weight_pct": 49.27959173532073,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.869185772935471
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.72040826467927,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 20:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.81,
+        "weight_pct": 49.26140866201066,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.791469085095089
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.73859133798935,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 20:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.7,
+        "weight_pct": 49.25947977111107,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.7832280363521695
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.74052022888894,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 20:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.65,
+        "weight_pct": 49.26314251598243,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.798877387253883
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.73685748401757,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 21:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.74,
+        "weight_pct": 49.260790844473995,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.788829435545403
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.739209155526,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 21:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1374.02,
+        "weight_pct": 49.26576421642668,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.810080185640352
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.734235783573325,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 21:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.82,
+        "weight_pct": 49.2634513979973,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.800197212028728
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.736548602002706,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 21:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.6,
+        "weight_pct": 49.263258347178734,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.79937232154445
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.73674165282126,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 22:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.87,
+        "weight_pct": 49.69505754998323,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.788004545061126
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 50.30494245001677,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 22:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.82,
+        "weight_pct": 49.694364194884166,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.785042795417579
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.305635805115834,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 22:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.81,
+        "weight_pct": 49.69555962277896,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.790149260320247
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.30444037722104,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 22:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.64,
+        "weight_pct": 49.69262796457828,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.777626637158934
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.30737203542173,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 23:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.67,
+        "weight_pct": 49.692011794714844,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.774994843709098
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.307988205285156,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 23:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.68,
+        "weight_pct": 49.6937848516963,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.782568123964746
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.3062151483037,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 23:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.78,
+        "weight_pct": 49.69702532375141,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.796410571900902
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.30297467624858,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "04-08-2026 23:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.84,
+        "weight_pct": 49.697679988183566,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.799207343447594
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.302320011816434,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 00:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.7,
+        "weight_pct": 49.694016590572716,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.78355799254588
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.30598340942728,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 00:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.48,
+        "weight_pct": 49.69274383961271,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.778121571449501
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.30725616038729,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 00:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.57,
+        "weight_pct": 49.68884793860165,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.761482351966654
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.31115206139836,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 00:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.45,
+        "weight_pct": 49.6932073344125,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.7801013086117665
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.306792665587494,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 01:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.93,
+        "weight_pct": 49.6948644423932,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.787179654576849
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.3051355576068,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 01:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.98,
+        "weight_pct": 49.69710256032945,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.796740528094613
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.302897439670545,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 01:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.68,
+        "weight_pct": 49.70057244474589,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.811564988512051
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.299427555254105,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 01:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1374.09,
+        "weight_pct": 49.70269422614751,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.820630927739249
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.297305773852486,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 02:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1374.16,
+        "weight_pct": 49.70508423343089,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.8308438575445845
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.29491576656911,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 02:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1374.02,
+        "weight_pct": 49.69841370700067,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.802341927287847
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.30158629299933,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 02:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.79,
+        "weight_pct": 49.69023677327989,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.767413707353599
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.30976322672011,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 02:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.35,
+        "weight_pct": 49.675419195922885,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.704148535259469
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.32458080407712,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 03:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1372.99,
+        "weight_pct": 49.68691815889427,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.753241303223732
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.313081841105735,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 03:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.02,
+        "weight_pct": 49.67700201832439,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.71090478113069
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.32299798167561,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 03:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1372.79,
+        "weight_pct": 49.682134463222006,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.7328154436130605
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.317865536777994,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 03:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.08,
+        "weight_pct": 49.685876862596416,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.748794750708487
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.31412313740358,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 04:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.08,
+        "weight_pct": 49.681748048098854,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.731165662644506
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.318251951901146,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 04:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1372.88,
+        "weight_pct": 49.67951040384232,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.721612645226592
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.32048959615767,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 04:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1372.75,
+        "weight_pct": 49.677927739233176,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.71485639935537
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.32207226076682,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 04:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1372.86,
+        "weight_pct": 49.68271223476338,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.735282258966042
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.31728776523663,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 05:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.11,
+        "weight_pct": 49.68599276873309,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.749289684999053
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.31400723126692,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 05:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.61,
+        "weight_pct": 49.68880930766685,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.761317373869797
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.31119069233315,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 05:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.41,
+        "weight_pct": 49.68707269389448,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.753901215611154
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.312927306105514,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 05:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.26,
+        "weight_pct": 49.684835523195645,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.74434819819324
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.315164476804355,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 06:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 70.0,
+        "decision_price": 1373.1,
+        "weight_pct": 49.68421732252553,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.741708548643553
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.31578267747447,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 06:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.05,
+        "weight_pct": 49.68599276873309,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.749289684999053
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.31400723126692,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 06:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.4,
+        "weight_pct": 49.68965733502095,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.764939035900768
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.310342664979046,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 06:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.32,
+        "weight_pct": 49.671520611031234,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.687509315776621
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 50.32847938896877,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 0.679115540664368
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 07:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.25,
+        "weight_pct": 50.27729749685648,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.664773762809974
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 302.3,
+        "weight_pct": 49.722702503143516,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.7520996235157835
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 07:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.49,
+        "weight_pct": 50.293385104277775,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.715351333645936
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 301.0,
+        "weight_pct": 49.70661489572222,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.7687477445450512
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 07:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.93,
+        "weight_pct": 50.2464743287959,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.7680736197410205
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 296.45,
+        "weight_pct": 49.75352567120411,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5356232316950387
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 07:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.28,
+        "weight_pct": 50.341587405364784,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.758182790029545
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 296.5,
+        "weight_pct": 49.65841259463521,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.918621488560672
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 08:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.12,
+        "weight_pct": 50.31851955648114,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.732155531225639
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 294.95,
+        "weight_pct": 49.68148044351886,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.8520086770674955
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 08:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.85,
+        "weight_pct": 50.297359985654325,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.732320509322494
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 296.1,
+        "weight_pct": 49.702640014345675,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.7687477445450512
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 08:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.78,
+        "weight_pct": 50.28061704797191,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.67893831083999
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 295.35,
+        "weight_pct": 49.7193829520281,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.7520996235157835
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 08:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.56,
+        "weight_pct": 50.22289156856272,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.775646899996669
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 296.4,
+        "weight_pct": 49.77710843143727,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.4357040144552744
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 09:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.57,
+        "weight_pct": 50.24168938147824,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.747639904030499
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 296.35,
+        "weight_pct": 49.75831061852177,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5356232316950387
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 09:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.5,
+        "weight_pct": 50.264753797533835,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.737756930418873
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 294.85,
+        "weight_pct": 49.73524620246617,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.635532285246751
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 09:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.87,
+        "weight_pct": 50.25192923079741,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.719137973773762
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 294.75,
+        "weight_pct": 49.7480707692026,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.6022258795001627
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 09:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.73,
+        "weight_pct": 50.3204050138981,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.703983557162613
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 295.65,
+        "weight_pct": 49.6795949861019,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.8853150828140837
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 10:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.71,
+        "weight_pct": 50.58804774854105,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.717653170902062
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 293.65,
+        "weight_pct": 49.41195225145895,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.917752678830003
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 10:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.8,
+        "weight_pct": 50.47223096233358,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.752746368933166
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 291.7,
+        "weight_pct": 49.52776903766641,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.4348352047246054
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 10:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.78,
+        "weight_pct": 50.48083025196597,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.734787324675476
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 293.55,
+        "weight_pct": 49.51916974803404,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.4847998951885137
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 10:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.16,
+        "weight_pct": 50.48036842570891,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.7328154436130605
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 292.3,
+        "weight_pct": 49.51963157429109,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.4847998951885137
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 11:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1373.17,
+        "weight_pct": 50.42893869604029,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.713536574580527
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 292.35,
+        "weight_pct": 49.5710613039597,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.3016197454263048
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 11:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1372.58,
+        "weight_pct": 50.704653184293726,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.664938740906829
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 291.55,
+        "weight_pct": 49.295346815706274,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.4173182739646686
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 11:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1371.94,
+        "weight_pct": 50.477220092501604,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.646484762358572
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 290.8,
+        "weight_pct": 49.522779907498396,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.5514025429936376
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 11:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1371.48,
+        "weight_pct": 50.84037225048286,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.5985389849724445
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 292.0,
+        "weight_pct": 49.15962774951714,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -4.0001448016217775
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 12:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1371.66,
+        "weight_pct": 50.689127351651464,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.598703963069301
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 287.55,
+        "weight_pct": 49.310872648348536,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.4173182739646686
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 12:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1371.15,
+        "weight_pct": 50.67345954117047,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.587006230392266
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 289.7,
+        "weight_pct": 49.326540458829534,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.3673637471888127
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 12:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1371.0,
+        "weight_pct": 50.867530982209416,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.584861515133145
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 289.8,
+        "weight_pct": 49.132469017790584,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -4.11671213989081
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 12:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1371.58,
+        "weight_pct": 50.748083724383044,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.647796731033565
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 288.7,
+        "weight_pct": 49.251916275616956,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.6004882600388246
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 13:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1371.72,
+        "weight_pct": 50.64865352644834,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.664773762809974
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 290.1,
+        "weight_pct": 49.351346473551665,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.200841882143924
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 13:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1372.03,
+        "weight_pct": 50.66884991450825,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.659172363616738
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 290.55,
+        "weight_pct": 49.33115008549176,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.2841028146663684
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 13:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1372.03,
+        "weight_pct": 50.62638309668978,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 6.6064500775216555
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 290.05,
+        "weight_pct": 49.37361690331022,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.167535476397336
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 13:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1413.53,
+        "weight_pct": 51.44875171211779,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.62791813879242
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.5,
+        "weight_pct": 48.5512482878822,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.7678789348143824
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 14:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1428.66,
+        "weight_pct": 51.407945482196524,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.222874881198988
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 292.0,
+        "weight_pct": 48.592054517803476,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.0851433536055604
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 14:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1430.05,
+        "weight_pct": 51.47256500215987,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.738548621148011
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 293.45,
+        "weight_pct": 48.52743499784014,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.8853150828140837
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 14:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1431.7,
+        "weight_pct": 51.23401464868762,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.864474558668315
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.95,
+        "weight_pct": 48.76598535131238,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.7187932177691951
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 14:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1427.31,
+        "weight_pct": 51.1432600908399,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.499953575009359
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 295.5,
+        "weight_pct": 48.856739909160105,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.685486812022607
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 15:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1423.7,
+        "weight_pct": 51.121579619444525,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.067511293965113
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.35,
+        "weight_pct": 48.878420380555475,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 15:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.47,
+        "weight_pct": 51.19906403779216,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.409365641886547
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.80093596220784,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 15:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1419.12,
+        "weight_pct": 51.181032620876096,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.329715755803017
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.8189673791239,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 15:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1422.6,
+        "weight_pct": 51.24414442560226,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.608756275952933
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.75585557439774,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 16:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1422.44,
+        "weight_pct": 51.18177310713982,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.332985535256373
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.81822689286018,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 16:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1422.91,
+        "weight_pct": 51.21007366316406,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.45802722925933
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.78992633683594,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 16:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1422.92,
+        "weight_pct": 51.408929547040316,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.340749047227671
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.59107045295969,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 16:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1432.44,
+        "weight_pct": 51.4003704050889,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.302606222910239
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.5996295949111,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 17:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1433.24,
+        "weight_pct": 51.42132616135957,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.396016953547777
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.57867383864043,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 17:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1429.25,
+        "weight_pct": 51.415520334631005,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.370129287101532
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.58447966536899,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 17:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1432.53,
+        "weight_pct": 51.37164559509802,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.17469558156523
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.62835440490197,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 17:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1430.81,
+        "weight_pct": 51.3808497318232,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.215664846152173
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.6191502681768,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 18:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1430.4,
+        "weight_pct": 51.35531931152008,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.102062503386517
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 34.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.64468068847993,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 18:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1428.99,
+        "weight_pct": 51.35823633695361,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.115036315071965
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.64176366304639,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 18:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1432.55,
+        "weight_pct": 51.43200624779474,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.443654676368078
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.56799375220526,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 18:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1433.14,
+        "weight_pct": 51.437039674412574,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.466113162020353
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.562960325587426,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 19:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1434.6,
+        "weight_pct": 51.44774538233639,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.513896103404939
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.55225461766361,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 19:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1436.56,
+        "weight_pct": 51.46884017503667,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.608110491931768
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.53115982496333,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 19:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1435.57,
+        "weight_pct": 51.46003173939964,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 11.568759954221985
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.53996826060036,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 19:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1430.03,
+        "weight_pct": 51.28551811972396,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.792076962063708
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.71448188027603,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 20:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1426.51,
+        "weight_pct": 51.191305557782385,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.37508702049616
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.80869444221762,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 20:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.58,
+        "weight_pct": 51.17210275019909,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.290291763364499
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.82789724980091,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 20:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.82,
+        "weight_pct": 51.1712154038522,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.286375054655045
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.8287845961478,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 20:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.35,
+        "weight_pct": 51.16789401217385,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.271715837825468
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.832105987826154,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 21:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.58,
+        "weight_pct": 51.16661983292885,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.266092679263346
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.83338016707114,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 21:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1417.84,
+        "weight_pct": 51.15487842000525,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.214289737307388
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.84512157999475,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 21:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1417.77,
+        "weight_pct": 51.15800633149203,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.22808760325895
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.841993668507975,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 21:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1417.93,
+        "weight_pct": 51.16098097573409,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.241211015221127
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 48.83901902426591,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.9852343000538482
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 22:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.11,
+        "weight_pct": 50.05478224913744,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.235075921703206
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 294.3,
+        "weight_pct": 49.94521775086256,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 22:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.16,
+        "weight_pct": 50.05652185468803,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.242746820088527
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94347814531198,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 22:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.1,
+        "weight_pct": 50.05540144466454,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.237806241467473
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94459855533546,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 22:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.09,
+        "weight_pct": 50.05659924957689,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.24308811005906
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94340075042311,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 23:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.14,
+        "weight_pct": 50.05644445955929,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.242405530117994
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94355554044071,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 23:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.17,
+        "weight_pct": 50.05389397160107,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.23115921299375
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94610602839892,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 23:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.03,
+        "weight_pct": 50.05667664422588,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.243429400029596
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94332335577412,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "05-08-2026 23:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1418.12,
+        "weight_pct": 50.052618629934365,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.22553605443163
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.947381370065635,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 00:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 72.0,
+        "decision_price": 1417.78,
+        "weight_pct": 50.05188325159528,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.222293799711563
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94811674840473,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 00:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1417.99,
+        "weight_pct": 50.05544014387522,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.23797688645274
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94455985612479,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 00:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.02,
+        "weight_pct": 50.05277344366761,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.226218634372696
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94722655633239,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 00:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1417.84,
+        "weight_pct": 50.052541222707845,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.225194764461097
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.947458777292155,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 01:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1417.92,
+        "weight_pct": 50.05142063407574,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.220254185840043
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94857936592425,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 01:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.11,
+        "weight_pct": 50.054898349468246,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.235587856659006
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94510165053176,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 01:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.16,
+        "weight_pct": 50.05605748031753,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.240699080265328
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94394251968248,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 01:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.05,
+        "weight_pct": 50.05257992635109,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.225365409446363
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.9474200736489,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 02:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.16,
+        "weight_pct": 50.05590268694169,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.240016500324261
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.944097313058315,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 02:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.06,
+        "weight_pct": 50.05393267314789,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.231329857979018
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94606732685211,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 02:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1417.94,
+        "weight_pct": 50.054820949307675,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.235246566688474
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.945179050692325,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 02:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.05,
+        "weight_pct": 50.05084004617844,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.217694511061042
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94915995382156,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 03:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.06,
+        "weight_pct": 50.05876252393644,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.252627977330638
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.94123747606356,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 03:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.37,
+        "weight_pct": 50.061776791362675,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.26592203427808
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.938223208637325,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 03:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.51,
+        "weight_pct": 50.06734007018092,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.290462408349764
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.932659929819074,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 03:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.75,
+        "weight_pct": 50.07158906435597,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.309208978874063
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.92841093564403,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 04:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.91,
+        "weight_pct": 50.0694637367721,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.299831630636074
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.9305362632279,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 04:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.8,
+        "weight_pct": 50.06845994463471,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.295402986970819
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.93154005536529,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 04:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.93,
+        "weight_pct": 50.0707382183589,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.305454789198196
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.9292617816411,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 04:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.9,
+        "weight_pct": 50.07174376051262,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.30989155881513
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.928256239487375,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 05:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.98,
+        "weight_pct": 50.069309026486394,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.299149050695009
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.930690973513606,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 05:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1419.1,
+        "weight_pct": 50.07703416037068,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.333237417989949
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.92296583962932,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 05:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1419.32,
+        "weight_pct": 50.07680216494864,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.332213548078348
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.92319783505136,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 05:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1419.15,
+        "weight_pct": 50.07015992119355,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.302903240370876
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.92984007880645,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 06:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 74.0,
+        "decision_price": 1418.9,
+        "weight_pct": 50.067649514197186,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.2918275682319
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 44.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.932350485802814,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 06:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1418.71,
+        "weight_pct": 50.07321148468479,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.316367942303586
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.926788515315216,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 06:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.12,
+        "weight_pct": 50.07545065668649,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.326249099545693
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.92454934331351,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 06:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.39,
+        "weight_pct": 50.07583733546057,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.32795554939836
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 49.92416266453944,
+        "reason": "Svage AI signaler.",
+        "profit_pct": 2.4442534083530174
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 07:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.34,
+        "weight_pct": 51.56010189904563,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34192406033519
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 307.6,
+        "weight_pct": 48.43989810095437,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -3.450624679711257
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 07:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.48,
+        "weight_pct": 51.24964605356502,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.332384193063614
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 290.05,
+        "weight_pct": 48.750353946434984,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -2.251665218650449
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 07:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.47,
+        "weight_pct": 51.16211924520348,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.339884446463671
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 293.7,
+        "weight_pct": 48.83788075479653,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.901973367531404
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 07:54",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.4,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.95,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 08:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.4,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.95,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 08:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 08:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 08:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 09:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 09:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 09:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 09:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 10:00",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 10:15",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 10:30",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
+  },
+  {
+    "date": "06-08-2026 10:45",
+    "decisions": [
+      {
+        "stock": "NVIDIA",
+        "action": "HOLD",
+        "score": 76.0,
+        "decision_price": 1419.53,
+        "weight_pct": 51.07943608216975,
+        "reason": "Stabil AI vurdering.",
+        "profit_pct": 10.34874173379418
+      },
+      {
+        "stock": "NOVO",
+        "action": "REDUCE",
+        "score": 40.0,
+        "decision_price": 295.55,
+        "weight_pct": 48.92056391783024,
+        "reason": "Svage AI signaler.",
+        "profit_pct": -1.5689296374416268
+      }
+    ]
   }
 ]

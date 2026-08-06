@@ -134,7 +134,7 @@ def export_recovery_files():
     }
 
 
-def create_backup():
+def create_platform_backup():
     """
     Opretter en komprimeret backup af Aureum AI Platform,
     inklusive maskeret recovery-konfiguration.
@@ -195,6 +195,102 @@ def create_backup():
     return metadata
 
 
+
+
+def create_full_backup():
+    """
+    Opretter en udvidet recovery-backup med platformdata,
+    recovery-konfiguration og gendannelsesvejledning.
+    """
+
+    BACKUP_DIR.mkdir(exist_ok=True)
+
+    recovery_result = export_recovery_files()
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    backup_name = f"aureum_full_backup_{timestamp}"
+
+    backup_file = BACKUP_DIR / f"{backup_name}.tar.gz"
+    metadata_file = BACKUP_DIR / f"{backup_name}.json"
+
+    restore_guide = RECOVERY_DIR / "RESTORE_GUIDE.md"
+
+    restore_guide.write_text(
+        """# Aureum AI Platform – Restore Guide
+
+1. Installér Ubuntu, Python 3 og Git.
+2. Udpak backupen til `/root/aureum-ai-platform`.
+3. Opret et nyt virtuelt miljø:
+   `python3 -m venv venv`
+4. Installér pakker:
+   `./venv/bin/python -m pip install -r requirements.lock.txt`
+5. Genskab secrets manuelt i systemd-servicefilen.
+6. Kopiér recovery-filer:
+   - `aureum-ai.service`
+   - `Caddyfile`
+   - `root-crontab.txt`
+7. Kør:
+   `sudo systemctl daemon-reload`
+8. Aktivér og start:
+   `sudo systemctl enable --now aureum-ai.service`
+9. Kontrollér:
+   `curl -I http://127.0.0.1:3000/command-center`
+""",
+        encoding="utf-8",
+    )
+
+    file_count = 0
+
+    with tarfile.open(backup_file, "w:gz") as tar:
+        for root, dirs, files in os.walk(PROJECT_DIR):
+            dirs[:] = [
+                directory
+                for directory in dirs
+                if directory not in EXCLUDE
+            ]
+
+            for filename in files:
+                path = Path(root) / filename
+                relative_path = path.relative_to(PROJECT_DIR)
+
+                tar.add(path, arcname=relative_path)
+                file_count += 1
+
+    size_bytes = backup_file.stat().st_size
+    size_mb = round(size_bytes / 1024 / 1024, 2)
+
+    metadata = {
+        "success": True,
+        "platform": "Aureum AI Platform",
+        "backup_type": "full",
+        "version": PLATFORM_VERSION,
+        "file": backup_file.name,
+        "path": str(backup_file),
+        "metadata_file": metadata_file.name,
+        "size_bytes": size_bytes,
+        "size_mb": size_mb,
+        "file_count": file_count,
+        "created": timestamp,
+        "git_commit": get_git_commit(),
+        "python_version": platform.python_version(),
+        "recovery_included": recovery_result["success"],
+        "recovery_files": recovery_result["files"],
+        "restore_guide": "recovery/RESTORE_GUIDE.md",
+    }
+
+    metadata_file.write_text(
+        json.dumps(metadata, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    return metadata
+
+def create_backup():
+    """
+    Bagudkompatibel alias for Platform Backup.
+    """
+    return create_platform_backup()
+
 def list_backups():
     """
     Returnerer alle backups sorteret med den nyeste først.
@@ -204,7 +300,10 @@ def list_backups():
 
     backups = []
 
-    for metadata_file in BACKUP_DIR.glob("aureum_backup_*.json"):
+    metadata_files = list(BACKUP_DIR.glob("aureum_backup_*.json"))
+    metadata_files += list(BACKUP_DIR.glob("aureum_full_backup_*.json"))
+
+    for metadata_file in metadata_files:
         try:
             metadata = json.loads(
                 metadata_file.read_text(encoding="utf-8")

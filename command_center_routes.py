@@ -72,6 +72,7 @@ def command_center_v2():
 
     system_health = cache.get("system_health", get_system_health())
     market = cache.get("market", get_market_score())
+    market_data_status = cache.get("market_data_status", {})
     summary = cache.get("summary", get_market_summary())
     alerts = cache.get("alerts", get_ai_alerts())
     portfolio = cache.get("portfolio", get_portfolio_summary())
@@ -106,6 +107,7 @@ def command_center_v2():
         "command_center_v2.html",
         system_health=system_health,
         market=market,
+        market_data_status=market_data_status,
         top_picks=top_picks,
         summary=summary,
         alerts=alerts,

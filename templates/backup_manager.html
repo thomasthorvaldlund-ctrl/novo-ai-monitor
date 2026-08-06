@@ -14,15 +14,32 @@
         virtuelle miljøer, Git-historik og cachemapper.
     </p>
 
-    <form
-        method="post"
-        action="{{ url_for('backup_manager.create_backup_route') }}"
-        style="margin-top:20px;"
-    >
-        <button type="submit" class="btn btn-primary">
-            💾 Opret ny backup
-        </button>
-    </form>
+    <div style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+        margin-top:20px;
+    ">
+
+        <form
+            method="post"
+            action="{{ url_for('backup_manager.create_backup_route') }}"
+        >
+            <button type="submit" class="btn btn-primary">
+                💾 Opret Platform Backup
+            </button>
+        </form>
+
+        <form
+            method="post"
+            action="{{ url_for('backup_manager.create_full_backup_route') }}"
+        >
+            <button type="submit" class="btn btn-secondary">
+                🚀 Opret Full Recovery Backup
+            </button>
+        </form>
+
+    </div>
 
 </section>
 
