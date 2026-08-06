@@ -1,4 +1,13 @@
-from flask import Blueprint, redirect, render_template, url_for
+from pathlib import Path
+
+from flask import (
+    Blueprint,
+    abort,
+    redirect,
+    render_template,
+    send_from_directory,
+    url_for,
+)
 
 from backup_service import create_backup, list_backups
 
@@ -28,3 +37,18 @@ def create_backup_route():
     return redirect(
         url_for("backup_manager.backup_manager")
     )
+
+@backup_bp.route("/backup-manager/download/<filename>")
+def download_backup(filename):
+    backup_dir = Path(__file__).parent / "backups"
+    file_path = backup_dir / filename
+
+    if not file_path.exists() or not file_path.is_file():
+        abort(404)
+
+    return send_from_directory(
+        backup_dir,
+        filename,
+        as_attachment=True,
+    )
+

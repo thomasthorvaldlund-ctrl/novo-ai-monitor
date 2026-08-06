@@ -3,12 +3,19 @@ from pathlib import Path
 import json
 import os
 import platform
+import re
+import shutil
 import subprocess
 import tarfile
 
 
 PROJECT_DIR = Path("/root/aureum-ai-platform")
 BACKUP_DIR = PROJECT_DIR / "backups"
+RECOVERY_DIR = PROJECT_DIR / "recovery"
+
+SYSTEMD_SERVICE = Path("/etc/systemd/system/aureum-ai.service")
+CADDY_FILE = Path("/etc/caddy/Caddyfile")
+
 PLATFORM_VERSION = "2.1"
 
 
@@ -19,6 +26,23 @@ EXCLUDE = {
     ".git",
     "backups",
 }
+
+
+def run_command(command):
+    """
+    Kører en systemkommando og returnerer tekstoutput.
+    """
+
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip()
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return "unavailable"
 
 
 def get_git_commit():
@@ -35,13 +59,90 @@ def get_git_commit():
         return "unknown"
 
 
+def redact_service_secrets(service_text):
+    """
+    Bevarer miljøvariablernes navne, men fjerner deres værdier.
+    """
+
+    pattern = r'Environment="([^="]+)=.*?"'
+
+    return re.sub(
+        pattern,
+        lambda match: f'Environment="{match.group(1)}=REDACTED"',
+        service_text,
+    )
+
+
+def export_recovery_files():
+    """
+    Eksporterer den aktuelle serverkonfiguration til recovery-mappen.
+    Følsomme værdier i systemd-servicefilen bliver maskeret.
+    """
+
+    RECOVERY_DIR.mkdir(exist_ok=True)
+
+    if SYSTEMD_SERVICE.exists():
+        service_text = SYSTEMD_SERVICE.read_text(encoding="utf-8")
+        safe_service_text = redact_service_secrets(service_text)
+
+        (RECOVERY_DIR / "aureum-ai.service").write_text(
+            safe_service_text,
+            encoding="utf-8",
+        )
+
+    crontab_text = run_command(["crontab", "-l"])
+
+    (RECOVERY_DIR / "root-crontab.txt").write_text(
+        crontab_text + "\n",
+        encoding="utf-8",
+    )
+
+    if CADDY_FILE.exists():
+        shutil.copy2(
+            CADDY_FILE,
+            RECOVERY_DIR / "Caddyfile",
+        )
+
+    server_info = {
+        "created": datetime.now().isoformat(timespec="seconds"),
+        "hostname": run_command(["hostname"]),
+        "hostnamectl": run_command(["hostnamectl"]),
+        "os_release": run_command(["cat", "/etc/os-release"]),
+        "python_version": platform.python_version(),
+        "git_commit": get_git_commit(),
+        "service_enabled": run_command(
+            ["systemctl", "is-enabled", "aureum-ai.service"]
+        ),
+        "service_active": run_command(
+            ["systemctl", "is-active", "aureum-ai.service"]
+        ),
+    }
+
+    (RECOVERY_DIR / "server-info.json").write_text(
+        json.dumps(server_info, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    return {
+        "success": True,
+        "directory": str(RECOVERY_DIR),
+        "files": sorted(
+            path.name
+            for path in RECOVERY_DIR.iterdir()
+            if path.is_file()
+        ),
+    }
+
+
 def create_backup():
     """
-    Opretter en komprimeret backup af Aureum AI Platform
-    og gemmer metadata i en tilhørende JSON-fil.
+    Opretter en komprimeret backup af Aureum AI Platform,
+    inklusive maskeret recovery-konfiguration.
     """
 
     BACKUP_DIR.mkdir(exist_ok=True)
+
+    recovery_result = export_recovery_files()
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     backup_name = f"aureum_backup_{timestamp}"
@@ -53,7 +154,11 @@ def create_backup():
 
     with tarfile.open(backup_file, "w:gz") as tar:
         for root, dirs, files in os.walk(PROJECT_DIR):
-            dirs[:] = [directory for directory in dirs if directory not in EXCLUDE]
+            dirs[:] = [
+                directory
+                for directory in dirs
+                if directory not in EXCLUDE
+            ]
 
             for filename in files:
                 path = Path(root) / filename
@@ -78,14 +183,14 @@ def create_backup():
         "created": timestamp,
         "git_commit": get_git_commit(),
         "python_version": platform.python_version(),
+        "recovery_included": recovery_result["success"],
+        "recovery_files": recovery_result["files"],
     }
 
     metadata_file.write_text(
         json.dumps(metadata, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
-
-    return metadata
 
     return metadata
 

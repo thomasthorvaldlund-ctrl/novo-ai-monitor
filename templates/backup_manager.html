@@ -144,7 +144,12 @@
 
                     <td style="padding:10px;text-align:center;">
                         {% if backup.available %}
-                            ✅
+                            <a
+                                href="{{ url_for('backup_manager.download_backup', filename=backup.file) }}"
+                                class="btn btn-sm btn-primary"
+                            >
+                                ⬇ Download
+                            </a>
                         {% else %}
                             ❌
                         {% endif %}

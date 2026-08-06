@@ -54,3 +54,6 @@ ai_portfolio_decisions_backup_before_cleanup.json
 
 # Generated platform backups
 backups/
+
+# Generated recovery files
+recovery/

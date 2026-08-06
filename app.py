@@ -160,6 +160,7 @@ def before_request():
         "/ai-performance",
         "/stock-universe",
         "/stock-universe-filter",
+        "/backup-manager",
     ]:
         return
 
