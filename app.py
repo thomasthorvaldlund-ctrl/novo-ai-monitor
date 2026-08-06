@@ -29,7 +29,8 @@ from openai_service import client
 
 import feedparser
 
-import yfinance as yf
+from market_data_provider import get_history as provider_get_history
+from currency_service import get_fx_rates as provider_get_fx_rates
 from stock_utils import get_history
 from portfolio import get_portfolio_summary
 from portfolio_manager_routes import portfolio_manager_bp
@@ -180,8 +181,10 @@ def send_telegram(message):
     })
 
 def get_stock_data(ticker):
-    stock = yf.Ticker(ticker)
-    data = stock.history(period="10d")
+    data = provider_get_history(
+        ticker,
+        period="10d",
+    )
 
     if data.empty or "Close" not in data.columns:
         raise ValueError(f"Ingen kursdata fundet for {ticker}")
@@ -240,21 +243,9 @@ def get_stock_data(ticker):
 
 def get_fx_rates():
     """
-    Henter valutakurser til DKK.
-    Bruger fallback hvis yfinance fejler.
+    Henter valutakurser gennem Aureum Market Data Provider.
     """
-    def fx(pair, fallback):
-        try:
-            data = yf.Ticker(pair).history(period="5d")
-            return float(data["Close"].iloc[-1])
-        except Exception:
-            return fallback
-
-    return {
-        "DKK": 1.0,
-        "USD": fx("USDDKK=X", 6.95),
-        "EUR": fx("EURDKK=X", 7.46),
-    }
+    return provider_get_fx_rates()
 
 
 def get_currency(ticker):
@@ -306,8 +297,10 @@ def risk_check():
 
     ticker = stock_metadata["ticker"]
     currency = get_currency(ticker)
-    stock = yf.Ticker(ticker)
-    data = stock.history(period="10d")
+    data = provider_get_history(
+        ticker,
+        period="10d",
+    )
 
     latest = data["Close"].iloc[-1]
     yesterday = data["Close"].iloc[-2]
@@ -513,8 +506,10 @@ Overskrifter:
 @app.route("/status-report")
 def status_report():
     ticker = get_stock_metadata("NOVO")["ticker"]
-    stock = yf.Ticker(ticker)
-    data = stock.history(period="10d")
+    data = provider_get_history(
+        ticker,
+        period="10d",
+    )
 
     latest = data["Close"].iloc[-1]
     yesterday = data["Close"].iloc[-2]
@@ -603,8 +598,10 @@ def chart():
     chart_file = "/tmp/novo_chart.png"
 
     ticker = get_stock_metadata("NOVO")["ticker"]
-    stock = yf.Ticker(ticker)
-    data = stock.history(period="1mo")
+    data = provider_get_history(
+        ticker,
+        period="1mo",
+    )
 
     plt.figure(figsize=(8,4))
     plt.plot(data.index, data["Close"])
@@ -621,8 +618,10 @@ def chart():
 @app.route("/dsv-chart")
 def dsv_chart():
     ticker = get_stock_metadata("DSV")["ticker"]
-    stock = yf.Ticker(ticker)
-    data = stock.history(period="1mo")
+    data = provider_get_history(
+        ticker,
+        period="1mo",
+    )
 
     plt.figure(figsize=(8,4))
     plt.plot(data.index, data["Close"])
@@ -640,8 +639,10 @@ def dsv_chart():
 @app.route("/dsv")
 def dsv_status():
     ticker = get_stock_metadata("DSV")["ticker"]
-    stock = yf.Ticker(ticker)
-    data = stock.history(period="10d")
+    data = provider_get_history(
+        ticker,
+        period="10d",
+    )
 
     latest = data["Close"].iloc[-1]
     yesterday = data["Close"].iloc[-2]
@@ -1063,13 +1064,17 @@ def portfolio_alerts():
         sent_today = set()
 
     novo_ticker = get_stock_metadata("NOVO")["ticker"]
-    stock = yf.Ticker(novo_ticker)
-    data = stock.history(period="10d")
+    data = provider_get_history(
+        novo_ticker,
+        period="10d",
+    )
     latest = data["Close"].iloc[-1]
 
     dsv_ticker = get_stock_metadata("DSV")["ticker"]
-    dsv = yf.Ticker(dsv_ticker)
-    dsv_data = dsv.history(period="10d")
+    dsv_data = provider_get_history(
+        dsv_ticker,
+        period="10d",
+    )
     dsv_latest = dsv_data["Close"].iloc[-1]
 
     novo_buy_price = 301.3

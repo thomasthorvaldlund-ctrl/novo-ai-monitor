@@ -1,7 +1,6 @@
 import json
 
-import yfinance as yf
-
+from market_data_provider import get_history
 from currency_service import (
     get_fx_rates,
     get_currency,
@@ -28,8 +27,10 @@ def build_stock_screener_cache():
 
     for name, ticker in watchlist.items():
         try:
-            stock = yf.Ticker(ticker)
-            data = stock.history(period="10d")
+            data = get_history(
+                ticker,
+                period="10d",
+            )
             data = data.dropna(subset=["Close"])
 
             if data.empty or len(data.index) < 6:

@@ -1,5 +1,6 @@
 from flask import Blueprint
-import yfinance as yf
+
+from market_data_provider import get_history
 
 market_dashboard_bp = Blueprint("market_dashboard", __name__)
 
@@ -17,7 +18,10 @@ def market_dashboard():
 
     for name, ticker in markets.items():
         try:
-            data = yf.Ticker(ticker).history(period="5d")
+            data = get_history(
+                ticker,
+                period="5d",
+            )
             latest = float(data["Close"].iloc[-1])
             previous = float(data["Close"].iloc[-2])
             change = ((latest - previous) / previous) * 100

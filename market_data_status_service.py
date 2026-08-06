@@ -1,6 +1,9 @@
 from datetime import datetime
 
-import yfinance as yf
+from market_data_provider import (
+    get_history,
+    get_provider_name,
+)
 
 
 def get_market_data_status():
@@ -9,7 +12,8 @@ def get_market_data_status():
     """
 
     try:
-        data = yf.Ticker("NOVO-B.CO").history(
+        data = get_history(
+            "NOVO",
             period="1d",
             interval="1m",
         )
@@ -18,7 +22,7 @@ def get_market_data_status():
             return {
                 "status": "Offline",
                 "status_color": "red",
-                "provider": "Yahoo Finance",
+                "provider": get_provider_name(),
                 "last_market_update": "-",
                 "age_minutes": None,
             }
@@ -43,7 +47,7 @@ def get_market_data_status():
         return {
             "status": status,
             "status_color": color,
-            "provider": "Yahoo Finance",
+            "provider": get_provider_name(),
             "last_market_update": last_timestamp.strftime("%H:%M"),
             "age_minutes": age_minutes,
         }
@@ -52,7 +56,7 @@ def get_market_data_status():
         return {
             "status": "Fejl",
             "status_color": "red",
-            "provider": "Yahoo Finance",
+            "provider": get_provider_name(),
             "last_market_update": "-",
             "age_minutes": None,
             "error": str(exc),

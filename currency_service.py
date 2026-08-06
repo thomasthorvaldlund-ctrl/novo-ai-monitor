@@ -1,10 +1,13 @@
-import yfinance as yf
+from market_data_provider import get_history
 
 
 def get_fx_rates():
     def fx(pair, fallback):
         try:
-            data = yf.Ticker(pair).history(period="5d")
+            data = get_history(
+                pair,
+                period="5d",
+            )
             return float(data["Close"].iloc[-1])
         except Exception:
             return fallback

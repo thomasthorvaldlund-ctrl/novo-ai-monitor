@@ -1,6 +1,6 @@
 from flask import Blueprint
-import yfinance as yf
 
+from market_data_provider import get_latest_price
 from stock_universe_service import get_stock_metadata
 
 portfolio_analysis_bp = Blueprint("portfolio_analysis", __name__)
@@ -14,8 +14,11 @@ def portfolio_analysis():
     novo_ticker = get_stock_metadata("NOVO")["ticker"]
     dsv_ticker = get_stock_metadata("DSV")["ticker"]
 
-    novo_price = float(yf.Ticker(novo_ticker).history(period="10d")["Close"].iloc[-1])
-    dsv_price = float(yf.Ticker(dsv_ticker).history(period="10d")["Close"].iloc[-1])
+    novo_price = get_latest_price(novo_ticker)
+    dsv_price = get_latest_price(dsv_ticker)
+
+    if novo_price is None or dsv_price is None:
+        raise RuntimeError("Kunne ikke hente aktuelle porteføljekurser.")
     
     novo_value = novo_qty * novo_price
     dsv_value = dsv_qty * dsv_price
