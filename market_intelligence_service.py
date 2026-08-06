@@ -9,9 +9,20 @@ from market_dashboard_service import (
     get_market_dashboard_status,
 )
 
+from market_freshness_service import (
+    get_market_data_freshness,
+)
+
 
 def get_market_intelligence():
     markets = get_market_dashboard_status()
+
+    data_quality = {}
+
+    for market in markets:
+        data_quality[market["name"]] = get_market_data_freshness(
+            market
+        )
 
     open_markets = [
         market["name"]
@@ -52,6 +63,7 @@ def get_market_intelligence():
 
     return {
         "markets": markets,
+        "data_quality": data_quality,
         "open_markets": open_markets,
         "closed_markets": closed_markets,
         "market_condition": condition,
