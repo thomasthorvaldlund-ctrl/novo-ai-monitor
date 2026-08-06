@@ -9,13 +9,18 @@ uden at resten af platformen skal ændres.
 """
 
 from datetime import datetime
+import os
 
-import yfinance as yf
+from yahoo_provider import get_history as yahoo_get_history
+from eodhd_provider import get_history as eodhd_get_history
 
 
 # Aktiv datakilde.
 # Skift senere til "eodhd", når EODHD-integrationen er implementeret.
-DATA_PROVIDER = "yahoo"
+DATA_PROVIDER = os.getenv(
+    "MARKET_DATA_PROVIDER",
+    "yahoo",
+).strip().lower()
 
 PROVIDER_NAMES = {
     "yahoo": "Yahoo Finance",
@@ -51,19 +56,17 @@ def get_history(symbol, period="1mo", interval=None):
     ticker = get_ticker(symbol)
 
     if DATA_PROVIDER == "yahoo":
-        if interval:
-            return yf.Ticker(ticker).history(
-                period=period,
-                interval=interval,
-            )
-
-        return yf.Ticker(ticker).history(
+        return yahoo_get_history(
+            ticker,
             period=period,
+            interval=interval,
         )
 
     if DATA_PROVIDER == "eodhd":
-        raise NotImplementedError(
-            "EODHD er endnu ikke implementeret."
+        return eodhd_get_history(
+            ticker,
+            period=period,
+            interval=interval,
         )
 
     raise RuntimeError(
