@@ -164,6 +164,45 @@ def get_decision_learning():
 
             regime_confidence[regime][confidence] += 1
 
+    regime_intelligence = {}
+
+    for regime in [
+        "Positive",
+        "Neutral",
+        "Weak",
+    ]:
+        decisions = regime_performance[regime]["decisions"]
+
+        score = 0
+
+        if decisions >= 5:
+            score += 40
+        elif decisions > 0:
+            score += 20
+
+        confidence_data = regime_confidence[regime]
+
+        if confidence_data["High"] > 0:
+            score += 30
+            confidence_level = "High"
+
+        elif confidence_data["Medium"] > 0:
+            score += 20
+            confidence_level = "Medium"
+
+        elif confidence_data["Low"] > 0:
+            score += 10
+            confidence_level = "Low"
+
+        else:
+            confidence_level = "Unknown"
+
+        regime_intelligence[regime] = {
+            "score": score,
+            "decisions": decisions,
+            "confidence": confidence_level,
+        }
+
     insights = []
 
     signal_distribution = {
@@ -233,6 +272,7 @@ def get_decision_learning():
         "regime_performance": regime_performance,
         "regime_signals": regime_signals,
         "regime_confidence": regime_confidence,
+        "regime_intelligence": regime_intelligence,
 
         "learning_warning": learning_warning,
 
