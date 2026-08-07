@@ -1015,6 +1015,65 @@
         </div>
     </div>
 
+
+    <div class="card">
+
+        <h2>
+            🧠 AI Learning Intelligence
+            <span
+                class="info-icon"
+                data-tooltip="Analyserer hvordan AI lærer fra tidligere beslutninger, signalændringer, markedsregimer og datakvalitet.">
+                ?
+            </span>
+        </h2>
+
+        <p>
+            <b>Adaptive simulationer:</b>
+            {{ adaptive_learning_summary.total_simulations }}
+        </p>
+
+        <p>
+            <b>Ændrede beslutninger:</b>
+            {{ adaptive_learning_summary.changed_decisions }}
+        </p>
+
+        <p>
+            <b>Ændringsrate:</b>
+            {{ adaptive_learning_summary.change_rate }}%
+        </p>
+
+        <p>
+            <b>Mest ændrede signal:</b>
+            {{ adaptive_learning_summary.most_common_signal_change }}
+        </p>
+
+        <p>
+            <b>Aktivt regime:</b>
+            {{ adaptive_learning_summary.most_active_regime }}
+        </p>
+
+        <p>
+            <b>Datakvalitet:</b>
+            {{ adaptive_learning_summary.data_quality }}
+        </p>
+
+        <p>
+            <b>Manglende kontekst:</b>
+            {{ adaptive_learning_summary.missing_context_records }}
+        </p>
+
+        <p>
+            <b>AI forklaring:</b>
+            {{ adaptive_learning_summary.summary }}
+        </p>
+
+        <p>
+            <b>Status:</b>
+            {{ adaptive_learning_summary.learning_status }}
+        </p>
+
+    </div>
+
     <div class="card market-score-card">
         <h2>
             🌍 Market Score

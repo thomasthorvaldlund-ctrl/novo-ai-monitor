@@ -47,6 +47,10 @@ from ai_decision_learning_service import get_decision_learning
 from ai_decision_learning_history_service import save_learning_snapshot
 from ai_decision_learning_trend_service import get_learning_trend
 
+from ai_adaptive_summary_service import (
+    get_adaptive_learning_summary
+)
+
 def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
@@ -137,6 +141,8 @@ def build_dashboard_cache():
     
     decision_learning_trend = get_learning_trend()
 
+    adaptive_learning_summary = get_adaptive_learning_summary()
+
     ai_copilot.update({
         "risk_score": ai_risk_dashboard.get(
             "risk_score",
@@ -208,6 +214,7 @@ def build_dashboard_cache():
     "decision_quality": decision_quality,
     "decision_learning": decision_learning,
     "decision_learning_trend": decision_learning_trend,
+    "adaptive_learning_summary": adaptive_learning_summary,
     "ai_news": ai_news,
     "earnings": earnings,
     "earnings_ai": earnings_ai,

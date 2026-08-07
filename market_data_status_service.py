@@ -5,6 +5,8 @@ from market_data_provider import (
     get_provider_name,
 )
 
+from market_status_service import get_asset_market_status
+
 
 def get_market_data_status():
     """
@@ -12,6 +14,8 @@ def get_market_data_status():
     """
 
     try:
+        market_status = get_asset_market_status("NOVO-B.CO")
+
         data = get_history(
             "NOVO",
             period="1d",
@@ -34,12 +38,18 @@ def get_market_data_status():
             (now - last_timestamp).total_seconds() / 60
         )
 
-        if age_minutes <= 15:
+        if market_status.get("status") != "OPEN":
+            status = "Marked lukket"
+            color = "blue"
+
+        elif age_minutes <= 15:
             status = "Live"
             color = "green"
+
         elif age_minutes <= 60:
             status = "Forsinket"
             color = "orange"
+
         else:
             status = "Meget forsinket"
             color = "red"
@@ -50,6 +60,7 @@ def get_market_data_status():
             "provider": get_provider_name(),
             "last_market_update": last_timestamp.strftime("%H:%M"),
             "age_minutes": age_minutes,
+            "market_session": market_status,
         }
 
     except Exception as exc:
