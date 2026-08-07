@@ -348,16 +348,16 @@ def get_decision_learning():
         decision_adjustment
     )
 
-    save_adaptive_decision(
-        adaptive_simulation
-    )
-
     adaptive_simulation["stock"] = latest_decision.get(
         "stock"
     )
 
     adaptive_simulation["historical_action"] = latest_decision.get(
         "action"
+    )
+
+    save_adaptive_decision(
+        adaptive_simulation
     )
 
     decision_adjustment_explanation = (
