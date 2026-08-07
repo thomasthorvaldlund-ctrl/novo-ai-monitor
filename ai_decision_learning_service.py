@@ -280,6 +280,14 @@ def get_decision_learning():
         regime_intelligence
     )
 
+    decision_adjustment_explanation = (
+        "AI Adaptive Decision: "
+        f"Mode {decision_adjustment['mode']}. "
+        f"Score adjustment: +{decision_adjustment['score_modifier']}. "
+        f"Risk adjustment: +{decision_adjustment['risk_modifier']}. "
+        f"Årsag: {decision_adjustment['reason']}"
+    )
+
     regime_insights = []
 
     for regime, data in regime_intelligence.items():
@@ -400,6 +408,7 @@ def get_decision_learning():
         "regime_ranking": regime_ranking,
         "regime_recommendation": regime_recommendation,
         "decision_adjustment": decision_adjustment,
+        "decision_adjustment_explanation": decision_adjustment_explanation,
 
         "learning_warning": learning_warning,
 
