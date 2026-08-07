@@ -1,0 +1,42 @@
+<div class="card">
+
+    <h2>
+        🧠 AI Adaptive Explanation
+        <span
+            class="info-icon"
+            data-tooltip="Forklarer hvorfor AI ændrer beslutninger, hvordan den lærer, og hvad ændringerne betyder for risikoniveauet.">
+            ?
+        </span>
+    </h2>
+
+
+    <p>
+        <b>AI vurdering:</b><br>
+        {{ adaptive_explanation.headline }}
+    </p>
+
+
+    <p>
+        <b>Forklaring:</b><br>
+        {{ adaptive_explanation.summary }}
+    </p>
+
+
+    <p>
+        <b>Risiko fortolkning:</b><br>
+        {{ adaptive_explanation.risk_interpretation }}
+    </p>
+
+
+    <p>
+        <b>Læringssignal:</b>
+        {{ adaptive_explanation.learning_signal }}
+    </p>
+
+
+    <p>
+        <b>AI confidence:</b>
+        {{ adaptive_explanation.confidence }}%
+    </p>
+
+</div>
