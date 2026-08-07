@@ -32,6 +32,7 @@ from today_take_service import get_today_take
 from ai_executive_summary_service import get_ai_executive_summary
 from ai_copilot_service import get_ai_copilot
 from market_intelligence_service import get_market_intelligence
+from global_market_score_service import get_global_market_score
 from ai_copilot_history_service import (
     save_copilot_snapshot,
     load_copilot_history,
@@ -95,6 +96,10 @@ def build_dashboard_cache():
 
     market_intelligence = get_market_intelligence()
 
+    global_market_score = get_global_market_score(
+        market_intelligence
+    )
+
     ai_copilot = get_ai_copilot(
         market=market,
         portfolio=portfolio,
@@ -145,6 +150,7 @@ def build_dashboard_cache():
             []
         ),
         "market_intelligence": market_intelligence,
+        "global_market_score": global_market_score,
     })
 
     history = load_copilot_history()

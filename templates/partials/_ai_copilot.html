@@ -36,6 +36,29 @@
         </div>
         {% endif %}
 
+
+        {% if ai_copilot.global_market_score %}
+        <div>
+            <b>🌎 Global Market Score</b>
+
+            <p>
+                {{ ai_copilot.global_market_score.status }}
+            </p>
+
+            <p>
+                Score:
+                {{ ai_copilot.global_market_score.score }}/100
+                · Confidence:
+                {{ ai_copilot.global_market_score.confidence }}%
+            </p>
+
+            <small>
+                {{ ai_copilot.global_market_score.explanation }}
+            </small>
+        </div>
+        {% endif %}
+
+
         <div>
             <b>⭐ Bedste mulighed lige nu</b>
             <p>{{ ai_copilot.best_opportunity }}</p>
