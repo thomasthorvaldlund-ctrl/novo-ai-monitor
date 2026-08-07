@@ -228,6 +228,17 @@ def get_decision_learning():
             "explanation": explanation,
         }
 
+    regime_insights = []
+
+    for regime, data in regime_intelligence.items():
+        regime_insights.append(
+            f"{regime} regime: "
+            f"Intelligence Score {data['score']}/100. "
+            f"Historiske beslutninger: {data['decisions']}. "
+            f"Confidence: {data['confidence']}. "
+            f"{data['explanation']}"
+        )
+
     insights = []
 
     signal_distribution = {
@@ -298,6 +309,7 @@ def get_decision_learning():
         "regime_signals": regime_signals,
         "regime_confidence": regime_confidence,
         "regime_intelligence": regime_intelligence,
+        "regime_insights": regime_insights,
 
         "learning_warning": learning_warning,
 
