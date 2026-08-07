@@ -106,5 +106,13 @@ def get_adaptive_learning_summary():
             "missing_context_records"
         ),
 
+        "total_records": quality.get(
+            "total_records"
+        ),
+
+        "valid_context_records": quality.get(
+            "valid_context_records"
+        ),
+
         "summary": summary,
     }

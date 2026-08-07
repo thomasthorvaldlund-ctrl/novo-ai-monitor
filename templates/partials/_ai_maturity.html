@@ -1,0 +1,51 @@
+<div class="card">
+
+    <h2>
+        🧠 AI Maturity
+        <span
+            class="info-icon"
+            data-tooltip="Samlet vurdering af AI-systemets læringsevne, tilpasning, datakvalitet og evne til at forklare beslutningsændringer.">
+            ?
+        </span>
+    </h2>
+
+
+    <p>
+        <b>AI Maturity Score:</b><br>
+        {{ ai_maturity.score }}/100
+    </p>
+
+
+    <p>
+        <b>Status:</b><br>
+        {{ ai_maturity.level }}
+    </p>
+
+
+    <hr>
+
+
+    <p>
+        <b>Adaptation:</b>
+        {{ ai_maturity.components.adaptation }}%
+    </p>
+
+
+    <p>
+        <b>Learning Activity:</b>
+        {{ ai_maturity.components.learning_activity }}%
+    </p>
+
+
+    <p>
+        <b>Data Quality:</b>
+        {{ ai_maturity.components.data_quality }}%
+    </p>
+
+
+    <p>
+        <b>Explanation Confidence:</b>
+        {{ ai_maturity.components.explanation_confidence }}%
+    </p>
+
+</div>

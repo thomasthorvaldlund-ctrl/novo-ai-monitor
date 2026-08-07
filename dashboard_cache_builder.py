@@ -63,6 +63,10 @@ from ai_adaptive_explanation_service import (
     get_adaptive_explanation
 )
 
+from ai_maturity_service import (
+    get_ai_maturity_score
+)
+
 def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
@@ -161,6 +165,8 @@ def build_dashboard_cache():
 
     adaptive_explanation = get_adaptive_explanation()
 
+    ai_maturity = get_ai_maturity_score()
+
     ai_copilot.update({
         "risk_score": ai_risk_dashboard.get(
             "risk_score",
@@ -236,6 +242,7 @@ def build_dashboard_cache():
     "adaptive_behavior": adaptive_behavior,
     "adaptive_performance": adaptive_performance,
     "adaptive_explanation": adaptive_explanation,
+      "ai_maturity": ai_maturity,
     "ai_news": ai_news,
     "earnings": earnings,
     "earnings_ai": earnings_ai,
