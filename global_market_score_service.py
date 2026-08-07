@@ -39,6 +39,32 @@ def get_global_market_score(market_intelligence):
         "data_quality",
         {}
     )
+    
+    # Alle markeder lukkede uden for åbningstid
+    reasons = [
+        quality.get("reason")
+        for quality in data_quality.values()
+    ]
+
+    if (
+        len(open_markets) == 0
+        and reasons
+        and all(
+            reason == "Uden for åbningstid"
+            for reason in reasons
+        )
+    ):
+        return {
+            "score": 50,
+            "status": "Globale markeder uden for åbningstid",
+            "confidence": 90,
+            "open_markets": open_markets,
+            "closed_markets": closed_markets,
+            "explanation": (
+                "Alle overvågede markeder er uden for åbningstid. "
+                "Seneste officielle lukkekurser anvendes."
+            ),
+        }
 
 
     total = len(markets)
