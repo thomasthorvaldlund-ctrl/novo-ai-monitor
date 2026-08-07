@@ -5,6 +5,22 @@ from ai_decision_evaluation_service import get_decision_quality
 from ai_decision_history_service import load_decision_history
 
 
+
+
+def get_market_regime(score):
+    """
+    Klassificerer Global Market Score.
+    """
+
+    if score >= 70:
+        return "Positive"
+
+    elif score >= 40:
+        return "Neutral"
+
+    else:
+        return "Weak"
+
 def get_decision_learning():
 
     performance = get_decision_performance()
@@ -28,6 +44,16 @@ def get_decision_learning():
         if market_context_count
         else None
     )
+
+    regime_distribution = {
+        "Positive": 0,
+        "Neutral": 0,
+        "Weak": 0,
+    }
+
+    for score in market_scores:
+        regime = get_market_regime(score)
+        regime_distribution[regime] += 1
 
     insights = []
 
@@ -94,6 +120,7 @@ def get_decision_learning():
 
         "market_context_count": market_context_count,
         "average_market_score": average_market_score,
+        "regime_distribution": regime_distribution,
 
         "learning_warning": learning_warning,
 
