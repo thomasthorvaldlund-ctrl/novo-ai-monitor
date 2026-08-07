@@ -69,6 +69,66 @@ def get_decision_adjustment(regime_intelligence):
     return adjustment
 
 
+def simulate_adjusted_decision(score, decision_adjustment):
+    """
+    Simulerer hvordan læring påvirker en beslutning.
+    """
+
+    def get_signal(value):
+        if value >= 80:
+            return "BUY"
+
+        elif value >= 70:
+            return "BUY"
+
+        elif value >= 60:
+            return "HOLD"
+
+        elif value >= 50:
+            return "WATCH"
+
+        else:
+            return "REDUCE"
+
+    modifier = decision_adjustment.get(
+        "score_modifier",
+        0
+    )
+
+    adjusted_score = score - modifier
+
+    original_signal = get_signal(score)
+
+    adjusted_signal = get_signal(
+        adjusted_score
+    )
+
+    changed = (
+        original_signal != adjusted_signal
+    )
+
+    if changed:
+        explanation = (
+            "AI reducerede signalstyrken "
+            "grundet konservativ regimejustering."
+        )
+
+    else:
+        explanation = (
+            "AI læringsjustering ændrede ikke "
+           "det oprindelige signal."
+        )
+
+    return {
+        "score": score,
+        "adjusted_score": adjusted_score,
+        "calculated_signal_before_learning": original_signal,
+        "calculated_signal_after_learning": adjusted_signal,
+        "learning_changed_signal": changed,
+        "explanation": explanation,
+    }
+
+
 def get_decision_learning():
 
     performance = get_decision_performance()
@@ -280,6 +340,21 @@ def get_decision_learning():
         regime_intelligence
     )
 
+    latest_decision = history[-1] if history else {}
+
+    adaptive_simulation = simulate_adjusted_decision(
+        latest_decision.get("score", 0),
+        decision_adjustment
+    )
+
+    adaptive_simulation["stock"] = latest_decision.get(
+        "stock"
+    )
+
+    adaptive_simulation["historical_action"] = latest_decision.get(
+        "action"
+    )
+
     decision_adjustment_explanation = (
         "AI Adaptive Decision: "
         f"Mode {decision_adjustment['mode']}. "
@@ -409,6 +484,7 @@ def get_decision_learning():
         "regime_recommendation": regime_recommendation,
         "decision_adjustment": decision_adjustment,
         "decision_adjustment_explanation": decision_adjustment_explanation,
+        "adaptive_simulation": adaptive_simulation,
 
         "learning_warning": learning_warning,
 
