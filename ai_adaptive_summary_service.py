@@ -10,6 +10,10 @@ from ai_adaptive_signal_analytics_service import (
     get_adaptive_signal_analysis
 )
 
+from ai_adaptive_quality_service import (
+    get_adaptive_data_quality
+)
+
 
 def get_adaptive_learning_summary():
     """
@@ -21,6 +25,8 @@ def get_adaptive_learning_summary():
     regime_analysis = get_adaptive_regime_analysis()
 
     signal_analysis = get_adaptive_signal_analysis()
+
+    quality = get_adaptive_data_quality()
 
 
     total_changes = signal_analysis.get(
@@ -90,6 +96,14 @@ def get_adaptive_learning_summary():
 
         "learning_status": performance.get(
             "status"
+        ),
+
+        "data_quality": quality.get(
+            "data_quality"
+        ),
+
+        "missing_context_records": quality.get(
+            "missing_context_records"
         ),
 
         "summary": summary,
