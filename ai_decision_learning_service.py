@@ -245,6 +245,35 @@ def get_decision_learning():
         reverse=True
     )
 
+    best_regime = regime_ranking[0]
+
+    best_name = best_regime[0]
+    best_data = best_regime[1]
+
+    regime_recommendation = {
+        "best_regime": best_name,
+        "score": best_data["score"],
+        "confidence": best_data["confidence"],
+        "recommendation": "",
+    }
+
+    if best_data["score"] >= 40:
+        regime_recommendation["recommendation"] = (
+            f"AI har mest erfaring i {best_name}-regimet. "
+            "Dette regime har det stærkeste historiske datagrundlag. "
+        )
+
+    else:
+        regime_recommendation["recommendation"] = (
+            "AI har endnu begrænset erfaring på tværs af regimer."
+        )
+
+    if regime_intelligence["Weak"]["decisions"] == 0:
+        regime_recommendation["recommendation"] += (
+            "Weak-regimer bør behandles konservativt, "
+            "da historikken er begrænset."
+        )
+
     insights = []
 
     signal_distribution = {
@@ -317,6 +346,7 @@ def get_decision_learning():
         "regime_intelligence": regime_intelligence,
         "regime_insights": regime_insights,
         "regime_ranking": regime_ranking,
+        "regime_recommendation": regime_recommendation,
 
         "learning_warning": learning_warning,
 
