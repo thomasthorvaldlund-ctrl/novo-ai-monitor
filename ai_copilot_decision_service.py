@@ -45,6 +45,11 @@ def get_copilot_decision():
         priority = "Medium"
         risk = "Høj"
 
+    elif action == "BUY" and market_score < 60:
+        action = "HOLD"
+        priority = "Medium"
+        risk = "Moderat"
+
 
     reason = copilot["summary"]
 
