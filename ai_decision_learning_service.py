@@ -239,6 +239,12 @@ def get_decision_learning():
             f"{data['explanation']}"
         )
 
+    regime_ranking = sorted(
+        regime_intelligence.items(),
+        key=lambda x: x[1]["score"],
+        reverse=True
+    )
+
     insights = []
 
     signal_distribution = {
@@ -310,6 +316,7 @@ def get_decision_learning():
         "regime_confidence": regime_confidence,
         "regime_intelligence": regime_intelligence,
         "regime_insights": regime_insights,
+        "regime_ranking": regime_ranking,
 
         "learning_warning": learning_warning,
 
