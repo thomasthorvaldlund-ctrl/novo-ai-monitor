@@ -356,10 +356,6 @@ def get_decision_learning():
         "action"
     )
 
-    save_adaptive_decision(
-        adaptive_simulation
-    )
-
     decision_adjustment_explanation = (
         "AI Adaptive Decision: "
         f"Mode {decision_adjustment['mode']}. "
@@ -383,6 +379,22 @@ def get_decision_learning():
         regime_intelligence.items(),
         key=lambda x: x[1]["score"],
         reverse=True
+    )
+
+    adaptive_simulation["market_score"] = average_market_score
+
+    adaptive_simulation["market_regime"] = (
+        regime_ranking[0][0]
+        if regime_ranking
+        else "Unknown"
+    )
+
+    adaptive_simulation["decision_mode"] = decision_adjustment.get(
+        "mode"
+    )
+
+    save_adaptive_decision(
+        adaptive_simulation
     )
 
     best_regime = regime_ranking[0]
