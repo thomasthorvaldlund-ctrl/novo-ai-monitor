@@ -39,9 +39,21 @@ def get_market_data_freshness(market_status):
         "HOLIDAY",
         "WEEKEND",
     ]:
+
+        if status == "HOLIDAY":
+            reason = "Helligdag"
+
+        elif status == "WEEKEND":
+            reason = "Weekend"
+
+        else:
+            reason = "Uden for åbningstid"
+
+
         return {
             "freshness": "LAST_CLOSE",
             "label": "Seneste officielle lukkekurs anvendes",
+            "reason": reason,
             "checked_at": datetime.now().isoformat(),
         }
 
