@@ -61,6 +61,23 @@
                 {{ decision_intelligence.confidence }}
             </div>
         </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                🌎 Global Market Score
+            </div>
+
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_intelligence.global_market_score.score }}/100
+            </div>
+
+            <div style="color:#64748b;font-size:13px;">
+                {{ decision_intelligence.global_market_score.status }}
+                · Confidence:
+                {{ decision_intelligence.global_market_score.confidence }}%
+            </div>
+        </div>
+
     </div>
 
     <div style="
