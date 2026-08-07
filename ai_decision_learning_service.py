@@ -21,6 +21,54 @@ def get_market_regime(score):
     else:
         return "Weak"
 
+def get_decision_adjustment(regime_intelligence):
+    """
+    Beregner hvordan AI bør justere beslutningsadfærd
+    baseret på historisk regime-læring.
+    """
+
+    weak = regime_intelligence.get(
+        "Weak",
+        {}
+    )
+
+    positive = regime_intelligence.get(
+        "Positive",
+        {}
+    )
+
+    adjustment = {
+        "mode": "Normal",
+        "score_modifier": 0,
+        "risk_modifier": 0,
+        "reason": "",
+    }
+
+    if weak.get("decisions", 0) == 0:
+        adjustment["mode"] = "Conservative"
+        adjustment["score_modifier"] = 10
+        adjustment["risk_modifier"] = 15
+        adjustment["reason"] = (
+            "Weak regime mangler historisk datagrundlag."
+        )
+
+    elif positive.get("score", 0) >= 40:
+        adjustment["mode"] = "Normal"
+        adjustment["reason"] = (
+            "AI har tilstrækkelig erfaring i Positive regime."
+        )
+
+    else:
+        adjustment["mode"] = "Cautious"
+        adjustment["score_modifier"] = 5
+        adjustment["risk_modifier"] = 5
+        adjustment["reason"] = (
+            "AI bør anvende moderat forsigtighed."
+        )
+
+    return adjustment
+
+
 def get_decision_learning():
 
     performance = get_decision_performance()
@@ -228,6 +276,10 @@ def get_decision_learning():
             "explanation": explanation,
         }
 
+    decision_adjustment = get_decision_adjustment(
+        regime_intelligence
+    )
+
     regime_insights = []
 
     for regime, data in regime_intelligence.items():
@@ -347,6 +399,7 @@ def get_decision_learning():
         "regime_insights": regime_insights,
         "regime_ranking": regime_ranking,
         "regime_recommendation": regime_recommendation,
+        "decision_adjustment": decision_adjustment,
 
         "learning_warning": learning_warning,
 
