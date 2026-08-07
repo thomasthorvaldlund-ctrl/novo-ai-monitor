@@ -123,6 +123,47 @@ def get_decision_learning():
 
             regime_signals[regime][action] += 1
 
+    regime_confidence = {
+        "Positive": {
+            "High": 0,
+            "Medium": 0,
+            "Low": 0,
+        },
+        "Neutral": {
+            "High": 0,
+            "Medium": 0,
+            "Low": 0,
+        },
+        "Weak": {
+            "High": 0,
+            "Medium": 0,
+            "Low": 0,
+        },
+    }
+
+    for item in history:
+        market_score = item.get(
+            "global_market_score",
+            {}
+        ).get(
+            "score"
+        )
+
+        confidence = item.get(
+            "confidence"
+        )
+
+        if market_score is not None and confidence in [
+            "High",
+            "Medium",
+            "Low",
+        ]:
+            regime = get_market_regime(
+                market_score
+            )
+
+            regime_confidence[regime][confidence] += 1
+
     insights = []
 
     signal_distribution = {
@@ -191,6 +232,7 @@ def get_decision_learning():
         "regime_distribution": regime_distribution,
         "regime_performance": regime_performance,
         "regime_signals": regime_signals,
+        "regime_confidence": regime_confidence,
 
         "learning_warning": learning_warning,
 
