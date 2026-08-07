@@ -71,6 +71,17 @@ def get_decision_intelligence():
     )
 
     reasons.append(
+        f"Global Market Score: "
+        f"{global_market_score['score']}/100. "
+        f"{global_market_score['status']}."
+    )
+
+    reasons.append(
+        f"Global Market Confidence: "
+        f"{global_market_score['confidence']}%."
+    )
+
+    reasons.append(
         f"AI anbefaling: {copilot['recommendation']}"
     )
 
