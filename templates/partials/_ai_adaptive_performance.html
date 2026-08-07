@@ -1,0 +1,37 @@
+<div class="card">
+
+    <h2>
+        📊 AI Adaptive Performance
+        <span
+            class="info-icon"
+            data-tooltip="Måler hvordan AI's adaptive beslutninger ændrer signaler over tid og følger udviklingen i læringsprocessen.">
+            ?
+        </span>
+    </h2>
+
+    <p>
+        <b>Adaptive simulationer:</b>
+        {{ adaptive_performance.total_simulations }}
+    </p>
+
+    <p>
+        <b>Ændrede beslutninger:</b>
+        {{ adaptive_performance.changed_decisions }}
+    </p>
+
+    <p>
+        <b>Uændrede beslutninger:</b>
+        {{ adaptive_performance.unchanged_decisions }}
+    </p>
+
+    <p>
+        <b>Ændringsrate:</b>
+        {{ adaptive_performance.change_rate }}%
+    </p>
+
+    <p>
+        <b>Status:</b>
+        {{ adaptive_performance.status }}
+    </p>
+
+</div>

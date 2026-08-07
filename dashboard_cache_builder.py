@@ -55,6 +55,10 @@ from ai_adaptive_behavior_service import (
     get_adaptive_behavior
 )
 
+from ai_adaptive_performance_service import (
+    get_adaptive_performance
+)
+
 def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
@@ -149,6 +153,8 @@ def build_dashboard_cache():
 
     adaptive_behavior = get_adaptive_behavior()
 
+    adaptive_performance = get_adaptive_performance()
+
     ai_copilot.update({
         "risk_score": ai_risk_dashboard.get(
             "risk_score",
@@ -222,6 +228,7 @@ def build_dashboard_cache():
     "decision_learning_trend": decision_learning_trend,
     "adaptive_learning_summary": adaptive_learning_summary,
     "adaptive_behavior": adaptive_behavior,
+    "adaptive_performance": adaptive_performance,
     "ai_news": ai_news,
     "earnings": earnings,
     "earnings_ai": earnings_ai,

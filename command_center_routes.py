@@ -105,6 +105,7 @@ def command_center_v2():
     decision_learning = cache.get("decision_learning", {})
     decision_learning_trend = cache.get("decision_learning_trend", {})
     adaptive_behavior = cache.get("adaptive_behavior", {})
+    adaptive_performance = cache.get("adaptive_performance", {})
     market_dashboard_status = get_market_dashboard_status()
     market_intelligence = get_market_intelligence()
 
@@ -144,6 +145,7 @@ def command_center_v2():
         decision_learning=decision_learning,
         decision_learning_trend=decision_learning_trend,
           adaptive_behavior=adaptive_behavior,
+          adaptive_performance=adaptive_performance,
         market_dashboard_status=market_dashboard_status,
         market_intelligence=market_intelligence,
         ai_engine_status=ai_engine_status,
