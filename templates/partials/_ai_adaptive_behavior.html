@@ -1,0 +1,49 @@
+<div class="card">
+
+    <h2>
+        🧠 AI Adaptive Behavior
+        <span
+            class="info-icon"
+            data-tooltip="Analyserer hvordan AI ændrer beslutninger over tid, herunder signalændringer, beslutningsstil og markedsregimer.">
+            ?
+        </span>
+    </h2>
+
+    <p>
+        <b>Analyserede records:</b>
+        {{ adaptive_behavior.total_records }}
+    </p>
+
+    <p>
+        <b>Signalændringer:</b>
+        {{ adaptive_behavior.change_behavior.total_changes }}
+    </p>
+
+    <p>
+        <b>Ændringsrate:</b>
+        {{ adaptive_behavior.change_behavior.change_rate }}%
+    </p>
+
+    <p>
+        <b>Mest almindelige ændring:</b>
+        {{ adaptive_behavior.change_behavior.most_common_change }}
+    </p>
+
+    <p>
+        <b>AI stil:</b>
+        {{ adaptive_behavior.decision_style.style }}
+    </p>
+
+    <p>
+        <b>Aktivt regime:</b>
+        {% for regime, count in adaptive_behavior.regime_behavior.items() %}
+            {{ regime }} ({{ count }})
+        {% endfor %}
+    </p>
+
+    <p>
+        <b>AI forklaring:</b>
+        {{ adaptive_behavior.summary }}
+    </p>
+
+</div>
