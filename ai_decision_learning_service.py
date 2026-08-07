@@ -3,6 +3,7 @@ from collections import Counter
 from ai_decision_performance_service import get_decision_performance
 from ai_decision_evaluation_service import get_decision_quality
 from ai_decision_history_service import load_decision_history
+from ai_adaptive_history_service import save_adaptive_decision
 
 
 
@@ -345,6 +346,10 @@ def get_decision_learning():
     adaptive_simulation = simulate_adjusted_decision(
         latest_decision.get("score", 0),
         decision_adjustment
+    )
+
+    save_adaptive_decision(
+        adaptive_simulation
     )
 
     adaptive_simulation["stock"] = latest_decision.get(
