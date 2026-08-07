@@ -197,10 +197,35 @@ def get_decision_learning():
         else:
             confidence_level = "Unknown"
 
+        if decisions == 0:
+            explanation = (
+                "Der mangler historiske beslutninger "
+                "i dette markedsregime."
+            )
+
+        elif confidence_level == "Low":
+            explanation = (
+                "Regimet har historik, "
+                "men AI confidence er fortsat lav."
+            )
+
+        elif confidence_level == "Medium":
+            explanation = (
+                "Regimet har moderat historik "
+                "og acceptabel AI confidence."
+            )
+
+        else:
+            explanation = (
+                "Regimet har stærkt datagrundlag "
+                "og høj AI confidence."
+            )
+
         regime_intelligence[regime] = {
             "score": score,
             "decisions": decisions,
             "confidence": confidence_level,
+            "explanation": explanation,
         }
 
     insights = []
