@@ -67,6 +67,50 @@ def get_global_market_score(market_intelligence):
         }
 
 
+    # Alle markeder lukkede pga. helligdag
+    if (
+        len(open_markets) == 0
+        and reasons
+        and all(
+            reason == "Helligdag"
+            for reason in reasons
+        )
+    ):
+        return {
+            "score": 50,
+            "status": "Globale markeder påvirket af helligdag",
+            "confidence": 70,
+            "open_markets": open_markets,
+            "closed_markets": closed_markets,
+            "explanation": (
+                "Alle overvågede markeder er påvirket af helligdag. "
+                "Seneste officielle lukkekurser anvendes."
+            ),
+        }
+
+
+    # Alle markeder lukkede pga. weekend
+    if (
+        len(open_markets) == 0
+        and reasons
+        and all(
+            reason == "Weekend"
+            for reason in reasons
+        )
+    ):
+        return {
+            "score": 50,
+            "status": "Globale markeder lukket (weekend)",
+            "confidence": 80,
+            "open_markets": open_markets,
+            "closed_markets": closed_markets,
+            "explanation": (
+                "Alle overvågede markeder er lukket pga. weekend. "
+                "Seneste officielle lukkekurser anvendes."
+            ),
+        }
+
+
     total = len(markets)
 
     if total == 0:
