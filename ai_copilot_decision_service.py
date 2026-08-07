@@ -40,18 +40,33 @@ def get_copilot_decision():
         50
     )
 
+    decision_reason = []
+
     if action == "BUY" and market_score < 40:
+        decision_reason.append(
+            "BUY nedjusteret på grund af svag global markedstilstand."
+        )
+
         action = "WATCH"
         priority = "Medium"
         risk = "Høj"
 
     elif action == "BUY" and market_score < 60:
+        decision_reason.append(
+            "BUY nedjusteret på grund af neutral global markedstilstand."
+        )
+
         action = "HOLD"
         priority = "Medium"
         risk = "Moderat"
 
 
     reason = copilot["summary"]
+
+    if decision_reason:
+        reason += " " + " ".join(
+            decision_reason
+        )
 
     return {
         "headline": "AI Copilot Decision",
