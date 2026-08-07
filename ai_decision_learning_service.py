@@ -2,12 +2,32 @@ from collections import Counter
 
 from ai_decision_performance_service import get_decision_performance
 from ai_decision_evaluation_service import get_decision_quality
+from ai_decision_history_service import load_decision_history
 
 
 def get_decision_learning():
 
     performance = get_decision_performance()
     quality = get_decision_quality()
+    history = load_decision_history()
+
+    market_scores = [
+        item.get("global_market_score", {}).get("score")
+        for item in history
+        if item.get("global_market_score")
+        and item.get("global_market_score", {}).get("score") is not None
+    ]
+
+    market_context_count = len(market_scores)
+
+    average_market_score = (
+        round(
+            sum(market_scores) / market_context_count,
+            1
+        )
+        if market_context_count
+        else None
+    )
 
     insights = []
 
@@ -37,6 +57,14 @@ def get_decision_learning():
             "AI bør fortsat kalibreres baseret på nye resultater."
         )
 
+    if market_context_count > 0:
+        insights.append(
+            f"AI har analyseret {market_context_count} beslutninger "
+            f"med Global Market Context. "
+            f"Gennemsnitlig Global Market Score: "
+            f"{average_market_score}/100."
+        )
+
     if len(active_signals) == 1:
         learning_warning = (
             "Historikken indeholder kun "
@@ -63,6 +91,10 @@ def get_decision_learning():
         "reduce_signals": performance["reduce"],
 
         "signal_distribution": signal_distribution,
+
+        "market_context_count": market_context_count,
+        "average_market_score": average_market_score,
+
         "learning_warning": learning_warning,
 
         "status": performance["status"],
