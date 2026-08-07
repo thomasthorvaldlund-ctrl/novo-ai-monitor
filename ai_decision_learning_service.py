@@ -55,6 +55,33 @@ def get_decision_learning():
         regime = get_market_regime(score)
         regime_distribution[regime] += 1
 
+    regime_performance = {
+        "Positive": {
+            "decisions": 0,
+        },
+        "Neutral": {
+            "decisions": 0,
+        },
+        "Weak": {
+            "decisions": 0,
+        },
+    }
+
+    for item in history:
+        market_score = item.get(
+            "global_market_score",
+            {}
+        ).get(
+            "score"
+        )
+
+        if market_score is not None:
+            regime = get_market_regime(
+                market_score
+            )
+
+            regime_performance[regime]["decisions"] += 1
+
     insights = []
 
     signal_distribution = {
@@ -121,6 +148,7 @@ def get_decision_learning():
         "market_context_count": market_context_count,
         "average_market_score": average_market_score,
         "regime_distribution": regime_distribution,
+        "regime_performance": regime_performance,
 
         "learning_warning": learning_warning,
 
