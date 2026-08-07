@@ -82,6 +82,47 @@ def get_decision_learning():
 
             regime_performance[regime]["decisions"] += 1
 
+    regime_signals = {
+        "Positive": {
+            "BUY": 0,
+            "HOLD": 0,
+            "REDUCE": 0,
+        },
+        "Neutral": {
+            "BUY": 0,
+            "HOLD": 0,
+            "REDUCE": 0,
+        },
+        "Weak": {
+            "BUY": 0,
+            "HOLD": 0,
+            "REDUCE": 0,
+        },
+    }
+
+    for item in history:
+        market_score = item.get(
+            "global_market_score",
+            {}
+        ).get(
+            "score"
+        )
+
+        action = item.get(
+            "action"
+        )
+
+        if market_score is not None and action in [
+            "BUY",
+            "HOLD",
+            "REDUCE",
+        ]:
+            regime = get_market_regime(
+                market_score
+            )
+
+            regime_signals[regime][action] += 1
+
     insights = []
 
     signal_distribution = {
@@ -149,6 +190,7 @@ def get_decision_learning():
         "average_market_score": average_market_score,
         "regime_distribution": regime_distribution,
         "regime_performance": regime_performance,
+        "regime_signals": regime_signals,
 
         "learning_warning": learning_warning,
 
