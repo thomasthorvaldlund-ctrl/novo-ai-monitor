@@ -44,6 +44,18 @@ def save_decision_snapshot(decision):
         "priority": decision.get("priority"),
         "risk": decision.get("risk"),
         "confidence": decision.get("confidence"),
+
+        "global_market_score": decision.get(
+            "global_market_score"
+        ),
+
+        "global_market_status": decision.get(
+            "global_market_score",
+            {}
+        ).get(
+            "status"
+        ),
+
         "recommendation": decision.get("recommendation"),
         "best_opportunity": decision.get("best_opportunity"),
         "reasons": decision.get("reasons", []),
