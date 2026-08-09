@@ -71,6 +71,15 @@ from ai_maturity_history_service import (
     save_ai_maturity_snapshot
 )
 
+
+from ai_maturity_trend_service import (
+    get_ai_maturity_trend
+)
+
+from ai_maturity_explanation_service import (
+    get_ai_maturity_explanation
+)
+
 def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
@@ -173,6 +182,12 @@ def build_dashboard_cache():
 
     save_ai_maturity_snapshot(ai_maturity)
 
+    ai_maturity_trend = get_ai_maturity_trend()
+
+    ai_maturity_explanation = get_ai_maturity_explanation(
+        ai_maturity_trend
+    )
+
     ai_copilot.update({
         "risk_score": ai_risk_dashboard.get(
             "risk_score",
@@ -249,6 +264,8 @@ def build_dashboard_cache():
     "adaptive_performance": adaptive_performance,
     "adaptive_explanation": adaptive_explanation,
       "ai_maturity": ai_maturity,
+    "ai_maturity_trend": ai_maturity_trend,
+    "ai_maturity_explanation": ai_maturity_explanation,
     "ai_news": ai_news,
     "earnings": earnings,
     "earnings_ai": earnings_ai,
