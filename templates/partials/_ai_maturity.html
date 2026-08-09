@@ -48,4 +48,36 @@
         {{ ai_maturity.components.explanation_confidence }}%
     </p>
 
+
+    <hr>
+
+
+    <p>
+        <b>📈 Trend:</b><br>
+        {{ ai_maturity_trend.trend }}
+        {% if ai_maturity_trend.change > 0 %}
+            (+{{ ai_maturity_trend.change }})
+        {% elif ai_maturity_trend.change < 0 %}
+            ({{ ai_maturity_trend.change }})
+        {% endif %}
+    </p>
+
+
+    <p>
+        <b>💪 Stærkeste område:</b><br>
+        {{ ai_maturity_trend.strongest_component }}
+    </p>
+
+
+    <p>
+        <b>🔧 Forbedringsområde:</b><br>
+        {{ ai_maturity_trend.weakest_component }}
+    </p>
+
+
+    <p>
+        <b>🤖 AI anbefaling:</b><br>
+        {{ ai_maturity_explanation.recommendation }}
+    </p>
+
 </div>

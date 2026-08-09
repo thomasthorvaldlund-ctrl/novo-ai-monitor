@@ -108,6 +108,16 @@ def command_center_v2():
     adaptive_performance = cache.get("adaptive_performance", {})
     adaptive_explanation = cache.get("adaptive_explanation", {})
     ai_maturity = cache.get("ai_maturity", {})
+
+    ai_maturity_trend = cache.get(
+        "ai_maturity_trend",
+        {}
+    )
+
+    ai_maturity_explanation = cache.get(
+        "ai_maturity_explanation",
+        {}
+    )
     market_dashboard_status = get_market_dashboard_status()
     market_intelligence = get_market_intelligence()
 
@@ -150,6 +160,8 @@ def command_center_v2():
           adaptive_performance=adaptive_performance,
           adaptive_explanation=adaptive_explanation,
           ai_maturity=ai_maturity,
+        ai_maturity_trend=ai_maturity_trend,
+        ai_maturity_explanation=ai_maturity_explanation,
         market_dashboard_status=market_dashboard_status,
         market_intelligence=market_intelligence,
         ai_engine_status=ai_engine_status,
