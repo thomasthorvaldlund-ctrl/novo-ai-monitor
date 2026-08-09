@@ -1,3 +1,4 @@
+from ai_alerts_service import get_active_ai_alert_count
 """
 AI Executive Summary Service
 
@@ -38,7 +39,7 @@ def get_ai_executive_summary(
         else 0
     )
 
-    alert_count = len(alerts) if alerts else 0
+    alert_count = get_active_ai_alert_count(alerts)
 
     if market_score >= 70:
         headline = "🟢 Positiv markedsvurdering"
@@ -107,12 +108,21 @@ def get_ai_executive_summary(
                     + "."
                 )
 
+    if alert_count == 0:
+        alert_summary = (
+            "Der er ingen aktive AI-alerts, der kræver overvågning."
+        )
+    else:
+        alert_summary = (
+            f"Der er {alert_text}, som bør overvåges."
+        )
+
     summary = (
         f"{market_comment} "
         f"Dagens stærkeste kandidat er {top_pick} baseret på "
         f"den samlede AI-vurdering. "
-        f"Porteføljen består af {portfolio_positions} positioner "
-        f"og der er {alert_text}, som bør overvåges."
+        f"Porteføljen består af {portfolio_positions} positioner. "
+        f"{alert_summary}"
     )
 
     if explain_text:

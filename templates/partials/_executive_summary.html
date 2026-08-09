@@ -54,7 +54,7 @@
         </a>
 
         <a href="/portfolio-alerts" class="summary-box summary-box-link" aria-label="Åbn 🚨 Alerts">
-            <div class="summary-title">🚨 Alerts</div>
+            <div class="summary-title">📉 Lav score</div>
 
             {% set alert_count = market.critical_alerts or 0 %}
 
@@ -64,9 +64,9 @@
 
             <div class="summary-meta">
                 {% if alert_count == 1 %}
-                    kritisk alert
+                    lavt rangeret aktie
                 {% else %}
-                    kritiske alerts
+                    lavt rangerede aktier
                 {% endif %}
             </div>
         </a>

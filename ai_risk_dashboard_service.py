@@ -1,4 +1,7 @@
-from ai_alerts_service import get_ai_alerts
+from ai_alerts_service import (
+    get_ai_alerts,
+    get_active_ai_alert_count,
+)
 from earnings_risk_service import get_earnings_risks
 from portfolio import get_portfolio_summary
 
@@ -33,7 +36,8 @@ def get_ai_risk_dashboard():
     earnings_score = min(earnings_score, 100)
 
 
-    alert_score = min(len(alerts) * 20, 100)
+    active_alert_count = get_active_ai_alert_count(alerts)
+    alert_score = min(active_alert_count * 20, 100)
 
 
     portfolio_score = 40
@@ -46,9 +50,9 @@ def get_ai_risk_dashboard():
 
     risk_reasons = []
 
-    if len(alerts) > 0:
+    if active_alert_count > 0:
         risk_reasons.append(
-            f"{len(alerts)} aktive AI alerts kræver overvågning."
+            f"{active_alert_count} aktive AI alerts kræver overvågning."
         )
 
     if alert_score >= 60:

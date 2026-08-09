@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card adaptive-explanation-card">
 
     <h2>
         🧠 AI Adaptive Explanation
@@ -10,33 +10,33 @@
     </h2>
 
 
-    <p>
-        <b>AI vurdering:</b><br>
-        {{ adaptive_explanation.headline }}
-    </p>
+    <div class="adaptive-explanation-grid">
 
+        <div class="adaptive-explanation-block">
+            <b>AI vurdering</b>
+            <p>{{ adaptive_explanation.headline }}</p>
+        </div>
 
-    <p>
-        <b>Forklaring:</b><br>
-        {{ adaptive_explanation.summary }}
-    </p>
+        <div class="adaptive-explanation-block">
+            <b>Forklaring</b>
+            <p>{{ adaptive_explanation.summary }}</p>
+        </div>
 
+        <div class="adaptive-explanation-block">
+            <b>Risiko fortolkning</b>
+            <p>{{ adaptive_explanation.risk_interpretation }}</p>
+        </div>
 
-    <p>
-        <b>Risiko fortolkning:</b><br>
-        {{ adaptive_explanation.risk_interpretation }}
-    </p>
+        <div class="adaptive-explanation-block">
+            <b>Læringssignal</b>
+            <p>{{ adaptive_explanation.learning_signal }}</p>
+        </div>
 
+    </div>
 
-    <p>
-        <b>Læringssignal:</b>
-        {{ adaptive_explanation.learning_signal }}
-    </p>
-
-
-    <p>
-        <b>AI confidence:</b>
-        {{ adaptive_explanation.confidence }}%
-    </p>
+    <div class="adaptive-explanation-confidence">
+        <span>AI Confidence</span>
+        <strong>{{ adaptive_explanation.confidence }}%</strong>
+    </div>
 
 </div>

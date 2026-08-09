@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card adaptive-performance-card">
 
     <h2>
         📊 AI Adaptive Performance
@@ -9,29 +9,33 @@
         </span>
     </h2>
 
-    <p>
-        <b>Adaptive simulationer:</b>
-        {{ adaptive_performance.total_simulations }}
-    </p>
+    <div class="adaptive-performance-grid">
 
-    <p>
-        <b>Ændrede beslutninger:</b>
-        {{ adaptive_performance.changed_decisions }}
-    </p>
+        <div class="adaptive-performance-metric">
+            <b>Adaptive simulationer</b>
+            <span>{{ adaptive_performance.total_simulations }}</span>
+        </div>
 
-    <p>
-        <b>Uændrede beslutninger:</b>
-        {{ adaptive_performance.unchanged_decisions }}
-    </p>
+        <div class="adaptive-performance-metric">
+            <b>Ændrede beslutninger</b>
+            <span>{{ adaptive_performance.changed_decisions }}</span>
+        </div>
 
-    <p>
-        <b>Ændringsrate:</b>
-        {{ adaptive_performance.change_rate }}%
-    </p>
+        <div class="adaptive-performance-metric">
+            <b>Uændrede beslutninger</b>
+            <span>{{ adaptive_performance.unchanged_decisions }}</span>
+        </div>
 
-    <p>
-        <b>Status:</b>
-        {{ adaptive_performance.status }}
-    </p>
+        <div class="adaptive-performance-metric">
+            <b>Ændringsrate</b>
+            <span>{{ adaptive_performance.change_rate }}%</span>
+        </div>
+
+        <div class="adaptive-performance-metric adaptive-performance-status">
+            <b>Status</b>
+            <span>{{ adaptive_performance.status }}</span>
+        </div>
+
+    </div>
 
 </div>

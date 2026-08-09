@@ -1,4 +1,7 @@
-from ai_alerts_service import get_ai_alerts
+from ai_alerts_service import (
+    get_ai_alerts,
+    get_active_ai_alerts,
+)
 
 
 def get_today_take(
@@ -19,11 +22,7 @@ def get_today_take(
     sell_count = performance.get("sell", 0)
 
     alerts = get_ai_alerts()
-    critical_alerts = [
-        alert
-        for alert in alerts
-        if alert.get("level") != "green"
-    ]
+    critical_alerts = get_active_ai_alerts(alerts)
     alert_count = len(critical_alerts)
 
     if market_score >= 70:

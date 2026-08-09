@@ -72,7 +72,12 @@
                 </small>
 
                 <p class="executive-action-summary">
-                    {{ market.critical_alerts }} kritiske alerts.
+                    {{ market.critical_alerts }}
+                    {% if market.critical_alerts == 1 %}
+                        lavt rangeret aktie.
+                    {% else %}
+                        lavt rangerede aktier.
+                    {% endif %}
                     Nyheder: {{ market.news_positive }} positive,
                     {{ market.news_neutral }} neutrale og
                     {{ market.news_negative }} negative.
@@ -134,9 +139,15 @@
                     {{ alerts[0].title }}
                 </strong>
 
-                <small class="executive-metric-status executive-status-weak">
-                    Kræver opmærksomhed
-                </small>
+                {% if alerts[0].level == "green" %}
+                    <small class="executive-metric-status executive-status-good">
+                        Alt roligt
+                    </small>
+                {% else %}
+                    <small class="executive-metric-status executive-status-weak">
+                        Kræver opmærksomhed
+                    </small>
+                {% endif %}
 
                 <p class="executive-action-summary">
                     {{ alerts[0].message }}

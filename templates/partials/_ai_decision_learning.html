@@ -1,4 +1,4 @@
-<section class="card">
+<section class="card decision-learning-card">
 
     <h2>
         🧠 AI Decision Learning
@@ -25,39 +25,34 @@
 
     {% if decision_learning %}
 
-    <div style="
-        display:grid;
-        grid-template-columns:repeat(6, 1fr);
-        gap:15px;
-        margin-top:15px;
-    ">
+    <div class="decision-learning-grid">
 
-        <div>
+        <div class="decision-learning-metric">
             <b>Beslutninger</b><br>
             {{ decision_learning.total_decisions }}
         </div>
 
-        <div>
+        <div class="decision-learning-metric">
             <b>Validerede</b><br>
             {{ decision_learning.validated_decisions }}
         </div>
 
-        <div>
+        <div class="decision-learning-metric">
             <b>Kvalitet</b><br>
             {{ decision_learning.accuracy }}%
         </div>
 
-        <div>
+        <div class="decision-learning-metric">
             <b>Gode</b><br>
             {{ decision_learning.good_decisions }}
         </div>
 
-        <div>
+        <div class="decision-learning-metric">
             <b>Dårlige</b><br>
             {{ decision_learning.bad_decisions }}
         </div>
 
-        <div>
+        <div class="decision-learning-metric">
             <b>Status</b><br>
             {{ decision_learning.status }}
         </div>
@@ -65,13 +60,7 @@
     </div>
 
 
-    <div style="
-        margin-top:15px;
-        padding:12px;
-        background:#f8fafc;
-        border-left:4px solid #2563eb;
-        border-radius:6px;
-    ">
+    <div class="decision-learning-signals">
 
         <b>Signalfordeling:</b><br>
 

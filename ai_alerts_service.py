@@ -90,3 +90,30 @@ def get_ai_alerts():
         })
 
     return alerts
+
+def get_active_ai_alerts(alerts=None):
+    """
+    Returnerer kun aktive AI-alerts.
+
+    Grønne statusbeskeder er informative fallback-beskeder
+    og skal ikke tælles som aktive eller kritiske alerts.
+    """
+    if alerts is None:
+        alerts = get_ai_alerts()
+
+    if not isinstance(alerts, list):
+        return []
+
+    return [
+        alert
+        for alert in alerts
+        if isinstance(alert, dict)
+        and alert.get("level") != "green"
+    ]
+
+
+def get_active_ai_alert_count(alerts=None):
+    """
+    Returnerer antal aktive AI-alerts.
+    """
+    return len(get_active_ai_alerts(alerts))

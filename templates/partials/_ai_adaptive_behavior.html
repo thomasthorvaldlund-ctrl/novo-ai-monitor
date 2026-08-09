@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card adaptive-behavior-card">
 
     <h2>
         🧠 AI Adaptive Behavior
@@ -9,41 +9,47 @@
         </span>
     </h2>
 
-    <p>
-        <b>Analyserede records:</b>
-        {{ adaptive_behavior.total_records }}
-    </p>
+    <div class="adaptive-behavior-grid">
 
-    <p>
-        <b>Signalændringer:</b>
-        {{ adaptive_behavior.change_behavior.total_changes }}
-    </p>
+        <div class="adaptive-behavior-metric">
+            <b>Analyserede records</b>
+            <span>{{ adaptive_behavior.total_records }}</span>
+        </div>
 
-    <p>
-        <b>Ændringsrate:</b>
-        {{ adaptive_behavior.change_behavior.change_rate }}%
-    </p>
+        <div class="adaptive-behavior-metric">
+            <b>Signalændringer</b>
+            <span>{{ adaptive_behavior.change_behavior.total_changes }}</span>
+        </div>
 
-    <p>
-        <b>Mest almindelige ændring:</b>
-        {{ adaptive_behavior.change_behavior.most_common_change }}
-    </p>
+        <div class="adaptive-behavior-metric">
+            <b>Ændringsrate</b>
+            <span>{{ adaptive_behavior.change_behavior.change_rate }}%</span>
+        </div>
 
-    <p>
-        <b>AI stil:</b>
-        {{ adaptive_behavior.decision_style.style }}
-    </p>
+        <div class="adaptive-behavior-metric">
+            <b>Mest almindelige ændring</b>
+            <span>{{ adaptive_behavior.change_behavior.most_common_change }}</span>
+        </div>
 
-    <p>
-        <b>Aktivt regime:</b>
-        {% for regime, count in adaptive_behavior.regime_behavior.items() %}
-            {{ regime }} ({{ count }})
-        {% endfor %}
-    </p>
+        <div class="adaptive-behavior-metric">
+            <b>AI stil</b>
+            <span>{{ adaptive_behavior.decision_style.style }}</span>
+        </div>
 
-    <p>
-        <b>AI forklaring:</b>
-        {{ adaptive_behavior.summary }}
-    </p>
+        <div class="adaptive-behavior-metric">
+            <b>Aktivt regime</b>
+            <span>
+                {% for regime, count in adaptive_behavior.regime_behavior.items() %}
+                    {{ regime }} ({{ count }})
+                {% endfor %}
+            </span>
+        </div>
+
+    </div>
+
+    <div class="adaptive-behavior-summary">
+        <b>AI forklaring</b>
+        <p>{{ adaptive_behavior.summary }}</p>
+    </div>
 
 </div>

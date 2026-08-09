@@ -1,4 +1,7 @@
-from ai_alerts_service import get_ai_alerts
+from ai_alerts_service import (
+    get_ai_alerts,
+    get_active_ai_alert_count,
+)
 from earnings_risk_service import get_earnings_risks
 from portfolio import get_portfolio_summary
 
@@ -33,7 +36,8 @@ def calculate_dynamic_risk():
     earnings_score = min(earnings_score, 100)
 
 
-    news_score = min(len(alerts) * 20, 100)
+    active_alert_count = get_active_ai_alert_count(alerts)
+    news_score = min(active_alert_count * 20, 100)
 
 
     # Midlertidig - erstattes af rigtig porteføljeanalyse
