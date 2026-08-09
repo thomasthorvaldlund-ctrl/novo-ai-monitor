@@ -67,6 +67,10 @@ from ai_maturity_service import (
     get_ai_maturity_score
 )
 
+from ai_maturity_history_service import (
+    save_ai_maturity_snapshot
+)
+
 def build_dashboard_cache():
 
     combined_data = combined_stock_score(client)
@@ -166,6 +170,8 @@ def build_dashboard_cache():
     adaptive_explanation = get_adaptive_explanation()
 
     ai_maturity = get_ai_maturity_score()
+
+    save_ai_maturity_snapshot(ai_maturity)
 
     ai_copilot.update({
         "risk_score": ai_risk_dashboard.get(
