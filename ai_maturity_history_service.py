@@ -53,6 +53,11 @@ def save_ai_maturity_snapshot(maturity_data):
             "components",
             {}
         ).get("explanation_confidence", 0),
+
+        "components": maturity_data.get(
+            "components",
+            {}
+        ),
     }
 
     # Undgå flere snapshots samme dag

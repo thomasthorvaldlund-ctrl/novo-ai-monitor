@@ -67,9 +67,32 @@ def get_ai_maturity_trend():
     else:
         trend = "Stable"
 
+
+    components = current.get(
+        "components",
+        {}
+    )
+
+    if components:
+        strongest_component = max(
+            components,
+            key=components.get
+        )
+
+        weakest_component = min(
+            components,
+            key=components.get
+        )
+    else:
+        strongest_component = None
+        weakest_component = None
+
+
     return {
         "current_score": current_score,
         "previous_score": previous_score,
         "change": change,
-        "trend": trend
+        "trend": trend,
+        "strongest_component": strongest_component,
+        "weakest_component": weakest_component
     }
