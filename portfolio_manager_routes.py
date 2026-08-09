@@ -9,7 +9,7 @@ from portfolio_health_history_service import load_portfolio_health_history
 
 portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 
-@portfolio_manager_bp.route("/portfolio-manager-page")
+@portfolio_manager_bp.route("/portfolio-manager-old")
 def portfolio_manager_page():
     data = get_raw_portfolio_summary()
     ai_data = get_ai_portfolio_summary()
@@ -430,7 +430,7 @@ def portfolio_manager_page():
 from flask import request
 
 
-@portfolio_manager_bp.route("/portfolio-manager-v2-test")
+@portfolio_manager_bp.route("/portfolio-manager-page")
 def portfolio_manager_v2_test():
     data = get_raw_portfolio_summary()
     ai_data = get_ai_portfolio_summary()
