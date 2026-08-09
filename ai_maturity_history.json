@@ -6,12 +6,6 @@
     "adaptation": 99.4,
     "learning_activity": 100,
     "data_quality": 98,
-    "explanation_confidence": 80,
-    "components": {
-      "adaptation": 99.4,
-      "learning_activity": 100,
-      "data_quality": 98,
-      "explanation_confidence": 80
-    }
+    "explanation_confidence": 80
   }
 ]
