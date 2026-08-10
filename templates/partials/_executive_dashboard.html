@@ -153,6 +153,15 @@
                     {{ alerts[0].message }}
                 </p>
 
+                  <p class="executive-action-summary">
+                      <b>Næste handling:</b>
+                      {% if alerts[0].level == "green" %}
+                          Ingen handling nødvendig — fortsæt normal overvågning.
+                      {% else %}
+                          Gennemgå alerten og vurder risikoen.
+                      {% endif %}
+                  </p>
+
                 <span class="executive-action-link">
                     Åbn AI Alerts →
                 </span>
