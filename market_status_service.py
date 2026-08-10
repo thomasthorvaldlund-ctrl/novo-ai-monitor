@@ -22,6 +22,8 @@ def get_asset_market_status(ticker):
         "label": session.get("label", "Ukendt"),
         "exchange": session.get("exchange"),
         "local_time": session.get("local_time"),
+        "open": session.get("open"),
+        "close": session.get("close"),
         "reason": session.get("reason"),
     }
 
