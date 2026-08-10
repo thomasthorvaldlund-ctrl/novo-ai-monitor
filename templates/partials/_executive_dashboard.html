@@ -190,11 +190,28 @@
                     · Score {{ "{:.1f}".format(top_picks[0].score) }}
                 </small>
 
-                <p class="executive-action-summary">
-                    {{ top_picks[0].comment }}
-                    Risiko: {{ top_picks[0].risk }}.
-                    AI-confidence: {{ top_picks[0].confidence }}%.
-                </p>
+                  <p class="executive-action-summary">
+                      {{ top_picks[0].comment }}
+                      Risiko: {{ top_picks[0].risk }}.
+                      AI-confidence: {{ top_picks[0].confidence }}%.
+                  </p>
+
+                  <p class="executive-action-summary">
+                      <b>Næste handling:</b>
+                      {% if top_picks[0].signal == "BUY" %}
+                          Overvej køb / nærmere analyse.
+                      {% elif top_picks[0].signal == "HOLD" %}
+                          Bevar / følg udviklingen.
+                      {% elif top_picks[0].signal == "WATCH" %}
+                          Afvent og overvåg.
+                      {% elif top_picks[0].signal == "REDUCE" %}
+                          Reducer eksponering / gennemgå risiko.
+                      {% elif top_picks[0].signal == "SELL" %}
+                          Overvej salg.
+                      {% else %}
+                          Gennemgå analysen.
+                      {% endif %}
+                  </p>
 
                 <span class="executive-action-link">
                     Åbn aktieanalyse →
