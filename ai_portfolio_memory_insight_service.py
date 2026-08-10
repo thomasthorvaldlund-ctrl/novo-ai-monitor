@@ -1,9 +1,16 @@
 from ai_portfolio_memory_trend_service import get_memory_trends
+from portfolio import load_portfolio_rows
 
 
 def get_memory_insights():
 
     trends = get_memory_trends()
+
+    current_stocks = {
+        row.get("stock")
+        for row in load_portfolio_rows()
+        if row.get("stock")
+    }
 
     risk_alerts = []
     stable_stocks = []
@@ -11,6 +18,9 @@ def get_memory_insights():
 
 
     for stock, data in trends.items():
+
+        if stock not in current_stocks:
+            continue
 
         trend = data.get("trend")
         explanation = data.get("explanation")
