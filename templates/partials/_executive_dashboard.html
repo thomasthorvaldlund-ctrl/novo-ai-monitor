@@ -39,7 +39,7 @@
                     {{ portfolio_health.conclusion }}
                 </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-next-action">
                       <b>Næste handling:</b>
                       {% if portfolio_health.level == "good" %}
                           Fortsæt overvågning og bevar den nuværende struktur.
@@ -50,7 +50,7 @@
                       {% endif %}
                   </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-why-summary">
                       <b>Hvorfor:</b>
                       Risiko {{ portfolio_health.risk.label|lower }}
                       · Momentum {{ portfolio_health.momentum.label|lower }}
@@ -103,7 +103,7 @@
                     {{ market.news_negative }} negative.
                 </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-next-action">
                       <b>Næste handling:</b>
                       {% if market.score >= 70 %}
                           Fortsæt normal investeringsovervågning og følg de stærkeste signaler.
@@ -114,7 +114,7 @@
                       {% endif %}
                   </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-why-summary">
                       <b>Hvorfor:</b>
                       Signaler {{ "{:.1f}".format(market.signal_component) }}
                       · Combined {{ "{:.1f}".format(market.combined_component) }}
@@ -158,7 +158,7 @@
                     {{ ai_copilot.recommendation }}
                 </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-next-action">
                       <b>Næste handling:</b>
                       {% if ai_copilot.confidence >= 80 %}
                           Følg AI-signalerne, men bekræft større beslutninger med den underliggende analyse.
@@ -169,7 +169,7 @@
                       {% endif %}
                   </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-why-summary">
                       <b>Hvorfor:</b>
                       AI-confidence {{ ai_copilot.confidence }}%
                       · Risiko {{ ai_copilot.risk_level|lower }} ({{ ai_copilot.risk_score }})
@@ -214,7 +214,7 @@
                     {{ alerts[0].message }}
                 </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-next-action">
                       <b>Næste handling:</b>
                       {% if alerts[0].level == "green" %}
                           Ingen handling nødvendig — fortsæt normal overvågning.
@@ -223,7 +223,7 @@
                       {% endif %}
                   </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-why-summary">
                       <b>Hvorfor:</b>
                       {% if alerts[0].level == "green" %}
                           Ingen aktive kritiske alerts · Overvågede aktier vurderes som stabile.
@@ -275,7 +275,7 @@
                       AI-confidence: {{ top_picks[0].confidence }}%.
                   </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-next-action">
                       <b>Næste handling:</b>
                       {% if top_picks[0].signal == "BUY" %}
                           Overvej køb / nærmere analyse.
@@ -292,7 +292,7 @@
                       {% endif %}
                   </p>
 
-                  <p class="executive-action-summary">
+                  <p class="executive-action-summary executive-why-summary">
                       <b>Hvorfor:</b>
                       {{ top_picks[0].signal }}
                       · Score {{ "{:.1f}".format(top_picks[0].score) }}
