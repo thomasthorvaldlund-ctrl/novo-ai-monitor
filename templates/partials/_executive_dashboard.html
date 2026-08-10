@@ -223,6 +223,15 @@
                       {% endif %}
                   </p>
 
+                  <p class="executive-action-summary">
+                      <b>Hvorfor:</b>
+                      {% if alerts[0].level == "green" %}
+                          Ingen aktive kritiske alerts · Overvågede aktier vurderes som stabile.
+                      {% else %}
+                          Denne alert er markeret som kritisk og kræver derfor opmærksomhed.
+                      {% endif %}
+                  </p>
+
                 <span class="executive-action-link">
                     Åbn AI Alerts →
                 </span>
