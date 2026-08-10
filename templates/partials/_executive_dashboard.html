@@ -39,6 +39,17 @@
                     {{ portfolio_health.conclusion }}
                 </p>
 
+                  <p class="executive-action-summary">
+                      <b>Næste handling:</b>
+                      {% if portfolio_health.level == "good" %}
+                          Fortsæt overvågning og bevar den nuværende struktur.
+                      {% elif portfolio_health.level == "medium" %}
+                          Forbedr spredningen før nye større investeringer.
+                      {% else %}
+                          Gennemgå risiko og koncentration før nye investeringer.
+                      {% endif %}
+                  </p>
+
                 <span class="executive-action-link">
                     Åbn Portfolio Manager →
                 </span>
