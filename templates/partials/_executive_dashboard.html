@@ -50,6 +50,15 @@
                       {% endif %}
                   </p>
 
+                  <p class="executive-action-summary">
+                      <b>Hvorfor:</b>
+                      Risiko {{ portfolio_health.risk.label|lower }}
+                      · Momentum {{ portfolio_health.momentum.label|lower }}
+                      · AI-confidence {{ "{:.0f}".format(portfolio_health.confidence.score) }}%
+                      · {{ portfolio_health.diversification.position_count }} position{% if portfolio_health.diversification.position_count != 1 %}er{% endif %}
+                      · Største vægt {{ "{:.1f}".format(portfolio_health.diversification.largest_weight) }}%
+                  </p>
+
                 <span class="executive-action-link">
                     Åbn Portfolio Manager →
                 </span>
