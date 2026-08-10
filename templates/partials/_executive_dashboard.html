@@ -141,6 +141,17 @@
                     {{ ai_copilot.recommendation }}
                 </p>
 
+                  <p class="executive-action-summary">
+                      <b>Næste handling:</b>
+                      {% if ai_copilot.confidence >= 80 %}
+                          Følg AI-signalerne, men bekræft større beslutninger med den underliggende analyse.
+                      {% elif ai_copilot.confidence >= 60 %}
+                          Brug AI-signalerne som støtte og kræv ekstra bekræftelse før større ændringer.
+                      {% else %}
+                          Vær tilbageholdende og afvent et stærkere datagrundlag.
+                      {% endif %}
+                  </p>
+
                 <span class="executive-action-link">
                     Se AI Copilot →
                 </span>
