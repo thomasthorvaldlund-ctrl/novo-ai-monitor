@@ -169,6 +169,17 @@
                       {% endif %}
                   </p>
 
+                  <p class="executive-action-summary">
+                      <b>Hvorfor:</b>
+                      AI-confidence {{ ai_copilot.confidence }}%
+                      · Risiko {{ ai_copilot.risk_level|lower }} ({{ ai_copilot.risk_score }})
+                      · Learning: {{ ai_copilot.learning_status|lower }}
+                      · {{ ai_copilot.learning_samples }} historisk sample{% if ai_copilot.learning_samples != 1 %}s{% endif %}
+                      {% if ai_copilot.risk_reasons %}
+                          · {{ ai_copilot.risk_reasons[0] }}
+                      {% endif %}
+                  </p>
+
                 <span class="executive-action-link">
                     Se AI Copilot →
                 </span>
