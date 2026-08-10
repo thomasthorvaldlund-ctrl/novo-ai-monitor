@@ -101,6 +101,7 @@ def command_center_v2():
     earnings_risks = cache.get("earnings_risks", [])
     executive_summary = cache.get("executive_summary", {})
     ai_copilot = cache.get("ai_copilot", {})
+    decision_intelligence = cache.get("decision_intelligence", {})
     ai_copilot_timeline = cache.get("ai_copilot_timeline", [])
     ai_copilot_changes = cache.get("ai_copilot_changes", {})
     ai_risk_dashboard = cache.get("ai_risk_dashboard", {})
@@ -153,6 +154,7 @@ def command_center_v2():
         earnings_risks=earnings_risks,
         executive_summary=executive_summary,
         ai_copilot=ai_copilot,
+        decision_intelligence=decision_intelligence,
         ai_copilot_timeline=ai_copilot_timeline,
         ai_copilot_changes=ai_copilot_changes,
         ai_risk_dashboard=ai_risk_dashboard,

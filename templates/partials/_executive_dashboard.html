@@ -17,6 +17,34 @@
 
     </div>
 
+
+    {% if decision_intelligence %}
+    <div class="executive-recommended-action">
+        <div>
+            <span>🎯 Recommended Action</span>
+            <strong>{{ decision_intelligence.action }}</strong>
+        </div>
+
+        <div>
+            <b>Prioritet:</b> {{ decision_intelligence.priority }}
+            · <b>Risiko:</b> {{ decision_intelligence.risk }}
+            · <b>Decision Confidence:</b> {{ decision_intelligence.decision_confidence }}%
+            · <b>Context Confidence:</b> {{ decision_intelligence.context_confidence }}
+        </div>
+
+        <p>
+            {{ decision_intelligence.recommendation }}
+        </p>
+
+        <p>
+            <b>Bedste mulighed:</b>
+            {{ decision_intelligence.best_opportunity }}
+        </p>
+    </div>
+    {% endif %}
+
+
+
     <div class="executive-dashboard-grid">
 
         <a

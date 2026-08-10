@@ -55,10 +55,19 @@
 
         <div>
             <div style="color:#64748b;font-size:14px;">
-                Confidence
+                Decision Confidence
             </div>
             <div style="font-size:22px;font-weight:700;">
-                {{ decision_intelligence.confidence }}
+                {{ decision_intelligence.decision_confidence }}%
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Context Confidence
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_intelligence.context_confidence }}
             </div>
         </div>
 
