@@ -27,6 +27,8 @@
         background:
             {% if market_data_status.status == 'Live' %}
                 #ecfdf5
+            {% elif market_data_status.status == 'Marked lukket' %}
+                #eff6ff
             {% elif market_data_status.status == 'Forsinket' %}
                 #fff7ed
             {% else %}
@@ -89,6 +91,19 @@
 
                     <p style="margin:8px 0 0 0;">
                         Aktiekurserne opdateres som forventet.
+                    </p>
+
+                {% elif market_data_status.status == "Marked lukket" %}
+
+                    <b>🔵 Markedet er lukket.</b>
+                    <p style="margin:8px 0 0 0;">
+                        Seneste officielle lukkekurs anvendes.
+                        Dette er en normal markedstilstand og ikke en datafejl.
+                        {% if market_data_status.market_session %}
+                            {% if market_data_status.market_session.reason %}
+                                Årsag: {{ market_data_status.market_session.reason }}.
+                            {% endif %}
+                        {% endif %}
                     </p>
 
                 {% elif market_data_status.status == "Forsinket" %}
@@ -171,73 +186,7 @@
 
 
 
-    <!-- Platform Information START -->
-<div class="platform-info-compact" style="
-        background:#f8fafc;
-        border-left:5px solid #10b981;
-        padding:18px;
-        border-radius:8px;
-        margin-bottom:30px;
-    ">
-
-        <h2 style="margin-top:0;">
-            🧠 Hvad gør Stock AI Monitor?
-        </h2>
-
-    <p>
-        Stock AI Monitor er et AI-baseret analyse- og overvågningssystem,
-        der samler markedsdata, tekniske signaler, nyheder og porteføljeinformation
-        for at skabe et samlet billede af aktiemarkedet.
-    </p>
-
-    <p>
-        Systemet analyserer løbende:
-    </p>
-
-    <ul>
-        <li>📈 Kursudvikling og tekniske signaler</li>
-        <li>📰 Nyheder og markedssentiment</li>
-        <li>⭐ AI-baserede aktievurderinger og Top Picks</li>
-        <li>⚠️ Risiko, alarmer og markedsændringer</li>
-        <li>💼 Porteføljeudvikling og mulige forbedringer</li>
-        <li>🧠 Tidligere AI-beslutninger og læring over tid</li>
-    </ul>
-
-    <p>
-        AI-systemet træffer ikke automatiske handler.
-        Det fungerer som en analyseassistent, der hjælper med at forstå
-        markedet, identificere muligheder og opdage potentielle risici.
-    </p>
-
-</div>
-
-    <div class="platform-info-compact" style="
-            background:#f8fafc;
-            border-left:5px solid #8b5cf6;
-            padding:16px;
-            border-radius:8px;
-            margin-bottom:30px;
-        ">
-
-            <h3 style="margin-top:0;">
-                ⚙️ AI Analysefrekvens
-            </h3>
-
-        <p>
-            Stock AI Monitor arbejder løbende med at analysere markedet
-            og opdatere de forskellige AI-moduler.
-        </p>
-
-        <ul>
-            <li>📈 <b>Markedsdata:</b> Opdateres ved dashboard-opdateringer</li>
-            <li>📰 <b>Nyheder og sentiment:</b> Analyseres via AI News Engine</li>
-            <li>🤖 <b>Aktievurderinger:</b> Opdateres via AI Score og Explain Engine</li>
-            <li>💼 <b>Portefølje:</b> Overvåges for udvikling og risiko</li>
-            <li>🧠 <b>AI-læring:</b> Tidligere beslutninger gemmes og evalueres over tid</li>
-        </ul>
-
-    </div>
-    <!-- Platform Information END -->
+    {% include "partials/_analysis_frequency.html" %}
 
 <!-- AI Engine Status START -->
 

@@ -1,83 +1,78 @@
-<div class="card">
+<div class="card ai-maturity-card">
 
     <h2>
         🧠 AI Maturity
         <span
             class="info-icon"
-            data-tooltip="Samlet vurdering af AI-systemets læringsevne, tilpasning, datakvalitet og evne til at forklare beslutningsændringer.">
+            data-tooltip="Samlet vurdering af AI-systemets læringsevne, tilpasning, datakvalitet og evne til at forklare beslutningsændringer."
+        >
             ?
         </span>
     </h2>
 
+    <div class="ai-maturity-overview">
 
-    <p>
-        <b>AI Maturity Score:</b><br>
-        {{ ai_maturity.score }}/100
-    </p>
+        <div class="ai-maturity-score">
+            <span>AI Maturity Score</span>
+            <strong>{{ ai_maturity.score }}/100</strong>
+            <small>{{ ai_maturity.level }}</small>
+        </div>
 
+        <div class="ai-maturity-components">
 
-    <p>
-        <b>Status:</b><br>
-        {{ ai_maturity.level }}
-    </p>
+            <div class="ai-maturity-metric">
+                <b>Adaptation</b>
+                <span>{{ ai_maturity.components.adaptation }}%</span>
+            </div>
 
+            <div class="ai-maturity-metric">
+                <b>Learning Activity</b>
+                <span>{{ ai_maturity.components.learning_activity }}%</span>
+            </div>
 
-    <hr>
+            <div class="ai-maturity-metric">
+                <b>Data Quality</b>
+                <span>{{ ai_maturity.components.data_quality }}%</span>
+            </div>
 
+            <div class="ai-maturity-metric">
+                <b>Explanation Confidence</b>
+                <span>{{ ai_maturity.components.explanation_confidence }}%</span>
+            </div>
 
-    <p>
-        <b>Adaptation:</b>
-        {{ ai_maturity.components.adaptation }}%
-    </p>
+        </div>
 
+    </div>
 
-    <p>
-        <b>Learning Activity:</b>
-        {{ ai_maturity.components.learning_activity }}%
-    </p>
+    <div class="ai-maturity-insights">
 
+        <div class="ai-maturity-insight">
+            <b>📈 Trend</b>
+            <span>
+                {{ ai_maturity_trend.trend }}
+                {% if ai_maturity_trend.change > 0 %}
+                    (+{{ ai_maturity_trend.change }})
+                {% elif ai_maturity_trend.change < 0 %}
+                    ({{ ai_maturity_trend.change }})
+                {% endif %}
+            </span>
+        </div>
 
-    <p>
-        <b>Data Quality:</b>
-        {{ ai_maturity.components.data_quality }}%
-    </p>
+        <div class="ai-maturity-insight">
+            <b>💪 Stærkeste område</b>
+            <span>{{ ai_maturity_trend.strongest_component | replace('_', ' ') | title }}</span>
+        </div>
 
+        <div class="ai-maturity-insight">
+            <b>🔧 Forbedringsområde</b>
+            <span>{{ ai_maturity_trend.weakest_component | replace('_', ' ') | title }}</span>
+        </div>
 
-    <p>
-        <b>Explanation Confidence:</b>
-        {{ ai_maturity.components.explanation_confidence }}%
-    </p>
+    </div>
 
-
-    <hr>
-
-
-    <p>
-        <b>📈 Trend:</b><br>
-        {{ ai_maturity_trend.trend }}
-        {% if ai_maturity_trend.change > 0 %}
-            (+{{ ai_maturity_trend.change }})
-        {% elif ai_maturity_trend.change < 0 %}
-            ({{ ai_maturity_trend.change }})
-        {% endif %}
-    </p>
-
-
-    <p>
-        <b>💪 Stærkeste område:</b><br>
-        {{ ai_maturity_trend.strongest_component }}
-    </p>
-
-
-    <p>
-        <b>🔧 Forbedringsområde:</b><br>
-        {{ ai_maturity_trend.weakest_component }}
-    </p>
-
-
-    <p>
-        <b>🤖 AI anbefaling:</b><br>
-        {{ ai_maturity_explanation.recommendation }}
-    </p>
+    <div class="ai-maturity-recommendation">
+        <b>🤖 AI anbefaling</b>
+        <p>{{ ai_maturity_explanation.recommendation }}</p>
+    </div>
 
 </div>

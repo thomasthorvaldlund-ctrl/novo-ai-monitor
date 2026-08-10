@@ -1973,3 +1973,200 @@
         display: block;
     }
 }
+
+/* ===== Command Center V2: AI Maturity ===== */
+
+.ai-maturity-card {
+    padding: 24px;
+}
+
+.ai-maturity-overview {
+    display: grid;
+    grid-template-columns: minmax(220px, .8fr) 2fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.ai-maturity-score {
+    padding: 18px;
+    border-radius: 16px;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+}
+
+.ai-maturity-score span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+}
+
+.ai-maturity-score strong {
+    display: block;
+    font-size: 34px;
+    line-height: 1.1;
+    color: #0f172a;
+}
+
+.ai-maturity-score small {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+.ai-maturity-components {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.ai-maturity-metric {
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
+}
+
+.ai-maturity-metric b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+}
+
+.ai-maturity-metric span {
+    display: block;
+    font-size: 22px;
+    font-weight: 650;
+    color: #0f172a;
+}
+
+.ai-maturity-insights {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.ai-maturity-insight {
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.ai-maturity-insight b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: #64748b;
+}
+
+.ai-maturity-insight span {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.ai-maturity-recommendation {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-left: 4px solid #8b5cf6;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.ai-maturity-recommendation b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: #475569;
+}
+
+.ai-maturity-recommendation p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #334155;
+}
+
+@media (max-width: 850px) {
+    .ai-maturity-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-maturity-insights {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .ai-maturity-components {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Command Center V2: Analysis Frequency ===== */
+
+.analysis-frequency-card {
+    padding: 20px 24px;
+}
+
+.analysis-frequency-header h2 {
+    margin: 0 0 5px;
+    font-size: 18px;
+}
+
+.analysis-frequency-header p {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.analysis-frequency-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.analysis-frequency-item {
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.analysis-frequency-item span {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    color: #64748b;
+}
+
+.analysis-frequency-item b {
+    display: block;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #0f172a;
+}
+
+@media (max-width: 1000px) {
+    .analysis-frequency-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .analysis-frequency-grid {
+        grid-template-columns: 1fr;
+    }
+}
