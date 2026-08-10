@@ -114,6 +114,14 @@
                       {% endif %}
                   </p>
 
+                  <p class="executive-action-summary">
+                      <b>Hvorfor:</b>
+                      Signaler {{ "{:.1f}".format(market.signal_component) }}
+                      · Combined {{ "{:.1f}".format(market.combined_component) }}
+                      · {{ market.critical_alerts }} kritiske alerts
+                      · Nyheder {{ market.news_positive }} positive / {{ market.news_neutral }} neutrale / {{ market.news_negative }} negative
+                  </p>
+
                 <span class="executive-action-link">
                     Åbn Market Score →
                 </span>
