@@ -118,6 +118,36 @@ def get_decision_intelligence():
                 ),
             }
 
+    executive_reasons = []
+
+    if context["confidence"] == "Low":
+        executive_reasons.append(
+            "Context Confidence er lav, fordi datagrundlaget stadig er begrænset."
+        )
+
+    if portfolio_health.get("level") in {"medium", "weak"}:
+        executive_reasons.append(
+            f"Portfolio Health er {portfolio_health.get('status', 'ikke optimal').lower()} "
+            "og taler for en mere selektiv tilgang."
+        )
+
+    market_score_value = market.get("score", 50)
+
+    if market_score_value < 50:
+        executive_reasons.append(
+            f"Market Score er {market_score_value}/100 og viser et svagt marked."
+        )
+    elif market_score_value < 70:
+        executive_reasons.append(
+            f"Market Score er {market_score_value}/100 og viser blandede signaler."
+        )
+
+    if selective_opportunity:
+        executive_reasons.append(
+            f"{selective_opportunity['stock']} er samtidig identificeret "
+            "som en selektiv købsmulighed."
+        )
+
     reasons = []
 
     reasons.append(
@@ -181,6 +211,7 @@ def get_decision_intelligence():
         "active_alert_count": active_alert_count,
         "top_pick": top_picks[0] if top_picks else None,
         "selective_opportunity": selective_opportunity,
+        "executive_reasons": executive_reasons,
         "executive_adjustments": executive_adjustments,
         "reasons": reasons + executive_adjustments,
     }

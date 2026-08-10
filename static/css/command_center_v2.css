@@ -2236,3 +2236,33 @@
     line-height: 1.55;
     color: #475569;
 }
+
+/* ===== Executive Recommended Reasons ===== */
+
+.executive-recommended-reasons {
+    margin: 10px 0 8px;
+    padding: 10px 12px;
+    border-top: 1px solid #dbeafe;
+    border-bottom: 1px solid #dbeafe;
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.executive-recommended-reasons > b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.executive-recommended-reasons ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.executive-recommended-reasons li {
+    margin: 3px 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #64748b;
+}

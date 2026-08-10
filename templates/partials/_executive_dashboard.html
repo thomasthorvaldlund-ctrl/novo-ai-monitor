@@ -41,6 +41,17 @@
             {{ decision_intelligence.best_opportunity }}
         </p>
 
+        {% if decision_intelligence.executive_reasons %}
+        <div class="executive-recommended-reasons">
+            <b>Hvorfor denne handling?</b>
+            <ul>
+                {% for reason in decision_intelligence.executive_reasons[:3] %}
+                    <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
         {% if decision_intelligence.selective_opportunity %}
         <p>
             <b>Selektiv mulighed:</b>
