@@ -88,6 +88,36 @@ def get_decision_intelligence():
                 "BUY nedjusteret fordi Context Confidence er lav."
             )
 
+    selective_opportunity = None
+
+    if top_picks:
+        top_pick = top_picks[0]
+
+        top_signal = top_pick.get("signal")
+        top_score = top_pick.get("score", 0)
+        top_confidence = top_pick.get("confidence", 0)
+        top_risk = top_pick.get("risk")
+
+        if (
+            executive_action == "HOLD"
+            and active_alert_count == 0
+            and top_signal == "BUY"
+            and top_score >= 70
+            and top_confidence >= 80
+            and top_risk == "Low"
+        ):
+            selective_opportunity = {
+                "stock": top_pick.get("stock"),
+                "signal": top_signal,
+                "score": top_score,
+                "confidence": top_confidence,
+                "risk": top_risk,
+                "message": (
+                    f"{top_pick.get('stock')} er en selektiv købsmulighed, "
+                    "selv om den samlede Executive Action fortsat er HOLD."
+                ),
+            }
+
     reasons = []
 
     reasons.append(
@@ -150,6 +180,7 @@ def get_decision_intelligence():
         "portfolio_health_level": portfolio_health.get("level"),
         "active_alert_count": active_alert_count,
         "top_pick": top_picks[0] if top_picks else None,
+        "selective_opportunity": selective_opportunity,
         "executive_adjustments": executive_adjustments,
         "reasons": reasons + executive_adjustments,
     }

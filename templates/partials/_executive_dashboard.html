@@ -41,6 +41,17 @@
             {{ decision_intelligence.best_opportunity }}
         </p>
 
+        {% if decision_intelligence.selective_opportunity %}
+        <p>
+            <b>Selektiv mulighed:</b>
+            {{ decision_intelligence.selective_opportunity.stock }}
+            · {{ decision_intelligence.selective_opportunity.signal }}
+            · Score {{ "{:.1f}".format(decision_intelligence.selective_opportunity.score) }}
+            · Confidence {{ decision_intelligence.selective_opportunity.confidence }}%
+            · Risiko {{ decision_intelligence.selective_opportunity.risk }}
+        </p>
+        {% endif %}
+
         {% if decision_intelligence.executive_adjustments %}
         <p>
             <b>Executive justering:</b>
