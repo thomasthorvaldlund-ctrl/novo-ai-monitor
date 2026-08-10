@@ -4,8 +4,15 @@ from ai_prediction_engine_service import get_prediction_engine
 from ai_learning_feedback_service import get_learning_feedback
 
 
-def get_brain_score():
-    brain = get_ai_portfolio_brain()
+def get_brain_score(
+    portfolio_brain=None
+):
+    brain = (
+        portfolio_brain
+        if portfolio_brain is not None
+        else get_ai_portfolio_brain()
+    )
+
     context = get_ai_context()
     prediction = get_prediction_engine()
     feedback = get_learning_feedback()

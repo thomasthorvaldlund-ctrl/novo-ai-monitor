@@ -4,12 +4,19 @@ from ai_copilot_decision_service import get_copilot_decision
 from ai_decision_intelligence_service import get_decision_intelligence
 
 
-def get_ai_portfolio_executive():
+def get_ai_portfolio_executive(
+    decision_intelligence=None
+):
 
     strategy = get_ai_strategy()
     copilot = get_ai_copilot()
     decision = get_copilot_decision()
-    intelligence = get_decision_intelligence()
+
+    intelligence = (
+        decision_intelligence
+        if decision_intelligence is not None
+        else get_decision_intelligence()
+    )
 
     return {
         "strategy": strategy.get("strategy"),

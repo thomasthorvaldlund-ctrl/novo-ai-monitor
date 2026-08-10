@@ -6,18 +6,32 @@ from ai_decision_intelligence_service import get_decision_intelligence
 from ai_decision_performance_service import get_decision_performance
 
 
-def get_ai_portfolio_brain():
+def get_ai_portfolio_brain(
+    portfolio_executive=None,
+    decision_intelligence=None,
+):
     """
     Samler alle AI Portfolio-moduler til én samlet vurdering.
     """
 
-    executive = get_ai_portfolio_executive()
+    intelligence = (
+        decision_intelligence
+        if decision_intelligence is not None
+        else get_decision_intelligence()
+    )
+
+    executive = (
+        portfolio_executive
+        if portfolio_executive is not None
+        else get_ai_portfolio_executive(
+            decision_intelligence=intelligence
+        )
+    )
+
     context = get_ai_context()
     strategy = get_ai_strategy()
     prediction = get_prediction_engine()
-    intelligence = get_decision_intelligence()
     performance = get_decision_performance()
-
 
     warnings = []
 

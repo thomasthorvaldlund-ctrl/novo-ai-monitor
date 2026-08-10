@@ -1,9 +1,15 @@
 from ai_portfolio_memory_center_service import get_memory_center
 
 
-def get_memory_intelligence():
+def get_memory_intelligence(
+    memory_center=None
+):
 
-    memory = get_memory_center()
+    memory = (
+        memory_center
+        if memory_center is not None
+        else get_memory_center()
+    )
 
     risk_stocks = []
     stable_stocks = []

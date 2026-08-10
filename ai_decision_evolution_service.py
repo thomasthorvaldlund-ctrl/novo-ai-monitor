@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from collections import defaultdict
+from portfolio import load_portfolio_rows
 
 
 DECISION_FILE = Path(
@@ -37,13 +38,24 @@ def get_decision_evolution():
 
     history = load_history()
 
+    current_stocks = {
+        row.get("stock")
+        for row in load_portfolio_rows()
+        if row.get("stock")
+    }
+
     stocks = defaultdict(list)
 
     for snapshot in history:
 
         for decision in snapshot.get("decisions", []):
 
-            stocks[decision["stock"]].append(
+            stock = decision.get("stock")
+
+            if stock not in current_stocks:
+                continue
+
+            stocks[stock].append(
                 {
                     "date": snapshot["date"],
                     "action": decision["action"],
