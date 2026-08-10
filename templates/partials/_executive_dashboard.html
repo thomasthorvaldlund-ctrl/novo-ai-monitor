@@ -94,6 +94,17 @@
                     {{ market.news_negative }} negative.
                 </p>
 
+                  <p class="executive-action-summary">
+                      <b>Næste handling:</b>
+                      {% if market.score >= 70 %}
+                          Fortsæt normal investeringsovervågning og følg de stærkeste signaler.
+                      {% elif market.score >= 50 %}
+                          Vær selektiv og prioriter kun aktier med stærke signaler og lav risiko.
+                      {% else %}
+                          Reducer nye risikotagninger og gennemgå markedets svageste områder først.
+                      {% endif %}
+                  </p>
+
                 <span class="executive-action-link">
                     Åbn Market Score →
                 </span>
