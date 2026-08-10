@@ -17,6 +17,79 @@ from ai_explain_service import explain_stock
 from openai_service import client
 
 
+def _apply_executive_overrides(
+    action,
+    priority,
+    risk,
+    portfolio_health,
+    active_alert_count,
+    context_confidence,
+    market_score,
+):
+    executive_action = action
+    executive_priority = priority
+    executive_risk = risk
+    adjustments = []
+
+    if executive_action == "BUY":
+        if portfolio_health.get("level") in {"medium", "weak"}:
+            executive_action = "HOLD"
+            executive_priority = "Medium"
+            executive_risk = "Moderat"
+            adjustments.append(
+                "BUY nedjusteret fordi Portfolio Health ikke er stærk nok."
+            )
+
+        elif active_alert_count > 0:
+            executive_action = "HOLD"
+            executive_priority = "Medium"
+            executive_risk = "Moderat"
+            adjustments.append(
+                "BUY nedjusteret på grund af aktive AI-alerts."
+            )
+
+        elif context_confidence == "Low":
+            executive_action = "HOLD"
+            executive_priority = "Medium"
+            executive_risk = "Moderat"
+            adjustments.append(
+                "BUY nedjusteret fordi Context Confidence er lav."
+            )
+
+    if executive_action == "HOLD":
+        if portfolio_health.get("level") == "weak":
+            executive_action = "WATCH"
+            executive_priority = "High"
+            executive_risk = "Høj"
+            adjustments.append(
+                "HOLD nedjusteret til WATCH fordi Portfolio Health er svag."
+            )
+
+        elif market_score < 45:
+            executive_action = "WATCH"
+            executive_priority = "High"
+            executive_risk = "Høj"
+            adjustments.append(
+                "HOLD nedjusteret til WATCH på grund af svag Market Score."
+            )
+
+        elif active_alert_count > 0 and market_score < 50:
+            executive_action = "WATCH"
+            executive_priority = "High"
+            executive_risk = "Høj"
+            adjustments.append(
+                "HOLD nedjusteret til WATCH fordi aktive AI-alerts "
+                "optræder samtidig med et svagt marked."
+            )
+
+    return (
+        executive_action,
+        executive_priority,
+        executive_risk,
+        adjustments,
+    )
+
+
 def get_decision_intelligence():
     """
     Samler Copilot beslutning og kontekst til en samlet AI vurdering.
@@ -58,35 +131,20 @@ def get_decision_intelligence():
         market_intelligence=market_intelligence,
     )
 
-    executive_action = decision["action"]
-    executive_priority = decision["priority"]
-    executive_risk = decision["risk"]
-    executive_adjustments = []
-
-    if executive_action == "BUY":
-        if portfolio_health.get("level") in {"medium", "weak"}:
-            executive_action = "HOLD"
-            executive_priority = "Medium"
-            executive_risk = "Moderat"
-            executive_adjustments.append(
-                "BUY nedjusteret fordi Portfolio Health ikke er stærk nok."
-            )
-
-        elif active_alert_count > 0:
-            executive_action = "HOLD"
-            executive_priority = "Medium"
-            executive_risk = "Moderat"
-            executive_adjustments.append(
-                "BUY nedjusteret på grund af aktive AI-alerts."
-            )
-
-        elif context["confidence"] == "Low":
-            executive_action = "HOLD"
-            executive_priority = "Medium"
-            executive_risk = "Moderat"
-            executive_adjustments.append(
-                "BUY nedjusteret fordi Context Confidence er lav."
-            )
+    (
+        executive_action,
+        executive_priority,
+        executive_risk,
+        executive_adjustments,
+    ) = _apply_executive_overrides(
+        action=decision["action"],
+        priority=decision["priority"],
+        risk=decision["risk"],
+        portfolio_health=portfolio_health,
+        active_alert_count=active_alert_count,
+        context_confidence=context["confidence"],
+        market_score=market.get("score", 50),
+    )
 
     selective_opportunity = None
 
