@@ -292,6 +292,15 @@
                       {% endif %}
                   </p>
 
+                  <p class="executive-action-summary">
+                      <b>Hvorfor:</b>
+                      {{ top_picks[0].signal }}
+                      · Score {{ "{:.1f}".format(top_picks[0].score) }}
+                      · AI-confidence {{ top_picks[0].confidence }}%
+                      · Risiko {{ top_picks[0].risk|lower }}
+                      · {{ top_picks[0].comment }}
+                  </p>
+
                 <span class="executive-action-link">
                     Åbn aktieanalyse →
                 </span>
