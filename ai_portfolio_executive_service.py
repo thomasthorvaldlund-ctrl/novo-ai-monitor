@@ -23,9 +23,9 @@ def get_ai_portfolio_executive(
         "confidence": strategy.get("confidence"),
         "prediction_accuracy": strategy.get("prediction_accuracy"),
 
-        "action": decision.get("action"),
-        "priority": decision.get("priority"),
-        "risk": decision.get("risk"),
+        "action": intelligence.get("action"),
+        "priority": intelligence.get("priority"),
+        "risk": intelligence.get("risk"),
 
         "summary": copilot.get("summary"),
 

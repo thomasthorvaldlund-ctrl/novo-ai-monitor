@@ -43,7 +43,17 @@ def save_decision_snapshot(decision):
         "action": decision.get("action"),
         "priority": decision.get("priority"),
         "risk": decision.get("risk"),
+
+        # Backward compatibility:
         "confidence": decision.get("confidence"),
+
+        # Explicit confidence fields:
+        "decision_confidence": decision.get(
+            "decision_confidence"
+        ),
+        "context_confidence": decision.get(
+            "context_confidence"
+        ),
 
         "global_market_score": decision.get(
             "global_market_score"
