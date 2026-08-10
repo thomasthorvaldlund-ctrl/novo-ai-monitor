@@ -7,7 +7,11 @@ from market_intelligence_service import get_market_intelligence
 from global_market_score_service import get_global_market_score
 from top_picks_service import get_top_picks
 from portfolio_summary_service import get_portfolio_summary
-from ai_alerts_service import get_ai_alerts
+from portfolio_health_service import get_portfolio_health
+from ai_alerts_service import (
+    get_ai_alerts,
+    get_active_ai_alert_count,
+)
 from performance_service import get_signal_statistics
 from ai_explain_service import explain_stock
 from openai_service import client
@@ -37,20 +41,57 @@ def get_decision_intelligence():
         market_intelligence
     )
 
+    market = get_market_score(ranking)
+    portfolio = get_portfolio_summary()
+    portfolio_health = get_portfolio_health(portfolio)
+    top_picks = get_top_picks(ranking)
+    alerts = get_ai_alerts()
+    active_alert_count = get_active_ai_alert_count(alerts)
+
     copilot = get_ai_copilot(
-        market=get_market_score(ranking),
-        portfolio=get_portfolio_summary(),
-        top_picks=get_top_picks(ranking),
-        alerts=get_ai_alerts(),
+        market=market,
+        portfolio=portfolio,
+        top_picks=top_picks,
+        alerts=alerts,
         stock_explanations=stock_explanations,
         performance=get_signal_statistics(),
         market_intelligence=market_intelligence,
     )
 
+    executive_action = decision["action"]
+    executive_priority = decision["priority"]
+    executive_risk = decision["risk"]
+    executive_adjustments = []
+
+    if executive_action == "BUY":
+        if portfolio_health.get("level") in {"medium", "weak"}:
+            executive_action = "HOLD"
+            executive_priority = "Medium"
+            executive_risk = "Moderat"
+            executive_adjustments.append(
+                "BUY nedjusteret fordi Portfolio Health ikke er stærk nok."
+            )
+
+        elif active_alert_count > 0:
+            executive_action = "HOLD"
+            executive_priority = "Medium"
+            executive_risk = "Moderat"
+            executive_adjustments.append(
+                "BUY nedjusteret på grund af aktive AI-alerts."
+            )
+
+        elif context["confidence"] == "Low":
+            executive_action = "HOLD"
+            executive_priority = "Medium"
+            executive_risk = "Moderat"
+            executive_adjustments.append(
+                "BUY nedjusteret fordi Context Confidence er lav."
+            )
+
     reasons = []
 
     reasons.append(
-        f"AI handling: {decision['action']}."
+        f"AI handling: {executive_action}."
     )
 
     reasons.append(
@@ -91,9 +132,9 @@ def get_decision_intelligence():
 
     return {
         "headline": "AI Decision Intelligence",
-        "action": decision["action"],
-        "priority": decision["priority"],
-        "risk": decision["risk"],
+        "action": executive_action,
+        "priority": executive_priority,
+        "risk": executive_risk,
         "confidence": copilot.get("confidence"),
         "decision_confidence": copilot.get("confidence"),
         "context_confidence": context["confidence"],
@@ -103,5 +144,12 @@ def get_decision_intelligence():
         "best_opportunity": copilot["best_opportunity"],
         "learning_status": context["learning_status"],
         "learning_samples": context["learning_samples"],
-        "reasons": reasons,
+        "market_score": market.get("score"),
+        "low_ranked_stocks": market.get("low_ranked_stocks", 0),
+        "portfolio_health_score": portfolio_health.get("score"),
+        "portfolio_health_level": portfolio_health.get("level"),
+        "active_alert_count": active_alert_count,
+        "top_pick": top_picks[0] if top_picks else None,
+        "executive_adjustments": executive_adjustments,
+        "reasons": reasons + executive_adjustments,
     }

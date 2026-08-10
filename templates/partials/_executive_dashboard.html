@@ -40,6 +40,13 @@
             <b>Bedste mulighed:</b>
             {{ decision_intelligence.best_opportunity }}
         </p>
+
+        {% if decision_intelligence.executive_adjustments %}
+        <p>
+            <b>Executive justering:</b>
+            {{ decision_intelligence.executive_adjustments[0] }}
+        </p>
+        {% endif %}
     </div>
     {% endif %}
 
