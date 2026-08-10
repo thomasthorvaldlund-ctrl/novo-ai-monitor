@@ -120,8 +120,8 @@
                 </small>
 
                 <p class="executive-action-summary">
-                    {{ market.critical_alerts }}
-                    {% if market.critical_alerts == 1 %}
+                    {{ market.low_ranked_stocks }}
+                    {% if market.low_ranked_stocks == 1 %}
                         lavt rangeret aktie.
                     {% else %}
                         lavt rangerede aktier.
@@ -146,7 +146,12 @@
                       <b>Hvorfor:</b>
                       Signaler {{ "{:.1f}".format(market.signal_component) }}
                       · Combined {{ "{:.1f}".format(market.combined_component) }}
-                      · {{ market.critical_alerts }} kritiske alerts
+                      · {{ market.low_ranked_stocks }}
+                      {% if market.low_ranked_stocks == 1 %}
+                          lavt rangeret aktie
+                      {% else %}
+                          lavt rangerede aktier
+                      {% endif %}
                       · Nyheder {{ market.news_positive }} positive / {{ market.news_neutral }} neutrale / {{ market.news_negative }} negative
                   </p>
 

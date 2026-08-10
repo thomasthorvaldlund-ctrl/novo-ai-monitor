@@ -8,7 +8,7 @@ def get_market_score(ranking=None):
 
     - 50 % gennemsnitlig Combined Score
     - 25 % aktuelle BUY/HOLD/WATCH/SELL-signaler
-    - 15 % kritiske AI-alerts
+    - 15 % lavt rangerede aktier
     - 10 % nyhedssentiment
 
     Hvis ranking mangler, bruges en neutral fallback-score.
@@ -59,14 +59,14 @@ def get_market_score(ranking=None):
     else:
         signal_score = 50
 
-    critical_alerts = sum(
+    low_ranked_stocks = sum(
         1
         for stock in ranking
         if stock.get("combined_score") is not None
         and stock.get("combined_score") < 45
     )
 
-    alert_score = max(20, 50 - critical_alerts * 10)
+    alert_score = max(20, 50 - low_ranked_stocks * 10)
 
     news_sentiment = get_news_sentiment()
     news_score = news_sentiment.get("score", 50)
@@ -95,7 +95,11 @@ def get_market_score(ranking=None):
         "combined_component": round(combined_score, 1),
         "signal_component": round(signal_score, 1),
         "alert_component": round(alert_score, 1),
-        "critical_alerts": critical_alerts,
+        "low_ranked_stocks": low_ranked_stocks,
+
+        # Midlertidigt kompatibilitetsfelt.
+        # Feltet fjernes, når alle consumers bruger low_ranked_stocks.
+        "critical_alerts": low_ranked_stocks,
         "news_component": round(news_score, 1),
         "news_positive": news_sentiment.get("positive", 0),
         "news_neutral": news_sentiment.get("neutral", 0),
