@@ -1,28 +1,48 @@
 from collections import defaultdict
 
-from ai_portfolio_performance_service import get_portfolio_performance
+from ai_decision_event_evaluation_service import (
+    get_evaluated_decision_events,
+)
 
 
-SUCCESS = {
-    "God beslutning",
-    "God risikostyring",
-    "Stabil vurdering",
-    "Positiv udvikling",
+EVALUABLE_OUTCOMES = {
+    "CORRECT",
+    "INCORRECT",
 }
 
 
 def get_signal_accuracy():
-    performance = get_portfolio_performance()
+    """
+    Beregner signal-accuracy ud fra reelle lukkede
+    beslutningsevents i stedet for gentagne snapshots.
 
-    signals = defaultdict(lambda: {"total": 0, "correct": 0})
+    Kun CORRECT og INCORRECT indgår i accuracy.
+    """
 
-    for row in performance:
-        signal = row.get("action", "UNKNOWN")
+    events = get_evaluated_decision_events()
+
+    signals = defaultdict(
+        lambda: {
+            "total": 0,
+            "correct": 0,
+        }
+    )
+
+    for event in events:
+        outcome = event.get("outcome")
+
+        if outcome not in EVALUABLE_OUTCOMES:
+            continue
+
+        signal = event.get(
+            "action",
+            "UNKNOWN",
+        )
+
         stats = signals[signal]
-
         stats["total"] += 1
 
-        if row.get("ai_result") in SUCCESS:
+        if outcome == "CORRECT":
             stats["correct"] += 1
 
     result = []
@@ -31,15 +51,20 @@ def get_signal_accuracy():
         total = signals[signal]["total"]
         correct = signals[signal]["correct"]
 
-        accuracy = round(correct / total * 100, 1) if total else 0.0
-
-        result.append(
-            {
-                "signal": signal,
-                "total": total,
-                "correct": correct,
-                "accuracy": accuracy,
-            }
+        accuracy = (
+            round(
+                correct / total * 100,
+                1,
+            )
+            if total
+            else 0.0
         )
+
+        result.append({
+            "signal": signal,
+            "total": total,
+            "correct": correct,
+            "accuracy": accuracy,
+        })
 
     return result
