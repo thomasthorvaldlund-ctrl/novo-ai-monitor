@@ -30,9 +30,41 @@ def get_decision_performance():
 
     history = load_decision_history()
 
-    actions = Counter(
+    action_sequence = [
         item.get("action", "UNKNOWN")
         for item in history
+    ]
+
+    actions = Counter(action_sequence)
+
+    action_changes = sum(
+        1
+        for previous, current in zip(
+            action_sequence,
+            action_sequence[1:]
+        )
+        if current != previous
+    )
+
+    transition_count = max(
+        len(action_sequence) - 1,
+        0
+    )
+
+    action_stability_pct = (
+        round(
+            (
+                (transition_count - action_changes)
+                / transition_count
+            ) * 100,
+            1,
+        )
+        if transition_count
+        else 100.0
+    )
+
+    unique_actions = sorted(
+        set(action_sequence)
     )
 
     # Legacy confidence-felt.
@@ -69,7 +101,15 @@ def get_decision_performance():
             context_confidence[legacy_confidence] += 1
 
     return {
+        # Legacy-navn: beholdes for kompatibilitet.
         "total_decisions": len(history),
+
+        # Explicit Performance v2 metrics.
+        "snapshot_count": len(history),
+        "action_changes": action_changes,
+        "unique_actions": unique_actions,
+        "action_stability_pct": action_stability_pct,
+
         "buy": actions["BUY"],
         "hold": actions["HOLD"],
         "reduce": actions["REDUCE"],

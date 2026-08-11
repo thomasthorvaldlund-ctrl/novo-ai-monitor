@@ -31,10 +31,28 @@
 
         <div>
             <div style="color:#64748b;font-size:14px;">
-                Samlede beslutninger
+                Snapshots
             </div>
             <div style="font-size:24px;font-weight:700;">
-                {{ decision_performance.total_decisions }}
+                {{ decision_performance.snapshot_count }}
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Beslutningsskift
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_performance.action_changes }}
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Action-stabilitet
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ "{:.1f}".format(decision_performance.action_stability_pct) }}%
             </div>
         </div>
 
