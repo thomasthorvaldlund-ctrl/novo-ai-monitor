@@ -15,17 +15,30 @@ def get_ai_insight():
 
     if trend == "Forbedres":
         opening = (
-            f"AI'ens confidence er steget med {change:.1f} procentpoint "
-            "siden de første historiske målinger."
+            f"AI'ens historiske beslutningspræcision er steget med "
+            f"{change:.1f} procentpoint siden de første sammenlignelige "
+            "Decision Events v2-målinger."
         )
     elif trend == "Faldende":
         opening = (
-            f"AI'ens confidence er faldet med {abs(change):.1f} procentpoint "
-            "og bør undersøges nærmere."
+            f"AI'ens historiske beslutningspræcision er faldet med "
+            f"{abs(change):.1f} procentpoint og bør undersøges nærmere."
+        )
+    elif trend == "Stabil":
+        opening = (
+            "AI'ens historiske beslutningspræcision har været stabil "
+            "gennem den målte periode."
+        )
+    elif trend == "For lidt historik":
+        opening = (
+            "Der er endnu for få sammenlignelige Decision Events v2-"
+            "snapshots til at vurdere udviklingen i AI'ens historiske "
+            "beslutningspræcision."
         )
     else:
         opening = (
-            "AI'ens confidence har været stabil gennem den målte periode."
+            "Der er endnu ikke tilstrækkelig historik til at vurdere "
+            "udviklingen i AI'ens beslutningspræcision."
         )
 
     strengths = [
