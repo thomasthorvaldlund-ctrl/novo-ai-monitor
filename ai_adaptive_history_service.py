@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -10,7 +11,7 @@ ADAPTIVE_HISTORY_FILE = Path(
 
 def load_adaptive_history():
     """
-    Henter tidligere adaptive simulationer.
+    Henter tidligere adaptive simulationer defensivt.
     """
 
     if not ADAPTIVE_HISTORY_FILE.exists():
@@ -22,9 +23,14 @@ def load_adaptive_history():
             "r",
             encoding="utf-8"
         ) as f:
-            return json.load(f)
+            data = json.load(f)
 
-    except Exception:
+        if isinstance(data, list):
+            return data
+
+        return []
+
+    except (OSError, json.JSONDecodeError):
         return []
 
 
@@ -39,8 +45,12 @@ def save_adaptive_decision(data):
 
     history.append(data)
 
+    temp_file = ADAPTIVE_HISTORY_FILE.with_suffix(
+        ADAPTIVE_HISTORY_FILE.suffix + ".tmp"
+    )
+
     with open(
-        ADAPTIVE_HISTORY_FILE,
+        temp_file,
         "w",
         encoding="utf-8"
     ) as f:
@@ -50,5 +60,12 @@ def save_adaptive_decision(data):
             indent=2,
             ensure_ascii=False
         )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        ADAPTIVE_HISTORY_FILE
+    )
 
     return data

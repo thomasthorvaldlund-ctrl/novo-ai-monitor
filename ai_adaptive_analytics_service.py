@@ -1,31 +1,6 @@
-import json
-from pathlib import Path
 from collections import defaultdict
 
-
-ADAPTIVE_HISTORY_FILE = Path(
-    "adaptive_decision_history.json"
-)
-
-
-def load_adaptive_history():
-    """
-    Henter adaptive beslutningshistorik.
-    """
-
-    if not ADAPTIVE_HISTORY_FILE.exists():
-        return []
-
-    try:
-        with open(
-            ADAPTIVE_HISTORY_FILE,
-            "r",
-            encoding="utf-8"
-        ) as f:
-            return json.load(f)
-
-    except Exception:
-        return []
+from ai_adaptive_history_service import load_adaptive_history
 
 
 def get_adaptive_regime_analysis():

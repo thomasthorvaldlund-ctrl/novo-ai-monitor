@@ -1,23 +1,6 @@
-import json
-from pathlib import Path
 from collections import Counter
 
-
-HISTORY_FILE = Path(
-    "adaptive_decision_history.json"
-)
-
-
-def load_adaptive_history():
-    if not HISTORY_FILE.exists():
-        return []
-
-    with open(
-        HISTORY_FILE,
-        "r",
-        encoding="utf-8"
-    ) as f:
-        return json.load(f)
+from ai_adaptive_history_service import load_adaptive_history
 
 
 def get_adaptive_behavior():
