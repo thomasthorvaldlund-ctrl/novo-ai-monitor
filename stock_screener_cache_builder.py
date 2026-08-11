@@ -1,4 +1,6 @@
 import json
+import os
+from pathlib import Path
 
 from market_data_provider import get_history
 from currency_service import (
@@ -10,7 +12,7 @@ from stock_universe_service import get_active_stocks
 from portfolio_stock_service import get_monitored_stock_map
 
 
-CACHE_FILE = "/root/aureum-ai-platform/stock_screener_cache.json"
+CACHE_FILE = Path("/root/aureum-ai-platform/stock_screener_cache.json")
 
 
 def build_stock_screener_cache():
@@ -86,7 +88,15 @@ def build_stock_screener_cache():
         "ranking": results,
     }
 
-    with open(CACHE_FILE, "w", encoding="utf-8") as f:
+    temp_file = CACHE_FILE.with_suffix(
+        CACHE_FILE.suffix + ".tmp"
+    )
+
+    with open(
+        temp_file,
+        "w",
+        encoding="utf-8",
+    ) as f:
         json.dump(
             cache_data,
             f,
@@ -94,6 +104,13 @@ def build_stock_screener_cache():
             indent=2,
             allow_nan=False,
         )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        CACHE_FILE
+    )
 
     return {
         "status": "ok",
