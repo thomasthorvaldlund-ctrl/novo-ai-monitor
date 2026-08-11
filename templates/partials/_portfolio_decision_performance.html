@@ -56,6 +56,33 @@
             </div>
         </div>
 
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Top Pick-stabilitet
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ "{:.1f}".format(decision_performance.top_pick_stability_pct) }}%
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Top Pick-skift
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_performance.top_pick_changes }}
+            </div>
+        </div>
+
+        <div>
+            <div style="color:#64748b;font-size:14px;">
+                Scoreændringer samme Top Pick
+            </div>
+            <div style="font-size:22px;font-weight:700;">
+                {{ decision_performance.same_top_pick_score_changes }}
+            </div>
+        </div>
+
 
         <div>
             <div style="color:#64748b;font-size:14px;">

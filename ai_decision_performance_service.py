@@ -67,6 +67,66 @@ def get_decision_performance():
         set(action_sequence)
     )
 
+
+    top_pick_sequence = [
+        item.get("stock")
+        for item in history
+        if item.get("stock")
+    ]
+
+    top_pick_changes = sum(
+        1
+        for previous, current in zip(
+            top_pick_sequence,
+            top_pick_sequence[1:]
+        )
+        if current != previous
+    )
+
+    top_pick_transition_count = max(
+        len(top_pick_sequence) - 1,
+        0
+    )
+
+    top_pick_stability_pct = (
+        round(
+            (
+                (
+                    top_pick_transition_count
+                    - top_pick_changes
+                )
+                / top_pick_transition_count
+            ) * 100,
+            1,
+        )
+        if top_pick_transition_count
+        else 100.0
+    )
+
+    unique_top_picks = sorted(
+        set(top_pick_sequence)
+    )
+
+    top_pick_rows = [
+        item
+        for item in history
+        if item.get("stock")
+        and isinstance(
+            item.get("score"),
+            (int, float),
+        )
+    ]
+
+    same_top_pick_score_changes = sum(
+        1
+        for previous, current in zip(
+            top_pick_rows,
+            top_pick_rows[1:]
+        )
+        if previous.get("stock") == current.get("stock")
+        and previous.get("score") != current.get("score")
+    )
+
     # Legacy confidence-felt.
     # Beholdes midlertidigt for bagudkompatibilitet.
     confidence = Counter(
@@ -109,6 +169,12 @@ def get_decision_performance():
         "action_changes": action_changes,
         "unique_actions": unique_actions,
         "action_stability_pct": action_stability_pct,
+
+        "top_pick_samples": len(top_pick_sequence),
+        "top_pick_changes": top_pick_changes,
+        "unique_top_picks": unique_top_picks,
+        "top_pick_stability_pct": top_pick_stability_pct,
+        "same_top_pick_score_changes": same_top_pick_score_changes,
 
         "buy": actions["BUY"],
         "hold": actions["HOLD"],
