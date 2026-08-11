@@ -1,117 +1,83 @@
-from ai_portfolio_decision_service import load_portfolio_decisions
-from combined_score_service import combined_stock_score
-from openai_service import client
+from ai_decision_event_evaluation_service import (
+    get_evaluated_decision_events,
+)
 
 
-def evaluate_ai_result(action, performance_pct):
+EVALUABLE_OUTCOMES = {
+    "CORRECT",
+    "INCORRECT",
+}
 
-    if performance_pct is None:
-        return "Afventer"
 
-    if action == "BUY":
-        if performance_pct > 0:
-            return "God beslutning"
-        return "Negativ udvikling"
-
-    if action == "REDUCE":
-        if performance_pct <= 0:
-            return "God risikostyring"
-        return "Forkert timing"
-
-    if action == "HOLD":
-        if abs(performance_pct) < 5:
-            return "Stabil vurdering"
-        elif performance_pct > 0:
-            return "Positiv udvikling"
-        else:
-            return "Negativ udvikling"
-
-    return "Ikke vurderet"
+OUTCOME_LABELS = {
+    "CORRECT": "Korrekt",
+    "INCORRECT": "Forkert",
+}
 
 
 def get_portfolio_performance():
+    """
+    Returnerer historisk performance for lukkede
+    Decision Events v2.
 
-    history = load_portfolio_decisions()
+    Hver række beskriver perioden fra den oprindelige
+    AI-beslutning til den efterfølgende beslutning,
+    hvor eventet blev lukket og evalueret.
+    """
 
-    if not history:
-        return []
-
-    latest = history[-1]
-
-    decisions = latest.get(
-        "decisions",
-        []
-    )
-
-    combined = combined_stock_score(client)
-
-    price_map = {
-        item["stock"]: item.get("price")
-        for item in combined.get(
-            "combined_ranking",
-            []
-        )
-    }
+    events = get_evaluated_decision_events()
 
     performance = []
 
-    for item in decisions:
+    for event in events:
+        outcome = event.get("outcome")
 
-        stock = item.get("stock")
-
-        decision_price = item.get(
-            "decision_price"
-        )
-
-        current_price = price_map.get(
-            stock
-        )
-
-        if (
-            decision_price
-            and current_price
-        ):
-            change_pct = (
-                (
-                    current_price
-                    -
-                    decision_price
-                )
-                /
-                decision_price
-            ) * 100
-
-        else:
-            change_pct = None
-
+        if outcome not in EVALUABLE_OUTCOMES:
+            continue
 
         performance.append({
+            "stock": event.get("stock"),
+            "action": event.get("action"),
+            "score": event.get("score"),
 
-            "stock": stock,
-
-            "action": item.get(
-                "action"
+            "decision_price": event.get(
+                "decision_price"
             ),
 
-            "score": item.get(
-                "score"
+            "end_price": event.get(
+                "end_price"
             ),
 
-            "decision_price": decision_price,
+            "performance_pct": event.get(
+                "performance_pct"
+            ),
 
-            "current_price": current_price,
+            "ai_result": OUTCOME_LABELS.get(
+                outcome,
+                outcome,
+            ),
 
-            "performance_pct": round(
-                change_pct,
-                2
-            ) if change_pct is not None else None,
+            "outcome": outcome,
 
-              "ai_result": evaluate_ai_result(
-                  item.get("action"),
-                  change_pct
-              ),
+            "evaluation_explanation": event.get(
+                "evaluation_explanation"
+            ),
 
+            "decision_date": event.get(
+                "date"
+            ),
+
+            "end_date": event.get(
+                "end_date"
+            ),
+
+            "duration_minutes": event.get(
+                "duration_minutes"
+            ),
+
+            "next_action": event.get(
+                "next_action"
+            ),
         })
-
 
     return performance

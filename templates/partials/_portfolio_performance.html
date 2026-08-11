@@ -5,8 +5,8 @@
     </h2>
 
     <p style="color:#6b7280;">
-        AI Portfolio Performance evaluerer hvordan tidligere AI-anbefalinger har udviklet sig efter beslutningstidspunktet.
-          Modulet sammenligner oprindelig AI-beslutning, kursudvikling og resultat for at måle kvaliteten af tidligere vurderinger.
+        AI Portfolio Performance evaluerer afsluttede historiske Decision Events.
+          Modulet sammenligner den oprindelige AI-beslutning med kursen ved næste beslutning og vurderer, om den tidligere anbefaling var korrekt.
     </p>
 
 
@@ -41,8 +41,8 @@
 
             <br>
 
-            Nuværende pris:
-            {{ item.current_price }}
+            Pris ved næste beslutning:
+            {{ item.end_price }}
 
             <br>
 
@@ -53,6 +53,23 @@
 
             Resultat:
             <b>{{ item.ai_result }}</b>
+
+            <br>
+
+            Næste beslutning:
+            <b>{{ item.next_action }}</b>
+
+            <br>
+
+            Periode:
+            {{ item.decision_date }}
+            →
+            {{ item.end_date }}
+
+            <br><br>
+
+            Forklaring:
+            {{ item.evaluation_explanation }}
 
         </div>
 
