@@ -1,20 +1,65 @@
 import json
 import os
+from pathlib import Path
 
-CACHE_FILE = "/root/aureum-ai-platform/dashboard_cache.json"
+
+CACHE_FILE = Path(
+    "/root/aureum-ai-platform/dashboard_cache.json"
+)
 
 
 def load_dashboard_cache():
-    if not os.path.exists(CACHE_FILE):
+    """
+    Indlæser dashboard cache defensivt.
+    """
+
+    if not CACHE_FILE.exists():
         return {}
 
     try:
-        with open(CACHE_FILE, "r") as f:
-            return json.load(f)
-    except Exception:
+        with open(
+            CACHE_FILE,
+            "r",
+            encoding="utf-8",
+        ) as f:
+            data = json.load(f)
+
+        if isinstance(data, dict):
+            return data
+
+        return {}
+
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
 def save_dashboard_cache(data):
-    with open(CACHE_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+    """
+    Gemmer dashboard cache atomisk.
+
+    Readers ser enten den gamle komplette cache
+    eller den nye komplette cache.
+    """
+
+    temp_file = CACHE_FILE.with_suffix(
+        CACHE_FILE.suffix + ".tmp"
+    )
+
+    with open(
+        temp_file,
+        "w",
+        encoding="utf-8",
+    ) as f:
+        json.dump(
+            data,
+            f,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        CACHE_FILE
+    )
