@@ -90,23 +90,36 @@
         <br>
 
 
-        <strong>Confidence niveauer:</strong>
+        <strong>Decision Confidence:</strong>
 
         <ul style="
             margin-top:10px;
             color:#334155;
             line-height:1.7;
         ">
+            {% for level, count in decision_performance.decision_confidence_levels.items() %}
+                <li>
+                    {{ level }}%:
+                    {{ count }}
+                </li>
+            {% endfor %}
+        </ul>
 
-            {% for level, count in decision_performance.confidence_levels.items() %}
+        <br>
 
+        <strong>Context Confidence:</strong>
+
+        <ul style="
+            margin-top:10px;
+            color:#334155;
+            line-height:1.7;
+        ">
+            {% for level, count in decision_performance.context_confidence_levels.items() %}
                 <li>
                     {{ level }}:
                     {{ count }}
                 </li>
-
             {% endfor %}
-
         </ul>
 
     </div>
