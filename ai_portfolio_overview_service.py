@@ -1,7 +1,6 @@
 from ai_learning_service import get_learning_report
 from ai_learning_trends_service import get_learning_trends
 from ai_confidence_calibration_service import get_confidence_calibration
-from ai_performance_service import get_ai_performance
 
 
 def get_ai_portfolio_overview():
@@ -12,12 +11,15 @@ def get_ai_portfolio_overview():
     learning = get_learning_report()
     trends = get_learning_trends()
     calibration = get_confidence_calibration()
-    performance = get_ai_performance()
-
     accuracy = learning.get("accuracy", 0)
 
-    total_signals = performance.get(
-        "evaluated_signals",
+    analytics = learning.get(
+        "analytics",
+        {}
+    )
+
+    total_signals = analytics.get(
+        "evaluated_decisions",
         0
     )
 
