@@ -10,15 +10,32 @@ DECISION_FILE = Path("ai_portfolio_decisions.json")
 
 
 def load_portfolio_decisions():
+    """
+    Indlæser portfolio decision-historikken defensivt.
+
+    Ved manglende, ugyldig eller midlertidigt ulæselig JSON
+    returneres en tom historik i stedet for at vælte hele
+    Decision Events / dashboard-kæden.
+    """
+
     if not DECISION_FILE.exists():
         return []
 
-    with open(
-        DECISION_FILE,
-        "r",
-        encoding="utf-8"
-    ) as f:
-        return json.load(f)
+    try:
+        with open(
+            DECISION_FILE,
+            "r",
+            encoding="utf-8"
+        ) as f:
+            data = json.load(f)
+
+        if isinstance(data, list):
+            return data
+
+        return []
+
+    except (OSError, json.JSONDecodeError):
+        return []
 
 
 
@@ -65,8 +82,12 @@ def save_portfolio_decision():
     history.append(snapshot)
 
 
+    temp_file = DECISION_FILE.with_suffix(
+        DECISION_FILE.suffix + ".tmp"
+    )
+
     with open(
-        DECISION_FILE,
+        temp_file,
         "w",
         encoding="utf-8"
     ) as f:
@@ -76,6 +97,15 @@ def save_portfolio_decision():
             indent=2,
             ensure_ascii=False
         )
+
+        f.flush()
+
+        import os
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        DECISION_FILE
+    )
 
 
     return snapshot
