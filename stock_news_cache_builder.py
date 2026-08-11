@@ -1,11 +1,14 @@
 import json
+import os
+from pathlib import Path
+
 import feedparser
 from urllib.parse import quote_plus
 
 from stock_universe_service import get_active_stocks, get_news_query
 
 
-CACHE_FILE = "/root/aureum-ai-platform/stock_news_ai_cache.json"
+CACHE_FILE = Path("/root/aureum-ai-platform/stock_news_ai_cache.json")
 
 
 def build_stock_news_ai_cache(client):
@@ -116,7 +119,27 @@ Overskrifter:
 
     output = {"news_ai_scores": results}
 
-    with open(CACHE_FILE, "w", encoding="utf-8") as file:
-        json.dump(output, file, ensure_ascii=False, indent=2)
+    temp_file = CACHE_FILE.with_suffix(
+        CACHE_FILE.suffix + ".tmp"
+    )
+
+    with open(
+        temp_file,
+        "w",
+        encoding="utf-8",
+    ) as file:
+        json.dump(
+            output,
+            file,
+            ensure_ascii=False,
+            indent=2,
+        )
+
+        file.flush()
+        os.fsync(file.fileno())
+
+    temp_file.replace(
+        CACHE_FILE
+    )
 
     return output
