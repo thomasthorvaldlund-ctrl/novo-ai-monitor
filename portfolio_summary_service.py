@@ -89,19 +89,28 @@ def get_portfolio_summary():
         default={}
     )
 
-    signals = [
-        p["signal"]
+    risk_levels = {
+        "Low": 1,
+        "Medium": 2,
+        "High": 3,
+    }
+
+    position_risk_levels = [
+        risk_levels.get(
+            p.get("risk"),
+            2,
+        )
         for p in position_details
     ]
 
-    reduce_count = signals.count("REDUCE")
-    watch_count = signals.count("WATCH")
+    highest_risk_level = max(
+        position_risk_levels,
+        default=1,
+    )
 
-    if reduce_count >= 2:
+    if highest_risk_level >= 3:
         portfolio_risk = "High"
-    elif reduce_count == 1:
-        portfolio_risk = "Medium"
-    elif watch_count >= 2:
+    elif highest_risk_level >= 2:
         portfolio_risk = "Medium"
     else:
         portfolio_risk = "Low"
