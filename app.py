@@ -699,12 +699,34 @@ Overskrifter:
 
     ai_text = response.choices[0].message.content
 
-    with open("/root/aureum-ai-platform/last_dsv_ai_news_check.log", "w") as f:
-        import json
-        json.dump({
-            "ai_analysis": ai_text,
-            "checked_articles": len(titles)
-        }, f)
+    dsv_ai_news_file = Path(
+        "/root/aureum-ai-platform/last_dsv_ai_news_check.log"
+    )
+
+    temp_dsv_ai_news_file = dsv_ai_news_file.with_suffix(
+        dsv_ai_news_file.suffix + ".tmp"
+    )
+
+    with open(
+        temp_dsv_ai_news_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            {
+                "ai_analysis": ai_text,
+                "checked_articles": len(titles)
+            },
+            f,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_dsv_ai_news_file.replace(
+        dsv_ai_news_file
+    )
 
     if "Høj" in ai_text or "Kritisk" in ai_text:
         send_telegram("🧠 DSV AI NYHEDSALARM\n\n" + ai_text)
