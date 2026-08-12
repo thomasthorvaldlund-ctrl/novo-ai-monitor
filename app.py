@@ -862,8 +862,27 @@ def smart_alerts():
                 alerts.append(message)
                 state[alert_key] = True
 
-    with open(state_file, "w") as f:
-        json.dump(state, f)
+    temp_state_file = state_file.with_suffix(
+        state_file.suffix + ".tmp"
+    )
+
+    with open(
+        temp_state_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            state,
+            f,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_state_file.replace(
+        state_file
+    )
 
     return {
         "alerts_sent": len(alerts),
