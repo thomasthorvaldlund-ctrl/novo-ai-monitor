@@ -1,4 +1,6 @@
 import csv
+import os
+from pathlib import Path
 from stock_utils import get_history
 from currency import get_fx_rates, get_currency, convert_to_dkk
 
@@ -98,7 +100,18 @@ def get_portfolio_summary(portfolio_file=PORTFOLIO_FILE):
 def save_portfolio_rows(positions, portfolio_file=PORTFOLIO_FILE):
     fieldnames = ["id", "stock", "ticker", "qty", "buy_price", "cost_dkk"]
 
-    with open(portfolio_file, "w", newline="") as f:
+    portfolio_path = Path(portfolio_file)
+
+    temp_portfolio_file = portfolio_path.with_suffix(
+        portfolio_path.suffix + ".tmp"
+    )
+
+    with open(
+        temp_portfolio_file,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
@@ -115,6 +128,13 @@ def save_portfolio_rows(positions, portfolio_file=PORTFOLIO_FILE):
                     else ""
                 ),
             })
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_portfolio_file.replace(
+        portfolio_path
+    )
 
 
 def add_portfolio_position(
