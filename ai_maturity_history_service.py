@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -8,7 +9,7 @@ HISTORY_FILE = Path("ai_maturity_history.json")
 
 def load_ai_maturity_history():
     """
-    Henter historik for AI Maturity.
+    Henter historik for AI Maturity defensivt.
     """
 
     if not HISTORY_FILE.exists():
@@ -20,9 +21,14 @@ def load_ai_maturity_history():
             "r",
             encoding="utf-8"
         ) as f:
-            return json.load(f)
+            data = json.load(f)
 
-    except Exception:
+        if isinstance(data, list):
+            return data
+
+        return []
+
+    except (OSError, json.JSONDecodeError):
         return []
 
 
@@ -66,8 +72,12 @@ def save_ai_maturity_snapshot(maturity_data):
     else:
         history.append(snapshot)
 
+    temp_file = HISTORY_FILE.with_suffix(
+        HISTORY_FILE.suffix + ".tmp"
+    )
+
     with open(
-        HISTORY_FILE,
+        temp_file,
         "w",
         encoding="utf-8"
     ) as f:
@@ -77,5 +87,12 @@ def save_ai_maturity_snapshot(maturity_data):
             indent=2,
             ensure_ascii=False
         )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        HISTORY_FILE
+    )
 
     return snapshot
