@@ -94,16 +94,32 @@ def get_portfolio_health(portfolio_summary):
     }
     risk_score = risk_scores.get(risk, 50.0)
 
-    positive_signals = sum(
-        1
-        for position in positions
-        if position.get("signal") in {"BUY", "HOLD"}
-    )
+    def _momentum_from_score(score):
+        try:
+            score = float(score)
+        except (TypeError, ValueError):
+            return 20.0
 
-    if positions:
-        momentum_score = (positive_signals / len(positions)) * 100
-    else:
-        momentum_score = 0.0
+        if score >= 80:
+            return 100.0
+        elif score >= 70:
+            return 80.0
+        elif score >= 60:
+            return 60.0
+        elif score >= 50:
+            return 40.0
+        return 20.0
+
+    momentum_values = [
+        _momentum_from_score(position.get("score"))
+        for position in positions
+    ]
+
+    momentum_score = (
+        sum(momentum_values) / len(momentum_values)
+        if momentum_values
+        else 0.0
+    )
 
     health_score = round(
         portfolio_score * 0.40
