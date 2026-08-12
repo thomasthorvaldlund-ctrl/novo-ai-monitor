@@ -7,6 +7,8 @@ helbredstjek. Servicen foretager ingen eksterne API-kald.
 
 from statistics import mean
 
+from asset_registry import find_asset_by_ticker
+
 
 RISK_LABELS = {
     "Low": "Lav",
@@ -62,6 +64,10 @@ def get_portfolio_health(portfolio_summary):
     confidence_score = mean(confidences) if confidences else 0.0
 
     weights = []
+    countries = set()
+    regions = set()
+    sectors = set()
+
     for position in positions:
         raw_weight = position.get("weight_pct", 0)
 
@@ -73,17 +79,82 @@ def get_portfolio_health(portfolio_summary):
         except (TypeError, ValueError):
             continue
 
+        asset = find_asset_by_ticker(position.get("ticker"))
+
+        if asset:
+            country = asset.get("country")
+            region = asset.get("region")
+            sector = asset.get("sector")
+
+            if country:
+                countries.add(country)
+
+            if region:
+                regions.add(region)
+
+            if sector:
+                sectors.add(sector)
+
     largest_weight = max(weights, default=0.0)
     position_count = len(positions)
 
-    if position_count >= 8 and largest_weight <= 25:
-        diversification_score = 90.0
-    elif position_count >= 5 and largest_weight <= 35:
-        diversification_score = 75.0
-    elif position_count >= 3 and largest_weight <= 50:
-        diversification_score = 60.0
+    # 1. Koncentration
+    if largest_weight <= 20:
+        concentration_score = 100.0
+    elif largest_weight <= 30:
+        concentration_score = 80.0
+    elif largest_weight <= 40:
+        concentration_score = 60.0
+    elif largest_weight <= 50:
+        concentration_score = 40.0
     else:
-        diversification_score = 35.0
+        concentration_score = 20.0
+
+    # 2. Sektorspredning
+    sector_count = len(sectors)
+
+    if sector_count >= 5:
+        sector_score = 100.0
+    elif sector_count >= 4:
+        sector_score = 85.0
+    elif sector_count >= 3:
+        sector_score = 70.0
+    elif sector_count >= 2:
+        sector_score = 50.0
+    else:
+        sector_score = 20.0
+
+    # 3. Regionspredning
+    region_count = len(regions)
+
+    if region_count >= 3:
+        region_score = 100.0
+    elif region_count == 2:
+        region_score = 60.0
+    else:
+        region_score = 20.0
+
+    # 4. Landespredning
+    country_count = len(countries)
+
+    if country_count >= 5:
+        country_score = 100.0
+    elif country_count >= 4:
+        country_score = 85.0
+    elif country_count >= 3:
+        country_score = 70.0
+    elif country_count >= 2:
+        country_score = 50.0
+    else:
+        country_score = 20.0
+
+    diversification_score = round(
+        concentration_score * 0.40
+        + sector_score * 0.30
+        + region_score * 0.20
+        + country_score * 0.10,
+        1,
+    )
 
     risk = summary.get("portfolio_risk", "Unknown")
 
