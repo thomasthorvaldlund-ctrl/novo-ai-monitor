@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -7,12 +8,29 @@ HISTORY_FILE = Path("ai_portfolio_learning_history.json")
 
 
 def load_learning_history():
+    """
+    Henter Portfolio Learning History defensivt.
+    """
 
     if not HISTORY_FILE.exists():
         return []
 
-    with open(HISTORY_FILE) as f:
-        return json.load(f)
+    try:
+        with open(
+            HISTORY_FILE,
+            "r",
+            encoding="utf-8"
+        ) as f:
+            data = json.load(f)
+
+        if isinstance(data, list):
+            return data
+
+        return []
+
+    except (OSError, json.JSONDecodeError):
+        return []
+
 
 def save_learning_snapshot(learning):
 
@@ -44,13 +62,28 @@ def save_learning_snapshot(learning):
     history.append(snapshot)
 
 
-    with open(HISTORY_FILE, "w") as f:
+    temp_file = HISTORY_FILE.with_suffix(
+        HISTORY_FILE.suffix + ".tmp"
+    )
+
+    with open(
+        temp_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
         json.dump(
             history,
             f,
             indent=2,
             ensure_ascii=False
         )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        HISTORY_FILE
+    )
 
 
     return snapshot
