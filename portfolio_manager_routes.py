@@ -6,6 +6,7 @@ from ai_decision_service import get_ai_decision
 from portfolio_history_service import save_portfolio_history, load_portfolio_history
 from portfolio_health_service import get_portfolio_health
 from portfolio_health_history_service import load_portfolio_health_history
+from portfolio_evolution_explanation_service import explain_portfolio_evolution
 
 portfolio_manager_bp = Blueprint("portfolio_manager", __name__)
 
@@ -438,6 +439,21 @@ def portfolio_manager_v2_test():
     portfolio_health = get_portfolio_health(ai_data)
     portfolio_health_history = load_portfolio_health_history()
 
+    portfolio_evolution = None
+    portfolio_evolution_explanation = None
+
+    if len(portfolio_health_history) >= 2:
+        from portfolio_evolution_service import compare_portfolio_health
+
+        portfolio_evolution = compare_portfolio_health(
+            portfolio_health_history[-2],
+            portfolio_health_history[-1],
+        )
+
+        portfolio_evolution_explanation = (
+            explain_portfolio_evolution(portfolio_evolution)
+        )
+
     ranking = cache.get("combined_ranking", [])
 
     score_map = {
@@ -468,6 +484,8 @@ def portfolio_manager_v2_test():
         rebalancer=ai_data.get("position_details", []),
         portfolio_health=portfolio_health,
         portfolio_health_history=portfolio_health_history,
+        portfolio_evolution=portfolio_evolution,
+        portfolio_evolution_explanation=portfolio_evolution_explanation,
         total_value=data.get("total_value", 0),
         total_profit=data.get("total_profit", 0),
         total_profit_pct=data.get("total_profit_pct", 0),

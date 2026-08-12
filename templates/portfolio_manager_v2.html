@@ -196,6 +196,22 @@
                 </div>
             </div>
         {% endif %}
+
+        {% if portfolio_evolution_explanation %}
+            <div class="portfolio-evolution-explanation">
+                <div class="portfolio-evolution-explanation-title">
+                    🧠 AI-forklaring
+                </div>
+
+                <strong>
+                    {{ portfolio_evolution_explanation.headline }}
+                </strong>
+
+                <p>
+                    {{ portfolio_evolution_explanation.summary }}
+                </p>
+            </div>
+        {% endif %}
     </div>
 
     {% if portfolio_health_history %}

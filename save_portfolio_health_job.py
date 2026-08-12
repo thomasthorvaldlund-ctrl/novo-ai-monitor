@@ -6,5 +6,5 @@ from portfolio_health_history_service import save_portfolio_health_snapshot
 if __name__ == "__main__":
     summary = get_portfolio_summary()
     health = get_portfolio_health(summary)
-    result = save_portfolio_health_snapshot(health)
+    result = save_portfolio_health_snapshot(health, summary)
     print(result)
