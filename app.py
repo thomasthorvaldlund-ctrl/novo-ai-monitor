@@ -444,9 +444,24 @@ def news_check():
         )
         send_telegram(message)
 
-    with open(seen_file, "w") as f:
+    seen_temp_file = Path(seen_file).with_suffix(
+        Path(seen_file).suffix + ".tmp"
+    )
+
+    with open(
+        seen_temp_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
         for title in seen:
             f.write(title + "\n")
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    seen_temp_file.replace(
+        seen_file
+    )
 
     return render_template(
         "news_check.html",
