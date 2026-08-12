@@ -181,10 +181,18 @@
             <div class="portfolio-evolution-portfolio">
                 <div>
                     <span>Første portefølje</span>
-                    <strong>
-                        {{ first.portfolio_snapshot }}
-                        ({{ first.position_count }} positioner)
+                    <strong class="portfolio-evolution-stocks">
+                        {% for stock in first.portfolio_snapshot.split(",") %}
+                            {% set stock_name = stock.strip() %}
+                            <span>
+                                {{ stock_name }}{% if portfolio_evolution and stock_name in portfolio_evolution.portfolio.removed %} (slettet){% endif %}
+                            </span>
+                        {% endfor %}
                     </strong>
+
+                    <small class="portfolio-evolution-position-count">
+                        {{ first.position_count }} positioner historisk
+                    </small>
                 </div>
 
                 <div>
@@ -213,6 +221,20 @@
             </div>
         {% endif %}
     </div>
+
+    {% if portfolio_health_history|length >= 2 %}
+        <div class="portfolio-evolution-chart">
+            <canvas
+                id="portfolioEvolutionChart"
+                data-labels='{{ portfolio_health_history | map(attribute="date") | list | tojson }}'
+                data-health='{{ portfolio_health_history | map(attribute="score") | list | tojson }}'
+                data-risk='{{ portfolio_health_history | map(attribute="risk_score") | list | tojson }}'
+                data-diversification='{{ portfolio_health_history | map(attribute="diversification_score") | list | tojson }}'
+                data-momentum='{{ portfolio_health_history | map(attribute="momentum_score") | list | tojson }}'
+                data-confidence='{{ portfolio_health_history | map(attribute="confidence_score") | list | tojson }}'
+            ></canvas>
+        </div>
+    {% endif %}
 
     {% if portfolio_health_history %}
         <div class="portfolio-evolution-latest">
@@ -413,4 +435,9 @@
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/portfolio_evolution_chart.js') }}"></script>
 {% endblock %}

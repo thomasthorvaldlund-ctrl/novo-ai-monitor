@@ -299,16 +299,23 @@ This rule is more specific than the older one-column rule.
 
 /* ===== AI Portfolio Evolution ===== */
 
+.portfolio-evolution-chart {
+    position: relative;
+    height: 360px;
+    margin-top: 20px;
+    padding: 10px 0;
+}
+
 .portfolio-evolution-card {
     padding: 22px;
     margin-bottom: 20px;
 }
 
 .portfolio-evolution-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: minmax(240px, 1fr) minmax(110px, 140px) minmax(220px, 1.4fr);
+    align-items: start;
+    gap: 16px;
 }
 
 .portfolio-evolution-header h2 {
@@ -350,9 +357,9 @@ This rule is more specific than the older one-column rule.
 
 .portfolio-evolution-portfolio {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(150px, 1fr));
     gap: 12px;
-    margin-top: 18px;
+    margin-top: 0;
 }
 
 .portfolio-evolution-portfolio > div {
@@ -363,6 +370,23 @@ This rule is more specific than the older one-column rule.
 }
 
 .portfolio-evolution-portfolio span,
+
+.portfolio-evolution-stocks {
+    display: block;
+    line-height: 1.6;
+}
+
+.portfolio-evolution-stocks span {
+    display: block;
+}
+
+.portfolio-evolution-position-count {
+    display: block;
+    margin-top: 6px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
 .portfolio-evolution-portfolio strong {
     display: block;
 }
@@ -378,7 +402,7 @@ This rule is more specific than the older one-column rule.
 }
 
 .portfolio-evolution-explanation {
-    margin-top: 18px;
+    margin-top: 0;
     padding: 16px;
     background: #f8fafc;
     border: 1px solid var(--color-border);
