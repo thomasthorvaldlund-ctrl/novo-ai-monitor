@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -59,9 +60,27 @@ def get_learning_feedback():
         "signal_weights": weights,
     }
 
-    FEEDBACK_FILE.write_text(
-        json.dumps(data, indent=2),
-        encoding="utf-8",
+    temp_file = FEEDBACK_FILE.with_suffix(
+        FEEDBACK_FILE.suffix + ".tmp"
+    )
+
+    with open(
+        temp_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            data,
+            f,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        FEEDBACK_FILE
     )
 
     return data
