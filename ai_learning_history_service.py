@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -102,13 +103,27 @@ def save_learning_snapshot():
 
     history.append(snapshot)
 
-    HISTORY_FILE.write_text(
-        json.dumps(
+    temp_file = HISTORY_FILE.with_suffix(
+        HISTORY_FILE.suffix + ".tmp"
+    )
+
+    with open(
+        temp_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
             history,
+            f,
             indent=2,
             ensure_ascii=False,
-        ),
-        encoding="utf-8",
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_file.replace(
+        HISTORY_FILE
     )
 
     return history
