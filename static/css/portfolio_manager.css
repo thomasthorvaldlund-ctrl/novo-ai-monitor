@@ -348,6 +348,35 @@ This rule is more specific than the older one-column rule.
     font-size: 12px;
 }
 
+.portfolio-evolution-portfolio {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.portfolio-evolution-portfolio > div {
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+}
+
+.portfolio-evolution-portfolio span,
+.portfolio-evolution-portfolio strong {
+    display: block;
+}
+
+.portfolio-evolution-portfolio span {
+    margin-bottom: 5px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.portfolio-evolution-portfolio strong {
+    line-height: 1.5;
+}
+
 .portfolio-evolution-latest {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -384,6 +413,10 @@ This rule is more specific than the older one-column rule.
 
     .portfolio-evolution-latest {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .portfolio-evolution-portfolio {
+        grid-template-columns: 1fr;
     }
 }
 

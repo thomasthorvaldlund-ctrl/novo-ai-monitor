@@ -14,7 +14,7 @@ from datetime import date
 HISTORY_FILE = "portfolio_health_history.csv"
 
 
-def save_portfolio_health_snapshot(portfolio_health):
+def save_portfolio_health_snapshot(portfolio_health, portfolio_summary=None):
     """
     Gemmer dagens Portfolio Health én gang pr. dag.
     """
@@ -39,6 +39,20 @@ def save_portfolio_health_snapshot(portfolio_health):
     momentum = health.get("momentum", {}) or {}
     confidence = health.get("confidence", {}) or {}
 
+    positions = (
+        portfolio_summary.get("position_details", [])
+        if portfolio_summary
+        else []
+    )
+
+    portfolio_snapshot = ",".join(
+        position.get("stock", "-")
+        for position in positions
+        if position.get("stock")
+    )
+
+    position_count = len(positions)
+
     row = {
         "date": today,
         "score": round(float(health.get("score", 0)), 1),
@@ -57,6 +71,8 @@ def save_portfolio_health_snapshot(portfolio_health):
             float(confidence.get("score", 0)),
             1,
         ),
+        "position_count": position_count,
+        "portfolio_snapshot": portfolio_snapshot or "-",
         "best_position": health.get("best_position", "-"),
         "weakest_position": health.get("weakest_position", "-"),
     }
@@ -106,6 +122,13 @@ def load_portfolio_health_history():
                 ),
                 "confidence_score": float(
                     row.get("confidence_score", 0)
+                ),
+                "position_count": int(
+                    row.get("position_count", 0)
+                ),
+                "portfolio_snapshot": row.get(
+                    "portfolio_snapshot",
+                    "-",
                 ),
                 "best_position": row.get("best_position", "-"),
                 "weakest_position": row.get(

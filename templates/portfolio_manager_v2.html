@@ -173,6 +173,29 @@
             <strong>{{ portfolio_health_history|length }}</strong>
             <span>målinger</span>
         </div>
+
+        {% if portfolio_health_history|length >= 2 %}
+            {% set first = portfolio_health_history[0] %}
+            {% set latest = portfolio_health_history[-1] %}
+
+            <div class="portfolio-evolution-portfolio">
+                <div>
+                    <span>Første portefølje</span>
+                    <strong>
+                        {{ first.portfolio_snapshot }}
+                        ({{ first.position_count }} positioner)
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Seneste portefølje</span>
+                    <strong>
+                        {{ latest.portfolio_snapshot }}
+                        ({{ latest.position_count }} positioner)
+                    </strong>
+                </div>
+            </div>
+        {% endif %}
     </div>
 
     {% if portfolio_health_history %}
