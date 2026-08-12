@@ -118,9 +118,28 @@ def export_recovery_files():
         ),
     }
 
-    (RECOVERY_DIR / "server-info.json").write_text(
-        json.dumps(server_info, indent=2, ensure_ascii=False),
-        encoding="utf-8",
+    server_info_file = RECOVERY_DIR / "server-info.json"
+    temp_server_info_file = server_info_file.with_suffix(
+        server_info_file.suffix + ".tmp"
+    )
+
+    with open(
+        temp_server_info_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            server_info,
+            f,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_server_info_file.replace(
+        server_info_file
     )
 
     return {
@@ -187,9 +206,27 @@ def create_platform_backup():
         "recovery_files": recovery_result["files"],
     }
 
-    metadata_file.write_text(
-        json.dumps(metadata, indent=2, ensure_ascii=False),
-        encoding="utf-8",
+    temp_metadata_file = metadata_file.with_suffix(
+        metadata_file.suffix + ".tmp"
+    )
+
+    with open(
+        temp_metadata_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            metadata,
+            f,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_metadata_file.replace(
+        metadata_file
     )
 
     return metadata
@@ -278,9 +315,27 @@ def create_full_backup():
         "restore_guide": "recovery/RESTORE_GUIDE.md",
     }
 
-    metadata_file.write_text(
-        json.dumps(metadata, indent=2, ensure_ascii=False),
-        encoding="utf-8",
+    temp_metadata_file = metadata_file.with_suffix(
+        metadata_file.suffix + ".tmp"
+    )
+
+    with open(
+        temp_metadata_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            metadata,
+            f,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_metadata_file.replace(
+        metadata_file
     )
 
     return metadata
