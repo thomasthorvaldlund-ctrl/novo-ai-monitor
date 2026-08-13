@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+from aureum_paths import PROJECT_DIR
 import json
 import os
 import platform
@@ -9,7 +10,6 @@ import subprocess
 import tarfile
 
 
-PROJECT_DIR = Path("/root/aureum-ai-platform")
 BACKUP_DIR = PROJECT_DIR / "backups"
 RECOVERY_DIR = PROJECT_DIR / "recovery"
 
@@ -253,10 +253,10 @@ def create_full_backup():
     restore_guide = RECOVERY_DIR / "RESTORE_GUIDE.md"
 
     restore_guide.write_text(
-        """# Aureum AI Platform – Restore Guide
+        f"""# Aureum AI Platform – Restore Guide
 
 1. Installér Ubuntu, Python 3 og Git.
-2. Udpak backupen til `/root/aureum-ai-platform`.
+2. Udpak backupen til `{PROJECT_DIR}`.
 3. Opret et nyt virtuelt miljø:
    `python3 -m venv venv`
 4. Installér pakker:
