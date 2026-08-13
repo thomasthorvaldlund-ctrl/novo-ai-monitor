@@ -10,8 +10,12 @@ import csv
 import os
 from datetime import date
 
+from aureum_paths import data_path
 
-HISTORY_FILE = "portfolio_health_history.csv"
+
+HISTORY_FILE = data_path(
+    "portfolio_health_history.csv"
+)
 
 
 def save_portfolio_health_snapshot(portfolio_health, portfolio_summary=None):
