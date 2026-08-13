@@ -1,4 +1,5 @@
 from flask import Blueprint
+from aureum_paths import cache_path, log_path
 import os
 from datetime import datetime
 
@@ -8,11 +9,21 @@ system_status_bp = Blueprint("system_status", __name__)
 @system_status_bp.route("/system-status-page")
 def system_status_page():
     files = {
-        "AI cache": "/root/aureum-ai-platform/stock_news_ai_cache.json",
-        "Historik log": "/root/aureum-ai-platform/history_save.log",
-        "Combined report log": "/root/aureum-ai-platform/combined_report.log",
-        "Smart alerts log": "/root/aureum-ai-platform/last_smart_alerts.log",
-        "Portfolio alerts log": "/root/aureum-ai-platform/portfolio_alerts.log",
+        "AI cache": cache_path(
+            "stock_news_ai_cache.json"
+        ),
+        "Historik log": log_path(
+            "history_save.log"
+        ),
+        "Combined report log": log_path(
+            "combined_report.log"
+        ),
+        "Smart alerts log": log_path(
+            "last_smart_alerts.log"
+        ),
+        "Portfolio alerts log": log_path(
+            "portfolio_alerts.log"
+        ),
     }
 
     rows = ""
