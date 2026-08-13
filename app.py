@@ -1,6 +1,7 @@
 import json
 import hmac
 from pathlib import Path
+from aureum_paths import log_path
 from urllib.parse import quote_plus
 from datetime import datetime
 
@@ -526,8 +527,8 @@ Overskrifter:
 
     ai_text = response.choices[0].message.content
 
-    novo_ai_news_file = Path(
-        "/root/aureum-ai-platform/last_ai_news_check.log"
+    novo_ai_news_file = log_path(
+        "last_ai_news_check.log"
     )
 
     temp_novo_ai_news_file = novo_ai_news_file.with_suffix(
@@ -702,7 +703,9 @@ def daily_report():
 
     levels = {"Lav": 1, "Moderat": 2, "Høj": 3, "Kritisk": 4}
 
-    novo_ai_risk = extract_ai_risk("/root/aureum-ai-platform/last_ai_news_check.log")
+    novo_ai_risk = extract_ai_risk(
+        log_path("last_ai_news_check.log")
+    )
 
     novo_total_risk = novo["risk_level"]
     if levels[novo_ai_risk] > levels[novo_total_risk]:
@@ -759,7 +762,7 @@ def smart_alerts():
         {
             "name": "NOVO",
             "ticker": get_stock_metadata("NOVO")["ticker"],
-            "ai_log": "/root/aureum-ai-platform/last_ai_news_check.log",
+            "ai_log": log_path("last_ai_news_check.log"),
         },
     ]
 
@@ -861,7 +864,7 @@ def save_history():
     today = datetime.now().strftime("%Y-%m-%d")
 
     for stock_name, logfile in [
-        ("NOVO", "/root/aureum-ai-platform/last_ai_news_check.log"),
+        ("NOVO", log_path("last_ai_news_check.log")),
         ("NVIDIA", None),
         ("ASML", None),
     ]:
