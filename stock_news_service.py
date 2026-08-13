@@ -1,15 +1,18 @@
 import os
 import time
 import json
-from pathlib import Path
+from aureum_paths import cache_path
 import feedparser
 from urllib.parse import quote_plus
 
 
+CACHE_FILE = cache_path(
+    "stock_news_ai_cache.json"
+)
+
+
 def stock_news_ai_score(client):
-    cache_file = Path(
-        "/root/aureum-ai-platform/stock_news_ai_cache.json"
-    )
+    cache_file = CACHE_FILE
     cache_seconds = 21600
 
     if (

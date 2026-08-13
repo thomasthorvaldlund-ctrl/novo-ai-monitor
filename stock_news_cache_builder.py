@@ -1,6 +1,6 @@
 import json
 import os
-from pathlib import Path
+from aureum_paths import cache_path
 
 import feedparser
 from urllib.parse import quote_plus
@@ -8,7 +8,9 @@ from urllib.parse import quote_plus
 from stock_universe_service import get_active_stocks, get_news_query
 
 
-CACHE_FILE = Path("/root/aureum-ai-platform/stock_news_ai_cache.json")
+CACHE_FILE = cache_path(
+    "stock_news_ai_cache.json"
+)
 
 
 def build_stock_news_ai_cache(client):
