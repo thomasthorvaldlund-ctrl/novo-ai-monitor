@@ -2,9 +2,15 @@ import csv
 from datetime import datetime
 from collections import defaultdict
 
+from aureum_paths import data_path
 
-SIGNAL_FILE = "signal_history.csv"
-PRICE_FILE = "history.csv"
+
+SIGNAL_FILE = data_path(
+    "signal_history.csv"
+)
+PRICE_FILE = data_path(
+    "history.csv"
+)
 
 
 def load_signals():

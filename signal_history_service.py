@@ -2,7 +2,11 @@ import csv
 import os
 from datetime import datetime
 
-HISTORY_FILE = "signal_history.csv"
+from aureum_paths import data_path
+
+HISTORY_FILE = data_path(
+    "signal_history.csv"
+)
 
 
 def load_signal_history():
