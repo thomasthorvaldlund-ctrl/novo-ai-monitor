@@ -9,7 +9,11 @@ def explain_stock(stock_data):
     score = stock_data.get("combined_score")
     technical_score = stock_data.get("technical_score", 0)
     news_score = stock_data.get("news_score", 0)
-    weekly_change = stock_data.get("weekly_change", 0)
+    weekly_change = stock_data.get("weekly_change")
+    weekly_change_available = isinstance(
+        weekly_change,
+        (int, float),
+    )
     rating = stock_data.get("rating", "Ukendt")
 
     positives = []
@@ -25,11 +29,11 @@ def explain_stock(stock_data):
     elif news_score < 50:
         negatives.append("Negativt nyhedsbillede")
 
-    if weekly_change >= 5:
+    if weekly_change_available and weekly_change >= 5:
         positives.append(
             f"Stærkt momentum med {weekly_change:.1f}% stigning på en uge"
         )
-    elif weekly_change <= -5:
+    elif weekly_change_available and weekly_change <= -5:
         negatives.append(
             f"Svagt momentum med {weekly_change:.1f}% fald på en uge"
         )
@@ -53,7 +57,7 @@ def explain_stock(stock_data):
         primary_reason = "Positivt nyhedsbillede"
     elif technical_score >= 65:
         primary_reason = "Stærk teknisk udvikling"
-    elif weekly_change >= 5:
+    elif weekly_change_available and weekly_change >= 5:
         primary_reason = "Stærkt kortsigtet momentum"
     else:
         primary_reason = "Blandede eller neutrale signaler"
