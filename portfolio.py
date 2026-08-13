@@ -1,11 +1,14 @@
 import csv
 import os
 from pathlib import Path
+from aureum_paths import data_path
 from stock_utils import get_history
 from currency import get_fx_rates, get_currency, convert_to_dkk
 
 
-PORTFOLIO_FILE = "/root/aureum-ai-platform/portfolio.csv"
+PORTFOLIO_FILE = str(
+    data_path("portfolio.csv")
+)
 
 
 def load_portfolio_rows(portfolio_file=PORTFOLIO_FILE):
