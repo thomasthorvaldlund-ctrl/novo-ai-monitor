@@ -2,8 +2,12 @@ import csv
 import os
 from datetime import date
 
+from aureum_paths import data_path
 
-HISTORY_FILE = "market_score_history.csv"
+
+HISTORY_FILE = data_path(
+    "market_score_history.csv"
+)
 
 
 def save_market_score(score, status):
