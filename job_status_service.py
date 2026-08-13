@@ -9,7 +9,6 @@ JOBS = [
     ("Status Report", "last_status_report.log"),
     ("Daily Report", "daily_report.log"),
     ("Smart Alerts", "last_smart_alerts.log"),
-    ("DSV AI News", "dsv_ai_cron.log"),
     ("Save History", "history_save.log"),
     ("Portfolio Alerts", "portfolio_alerts.log"),
     ("Combined Score", "combined_score.log"),
