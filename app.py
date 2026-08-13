@@ -1,4 +1,5 @@
 import json
+import hmac
 from pathlib import Path
 from urllib.parse import quote_plus
 from datetime import datetime
@@ -123,85 +124,70 @@ def require_auth():
     )
 
 
+INTERNAL_JOB_PATHS = frozenset({
+    "/risk-check",
+    "/news-check",
+    "/ai-news-check",
+    "/status-report",
+    "/daily-report",
+    "/smart-alerts",
+    "/dsv-ai-news-check",
+    "/save-history",
+    "/portfolio-alerts",
+    "/combined-stock-score",
+    "/combined-stock-score-report",
+    "/update-dashboard-cache",
+    "/update-stock-news-ai-cache",
+    "/update-stock-screener-cache",
+})
+
+INTERNAL_JOB_TOKEN_HEADER = "X-Aureum-Job-Token"
+
+INTERNAL_JOB_TOKEN = os.getenv(
+    "AUREUM_INTERNAL_JOB_TOKEN",
+    "",
+).strip()
+
+if not INTERNAL_JOB_TOKEN:
+    raise RuntimeError(
+        "Missing AUREUM_INTERNAL_JOB_TOKEN."
+    )
+
+
+def _has_valid_internal_job_token():
+    supplied_token = request.headers.get(
+        INTERNAL_JOB_TOKEN_HEADER,
+        "",
+    )
+
+    if not supplied_token:
+        return False
+
+    return hmac.compare_digest(
+        supplied_token,
+        INTERNAL_JOB_TOKEN,
+    )
+
+
 @app.before_request
 def before_request():
     if request.path.startswith("/static/"):
         return
-    
-    if request.path.startswith("/stock-universe/"):
-        return
 
     if (
-        request.path in {
-            "/update-stock-news-ai-cache",
-            "/update-stock-screener-cache",
-        }
-        and request.remote_addr in {"127.0.0.1", "::1"}
+        request.path in INTERNAL_JOB_PATHS
+        and _has_valid_internal_job_token()
     ):
-        return
-
-    if request.path in [
-        "/test-alert",
-        "/risk-check",
-        "/news-check",
-        "/ai-news-check",
-        "/status-report",
-        "/chart",
-        "/dsv",
-     	"/dsv-ai-news-check",
-        "/dsv-chart",
-        "/daily-report",
-        "/smart-alerts",
-	    "/save-history",
-        "/stock-screener",
-        "/stock-screener-page",
-        "/portfolio-alerts",
-        "/simulate-rebalancing",
-        "/history",
-        "/stock-news-ai-page",
-        "/combined-stock-score",
-        "/combined-stock-score-report",
-        "/portfolio-analysis",
-        "/portfolio-analysis-page",
-        "/market-dashboard",
-        "/system-status-page",
-        "/watchlist-page",
-        "/trading-signals-page",
-        "/portfolio-manager-page",
-        "/portfolio-manager-v2-test",
-        "/combined-stock-score-page",
-        "/stock-news-ai-score",
-        "/stock-screener-report",
-        "/watchlist-page",
-        "/trading-signals-page",
-        "/portfolio-manager-page",
-        "/combined-stock-score-page",
-        "/stock-news-ai-score",
-        "/stock-screener-report",
-        "/history-data",
-        "/portfolio-history",
-        "/portfolio-settings",
-        "/portfolio-add",
-        "/portfolio-delete",
-        "/update-dashboard-cache",
-        "/job-status",
-        "/signal-history",
-        "/market-score-history",
-        "/command-center",
-        "/command-center-v2",
-        "/ai-portfolio-lab",
-        "/backup-manager",
-        "/ai-performance",
-        "/stock-universe",
-        "/stock-universe-filter",
-        "/backup-manager",
-    ]:
         return
 
     auth = request.authorization
 
-    if not auth or not check_auth(auth.username, auth.password):
+    if not auth or not check_auth(
+        auth.username,
+        auth.password,
+    ):
         return require_auth()
+
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = "8532274659"
