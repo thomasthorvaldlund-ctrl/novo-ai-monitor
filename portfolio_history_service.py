@@ -2,10 +2,14 @@ import csv
 import os
 from datetime import datetime
 
+from aureum_paths import data_path
+
 from portfolio import get_portfolio_summary
 
 
-HISTORY_FILE = "portfolio_history.csv"
+HISTORY_FILE = data_path(
+    "portfolio_history.csv"
+)
 
 
 def save_portfolio_history():
