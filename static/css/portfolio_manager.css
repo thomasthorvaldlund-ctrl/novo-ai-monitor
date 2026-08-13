@@ -402,6 +402,15 @@ This rule is more specific than the older one-column rule.
 }
 
 .portfolio-evolution-explanation {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns:
+        minmax(260px, 0.85fr)
+        minmax(0, 1.5fr);
+    align-items: start;
+    column-gap: 20px;
+    row-gap: 6px;
+    min-width: 0;
     margin-top: 0;
     padding: 16px;
     background: #f8fafc;
@@ -438,7 +447,9 @@ This rule is more specific than the older one-column rule.
 }
 
 .portfolio-evolution-overall {
-    margin-bottom: 14px;
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    margin-bottom: 0;
     padding: 12px 14px;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
@@ -466,6 +477,7 @@ This rule is more specific than the older one-column rule.
 }
 
 .portfolio-evolution-explanation-title {
+    grid-column: 1 / -1;
     margin-bottom: 6px;
     color: var(--color-primary);
     font-size: 13px;
@@ -481,6 +493,16 @@ This rule is more specific than the older one-column rule.
     margin: 6px 0 0;
     color: var(--color-text-muted);
     line-height: 1.6;
+}
+
+.portfolio-evolution-explanation > strong {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.portfolio-evolution-explanation > p {
+    grid-column: 2;
+    grid-row: 3;
 }
 
 .portfolio-evolution-latest {
@@ -510,7 +532,23 @@ This rule is more specific than the older one-column rule.
 
 @media (max-width: 800px) {
     .portfolio-evolution-header {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+    }
+
+    .portfolio-evolution-explanation {
+        grid-template-columns: 1fr;
+    }
+
+    .portfolio-evolution-explanation-title,
+    .portfolio-evolution-overall,
+    .portfolio-evolution-explanation > strong,
+    .portfolio-evolution-explanation > p {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .portfolio-evolution-overall {
+        margin-bottom: 8px;
     }
 
     .portfolio-evolution-count {
