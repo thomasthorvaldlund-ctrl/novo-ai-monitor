@@ -16,17 +16,13 @@ def generate_portfolio_recommendations():
         score = item.get("combined_score", 0)
         weight = item.get("weight_pct", 0)
 
-        if score >= 75 and weight < 40:
-            recommendation = "BUY"
-            reason = "Stærk AI score og plads i porteføljen."
-
-        elif weight >= 60:
-            recommendation = "REDUCE"
-            reason = "Positionen fylder for meget i porteføljen."
-
-        elif score < 50:
+        if score < 50:
             recommendation = "REDUCE"
             reason = "Svage AI signaler."
+
+        elif score >= 75 and weight < 40:
+            recommendation = "BUY"
+            reason = "Stærk AI score og plads i porteføljen."
 
         elif score >= 60:
             recommendation = "HOLD"
@@ -36,10 +32,21 @@ def generate_portfolio_recommendations():
             recommendation = "WATCH"
             reason = "Bør overvåges."
 
+        if weight >= 60:
+            portfolio_action = "DIVERSIFY"
+            portfolio_reason = (
+                "Positionen fylder for meget i porteføljen."
+            )
+        else:
+            portfolio_action = "NONE"
+            portfolio_reason = ""
+
 
         explanation = generate_portfolio_explanation({
             **item,
             "recommendation": recommendation,
+            "portfolio_action": portfolio_action,
+            "portfolio_reason": portfolio_reason,
             "score": score,
         })
 
@@ -48,6 +55,8 @@ def generate_portfolio_recommendations():
             "stock": item["stock"],
             "recommendation": recommendation,
             "reason": reason,
+            "portfolio_action": portfolio_action,
+            "portfolio_reason": portfolio_reason,
             "score": score,
             "weight_pct": weight,
             "profit_pct": item.get("profit_pct"),

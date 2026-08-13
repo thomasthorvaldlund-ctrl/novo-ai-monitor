@@ -28,6 +28,36 @@ def clean_number(value):
     return value
 
 
+def _resolve_portfolio_action(
+    item,
+    weight,
+):
+    portfolio_action = item.get(
+        "portfolio_action"
+    )
+    portfolio_reason = item.get(
+        "portfolio_reason",
+        ""
+    )
+
+    if portfolio_action:
+        return (
+            portfolio_action,
+            portfolio_reason,
+        )
+
+    if weight >= 60:
+        return (
+            "DIVERSIFY",
+            "Positionen fylder for meget i porteføljen.",
+        )
+
+    return (
+        "NONE",
+        "",
+    )
+
+
 def load_latest_portfolio_decisions():
 
     if not DECISION_FILE.exists():
@@ -155,6 +185,23 @@ def get_stock_decision_intelligence():
             f"Porteføljevægt: {clean_weight:.1f}%."
         )
 
+        (
+            portfolio_action,
+            portfolio_reason,
+        ) = _resolve_portfolio_action(
+            item,
+            clean_weight,
+        )
+
+        if portfolio_action == "DIVERSIFY":
+            explanation.append(
+                "Porteføljehandling: DIVERSIFY. "
+                + (
+                    portfolio_reason
+                    or "Porteføljen bør diversificeres."
+                )
+            )
+
         results.append({
 
             "stock": item.get("stock"),
@@ -166,6 +213,12 @@ def get_stock_decision_intelligence():
             "weight_pct": clean_weight,
 
             "reason": item.get("reason"),
+
+            "portfolio_action":
+                portfolio_action,
+
+            "portfolio_reason":
+                portfolio_reason,
 
             "profit_pct": item.get("profit_pct"),
 

@@ -65,6 +65,14 @@ def save_portfolio_decision():
             "decision_price": insight.get("price"),
             "weight_pct": item["weight_pct"],
             "reason": item["reason"],
+            "portfolio_action": item.get(
+                "portfolio_action",
+                "NONE"
+            ),
+            "portfolio_reason": item.get(
+                "portfolio_reason",
+                ""
+            ),
             "profit_pct": insight.get("profit_pct"),
         })
 
