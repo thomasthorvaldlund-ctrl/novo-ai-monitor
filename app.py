@@ -685,10 +685,7 @@ def daily_report():
     import json
 
     novo_ticker = get_stock_metadata("NOVO")["ticker"]
-    dsv_ticker = get_stock_metadata("DSV")["ticker"]
-
     novo = get_stock_data(novo_ticker)
-    dsv = get_stock_data(dsv_ticker)
 
     def extract_ai_risk(path):
         try:
@@ -708,15 +705,10 @@ def daily_report():
     levels = {"Lav": 1, "Moderat": 2, "Høj": 3, "Kritisk": 4}
 
     novo_ai_risk = extract_ai_risk("/root/aureum-ai-platform/last_ai_news_check.log")
-    dsv_ai_risk = extract_ai_risk("/root/aureum-ai-platform/last_dsv_ai_news_check.log")
 
     novo_total_risk = novo["risk_level"]
     if levels[novo_ai_risk] > levels[novo_total_risk]:
         novo_total_risk = novo_ai_risk
-
-    dsv_total_risk = dsv["risk_level"]
-    if levels[dsv_ai_risk] > levels[dsv_total_risk]:
-        dsv_total_risk = dsv_ai_risk
 
     message = (
         "📊 DAGLIG AKTIERAPPORT\n\n"
@@ -726,14 +718,7 @@ def daily_report():
         f"Ugeændring: {novo['weekly_change']:.2f}%\n"
         f"Teknisk risiko: {novo['risk_level']}\n"
         f"AI-risiko: {novo_ai_risk}\n"
-        f"Samlet risiko: {novo_total_risk}\n\n"
-        "DSV\n"
-        f"Kurs: {dsv['price']:.2f} DKK\n"
-        f"Dagsændring: {dsv['daily_change']:.2f}%\n"
-        f"Ugeændring: {dsv['weekly_change']:.2f}%\n"
-        f"Teknisk risiko: {dsv['risk_level']}\n"
-        f"AI-risiko: {dsv_ai_risk}\n"
-        f"Samlet risiko: {dsv_total_risk}"
+        f"Samlet risiko: {novo_total_risk}"
     )
 
     send_telegram(message)
@@ -744,7 +729,9 @@ def smart_alerts():
     import json
     from datetime import datetime
 
-    state_file = "/root/aureum-ai-platform/smart_alert_state.json"
+    state_file = Path(
+        "/root/aureum-ai-platform/smart_alert_state.json"
+    )
     today = datetime.now().strftime("%Y-%m-%d")
 
     try:
@@ -775,11 +762,6 @@ def smart_alerts():
             "name": "NOVO",
             "ticker": get_stock_metadata("NOVO")["ticker"],
             "ai_log": "/root/aureum-ai-platform/last_ai_news_check.log",
-        },
-        {
-            "name": "DSV",
-            "ticker": get_stock_metadata("DSV")["ticker"],
-            "ai_log": "/root/aureum-ai-platform/last_dsv_ai_news_check.log",
         },
     ]
 
@@ -882,7 +864,6 @@ def save_history():
 
     for stock_name, logfile in [
         ("NOVO", "/root/aureum-ai-platform/last_ai_news_check.log"),
-        ("DSV", "/root/aureum-ai-platform/last_dsv_ai_news_check.log"),
         ("NVIDIA", None),
         ("ASML", None),
     ]:
@@ -1059,33 +1040,15 @@ def portfolio_alerts():
     )
     latest = data["Close"].iloc[-1]
 
-    dsv_ticker = get_stock_metadata("DSV")["ticker"]
-    dsv_data = provider_get_history(
-        dsv_ticker,
-        period="10d",
-    )
-    dsv_latest = dsv_data["Close"].iloc[-1]
-
     novo_buy_price = 301.3
-    dsv_buy_price = 1588.5
 
     novo_profit_pct = ((latest - novo_buy_price) / novo_buy_price) * 100
-    dsv_profit_pct = ((dsv_latest - dsv_buy_price) / dsv_buy_price) * 100
 
     alerts = []
 
     if novo_profit_pct <= -5:
         alert_key = f"{today}-NOVO-minus5"
         msg = f"⚠️ NOVO er {novo_profit_pct:.2f}% under købskursen. Kurs: {latest:.2f} DKK"
-        if alert_key not in sent_today:
-            send_telegram(msg)
-            alerts.append(msg)
-            with open(sent_file, "a") as f:
-                f.write(alert_key + "\n")
-
-    if dsv_profit_pct <= -5:
-        alert_key = f"{today}-DSV-minus5"
-        msg = f"⚠️ DSV er {dsv_profit_pct:.2f}% under købskursen. Kurs: {dsv_latest:.2f} DKK"
         if alert_key not in sent_today:
             send_telegram(msg)
             alerts.append(msg)
