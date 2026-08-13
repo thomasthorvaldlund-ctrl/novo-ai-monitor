@@ -108,5 +108,4 @@ if __name__ == "__main__":
 
     print("Provider:", get_provider_name())
     print("NOVO:", get_latest_price("NOVO"))
-    print("DSV :", get_latest_price("DSV"))
     print("Tid :", get_latest_timestamp("NOVO"))
