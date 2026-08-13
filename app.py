@@ -1,7 +1,7 @@
 import json
 import hmac
 from pathlib import Path
-from aureum_paths import log_path, state_path
+from aureum_paths import data_path, log_path, state_path
 from urllib.parse import quote_plus
 from datetime import datetime
 
@@ -881,7 +881,7 @@ def save_history():
         if levels[ai_risk] > levels[total_risk]:
             total_risk = ai_risk
 
-        with open("/root/aureum-ai-platform/history.csv", "a", newline="") as f:
+        with open(data_path("history.csv"), "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([
                 today,
@@ -901,7 +901,7 @@ def history_data():
     daily_data = {}
 
     try:
-        with open("history.csv", newline="") as csvfile:
+        with open(data_path("history.csv"), newline="") as csvfile:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
@@ -932,7 +932,7 @@ def history():
     rows = []
 
     try:
-        with open("/root/aureum-ai-platform/history.csv", "r") as f:
+        with open(data_path("history.csv"), "r") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
     except Exception:
@@ -998,7 +998,7 @@ def history():
 
 @app.route("/dashboard")
 def dashboard():
-    df = pd.read_csv("history.csv")
+    df = pd.read_csv(data_path("history.csv"))
     return render_template(
         "dashboard.html",
         tables=[df.tail(20).to_html(classes="data", index=False)]
@@ -1006,7 +1006,7 @@ def dashboard():
 
 @app.route("/history-chart")
 def history_chart():
-    df = pd.read_csv("history.csv")
+    df = pd.read_csv(data_path("history.csv"))
 
     novo = df[df["stock"] == "NOVO"]
     dsv = df[df["stock"] == "DSV"]
