@@ -1,8 +1,10 @@
 import json
-from pathlib import Path
+from aureum_paths import cache_path
 
 
-CACHE_FILE = Path("/root/aureum-ai-platform/stock_screener_cache.json")
+CACHE_FILE = cache_path(
+    "stock_screener_cache.json"
+)
 
 
 def stock_screener():

@@ -1,6 +1,6 @@
 import json
 import os
-from pathlib import Path
+from aureum_paths import cache_path
 
 from market_data_provider import get_history
 from currency_service import (
@@ -12,7 +12,9 @@ from stock_universe_service import get_active_stocks
 from portfolio_stock_service import get_monitored_stock_map
 
 
-CACHE_FILE = Path("/root/aureum-ai-platform/stock_screener_cache.json")
+CACHE_FILE = cache_path(
+    "stock_screener_cache.json"
+)
 
 
 def build_stock_screener_cache():
