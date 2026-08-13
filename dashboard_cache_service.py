@@ -1,10 +1,10 @@
 import json
 import os
-from pathlib import Path
+from aureum_paths import cache_path
 
 
-CACHE_FILE = Path(
-    "/root/aureum-ai-platform/dashboard_cache.json"
+CACHE_FILE = cache_path(
+    "dashboard_cache.json"
 )
 
 
