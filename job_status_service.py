@@ -10,7 +10,6 @@ JOBS = [
     ("Daily Report", "daily_report.log"),
     ("Smart Alerts", "last_smart_alerts.log"),
     ("Save History", "history_save.log"),
-    ("Portfolio Alerts", "portfolio_alerts.log"),
     ("Combined Score", "combined_score.log"),
     ("Combined Report", "combined_report.log"),
     ("Dashboard Cache", "dashboard_cache.log"),

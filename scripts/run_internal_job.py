@@ -35,7 +35,6 @@ ALLOWED_JOB_PATHS = frozenset({
     "/daily-report",
     "/smart-alerts",
     "/save-history",
-    "/portfolio-alerts",
     "/combined-stock-score",
     "/combined-stock-score-report",
     "/update-dashboard-cache",

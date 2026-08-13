@@ -131,7 +131,6 @@ INTERNAL_JOB_PATHS = frozenset({
     "/daily-report",
     "/smart-alerts",
     "/save-history",
-    "/portfolio-alerts",
     "/combined-stock-score",
     "/combined-stock-score-report",
     "/update-dashboard-cache",
@@ -1023,40 +1022,6 @@ def history_chart():
 
     return send_file(chart_file, mimetype="image/png")
 
-@app.route("/portfolio-alerts")
-def portfolio_alerts():
-    today = datetime.now().strftime("%Y-%m-%d")
-    sent_file = "/root/aureum-ai-platform/portfolio_alerts_sent.txt"
-
-    try:
-        with open(sent_file, "r") as f:
-            sent_today = set(line.strip() for line in f.readlines())
-    except FileNotFoundError:
-        sent_today = set()
-
-    novo_ticker = get_stock_metadata("NOVO")["ticker"]
-    data = provider_get_history(
-        novo_ticker,
-        period="10d",
-    )
-    latest = data["Close"].iloc[-1]
-
-    novo_buy_price = 301.3
-
-    novo_profit_pct = ((latest - novo_buy_price) / novo_buy_price) * 100
-
-    alerts = []
-
-    if novo_profit_pct <= -5:
-        alert_key = f"{today}-NOVO-minus5"
-        msg = f"⚠️ NOVO er {novo_profit_pct:.2f}% under købskursen. Kurs: {latest:.2f} DKK"
-        if alert_key not in sent_today:
-            send_telegram(msg)
-            alerts.append(msg)
-            with open(sent_file, "a") as f:
-                f.write(alert_key + "\n")
-
-    return {"status": "portfolio alerts checked", "alerts": alerts}
     
 @app.route("/stock-screener")
 def stock_screener_route():

@@ -21,9 +21,6 @@ def system_status_page():
         "Smart alerts log": log_path(
             "last_smart_alerts.log"
         ),
-        "Portfolio alerts log": log_path(
-            "portfolio_alerts.log"
-        ),
     }
 
     rows = ""
