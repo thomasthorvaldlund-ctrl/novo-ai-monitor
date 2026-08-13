@@ -1,0 +1,13 @@
+[Unit]
+Description=Aureum AI Platform
+After=network.target
+
+[Service]
+WorkingDirectory=/root/aureum-ai-platform
+EnvironmentFile=/etc/aureum-ai.env
+ExecStart=/root/aureum-ai-platform/venv/bin/gunicorn --bind 127.0.0.1:3000 --workers 1 --worker-class gthread --threads 2 --timeout 180 --graceful-timeout 30 --access-logfile - --error-logfile - --capture-output app:app
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
