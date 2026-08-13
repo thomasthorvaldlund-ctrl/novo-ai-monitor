@@ -1,11 +1,13 @@
 from datetime import datetime
-from pathlib import Path
 
+from aureum_paths import cache_path
 from signal_history_service import load_signal_history
 from job_status_service import get_job_statuses
 
 
-CACHE_FILE = Path("dashboard_cache.json")
+CACHE_FILE = cache_path(
+    "dashboard_cache.json"
+)
 
 
 def get_ai_engine_status():
