@@ -132,6 +132,34 @@ def explain_portfolio_evolution(evolution):
             f"med {abs(position_change)}."
         )
 
+    if health_change > 0.5:
+        overall_status = "Forbedret"
+        overall_assessment = (
+            f"Portfolio Health steg {health_change:.1f} point"
+            + (
+                f", primært understøttet af Momentum, som steg "
+                f"{momentum_change:.1f} point."
+                if momentum_change > 0
+                else "."
+            )
+        )
+    elif health_change < -0.5:
+        overall_status = "Forværret"
+        overall_assessment = (
+            f"Portfolio Health faldt {abs(health_change):.1f} point"
+            + (
+                f", blandt andet fordi Momentum faldt "
+                f"{abs(momentum_change):.1f} point."
+                if momentum_change < 0
+                else "."
+            )
+        )
+    else:
+        overall_status = "Uændret"
+        overall_assessment = (
+            "Portfolio Health er stort set uændret."
+        )
+
     if not details:
         details.append(
             "Der blev ikke registreret væsentlige ændringer "
@@ -147,4 +175,6 @@ def explain_portfolio_evolution(evolution):
         "added_positions": added,
         "removed_positions": removed,
         "position_change": position_change,
+        "overall_status": overall_status,
+        "overall_assessment": overall_assessment,
     }

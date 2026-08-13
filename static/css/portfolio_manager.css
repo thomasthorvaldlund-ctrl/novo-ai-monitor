@@ -410,6 +410,61 @@ This rule is more specific than the older one-column rule.
     border-radius: var(--radius-medium);
 }
 
+.portfolio-evolution-overall.status-positive {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.portfolio-evolution-overall.status-positive strong {
+    color: #15803d;
+}
+
+.portfolio-evolution-overall.status-negative {
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.portfolio-evolution-overall.status-negative strong {
+    color: #b91c1c;
+}
+
+.portfolio-evolution-overall.status-neutral {
+    background: #f8fafc;
+    border-color: var(--color-border);
+}
+
+.portfolio-evolution-overall.status-neutral strong {
+    color: var(--color-text-muted);
+}
+
+.portfolio-evolution-overall {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius-medium);
+}
+
+.portfolio-evolution-overall-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.portfolio-evolution-overall strong {
+    display: block;
+    color: var(--color-primary);
+    font-size: 16px;
+}
+
+.portfolio-evolution-overall p {
+    margin: 4px 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
 .portfolio-evolution-explanation-title {
     margin-bottom: 6px;
     color: var(--color-primary);

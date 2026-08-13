@@ -211,6 +211,29 @@
                     🧠 AI-forklaring
                 </div>
 
+                <div
+                    class="portfolio-evolution-overall
+                    {% if portfolio_evolution_explanation.overall_status == 'Forbedret' %}
+                        status-positive
+                    {% elif portfolio_evolution_explanation.overall_status == 'Forværret' %}
+                        status-negative
+                    {% else %}
+                        status-neutral
+                    {% endif %}"
+                >
+                    <span class="portfolio-evolution-overall-label">
+                        Samlet vurdering
+                    </span>
+
+                    <strong>
+                        {{ portfolio_evolution_explanation.overall_status }}
+                    </strong>
+
+                    <p>
+                        {{ portfolio_evolution_explanation.overall_assessment }}
+                    </p>
+                </div>
+
                 <strong>
                     {{ portfolio_evolution_explanation.headline }}
                 </strong>
