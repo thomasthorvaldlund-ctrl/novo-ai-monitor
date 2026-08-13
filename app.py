@@ -730,8 +730,8 @@ def smart_alerts():
     import json
     from datetime import datetime
 
-    state_file = Path(
-        "/root/aureum-ai-platform/smart_alert_state.json"
+    state_file = state_path(
+        "smart_alert_state.json"
     )
     today = datetime.now().strftime("%Y-%m-%d")
 
