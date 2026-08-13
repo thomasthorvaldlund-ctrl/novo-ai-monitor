@@ -8,7 +8,9 @@ from collections import Counter
 DECISION_HISTORY_FILE = data_path(
     "ai_decision_history.json"
 )
-LEARNING_HISTORY_FILE = Path("ai_decision_learning_history.json")
+LEARNING_HISTORY_FILE = data_path(
+    "ai_decision_learning_history.json"
+)
 PORTFOLIO_DECISIONS_FILE = Path("ai_portfolio_decisions.json")
 
 
