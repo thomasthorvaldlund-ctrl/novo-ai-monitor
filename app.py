@@ -26,6 +26,7 @@ from dashboard_cache_service import load_dashboard_cache
 matplotlib.use("Agg")
 
 import os
+from werkzeug.security import check_password_hash
 from openai_service import client
 
 import feedparser
@@ -78,14 +79,41 @@ app.register_blueprint(ai_performance_bp)
 app.register_blueprint(stock_universe_bp)
 app.register_blueprint(backup_bp)
 
-USERS = {
-    "thomas": "59autoKamp19#",
-    "admin": "Suramitr8267",
-    "guest": "GuestSeatrout68#"
+AUTH_HASH_ENV_VARS = {
+    "thomas": "AUREUM_AUTH_THOMAS_HASH",
+    "admin": "AUREUM_AUTH_ADMIN_HASH",
+    "guest": "AUREUM_AUTH_GUEST_HASH",
 }
 
+USERS = {
+    username: os.getenv(env_name, "").strip()
+    for username, env_name in AUTH_HASH_ENV_VARS.items()
+}
+
+missing_auth_users = [
+    username
+    for username, password_hash in USERS.items()
+    if not password_hash
+]
+
+if missing_auth_users:
+    raise RuntimeError(
+        "Missing Aureum AI authentication hashes for: "
+        + ", ".join(missing_auth_users)
+    )
+
+
 def check_auth(username, password):
-    return username in USERS and USERS[username] == password
+    password_hash = USERS.get(username)
+
+    if not password_hash or not password:
+        return False
+
+    return check_password_hash(
+        password_hash,
+        password,
+    )
+
 
 def require_auth():
     return Response(
