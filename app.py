@@ -1,7 +1,7 @@
 import json
 import hmac
 from pathlib import Path
-from aureum_paths import log_path
+from aureum_paths import log_path, state_path
 from urllib.parse import quote_plus
 from datetime import datetime
 
@@ -394,7 +394,7 @@ def news_check():
         selected_stock = "NOVO"
         stock_metadata = get_stock_metadata(selected_stock)
 
-    seen_file = "/root/aureum-ai-platform/seen_news.txt"
+    seen_file = state_path("seen_news.txt")
 
     try:
         with open(seen_file, "r") as f:
