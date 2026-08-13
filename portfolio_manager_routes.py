@@ -446,7 +446,7 @@ def portfolio_manager_v2_test():
         from portfolio_evolution_service import compare_portfolio_health
 
         portfolio_evolution = compare_portfolio_health(
-            portfolio_health_history[-2],
+            portfolio_health_history[0],
             portfolio_health_history[-1],
         )
 
