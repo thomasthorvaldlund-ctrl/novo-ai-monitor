@@ -14,14 +14,6 @@ STOCK_UNIVERSE = {
         "news_query": "Novo Nordisk stock OR Wegovy OR Ozempic",
         "active": True,
     },
-    "DSV": {
-        "ticker": "DSV.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "DSV stock OR DSV logistics",
-        "active": True,
-    },
     "VESTAS": {
         "ticker": "VWS.CO",
         "country": "Denmark",

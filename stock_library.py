@@ -14,14 +14,6 @@ STOCK_LIBRARY = [
         "sector": "Healthcare",
     },
     {
-        "name": "DSV",
-        "ticker": "DSV.CO",
-        "currency": "DKK",
-        "exchange": "Nasdaq Copenhagen",
-        "country": "Denmark",
-        "sector": "Logistics",
-    },
-    {
         "name": "Microsoft",
         "ticker": "MSFT",
         "currency": "USD",

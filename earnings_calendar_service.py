@@ -2,7 +2,6 @@ from datetime import datetime, date
 
 
 EARNINGS_CALENDAR = {
-    "DSV": "2026-07-23",
     "NOVO": "2026-08-06",
     "GENMAB": "2026-08-07",
     "PANDORA": "2026-08-12",

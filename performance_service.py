@@ -1,6 +1,7 @@
 from collections import Counter
 
 from signal_history_service import get_latest_signals
+from stock_universe_service import get_active_stocks
 
 
 def get_signal_statistics():
@@ -10,7 +11,14 @@ def get_signal_statistics():
     Hver aktie medregnes kun én gang ud fra dens seneste
     registrerede signal.
     """
-    latest_signals = get_latest_signals()
+    active_stocks = set(get_active_stocks())
+
+    latest_signals = {
+        stock: row
+        for stock, row in get_latest_signals().items()
+        if stock in active_stocks
+    }
+
     rows = list(latest_signals.values())
 
     signals = Counter(

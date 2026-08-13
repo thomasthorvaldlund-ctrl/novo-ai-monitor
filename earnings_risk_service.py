@@ -63,7 +63,6 @@ def get_earnings_risks():
     results = []
 
     example_scores = {
-        "DSV": 38,
         "NOVO": 50,
         "GENMAB": 50,
         "PANDORA": 50,
