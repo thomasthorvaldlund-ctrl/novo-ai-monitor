@@ -1,12 +1,16 @@
 import json
 from pathlib import Path
+
+from aureum_paths import data_path
 from datetime import datetime
 
 from portfolio_recommendation_service import generate_portfolio_recommendations
 from portfolio_ai_service import get_portfolio_ai_insights
 
 
-DECISION_FILE = Path("ai_portfolio_decisions.json")
+DECISION_FILE = data_path(
+    "ai_portfolio_decisions.json"
+)
 
 
 def load_portfolio_decisions():

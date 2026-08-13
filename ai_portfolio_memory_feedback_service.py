@@ -1,8 +1,12 @@
 import json
 from pathlib import Path
 
+from aureum_paths import data_path
 
-DECISION_FILE = Path("ai_portfolio_decisions.json")
+
+DECISION_FILE = data_path(
+    "ai_portfolio_decisions.json"
+)
 
 
 def load_decisions():

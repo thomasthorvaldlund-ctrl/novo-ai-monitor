@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
+
+from aureum_paths import data_path
 from collections import defaultdict
 from portfolio import load_portfolio_rows
 
 
-DECISION_FILE = Path(
+DECISION_FILE = data_path(
     "ai_portfolio_decisions.json"
 )
 

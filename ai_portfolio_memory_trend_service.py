@@ -1,9 +1,13 @@
 import json
 from pathlib import Path
+
+from aureum_paths import data_path
 from collections import Counter
 
 
-FILE = Path("ai_portfolio_decisions.json")
+FILE = data_path(
+    "ai_portfolio_decisions.json"
+)
 
 
 def load_decisions():

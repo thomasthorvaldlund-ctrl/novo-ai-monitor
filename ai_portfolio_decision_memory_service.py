@@ -11,7 +11,9 @@ DECISION_HISTORY_FILE = data_path(
 LEARNING_HISTORY_FILE = data_path(
     "ai_decision_learning_history.json"
 )
-PORTFOLIO_DECISIONS_FILE = Path("ai_portfolio_decisions.json")
+PORTFOLIO_DECISIONS_FILE = data_path(
+    "ai_portfolio_decisions.json"
+)
 
 
 def load_json(path):

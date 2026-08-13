@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from aureum_paths import data_path
+
 import math
 
 from ai_portfolio_learning_analytics_service import (
@@ -11,7 +13,7 @@ from ai_confidence_intelligence_service import (
     get_confidence_intelligence
 )
 
-DECISION_FILE = Path(
+DECISION_FILE = data_path(
     "ai_portfolio_decisions.json"
 )
 
