@@ -34,7 +34,6 @@ ALLOWED_JOB_PATHS = frozenset({
     "/status-report",
     "/daily-report",
     "/smart-alerts",
-    "/dsv-ai-news-check",
     "/save-history",
     "/portfolio-alerts",
     "/combined-stock-score",

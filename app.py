@@ -131,7 +131,6 @@ INTERNAL_JOB_PATHS = frozenset({
     "/status-report",
     "/daily-report",
     "/smart-alerts",
-    "/dsv-ai-news-check",
     "/save-history",
     "/portfolio-alerts",
     "/combined-stock-score",
@@ -678,122 +677,8 @@ def chart():
 
     return send_file(chart_file, mimetype="image/png")
 
-@app.route("/dsv-chart")
-def dsv_chart():
-    ticker = get_stock_metadata("DSV")["ticker"]
-    data = provider_get_history(
-        ticker,
-        period="1mo",
-    )
 
-    plt.figure(figsize=(8,4))
-    plt.plot(data.index, data["Close"])
-    plt.title("DSV - 30 dage")
-    plt.grid(True)
 
-    chart_file = "/tmp/dsv_chart.png"
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    plt.savefig(chart_file, bbox_inches="tight")
-    plt.close()
-
-    return send_file(chart_file, mimetype="image/png")
-
-@app.route("/dsv")
-def dsv_status():
-    ticker = get_stock_metadata("DSV")["ticker"]
-    data = provider_get_history(
-        ticker,
-        period="10d",
-    )
-
-    latest = data["Close"].iloc[-1]
-    yesterday = data["Close"].iloc[-2]
-    week_ago = data["Close"].iloc[-6]
-
-    daily_change = ((latest - yesterday) / yesterday) * 100
-    weekly_change = ((latest - week_ago) / week_ago) * 100
-
-    return {
-        "stock": "DSV",
-        "price": round(float(latest), 2),
-        "daily_change": round(float(daily_change), 2),
-        "weekly_change": round(float(weekly_change), 2)
-    }
-
-@app.route("/dsv-ai-news-check")
-def dsv_ai_news_check():
-    feed = feedparser.parse(
-        "https://news.google.com/rss/search?q=DSV+stock+OR+DSV+transport+OR+DSV+logistics&hl=en-US&gl=US&ceid=US:en"
-    )
-
-    titles = [entry.title for entry in feed.entries[:8]]
-    text = "\n".join(titles)
-
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "Du er en forsigtig aktie- og nyhedsanalytiker. Du vurderer risiko for større fald i DSV-aktien."
-            },
-            {
-                "role": "user",
-                "content": f"""
-Analyser disse nyhedsoverskrifter om DSV, transport, logistik og konkurrenter.
-
-Svar på dansk i dette format:
-
-Risiko: Lav / Moderat / Høj / Kritisk
-Kort forklaring:
-Vigtigste negative signaler:
-Vigtigste positive signaler:
-
-Overskrifter:
-{text}
-"""
-            }
-        ]
-    )
-
-    ai_text = response.choices[0].message.content
-
-    dsv_ai_news_file = Path(
-        "/root/aureum-ai-platform/last_dsv_ai_news_check.log"
-    )
-
-    temp_dsv_ai_news_file = dsv_ai_news_file.with_suffix(
-        dsv_ai_news_file.suffix + ".tmp"
-    )
-
-    with open(
-        temp_dsv_ai_news_file,
-        "w",
-        encoding="utf-8"
-    ) as f:
-        json.dump(
-            {
-                "ai_analysis": ai_text,
-                "checked_articles": len(titles)
-            },
-            f,
-            ensure_ascii=False,
-        )
-
-        f.flush()
-        os.fsync(f.fileno())
-
-    temp_dsv_ai_news_file.replace(
-        dsv_ai_news_file
-    )
-
-    if "Høj" in ai_text or "Kritisk" in ai_text:
-        send_telegram("🧠 DSV AI NYHEDSALARM\n\n" + ai_text)
-
-    return {
-        "checked_articles": len(titles),
-        "ai_analysis": ai_text
-    }
 
 @app.route("/daily-report")
 def daily_report():
