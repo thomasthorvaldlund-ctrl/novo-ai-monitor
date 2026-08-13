@@ -529,6 +529,35 @@ Overskrifter:
 
     ai_text = response.choices[0].message.content
 
+    novo_ai_news_file = Path(
+        "/root/aureum-ai-platform/last_ai_news_check.log"
+    )
+
+    temp_novo_ai_news_file = novo_ai_news_file.with_suffix(
+        novo_ai_news_file.suffix + ".tmp"
+    )
+
+    with open(
+        temp_novo_ai_news_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            {
+                "ai_analysis": ai_text,
+                "checked_articles": len(titles)
+            },
+            f,
+            ensure_ascii=False,
+        )
+
+        f.flush()
+        os.fsync(f.fileno())
+
+    temp_novo_ai_news_file.replace(
+        novo_ai_news_file
+    )
+
     if "Høj" in ai_text or "Kritisk" in ai_text:
         send_telegram("🧠 NOVO AI NYHEDSALARM\n\n" + ai_text)
 
