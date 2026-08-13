@@ -1,11 +1,15 @@
 import json
 from pathlib import Path
 
+from aureum_paths import data_path
+
 from stock_utils import get_history
 from stock_universe_service import get_stock_metadata
 
 
-HISTORY_FILE = Path("ai_decision_history.json")
+HISTORY_FILE = data_path(
+    "ai_decision_history.json"
+)
 
 
 def load_decision_history():

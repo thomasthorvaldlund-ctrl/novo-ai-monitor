@@ -1,9 +1,13 @@
 import json
 from pathlib import Path
+
+from aureum_paths import data_path
 from collections import Counter
 
 
-HISTORY_FILE = Path("ai_decision_history.json")
+HISTORY_FILE = data_path(
+    "ai_decision_history.json"
+)
 
 
 def load_decision_history():
