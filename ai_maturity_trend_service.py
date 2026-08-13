@@ -1,8 +1,12 @@
 import json
 from pathlib import Path
 
+from aureum_paths import data_path
 
-HISTORY_FILE = Path("ai_maturity_history.json")
+
+HISTORY_FILE = data_path(
+    "ai_maturity_history.json"
+)
 
 
 def load_maturity_history():
