@@ -296,7 +296,7 @@ def portfolio_manager_page():
     </div>
 </div>
 
-            <p>Rediger beholdninger i: /root/aureum-ai-platform/portfolio.csv</p>
+            <p>Beholdninger administreres i Portfolio Manager.</p>
         </div>
     <script>
     let portfolioValueChart;
