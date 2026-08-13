@@ -1,10 +1,13 @@
 import json
 import os
 from datetime import datetime
-from pathlib import Path
+
+from aureum_paths import data_path
 
 
-HISTORY_FILE = Path("ai_copilot_history.json")
+HISTORY_FILE = data_path(
+    "ai_copilot_history.json"
+)
 
 
 def load_copilot_history():
