@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, redirect, render_template, request
 
 from dashboard_cache_service import load_dashboard_cache
 from system_health_service import get_system_health
@@ -66,14 +66,13 @@ from ai_decision_evolution_service import get_decision_evolution
 
 command_center_bp = Blueprint("command_center", __name__)
 
-@command_center_bp.route("/command-center")
-def command_center():
-    return command_center_v2()
-
-
-# Stock AI Monitor v2.0 testside
 @command_center_bp.route("/command-center-v2")
 def command_center_v2():
+    return redirect("/command-center")
+
+
+@command_center_bp.route("/command-center")
+def command_center():
     cache = load_dashboard_cache()
     updated_at = cache.get("updated_at", "Ukendt")
 
