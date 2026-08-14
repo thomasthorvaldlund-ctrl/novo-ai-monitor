@@ -294,7 +294,7 @@ def format_dkk(amount):
 
 @app.route("/")
 def home():
-    return redirect("/command-center-v2")
+    return redirect("/command-center")
 
 @app.route("/test-alert")
 def test_alert():
