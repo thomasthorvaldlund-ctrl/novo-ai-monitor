@@ -1,12 +1,14 @@
 import json
 import os
 from datetime import datetime
-from pathlib import Path
+from aureum_paths import data_path
 
 from ai_learning_service import get_learning_report
 
 
-HISTORY_FILE = Path("ai_learning_history.json")
+HISTORY_FILE = data_path(
+    "ai_learning_history.json"
+)
 
 
 def load_learning_history():
