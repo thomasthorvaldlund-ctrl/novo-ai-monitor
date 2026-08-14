@@ -1,5 +1,5 @@
 /* =====================================================
-   Stock AI Monitor v2.0
+   Aureum AI Platform
    ===================================================== */
 
 .dashboard-card{
@@ -142,7 +142,7 @@
 }
 
 
-/* ===== V2 Typography refinement ===== */
+/* ===== Typography refinement ===== */
 
 .dashboard-card > h2 {
     font-size: 18px;
@@ -1444,7 +1444,7 @@
     color: #1d4ed8;
 }
 
-/* ===== Command Center V2: platform info refinement ===== */
+/* ===== Command Center: platform info refinement ===== */
 
 .platform-info-compact {
     padding: 14px 16px !important;
@@ -1470,7 +1470,7 @@
     padding-left: 20px;
 }
 
-/* ===== Command Center V2: header refinement ===== */
+/* ===== Command Center: header refinement ===== */
 
 .command-center-v2-header {
     margin-bottom: 18px;
@@ -1493,7 +1493,7 @@
     margin-bottom: 20px;
 }
 
-/* ===== Command Center V2: market data status refinement ===== */
+/* ===== Command Center: market data status refinement ===== */
 
 .market-data-status-card {
     padding: 12px 14px !important;
@@ -1521,7 +1521,7 @@
     line-height: 1.45;
 }
 
-/* ===== Command Center V2: global stock search refinement ===== */
+/* ===== Command Center: global stock search refinement ===== */
 
 .global-stock-search {
     margin: 18px 0 22px;
@@ -1562,7 +1562,7 @@
     pointer-events: none;
 }
 
-/* ===== Command Center V2: Executive Dashboard refinement ===== */
+/* ===== Command Center: Executive Dashboard refinement ===== */
 
 .executive-dashboard-card {
     padding: 24px;
@@ -1699,7 +1699,7 @@
     }
 }
 
-/* ===== Command Center V2: AI Decision Learning ===== */
+/* ===== Command Center: AI Decision Learning ===== */
 
 .decision-learning-card {
     padding: 24px;
@@ -1755,7 +1755,7 @@
     }
 }
 
-/* ===== Command Center V2: AI Adaptive Behavior ===== */
+/* ===== Command Center: AI Adaptive Behavior ===== */
 
 .adaptive-behavior-card {
     padding: 24px;
@@ -1827,7 +1827,7 @@
     }
 }
 
-/* ===== Command Center V2: AI Adaptive Performance ===== */
+/* ===== Command Center: AI Adaptive Performance ===== */
 
 .adaptive-performance-card {
     padding: 24px;
@@ -1883,7 +1883,7 @@
     }
 }
 
-/* ===== Command Center V2: AI Adaptive Explanation ===== */
+/* ===== Command Center: AI Adaptive Explanation ===== */
 
 .adaptive-explanation-card {
     padding: 24px;
@@ -1948,7 +1948,7 @@
     }
 }
 
-/* ===== Command Center V2: welcome intro ===== */
+/* ===== Command Center: welcome intro ===== */
 
 .command-center-v2-welcome {
     padding: 15px 18px !important;
@@ -1996,7 +1996,7 @@
     }
 }
 
-/* ===== Command Center V2: AI Maturity ===== */
+/* ===== Command Center: AI Maturity ===== */
 
 .ai-maturity-card {
     padding: 24px;
@@ -2136,7 +2136,7 @@
     }
 }
 
-/* ===== Command Center V2: Analysis Frequency ===== */
+/* ===== Command Center: Analysis Frequency ===== */
 
 .analysis-frequency-card {
     padding: 20px 24px;
