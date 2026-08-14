@@ -1,16 +1,16 @@
-symbol,ticker,country,market,currency,news_query,active
-NOVO,NOVO-B.CO,Denmark,Nasdaq Copenhagen,DKK,Novo Nordisk stock OR Wegovy OR Ozempic,true
-VESTAS,VWS.CO,Denmark,Nasdaq Copenhagen,DKK,Vestas stock OR wind turbines,true
-GENMAB,GMAB.CO,Denmark,Nasdaq Copenhagen,DKK,Genmab stock OR Genmab cancer,true
-CARLSBERG,CARL-B.CO,Denmark,Nasdaq Copenhagen,DKK,Carlsberg stock OR Carlsberg earnings,true
-MAERSK,MAERSK-B.CO,Denmark,Nasdaq Copenhagen,DKK,Maersk stock OR shipping logistics,true
-ORSTED,ORSTED.CO,Denmark,Nasdaq Copenhagen,DKK,Orsted stock OR offshore wind,true
-PANDORA,PNDORA.CO,Denmark,Nasdaq Copenhagen,DKK,Pandora stock OR Pandora jewelry,true
-APPLE,AAPL,United States,NASDAQ,USD,Apple stock OR AAPL,true
-MICROSOFT,MSFT,United States,NASDAQ,USD,Microsoft stock OR MSFT,true
-NVIDIA,NVDA,United States,NASDAQ,USD,NVIDIA stock OR NVDA OR AI chips,true
-ASML,ASML.AS,Netherlands,Euronext Amsterdam,EUR,ASML stock OR semiconductor lithography,true
-TESLA,TSLA,United States,NASDAQ,USD,Tesla stock OR TSLA,true
-AMAZON,AMZN,United States,NASDAQ,USD,Amazon stock OR AMZN,true
-META,META,United States,NASDAQ,USD,Meta stock OR META platforms,true
-GOOGLE,GOOGL,United States,NASDAQ,USD,Alphabet stock OR GOOGL OR Google,true
+symbol,name,ticker,country,market,currency,sector,news_query,active
+NOVO,Novo Nordisk,NOVO-B.CO,Denmark,Nasdaq Copenhagen,DKK,Healthcare,Novo Nordisk stock OR Wegovy OR Ozempic,true
+VESTAS,Vestas,VWS.CO,Denmark,Nasdaq Copenhagen,DKK,Industrials,Vestas stock OR wind turbines,true
+GENMAB,Genmab,GMAB.CO,Denmark,Nasdaq Copenhagen,DKK,Healthcare,Genmab stock OR Genmab cancer,true
+CARLSBERG,Carlsberg,CARL-B.CO,Denmark,Nasdaq Copenhagen,DKK,Consumer,Carlsberg stock OR Carlsberg earnings,true
+MAERSK,Maersk,MAERSK-B.CO,Denmark,Nasdaq Copenhagen,DKK,Industrials,Maersk stock OR shipping logistics,true
+ORSTED,Orsted,ORSTED.CO,Denmark,Nasdaq Copenhagen,DKK,Utilities,Orsted stock OR offshore wind,true
+PANDORA,Pandora,PNDORA.CO,Denmark,Nasdaq Copenhagen,DKK,Consumer,Pandora stock OR Pandora jewelry,true
+APPLE,Apple,AAPL,United States,NASDAQ,USD,Technology,Apple stock OR AAPL,true
+MICROSOFT,Microsoft,MSFT,United States,NASDAQ,USD,Technology,Microsoft stock OR MSFT,true
+NVIDIA,NVIDIA,NVDA,United States,NASDAQ,USD,Technology,NVIDIA stock OR NVDA OR AI chips,true
+ASML,ASML,ASML.AS,Netherlands,Euronext Amsterdam,EUR,Semiconductors,ASML stock OR semiconductor lithography,true
+TESLA,Tesla,TSLA,United States,NASDAQ,USD,Automotive,Tesla stock OR TSLA,true
+AMAZON,Amazon,AMZN,United States,NASDAQ,USD,Consumer,Amazon stock OR AMZN,true
+META,Meta,META,United States,NASDAQ,USD,Technology,Meta stock OR META platforms,true
+GOOGLE,Alphabet,GOOGL,United States,NASDAQ,USD,Technology,Alphabet stock OR GOOGL OR Google,true

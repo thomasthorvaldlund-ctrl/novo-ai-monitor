@@ -16,10 +16,12 @@ UNIVERSE_FILE = project_path(
 
 _REQUIRED_COLUMNS = {
     "symbol",
+    "name",
     "ticker",
     "country",
     "market",
     "currency",
+    "sector",
     "news_query",
     "active",
 }
@@ -107,6 +109,13 @@ def _load_stock_universe():
                 )
             ).strip()
 
+            name = str(
+                row.get(
+                    "name",
+                    ""
+                )
+            ).strip()
+
             if not symbol:
                 raise RuntimeError(
                     "Tom symbol-værdi i "
@@ -117,6 +126,13 @@ def _load_stock_universe():
             if not ticker:
                 raise RuntimeError(
                     "Tom ticker-værdi i "
+                    f"{UNIVERSE_FILE} "
+                    f"på linje {line_number}."
+                )
+
+            if not name:
+                raise RuntimeError(
+                    "Tom name-værdi i "
                     f"{UNIVERSE_FILE} "
                     f"på linje {line_number}."
                 )
@@ -144,6 +160,7 @@ def _load_stock_universe():
             )
 
             universe[symbol] = {
+                "name": name,
                 "ticker": ticker,
                 "country": str(
                     row.get(
@@ -160,6 +177,12 @@ def _load_stock_universe():
                 "currency": str(
                     row.get(
                         "currency",
+                        ""
+                    )
+                ).strip(),
+                "sector": str(
+                    row.get(
+                        "sector",
                         ""
                     )
                 ).strip(),
