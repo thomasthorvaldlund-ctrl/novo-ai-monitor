@@ -22,19 +22,18 @@
     </div>
 
     {% if market_data_status %}
-
     <div class="market-data-status-card" style="
         background:
-            {% if market_data_status.status == 'Live' %}
+            {% if market_overview_status.status == 'OPEN' %}
                 #ecfdf5
-            {% elif market_data_status.status == 'Marked lukket' %}
+            {% elif market_overview_status.status == 'PARTIAL' %}
                 #eff6ff
-            {% elif market_data_status.status == 'Forsinket' %}
-                #fff7ed
+            {% elif market_overview_status.status == 'CLOSED' %}
+                #f8fafc
             {% else %}
                 #fef2f2
             {% endif %};
-        border-left:5px solid {{ market_data_status.status_color }};
+        border-left:5px solid {{ market_overview_status.status_color or '#64748b' }};
         padding:16px;
         border-radius:8px;
         margin-bottom:30px;
@@ -48,32 +47,24 @@
             align-items:flex-start;
         ">
 
-            <div>
+            <div style="
+                min-width:240px;
+            ">
                 <h3 style="margin:0 0 10px 0;">
-                    📈 Market Data Status
+                    📈 Markedsstatus &amp; data
                 </h3>
 
                 <p style="margin:4px 0;">
-                    <b>Status:</b>
-                    {{ market_data_status.status }}
+                    <b>Markedsstatus:</b>
+                    {{ market_overview_status.label or "Ukendt" }}
                 </p>
 
                 <p style="margin:4px 0;">
-                    <b>Datakilde:</b>
-                    {{ market_data_status.provider }}
+                    <b>Åbne relevante markeder:</b>
+                    {{ market_overview_status.open_count }}
+                    af
+                    {{ market_overview_status.total_count }}
                 </p>
-
-                <p style="margin:4px 0;">
-                    <b>Seneste markedsdata:</b>
-                    {{ market_data_status.last_market_update }}
-                </p>
-
-                {% if market_data_status.age_minutes is not none %}
-                <p style="margin:4px 0;">
-                    <b>Forsinkelse:</b>
-                    {{ market_data_status.age_minutes }} minutter
-                </p>
-                {% endif %}
             </div>
 
             <div class="market-data-status-message" style="
@@ -84,52 +75,109 @@
                 padding:14px;
                 border-radius:8px;
             ">
+                {% if market_overview_status.status == "OPEN" %}
+                    <b>✅ Relevante markeder er åbne.</b>
 
-                {% if market_data_status.status == "Live" %}
+                {% elif market_overview_status.status == "PARTIAL" %}
+                    <b>🌍 Nogle relevante markeder er åbne.</b>
 
-                    <b>✅ Markedsdata opdateres normalt.</b>
-
-                    <p style="margin:8px 0 0 0;">
-                        Aktiekurserne opdateres som forventet.
-                    </p>
-
-                {% elif market_data_status.status == "Marked lukket" %}
-
-                    <b>🔵 Markedet er lukket.</b>
-                    <p style="margin:8px 0 0 0;">
-                        Seneste officielle lukkekurs anvendes.
-                        Dette er en normal markedstilstand og ikke en datafejl.
-                        {% if market_data_status.market_session %}
-                            {% if market_data_status.market_session.reason %}
-                                Årsag: {{ market_data_status.market_session.reason }}.
-                            {% endif %}
-                        {% endif %}
-                    </p>
-
-                {% elif market_data_status.status == "Forsinket" %}
-
-                    <b>⚠️ Den eksterne datakilde er forsinket.</b>
-
-                    <p style="margin:8px 0 0 0;">
-                        Aktiekurser kan være ældre end normalt.
-                        Aureum AI fungerer fortsat normalt og opdaterer automatisk,
-                        når nye markedsdata bliver tilgængelige.
-                    </p>
+                {% elif market_overview_status.status == "CLOSED" %}
+                    <b>🔵 Relevante markeder er lukkede.</b>
 
                 {% else %}
-
-                    <b>⚠️ Den eksterne dataleverandør leverer ikke nyere markedsdata.</b>
-
-                    <p style="margin:8px 0 0 0;">
-                        Aureum AI fungerer normalt.
-                        Forsinkelsen skyldes et eksternt dataproblem, og platformen
-                        opdaterer automatisk aktiekurserne, så snart nye data modtages.
-                    </p>
-
+                    <b>⚠️ Markedsstatus er ukendt.</b>
                 {% endif %}
 
+                <p style="margin:8px 0 0 0;">
+                    {{ market_overview_status.message }}
+                </p>
             </div>
 
+        </div>
+
+        <div style="
+            margin-top:14px;
+            padding:12px 14px;
+            border:1px solid #e2e8f0;
+            border-radius:8px;
+            background:rgba(255,255,255,0.62);
+        ">
+            <div style="
+                font-weight:700;
+                margin-bottom:8px;
+            ">
+                📡 Datareference
+            </div>
+
+            <div style="
+                display:flex;
+                gap:18px;
+                flex-wrap:wrap;
+                font-size:13px;
+                color:#475569;
+            ">
+                <span>
+                    <b>Aktie:</b>
+                    {{ market_data_status.reference_stock or "Ukendt" }}
+                    {% if market_data_status.reference_ticker %}
+                        ({{ market_data_status.reference_ticker }})
+                    {% endif %}
+                </span>
+
+                <span>
+                    <b>Datastatus:</b>
+                    {{ market_data_status.status or "Ukendt" }}
+                </span>
+
+                <span>
+                    <b>Datakilde:</b>
+                    {{ market_data_status.provider or "Ukendt" }}
+                </span>
+
+                <span>
+                    <b>Seneste data:</b>
+                    {{ market_data_status.last_market_update or "-" }}
+                </span>
+
+                {% if market_data_status.age_minutes is not none %}
+                <span>
+                    <b>Forsinkelse:</b>
+                    {{ market_data_status.age_minutes }} minutter
+                </span>
+                {% endif %}
+            </div>
+
+            <p style="
+                margin:8px 0 0 0;
+                font-size:12px;
+                color:#64748b;
+            ">
+                {% if market_data_status.status == "Live" %}
+                    Data for referenceaktien opdateres normalt.
+
+                {% elif market_data_status.status == "Marked lukket" %}
+                    Referenceaktiens marked er lukket, så seneste
+                    officielle lukkekurs anvendes.
+
+                    {% if market_data_status.market_session %}
+                        {% if market_data_status.market_session.reason %}
+                            Årsag:
+                            {{ market_data_status.market_session.reason }}.
+                        {% endif %}
+                    {% endif %}
+
+                {% elif market_data_status.status == "Forsinket" %}
+                    Data for referenceaktien er forsinket,
+                    men Aureum AI fortsætter normalt.
+
+                {% elif market_data_status.status == "Meget forsinket" %}
+                    Den eksterne datakilde leverer ikke nyere data
+                    for referenceaktien.
+
+                {% else %}
+                    Datareference kunne ikke vurderes fuldt ud.
+                {% endif %}
+            </p>
         </div>
 
         {% if market_dashboard_status %}
