@@ -1472,17 +1472,17 @@
 
 /* ===== Command Center: header refinement ===== */
 
-.command-center-v2-header {
+.command-center-header {
     margin-bottom: 18px;
 }
 
-.command-center-v2-header h1 {
+.command-center-header h1 {
     margin-bottom: 8px !important;
     font-size: 30px;
     letter-spacing: -0.02em;
 }
 
-.command-center-v2-intro {
+.command-center-intro {
     margin-bottom: 18px !important;
     padding: 12px 14px !important;
     font-size: 13px;
@@ -1950,29 +1950,29 @@
 
 /* ===== Command Center: welcome intro ===== */
 
-.command-center-v2-welcome {
+.command-center-welcome {
     padding: 15px 18px !important;
 }
 
-.command-center-v2-welcome > strong {
+.command-center-welcome > strong {
     display: block;
     margin-bottom: 6px;
     font-size: 14px;
     color: #0f172a;
 }
 
-.command-center-v2-welcome p {
+.command-center-welcome p {
     margin: 5px 0;
     font-size: 12px;
     line-height: 1.5;
     color: #475569;
 }
 
-.command-center-v2-welcome-guide {
+.command-center-welcome-guide {
     color: #334155 !important;
 }
 
-.command-center-v2-welcome-flow {
+.command-center-welcome-flow {
     display: inline-block;
     margin-top: 7px;
     padding: 5px 9px;
@@ -1983,7 +1983,7 @@
     color: #2563eb;
 }
 
-.command-center-v2-welcome small {
+.command-center-welcome small {
     display: block;
     margin-top: 7px;
     font-size: 10px;
@@ -1991,7 +1991,7 @@
 }
 
 @media (max-width: 700px) {
-    .command-center-v2-welcome-flow {
+    .command-center-welcome-flow {
         display: block;
     }
 }
