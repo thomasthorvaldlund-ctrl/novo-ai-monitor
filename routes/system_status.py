@@ -62,7 +62,7 @@ def system_status_page():
             <h1>⚙️ Systemstatus V3.2</h1>
 
             <div class="card">
-                <p><b>Novo AI service:</b> ✅ Aktiv hvis denne side vises</p>
+                <p><b>Aureum AI service:</b> ✅ Aktiv hvis denne side vises</p>
                 <p><b>HTTPS/Caddy:</b> ✅ Aktiv hvis siden åbnes via monitor.ethinking.dk</p>
                 <p><b>Senest opdateret:</b> {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
             </div>

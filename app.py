@@ -119,7 +119,7 @@ def require_auth():
     return Response(
         "Login required",
         401,
-        {"WWW-Authenticate": 'Basic realm="Stock AI Monitor"'}
+        {"WWW-Authenticate": 'Basic realm="Aureum AI Platform"'}
     )
 
 
@@ -298,7 +298,7 @@ def home():
 
 @app.route("/test-alert")
 def test_alert():
-    send_telegram("✅ Stock AI Monitor test-alarm virker!")
+    send_telegram("✅ Aureum AI test-alarm virker!")
     return {"status": "Telegram test sent"}
 
 @app.route("/risk-check")
