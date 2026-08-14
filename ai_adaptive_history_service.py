@@ -3,8 +3,10 @@ import os
 from pathlib import Path
 from datetime import datetime
 
+from aureum_paths import data_path
 
-ADAPTIVE_HISTORY_FILE = Path(
+
+ADAPTIVE_HISTORY_FILE = data_path(
     "adaptive_decision_history.json"
 )
 
