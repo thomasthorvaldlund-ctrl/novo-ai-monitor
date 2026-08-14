@@ -1,5 +1,5 @@
 """
-Central Stock Library for Stock AI Monitor.
+Central Stock Library for Aureum AI Platform.
 
 Alle moduler skal hente aktieinformation herfra.
 """

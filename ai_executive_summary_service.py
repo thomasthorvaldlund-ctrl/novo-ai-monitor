@@ -3,7 +3,7 @@ from ai_alerts_service import get_active_ai_alert_count
 AI Executive Summary Service
 
 Samler de vigtigste dashboard-data og genererer en kort
-AI-opsummering til Executive Summary i Stock AI Monitor v2.
+AI-opsummering til Executive Summary i Aureum AI Platform v2.
 """
 
 

@@ -1,5 +1,5 @@
 """
-Central administration af Stock AI Monitors aktieunivers.
+Central administration af Aureum AI Platforms aktieunivers.
 
 Denne service bliver senere udvidet til at understøtte
 1.000+ aktier, markeder, sektorer og prioriteringsniveauer.

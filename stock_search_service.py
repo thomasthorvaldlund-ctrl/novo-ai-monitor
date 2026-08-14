@@ -1,5 +1,5 @@
 """
-Søgeservice til Stock AI Monitor's centrale aktiebibliotek.
+Søgeservice til Aureum AI Platforms centrale aktiebibliotek.
 """
 
 from stock_library import STOCK_LIBRARY
