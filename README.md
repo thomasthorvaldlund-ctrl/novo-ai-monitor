@@ -1,4 +1,4 @@
-# 📈 Stock AI Monitor
+# 📈 Aureum AI Platform
 
 En AI-baseret aktieplatform udviklet i Python og Flask.
 
@@ -49,9 +49,9 @@ En AI-baseret aktieplatform udviklet i Python og Flask.
 ## Installation
 
 ```bash
-git clone https://github.com/thomasthorvaldlund-ctrl/novo-ai-monitor.git
+git clone https://github.com/thomasthorvaldlund-ctrl/novo-ai-monitor.git aureum-ai-platform
 
-cd novo-ai-monitor
+cd aureum-ai-platform
 
 python3 -m venv venv
 
