@@ -131,7 +131,7 @@ def command_center():
     ai_engine_status = get_ai_engine_status()
 
     return render_template(
-        "command_center_v2.html",
+        "command_center.html",
         system_health=system_health,
         market=market,
         market_data_status=market_data_status,
