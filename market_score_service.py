@@ -96,10 +96,6 @@ def get_market_score(ranking=None):
         "signal_component": round(signal_score, 1),
         "alert_component": round(alert_score, 1),
         "low_ranked_stocks": low_ranked_stocks,
-
-        # Midlertidigt kompatibilitetsfelt.
-        # Feltet fjernes, når alle consumers bruger low_ranked_stocks.
-        "critical_alerts": low_ranked_stocks,
         "news_component": round(news_score, 1),
         "news_positive": news_sentiment.get("positive", 0),
         "news_neutral": news_sentiment.get("neutral", 0),

@@ -56,7 +56,7 @@
         <a href="/command-center#ai-alerts" class="summary-box summary-box-link" aria-label="Åbn 🚨 Alerts">
             <div class="summary-title">📉 Lav score</div>
 
-            {% set alert_count = market.critical_alerts or 0 %}
+            {% set alert_count = market.low_ranked_stocks or 0 %}
 
             <div class="summary-value">
                 {{ alert_count }}
