@@ -66,8 +66,11 @@ from ai_decision_evolution_service import get_decision_evolution
 
 command_center_bp = Blueprint("command_center", __name__)
 
-@command_center_bp.route("/command-center-v2")
-def command_center_v2():
+@command_center_bp.route(
+    "/command-center-v2",
+    endpoint="command_center_v2",
+)
+def legacy_command_center_redirect():
     return redirect("/command-center")
 
 
