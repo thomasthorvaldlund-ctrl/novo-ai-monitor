@@ -34,7 +34,11 @@ from openai_service import client
 import feedparser
 
 from market_data_provider import get_history as provider_get_history
-from currency_service import get_fx_rates as provider_get_fx_rates
+from currency_service import (
+    get_fx_rates,
+    get_currency,
+    convert_to_dkk,
+)
 from stock_utils import get_history
 from portfolio import get_portfolio_summary
 from portfolio_manager_routes import portfolio_manager_bp
@@ -257,32 +261,10 @@ def get_stock_data(ticker):
 # V3.6.1 Currency Engine
 # =========================
 
-def get_fx_rates():
-    """
-    Henter valutakurser gennem Aureum Market Data Provider.
-    """
-    return provider_get_fx_rates()
 
 
-def get_currency(ticker):
-    """
-    Finder aktiens handelsvaluta ud fra ticker.
-    """
-    if ticker.endswith(".CO"):
-        return "DKK"
-    if ticker.endswith(".AS"):
-        return "EUR"
-    return "USD"
 
 
-def convert_to_dkk(price, currency, fx_rates=None):
-    """
-    Konverterer pris til DKK.
-    """
-    if fx_rates is None:
-        fx_rates = get_fx_rates()
-
-    return float(price) * fx_rates.get(currency, 1.0)
 
 
 def format_dkk(amount):
