@@ -14,7 +14,17 @@ PORTFOLIO_FILE = str(
 def load_portfolio_rows(portfolio_file=PORTFOLIO_FILE):
     positions = []
 
-    with open(portfolio_file, "r") as f:
+    portfolio_path = Path(portfolio_file)
+
+    if not portfolio_path.exists():
+        return positions
+
+    with open(
+        portfolio_path,
+        "r",
+        encoding="utf-8",
+        newline="",
+    ) as f:
         reader = csv.DictReader(f)
 
         for row in reader:
