@@ -5,7 +5,7 @@ from aureum_paths import cache_path
 import feedparser
 from urllib.parse import quote_plus
 
-from stock_universe_service import get_active_stocks, get_news_query
+from stock_universe_service import get_deep_ai_stocks, get_news_query
 
 
 CACHE_FILE = cache_path(
@@ -16,7 +16,7 @@ CACHE_FILE = cache_path(
 def build_stock_news_ai_cache(client):
     watchlist = {
         stock_name: get_news_query(stock_name)
-        for stock_name in get_active_stocks()
+        for stock_name in get_deep_ai_stocks()
     }
 
     results = []
