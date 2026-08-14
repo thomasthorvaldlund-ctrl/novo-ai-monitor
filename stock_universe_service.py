@@ -24,6 +24,7 @@ _REQUIRED_COLUMNS = {
     "sector",
     "news_query",
     "active",
+    "deep_ai",
 }
 
 
@@ -197,6 +198,11 @@ def _load_stock_universe():
                         "active"
                     )
                 ),
+                "deep_ai": _parse_active(
+                    row.get(
+                        "deep_ai"
+                    )
+                ),
             }
 
     return universe
@@ -222,6 +228,24 @@ def get_active_stocks():
         name: data["ticker"]
         for name, data in STOCK_UNIVERSE.items()
         if data.get("active", False)
+    }
+
+
+def get_deep_ai_stocks():
+    """
+    Returnerer aktive aktier prioriteret til dyb AI-analyse.
+
+    Funktionen er adskilt fra get_active_stocks(), så Aureum
+    kan broad-scanne et stort univers uden at sende alle aktier
+    gennem dyre nyheds- og AI-kald.
+    """
+    return {
+        name: data["ticker"]
+        for name, data in STOCK_UNIVERSE.items()
+        if (
+            data.get("active", False)
+            and data.get("deep_ai", False)
+        )
     }
 
 

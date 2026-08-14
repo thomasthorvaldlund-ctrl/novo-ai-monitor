@@ -1,16 +1,16 @@
-symbol,name,ticker,country,market,currency,sector,news_query,active
-NOVO,Novo Nordisk,NOVO-B.CO,Denmark,Nasdaq Copenhagen,DKK,Healthcare,Novo Nordisk stock OR Wegovy OR Ozempic,true
-VESTAS,Vestas,VWS.CO,Denmark,Nasdaq Copenhagen,DKK,Industrials,Vestas stock OR wind turbines,true
-GENMAB,Genmab,GMAB.CO,Denmark,Nasdaq Copenhagen,DKK,Healthcare,Genmab stock OR Genmab cancer,true
-CARLSBERG,Carlsberg,CARL-B.CO,Denmark,Nasdaq Copenhagen,DKK,Consumer,Carlsberg stock OR Carlsberg earnings,true
-MAERSK,Maersk,MAERSK-B.CO,Denmark,Nasdaq Copenhagen,DKK,Industrials,Maersk stock OR shipping logistics,true
-ORSTED,Orsted,ORSTED.CO,Denmark,Nasdaq Copenhagen,DKK,Utilities,Orsted stock OR offshore wind,true
-PANDORA,Pandora,PNDORA.CO,Denmark,Nasdaq Copenhagen,DKK,Consumer,Pandora stock OR Pandora jewelry,true
-APPLE,Apple,AAPL,United States,NASDAQ,USD,Technology,Apple stock OR AAPL,true
-MICROSOFT,Microsoft,MSFT,United States,NASDAQ,USD,Technology,Microsoft stock OR MSFT,true
-NVIDIA,NVIDIA,NVDA,United States,NASDAQ,USD,Technology,NVIDIA stock OR NVDA OR AI chips,true
-ASML,ASML,ASML.AS,Netherlands,Euronext Amsterdam,EUR,Semiconductors,ASML stock OR semiconductor lithography,true
-TESLA,Tesla,TSLA,United States,NASDAQ,USD,Automotive,Tesla stock OR TSLA,true
-AMAZON,Amazon,AMZN,United States,NASDAQ,USD,Consumer,Amazon stock OR AMZN,true
-META,Meta,META,United States,NASDAQ,USD,Technology,Meta stock OR META platforms,true
-GOOGLE,Alphabet,GOOGL,United States,NASDAQ,USD,Technology,Alphabet stock OR GOOGL OR Google,true
+symbol,name,ticker,country,market,currency,sector,news_query,active,deep_ai
+NOVO,Novo Nordisk,NOVO-B.CO,Denmark,Nasdaq Copenhagen,DKK,Healthcare,Novo Nordisk stock OR Wegovy OR Ozempic,true,true
+VESTAS,Vestas,VWS.CO,Denmark,Nasdaq Copenhagen,DKK,Industrials,Vestas stock OR wind turbines,true,true
+GENMAB,Genmab,GMAB.CO,Denmark,Nasdaq Copenhagen,DKK,Healthcare,Genmab stock OR Genmab cancer,true,true
+CARLSBERG,Carlsberg,CARL-B.CO,Denmark,Nasdaq Copenhagen,DKK,Consumer,Carlsberg stock OR Carlsberg earnings,true,true
+MAERSK,Maersk,MAERSK-B.CO,Denmark,Nasdaq Copenhagen,DKK,Industrials,Maersk stock OR shipping logistics,true,true
+ORSTED,Orsted,ORSTED.CO,Denmark,Nasdaq Copenhagen,DKK,Utilities,Orsted stock OR offshore wind,true,true
+PANDORA,Pandora,PNDORA.CO,Denmark,Nasdaq Copenhagen,DKK,Consumer,Pandora stock OR Pandora jewelry,true,true
+APPLE,Apple,AAPL,United States,NASDAQ,USD,Technology,Apple stock OR AAPL,true,true
+MICROSOFT,Microsoft,MSFT,United States,NASDAQ,USD,Technology,Microsoft stock OR MSFT,true,true
+NVIDIA,NVIDIA,NVDA,United States,NASDAQ,USD,Technology,NVIDIA stock OR NVDA OR AI chips,true,true
+ASML,ASML,ASML.AS,Netherlands,Euronext Amsterdam,EUR,Semiconductors,ASML stock OR semiconductor lithography,true,true
+TESLA,Tesla,TSLA,United States,NASDAQ,USD,Automotive,Tesla stock OR TSLA,true,true
+AMAZON,Amazon,AMZN,United States,NASDAQ,USD,Consumer,Amazon stock OR AMZN,true,true
+META,Meta,META,United States,NASDAQ,USD,Technology,Meta stock OR META platforms,true,true
+GOOGLE,Alphabet,GOOGL,United States,NASDAQ,USD,Technology,Alphabet stock OR GOOGL OR Google,true,true
