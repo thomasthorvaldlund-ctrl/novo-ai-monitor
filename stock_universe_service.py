@@ -5,128 +5,184 @@ Denne service bliver senere udvidet til at understøtte
 1.000+ aktier, markeder, sektorer og prioriteringsniveauer.
 """
 
-STOCK_UNIVERSE = {
-    "NOVO": {
-        "ticker": "NOVO-B.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "Novo Nordisk stock OR Wegovy OR Ozempic",
-        "active": True,
-    },
-    "VESTAS": {
-        "ticker": "VWS.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "Vestas stock OR wind turbines",
-        "active": True,
-    },
-    "GENMAB": {
-        "ticker": "GMAB.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "Genmab stock OR Genmab cancer",
-        "active": True,
-    },
-    "CARLSBERG": {
-        "ticker": "CARL-B.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "Carlsberg stock OR Carlsberg earnings",
-        "active": True,
-    },
-    "MAERSK": {
-        "ticker": "MAERSK-B.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "Maersk stock OR shipping logistics",
-        "active": True,
-    },
-    "ORSTED": {
-        "ticker": "ORSTED.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "Orsted stock OR offshore wind",
-        "active": True,
-    },
-    "PANDORA": {
-        "ticker": "PNDORA.CO",
-        "country": "Denmark",
-        "market": "Nasdaq Copenhagen",
-        "currency": "DKK",
-        "news_query": "Pandora stock OR Pandora jewelry",
-        "active": True,
-    },
-    "APPLE": {
-        "ticker": "AAPL",
-        "country": "United States",
-        "market": "NASDAQ",
-        "currency": "USD",
-        "news_query": "Apple stock OR AAPL",
-        "active": True,
-    },
-    "MICROSOFT": {
-        "ticker": "MSFT",
-        "country": "United States",
-        "market": "NASDAQ",
-        "currency": "USD",
-        "news_query": "Microsoft stock OR MSFT",
-        "active": True,
-    },
-    "NVIDIA": {
-        "ticker": "NVDA",
-        "country": "United States",
-        "market": "NASDAQ",
-        "currency": "USD",
-        "news_query": "NVIDIA stock OR NVDA OR AI chips",
-        "active": True,
-    },
-    "ASML": {
-        "ticker": "ASML.AS",
-        "country": "Netherlands",
-        "market": "Euronext Amsterdam",
-        "currency": "EUR",
-        "news_query": "ASML stock OR semiconductor lithography",
-        "active": True,
-    },
-    "TESLA": {
-        "ticker": "TSLA",
-        "country": "United States",
-        "market": "NASDAQ",
-        "currency": "USD",
-        "news_query": "Tesla stock OR TSLA",
-        "active": True,
-    },
-    "AMAZON": {
-        "ticker": "AMZN",
-        "country": "United States",
-        "market": "NASDAQ",
-        "currency": "USD",
-        "news_query": "Amazon stock OR AMZN",
-        "active": True,
-    },
-    "META": {
-        "ticker": "META",
-        "country": "United States",
-        "market": "NASDAQ",
-        "currency": "USD",
-        "news_query": "Meta stock OR META platforms",
-        "active": True,
-    },
-    "GOOGLE": {
-        "ticker": "GOOGL",
-        "country": "United States",
-        "market": "NASDAQ",
-        "currency": "USD",
-        "news_query": "Alphabet stock OR GOOGL OR Google",
-        "active": True,
-    },
+import csv
+
+from aureum_paths import project_path
+
+
+UNIVERSE_FILE = project_path(
+    "stock_universe.csv"
+)
+
+_REQUIRED_COLUMNS = {
+    "symbol",
+    "ticker",
+    "country",
+    "market",
+    "currency",
+    "news_query",
+    "active",
 }
+
+
+def _parse_active(value):
+    normalized = str(
+        value or ""
+    ).strip().lower()
+
+    if normalized in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
+        return True
+
+    if normalized in {
+        "0",
+        "false",
+        "no",
+        "off",
+    }:
+        return False
+
+    raise ValueError(
+        f"Ugyldig active-værdi: {value!r}"
+    )
+
+
+def _load_stock_universe():
+    if not UNIVERSE_FILE.exists():
+        raise RuntimeError(
+            "Canonical stock universe mangler: "
+            f"{UNIVERSE_FILE}"
+        )
+
+    universe = {}
+    seen_tickers = set()
+
+    with UNIVERSE_FILE.open(
+        "r",
+        encoding="utf-8",
+        newline="",
+    ) as handle:
+        reader = csv.DictReader(
+            handle
+        )
+
+        fieldnames = set(
+            reader.fieldnames
+            or []
+        )
+
+        missing = (
+            _REQUIRED_COLUMNS
+            - fieldnames
+        )
+
+        if missing:
+            raise RuntimeError(
+                "Canonical stock universe mangler "
+                "kolonner: "
+                + ", ".join(
+                    sorted(missing)
+                )
+            )
+
+        for line_number, row in enumerate(
+            reader,
+            start=2,
+        ):
+            symbol = str(
+                row.get(
+                    "symbol",
+                    ""
+                )
+            ).strip().upper()
+
+            ticker = str(
+                row.get(
+                    "ticker",
+                    ""
+                )
+            ).strip()
+
+            if not symbol:
+                raise RuntimeError(
+                    "Tom symbol-værdi i "
+                    f"{UNIVERSE_FILE} "
+                    f"på linje {line_number}."
+                )
+
+            if not ticker:
+                raise RuntimeError(
+                    "Tom ticker-værdi i "
+                    f"{UNIVERSE_FILE} "
+                    f"på linje {line_number}."
+                )
+
+            if symbol in universe:
+                raise RuntimeError(
+                    "Duplikeret symbol i "
+                    f"{UNIVERSE_FILE}: "
+                    f"{symbol}"
+                )
+
+            ticker_key = (
+                ticker.upper()
+            )
+
+            if ticker_key in seen_tickers:
+                raise RuntimeError(
+                    "Duplikeret ticker i "
+                    f"{UNIVERSE_FILE}: "
+                    f"{ticker}"
+                )
+
+            seen_tickers.add(
+                ticker_key
+            )
+
+            universe[symbol] = {
+                "ticker": ticker,
+                "country": str(
+                    row.get(
+                        "country",
+                        ""
+                    )
+                ).strip(),
+                "market": str(
+                    row.get(
+                        "market",
+                        ""
+                    )
+                ).strip(),
+                "currency": str(
+                    row.get(
+                        "currency",
+                        ""
+                    )
+                ).strip(),
+                "news_query": str(
+                    row.get(
+                        "news_query",
+                        ""
+                    )
+                ).strip(),
+                "active": _parse_active(
+                    row.get(
+                        "active"
+                    )
+                ),
+            }
+
+    return universe
+
+
+STOCK_UNIVERSE = (
+    _load_stock_universe()
+)
+
 
 
 def get_active_stocks():
