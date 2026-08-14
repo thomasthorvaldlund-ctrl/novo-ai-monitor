@@ -87,7 +87,7 @@ def ai_performance_page():
     <h2>🤖 Hvad måler AI Performance Dashboard?</h2>
 
     <p>
-    Dette dashboard måler, hvor godt Stock AI Monitor's
+    Dette dashboard måler, hvor godt Aureum AI Platforms
     aktiesignaler har fungeret historisk.
     </p>
 
