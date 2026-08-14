@@ -3,9 +3,12 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+from aureum_paths import data_path
 from ai_signal_accuracy_service import get_signal_accuracy
 
-FEEDBACK_FILE = Path("ai_learning_feedback.json")
+FEEDBACK_FILE = data_path(
+    "ai_learning_feedback.json"
+)
 
 
 def get_learning_feedback():
