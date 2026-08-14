@@ -11,8 +11,8 @@ signal_history.csv
 portfolio_history.csv
 market_score_history.csv
 
-# Keep portfolio configuration
-!portfolio.csv
+# Runtime portfolio data
+portfolio.csv
 
 # Charts/images
 *.png
