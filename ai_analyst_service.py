@@ -2,6 +2,7 @@ import json
 
 from analysis_data_service import build_analysis_data
 from openai_service import client
+from openai_service import create_chat_completion
 
 def build_fallback_analysis(ranking):
     top_3 = ranking[:3]
@@ -79,7 +80,11 @@ Maks 5 sætninger.
 Ingen investeringsgaranti. Ingen lange forbehold.
 """
 
-        response = client.chat.completions.create(
+        response = create_chat_completion(
+            service="ai_analyst",
+            operation="market_briefing",
+            instrument=None,
+            route="/update-dashboard-cache",
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "Du er en forsigtig og konkret aktieanalytiker."},
