@@ -1,6 +1,7 @@
 import json
 
 from openai_service import client
+from openai_service import create_chat_completion
 
 
 def analyze_earnings_article(article):
@@ -37,7 +38,11 @@ Svar KUN som gyldig JSON i dette format:
 Summary må højst være to korte sætninger.
 """
 
-    response = client.chat.completions.create(
+    response = create_chat_completion(
+        service="earnings_ai",
+        operation="earnings_article_analysis",
+        instrument=None,
+        route="/update-dashboard-cache",
         model="gpt-4.1-mini",
         messages=[
             {
