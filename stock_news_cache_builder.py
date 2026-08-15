@@ -5,6 +5,7 @@ from aureum_paths import cache_path
 import feedparser
 from urllib.parse import quote_plus
 
+from openai_service import create_chat_completion
 from stock_universe_service import get_deep_ai_stocks, get_news_query
 
 
@@ -30,7 +31,11 @@ def build_stock_news_ai_cache(client):
             titles = [entry.title for entry in feed.entries[:5]]
             text = "\n".join(titles)
 
-            response = client.chat.completions.create(
+            response = create_chat_completion(
+                service="stock_news",
+                operation="news_sentiment",
+                instrument=stock_name,
+                route="/update-stock-news-ai-cache",
                 model="gpt-4.1-mini",
                 messages=[
                     {
