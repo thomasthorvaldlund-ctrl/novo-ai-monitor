@@ -20,35 +20,35 @@ _FX_CACHE = {
 # midlertidigt ikke kan hente den aktuelle FX-rate.
 _FX_RATE_SPECS = {
     "USD": (
-        "USDDKK=X",
+        "FX:USD/DKK",
         6.95,
     ),
     "EUR": (
-        "EURDKK=X",
+        "FX:EUR/DKK",
         7.46,
     ),
     "SEK": (
-        "SEKDKK=X",
+        "FX:SEK/DKK",
         0.66,
     ),
     "NOK": (
-        "NOKDKK=X",
+        "FX:NOK/DKK",
         0.64,
     ),
     "GBP": (
-        "GBPDKK=X",
+        "FX:GBP/DKK",
         8.65,
     ),
     "CHF": (
-        "CHFDKK=X",
+        "FX:CHF/DKK",
         7.95,
     ),
     "PLN": (
-        "PLNDKK=X",
+        "FX:PLN/DKK",
         1.73,
     ),
     "CZK": (
-        "CZKDKK=X",
+        "FX:CZK/DKK",
         0.30,
     ),
 }

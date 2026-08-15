@@ -11,6 +11,23 @@ class EODHDNotConfiguredError(RuntimeError):
     """EODHD er valgt, men endnu ikke konfigureret."""
 
 
+def get_symbol(
+    instrument_id,
+    kind="equity",
+):
+    """
+    Oversætter Aureums canonical instrument-ID
+    til EODHD-symbol.
+
+    Implementeres sammen med den kommende
+    EODHD API-integration.
+    """
+    raise EODHDNotConfiguredError(
+        "EODHD-provider er endnu ikke konfigureret. "
+        "Provider-specifik symboloversættelse mangler."
+    )
+
+
 def get_metadata(ticker):
     """
     Returnerer selskabsmetadata fra EODHD i Aureums

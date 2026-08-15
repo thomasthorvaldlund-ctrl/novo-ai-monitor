@@ -15,10 +15,12 @@ import pandas as pd
 from yahoo_provider import (
     get_history as yahoo_get_history,
     get_metadata as yahoo_get_metadata,
+    get_symbol as yahoo_get_symbol,
 )
 from eodhd_provider import (
     get_history as eodhd_get_history,
     get_metadata as eodhd_get_metadata,
+    get_symbol as eodhd_get_symbol,
 )
 
 
@@ -344,12 +346,69 @@ def get_ticker(symbol: str):
     return mapping.get(symbol.upper(), symbol)
 
 
+def get_instrument_kind(
+    instrument_id,
+):
+    """
+    Klassificerer Aureums canonical instrument-ID.
+    """
+    value = str(
+        instrument_id
+    ).strip().upper()
+
+    if value.startswith(
+        "FX:"
+    ):
+        return "fx"
+
+    if value.startswith(
+        "INDEX:"
+    ):
+        return "index"
+
+    return "equity"
+
+
+def get_provider_symbol(
+    instrument_id,
+):
+    """
+    Oversætter Aureums canonical instrument-ID
+    til den aktive providers symbolformat.
+    """
+    canonical_id = get_ticker(
+        instrument_id
+    )
+
+    kind = get_instrument_kind(
+        canonical_id
+    )
+
+    if DATA_PROVIDER == "yahoo":
+        return yahoo_get_symbol(
+            canonical_id,
+            kind=kind,
+        )
+
+    if DATA_PROVIDER == "eodhd":
+        return eodhd_get_symbol(
+            canonical_id,
+            kind=kind,
+        )
+
+    raise RuntimeError(
+        f"Ukendt Market Data Provider: {DATA_PROVIDER}"
+    )
+
+
 def get_history(symbol, period="1mo", interval=None):
     """
     Returnerer historiske kursdata fra den aktive datakilde
     i Aureums provider-neutrale history-format.
     """
-    ticker = get_ticker(symbol)
+    ticker = get_provider_symbol(
+        symbol
+    )
 
     if DATA_PROVIDER == "yahoo":
         data = yahoo_get_history(
@@ -380,7 +439,9 @@ def get_metadata(symbol):
     Returnerer selskabsmetadata fra den aktive datakilde
     i Aureums provider-neutrale metadataformat.
     """
-    ticker = get_ticker(symbol)
+    ticker = get_provider_symbol(
+        symbol
+    )
 
     if DATA_PROVIDER == "yahoo":
         data = yahoo_get_metadata(

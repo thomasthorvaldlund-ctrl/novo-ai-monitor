@@ -7,10 +7,10 @@ market_dashboard_bp = Blueprint("market_dashboard", __name__)
 @market_dashboard_bp.route("/market-dashboard")
 def market_dashboard():
     markets = {
-        "S&P 500": "^GSPC",
-        "Nasdaq": "^IXIC",
-        "OMXC25": "^OMXC25",
-        "DAX": "^GDAXI"
+        "S&P 500": "INDEX:SP500",
+        "Nasdaq": "INDEX:NASDAQ_COMPOSITE",
+        "OMXC25": "INDEX:OMXC25",
+        "DAX": "INDEX:DAX"
     }
 
     results = []

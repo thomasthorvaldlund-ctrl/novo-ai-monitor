@@ -8,6 +8,67 @@ Alle Yahoo-specifikke kald ligger i denne fil.
 import yfinance as yf
 
 
+YAHOO_INSTRUMENT_SYMBOLS = {
+    "FX:USD/DKK": "USDDKK=X",
+    "FX:EUR/DKK": "EURDKK=X",
+    "FX:SEK/DKK": "SEKDKK=X",
+    "FX:NOK/DKK": "NOKDKK=X",
+    "FX:GBP/DKK": "GBPDKK=X",
+    "FX:CHF/DKK": "CHFDKK=X",
+    "FX:PLN/DKK": "PLNDKK=X",
+    "FX:CZK/DKK": "CZKDKK=X",
+
+    "INDEX:SP500": "^GSPC",
+    "INDEX:NASDAQ_COMPOSITE": "^IXIC",
+    "INDEX:OMXC25": "^OMXC25",
+    "INDEX:DAX": "^GDAXI",
+}
+
+
+def get_symbol(
+    instrument_id,
+    kind="equity",
+):
+    """
+    Oversætter Aureums canonical instrument-ID
+    til Yahoo Finance-symbol.
+    """
+    instrument_id = str(
+        instrument_id
+    ).strip()
+
+    kind = str(
+        kind
+        or "equity"
+    ).strip().lower()
+
+    if kind == "equity":
+        return instrument_id
+
+    if kind in {
+        "fx",
+        "index",
+    }:
+        symbol = (
+            YAHOO_INSTRUMENT_SYMBOLS.get(
+                instrument_id
+            )
+        )
+
+        if not symbol:
+            raise ValueError(
+                "Ukendt Aureum-instrument for Yahoo: "
+                f"{instrument_id}"
+            )
+
+        return symbol
+
+    raise ValueError(
+        "Ukendt instrumenttype: "
+        f"{kind}"
+    )
+
+
 def _normalize_metadata(info):
     """
     Oversætter Yahoo-specifik metadata til Aureums
