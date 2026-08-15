@@ -31,6 +31,11 @@ def get_history(ticker, period="1mo", interval=None):
     """
     Returnerer historiske kursdata fra EODHD.
 
+    Provider-resultatet normaliseres centralt til Aureums
+    history-kontrakt: pandas DataFrame med obligatorisk
+    Close og kronologisk DatetimeIndex. Open, High, Low,
+    Adj Close og Volume er valgfrie.
+
     Funktionen implementeres, når Aureum AI får en EODHD API-nøgle.
     """
 
