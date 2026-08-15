@@ -13,9 +13,11 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-import yfinance as yf
-
 from aureum_paths import cache_path
+from market_data_provider import (
+    get_metadata as provider_get_metadata,
+    get_provider_name,
+)
 from stock_universe_service import get_all_stocks
 
 
@@ -254,21 +256,6 @@ def _select_batch(
     )
 
 
-def _fetch_yahoo_metadata(ticker):
-    stock = yf.Ticker(ticker)
-
-    if hasattr(
-        stock,
-        "get_info",
-    ):
-        return (
-            stock.get_info()
-            or {}
-        )
-
-    return stock.info or {}
-
-
 def _success_result(
     symbol,
     stock,
@@ -440,7 +427,7 @@ def build_stock_metadata_enrichment_cache(
 
     provider = (
         fetcher
-        or _fetch_yahoo_metadata
+        or provider_get_metadata
     )
 
     items = _get_unknown_sector_items(
@@ -621,7 +608,7 @@ def build_stock_metadata_enrichment_cache(
 
     data = {
         "metadata_source":
-            "Yahoo Finance",
+            get_provider_name(),
 
         "canonical_country_semantics":
             "listing_country_preserved",

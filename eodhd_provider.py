@@ -11,6 +11,18 @@ class EODHDNotConfiguredError(RuntimeError):
     """EODHD er valgt, men endnu ikke konfigureret."""
 
 
+def get_metadata(ticker):
+    """
+    Returnerer selskabsmetadata fra EODHD.
+
+    Implementeres sammen med den kommende EODHD API-integration.
+    """
+    raise EODHDNotConfiguredError(
+        "EODHD-provider er endnu ikke konfigureret. "
+        "Brug MARKET_DATA_PROVIDER=yahoo indtil videre."
+    )
+
+
 def get_history(ticker, period="1mo", interval=None):
     """
     Returnerer historiske kursdata fra EODHD.
