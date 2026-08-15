@@ -30,6 +30,7 @@ matplotlib.use("Agg")
 import os
 from werkzeug.security import check_password_hash
 from openai_service import client
+from openai_service import create_chat_completion
 
 import feedparser
 
@@ -480,7 +481,11 @@ def ai_news_check():
 
     text = "\n".join(titles)
 
-    response = client.chat.completions.create(
+    response = create_chat_completion(
+        service="ai_news_check",
+        operation="novo_news_risk",
+        instrument="NOVO",
+        route="/ai-news-check",
         model="gpt-4.1-mini",
         messages=[
             {
