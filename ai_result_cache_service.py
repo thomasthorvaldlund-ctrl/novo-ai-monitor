@@ -476,6 +476,176 @@ def get_cached_ai_result(
             )
 
 
+def get_latest_cached_ai_result(
+    *,
+    service: str,
+    operation: str,
+    model: str,
+    prompt_contract_version: str,
+    max_age_seconds=None,
+):
+    """
+    Returnerer det nyeste gyldige resultat i et AI-cache namespace.
+
+    Lookup er uafhængigt af input-fingerprint og bruges derfor kun,
+    når en caller bevidst ønsker en bounded refresh-policy.
+
+    Rå AI-inputs læses eller returneres ikke.
+    """
+    dimensions = (
+        _namespace_dimensions(
+            service=service,
+            operation=operation,
+            model=model,
+            prompt_contract_version=(
+                prompt_contract_version
+            ),
+        )
+    )
+
+    namespace_key = (
+        _namespace_key(
+            dimensions
+        )
+    )
+
+    max_age = (
+        _validate_max_age(
+            max_age_seconds
+        )
+    )
+
+    with _open_lock_file() as lock:
+
+        fcntl.flock(
+            lock.fileno(),
+            fcntl.LOCK_SH,
+        )
+
+        try:
+            data = (
+                _read_cache_unlocked()
+            )
+
+            namespace = (
+                data[
+                    "namespaces"
+                ].get(
+                    namespace_key
+                )
+            )
+
+            if not isinstance(
+                namespace,
+                dict,
+            ):
+                return None
+
+            for key, expected in (
+                dimensions.items()
+            ):
+                if (
+                    namespace.get(
+                        key
+                    )
+                    != expected
+                ):
+                    return None
+
+            entries = namespace.get(
+                "entries"
+            )
+
+            if not isinstance(
+                entries,
+                dict,
+            ):
+                return None
+
+            candidates = []
+
+            for fingerprint, entry in (
+                entries.items()
+            ):
+                if not isinstance(
+                    entry,
+                    dict,
+                ):
+                    continue
+
+                if (
+                    entry.get(
+                        "fingerprint"
+                    )
+                    != fingerprint
+                ):
+                    continue
+
+                if "result" not in entry:
+                    continue
+
+                created_at = (
+                    _parse_created_at(
+                        entry.get(
+                            "created_at"
+                        )
+                    )
+                )
+
+                if created_at is None:
+                    continue
+
+                if max_age is not None:
+
+                    age_seconds = max(
+                        0.0,
+                        (
+                            _utc_now()
+                            - created_at
+                        ).total_seconds(),
+                    )
+
+                    if (
+                        age_seconds
+                        > max_age
+                    ):
+                        continue
+
+                candidates.append(
+                    (
+                        created_at,
+                        fingerprint,
+                        entry[
+                            "result"
+                        ],
+                    )
+                )
+
+            if not candidates:
+                return None
+
+            latest = max(
+                candidates,
+                key=lambda item:
+                    (
+                        item[0],
+                        item[1],
+                    ),
+            )
+
+            return copy.deepcopy(
+                latest[
+                    2
+                ]
+            )
+
+        finally:
+            fcntl.flock(
+                lock.fileno(),
+                fcntl.LOCK_UN,
+            )
+
+
 def save_cached_ai_result(
     *,
     service: str,
