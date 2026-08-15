@@ -67,3 +67,4 @@ ai_decision_history.json
 ai_decision_learning_history.json
 ai_portfolio_decisions.json
 stock_metadata_enrichment_cache.json
+ai_usage_history.jsonl
