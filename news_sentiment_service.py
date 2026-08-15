@@ -3,6 +3,7 @@ import json
 import feedparser
 
 from openai_service import client
+from openai_service import create_chat_completion
 
 
 NEWS_FEED_URL = (
@@ -134,7 +135,11 @@ def get_ai_news_sentiment(news=None):
 
     headlines = "\n".join(news["headlines"])
 
-    response = client.chat.completions.create(
+    response = create_chat_completion(
+        service="news_sentiment",
+        operation="market_news_sentiment",
+        instrument=None,
+        route="/update-dashboard-cache",
         model="gpt-4.1-mini",
         messages=[
             {
