@@ -5,7 +5,15 @@ import feedparser
 from openai_service import client
 from openai_service import create_chat_completion
 from ai_result_cache_service import get_cached_ai_result
+from ai_result_cache_service import get_latest_cached_ai_result
 from ai_result_cache_service import save_cached_ai_result
+
+
+AI_NEWS_CACHE_CONTRACT_VERSION = "news_sentiment:v2"
+
+AI_NEWS_EXACT_CACHE_MAX_AGE_SECONDS = 21600
+
+AI_NEWS_NARRATIVE_REFRESH_SECONDS = 3600
 
 
 NEWS_FEED_URL = (
@@ -148,9 +156,9 @@ def get_ai_news_sentiment(news=None):
             service="news_sentiment",
             operation="market_news_sentiment",
             model="gpt-4.1-mini",
-            prompt_contract_version="news_sentiment:v2",
+            prompt_contract_version=AI_NEWS_CACHE_CONTRACT_VERSION,
             input_payload=cache_input,
-            max_age_seconds=21600,
+            max_age_seconds=AI_NEWS_EXACT_CACHE_MAX_AGE_SECONDS,
         )
     except Exception as e:
         print(
@@ -161,6 +169,24 @@ def get_ai_news_sentiment(news=None):
 
     if cached_result is not None:
         return cached_result
+
+    try:
+        latest_result = get_latest_cached_ai_result(
+            service="news_sentiment",
+            operation="market_news_sentiment",
+            model="gpt-4.1-mini",
+            prompt_contract_version=AI_NEWS_CACHE_CONTRACT_VERSION,
+            max_age_seconds=AI_NEWS_NARRATIVE_REFRESH_SECONDS,
+        )
+    except Exception as e:
+        print(
+            "AI latest result cache read error:",
+            e,
+        )
+        latest_result = None
+
+    if latest_result is not None:
+        return latest_result
 
     response = create_chat_completion(
         service="news_sentiment",
@@ -237,7 +263,7 @@ Overskrifter:
             service="news_sentiment",
             operation="market_news_sentiment",
             model="gpt-4.1-mini",
-            prompt_contract_version="news_sentiment:v2",
+            prompt_contract_version=AI_NEWS_CACHE_CONTRACT_VERSION,
             input_payload=cache_input,
             result=ai_result,
         )
