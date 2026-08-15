@@ -303,7 +303,7 @@ def _success_result(
         "provider_full_exchange":
             _clean(
                 info.get(
-                    "fullExchangeName"
+                    "full_exchange"
                 )
             ),
 
@@ -314,13 +314,12 @@ def _success_result(
 
         "quote_type":
             _clean(
-                info.get("quoteType")
+                info.get("quote_type")
             ),
 
         "provider_long_name":
             _clean(
-                info.get("longName")
-                or info.get("shortName")
+                info.get("long_name")
             ),
 
         "sector_usable":

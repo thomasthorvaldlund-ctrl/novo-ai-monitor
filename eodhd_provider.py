@@ -13,7 +13,11 @@ class EODHDNotConfiguredError(RuntimeError):
 
 def get_metadata(ticker):
     """
-    Returnerer selskabsmetadata fra EODHD.
+    Returnerer selskabsmetadata fra EODHD i Aureums
+    provider-neutrale metadataformat:
+
+    sector, industry, country, exchange, full_exchange,
+    currency, quote_type og long_name.
 
     Implementeres sammen med den kommende EODHD API-integration.
     """

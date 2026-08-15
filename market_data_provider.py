@@ -34,6 +34,41 @@ PROVIDER_NAMES = {
 }
 
 
+METADATA_FIELDS = (
+    "sector",
+    "industry",
+    "country",
+    "exchange",
+    "full_exchange",
+    "currency",
+    "quote_type",
+    "long_name",
+)
+
+
+def _metadata_contract(data):
+    """
+    Håndhæver Aureums provider-neutrale metadataformat.
+    """
+    if data is None:
+        data = {}
+
+    if not isinstance(
+        data,
+        dict,
+    ):
+        raise TypeError(
+            "Market Data Provider metadata skal være et dict."
+        )
+
+    return {
+        field:
+            data.get(field)
+        for field
+        in METADATA_FIELDS
+    }
+
+
 def get_provider_name():
     return PROVIDER_NAMES.get(
         DATA_PROVIDER,
@@ -82,18 +117,28 @@ def get_history(symbol, period="1mo", interval=None):
 
 def get_metadata(symbol):
     """
-    Returnerer rå selskabsmetadata fra den aktive datakilde.
+    Returnerer selskabsmetadata fra den aktive datakilde
+    i Aureums provider-neutrale metadataformat.
     """
     ticker = get_ticker(symbol)
 
     if DATA_PROVIDER == "yahoo":
-        return yahoo_get_metadata(ticker)
+        data = yahoo_get_metadata(
+            ticker
+        )
 
-    if DATA_PROVIDER == "eodhd":
-        return eodhd_get_metadata(ticker)
+    elif DATA_PROVIDER == "eodhd":
+        data = eodhd_get_metadata(
+            ticker
+        )
 
-    raise RuntimeError(
-        f"Ukendt Market Data Provider: {DATA_PROVIDER}"
+    else:
+        raise RuntimeError(
+            f"Ukendt Market Data Provider: {DATA_PROVIDER}"
+        )
+
+    return _metadata_contract(
+        data
     )
 
 
