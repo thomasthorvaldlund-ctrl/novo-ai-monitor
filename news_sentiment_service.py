@@ -137,8 +137,10 @@ def get_ai_news_sentiment(news=None):
 
     headlines = "\n".join(news["headlines"])
 
+    # Cache-identiteten ignorerer kun RSS-rækkefølgen.
+    # Prompten nedenfor bevarer fortsat den oprindelige headline-rækkefølge.
     cache_input = {
-        "headlines": news["headlines"],
+        "headlines": sorted(news["headlines"]),
     }
 
     try:
@@ -146,7 +148,7 @@ def get_ai_news_sentiment(news=None):
             service="news_sentiment",
             operation="market_news_sentiment",
             model="gpt-4.1-mini",
-            prompt_contract_version="news_sentiment:v1",
+            prompt_contract_version="news_sentiment:v2",
             input_payload=cache_input,
             max_age_seconds=21600,
         )
@@ -235,7 +237,7 @@ Overskrifter:
             service="news_sentiment",
             operation="market_news_sentiment",
             model="gpt-4.1-mini",
-            prompt_contract_version="news_sentiment:v1",
+            prompt_contract_version="news_sentiment:v2",
             input_payload=cache_input,
             result=ai_result,
         )
