@@ -4,6 +4,8 @@ import feedparser
 
 from openai_service import client
 from openai_service import create_chat_completion
+from ai_result_cache_service import get_cached_ai_result
+from ai_result_cache_service import save_cached_ai_result
 
 
 NEWS_FEED_URL = (
@@ -135,6 +137,29 @@ def get_ai_news_sentiment(news=None):
 
     headlines = "\n".join(news["headlines"])
 
+    cache_input = {
+        "headlines": news["headlines"],
+    }
+
+    try:
+        cached_result = get_cached_ai_result(
+            service="news_sentiment",
+            operation="market_news_sentiment",
+            model="gpt-4.1-mini",
+            prompt_contract_version="news_sentiment:v1",
+            input_payload=cache_input,
+            max_age_seconds=21600,
+        )
+    except Exception as e:
+        print(
+            "AI result cache read error:",
+            e,
+        )
+        cached_result = None
+
+    if cached_result is not None:
+        return cached_result
+
     response = create_chat_completion(
         service="news_sentiment",
         operation="market_news_sentiment",
@@ -203,5 +228,21 @@ Overskrifter:
                 "Den regelbaserede nyhedsscore bruges midlertidigt."
             ),
         }
+
+
+    try:
+        save_cached_ai_result(
+            service="news_sentiment",
+            operation="market_news_sentiment",
+            model="gpt-4.1-mini",
+            prompt_contract_version="news_sentiment:v1",
+            input_payload=cache_input,
+            result=ai_result,
+        )
+    except Exception as e:
+        print(
+            "AI result cache write error:",
+            e,
+        )
 
     return ai_result
