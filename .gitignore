@@ -38,6 +38,7 @@ dashboard_cache.json
 
 # Runtime AI history
 ai_copilot_history.json
+ai_copilot_history.lock
 ai_maturity_history.json
 
 # Backup data files
