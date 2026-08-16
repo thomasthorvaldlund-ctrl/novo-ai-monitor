@@ -194,6 +194,7 @@ def get_ai_news_sentiment(news=None):
         instrument=None,
         route="/update-dashboard-cache",
         model="gpt-4.1-mini",
+        response_format={"type": "json_object"},
         messages=[
             {
                 "role": "system",
