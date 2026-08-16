@@ -31,6 +31,8 @@ import os
 from werkzeug.security import check_password_hash
 from openai_service import client
 from openai_service import create_chat_completion
+from ai_result_cache_service import get_cached_ai_result
+from ai_result_cache_service import save_cached_ai_result
 
 import feedparser
 
@@ -471,6 +473,9 @@ def news_check():
         query=query,
     )
 
+AI_NEWS_CHECK_CACHE_CONTRACT_VERSION = "ai_news_check:v1"
+
+
 @app.route("/ai-news-check")
 def ai_news_check():
     feed = feedparser.parse(
@@ -481,20 +486,54 @@ def ai_news_check():
 
     text = "\n".join(titles)
 
-    response = create_chat_completion(
-        service="ai_news_check",
-        operation="novo_news_risk",
-        instrument="NOVO",
-        route="/ai-news-check",
-        model="gpt-4.1-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "Du er en forsigtig aktie- og nyhedsanalytiker. Du vurderer risiko for større fald i Novo Nordisk aktien."
-            },
-            {
-                "role": "user",
-                "content": f"""
+    cache_input = {
+        "instrument": "NOVO",
+        "headlines": sorted(titles),
+    }
+
+    try:
+        cached_ai_text = get_cached_ai_result(
+            service="ai_news_check",
+            operation="novo_news_risk",
+            model="gpt-4.1-mini",
+            prompt_contract_version=AI_NEWS_CHECK_CACHE_CONTRACT_VERSION,
+            input_payload=cache_input,
+        )
+    except Exception as exc:
+        print(
+            "AI News Check exact cache read error:",
+            exc,
+        )
+        cached_ai_text = None
+
+    valid_cached_ai_text = (
+        isinstance(
+            cached_ai_text,
+            str,
+        )
+        and bool(
+            cached_ai_text.strip()
+        )
+    )
+
+    if valid_cached_ai_text:
+        ai_text = cached_ai_text
+
+    else:
+        response = create_chat_completion(
+            service="ai_news_check",
+            operation="novo_news_risk",
+            instrument="NOVO",
+            route="/ai-news-check",
+            model="gpt-4.1-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Du er en forsigtig aktie- og nyhedsanalytiker. Du vurderer risiko for større fald i Novo Nordisk aktien."
+                },
+                {
+                    "role": "user",
+                    "content": f"""
 Analyser disse nyhedsoverskrifter om Novo Nordisk, Wegovy, Ozempic og konkurrenter.
 
 Giv svar på dansk i dette format:
@@ -507,11 +546,27 @@ Vigtigste positive signaler:
 Overskrifter:
 {text}
 """
-            }
-        ]
-    )
+                }
+            ]
+        )
 
-    ai_text = response.choices[0].message.content
+        ai_text = response.choices[0].message.content
+
+        if ai_text.strip():
+            try:
+                save_cached_ai_result(
+                    service="ai_news_check",
+                    operation="novo_news_risk",
+                    model="gpt-4.1-mini",
+                    prompt_contract_version=AI_NEWS_CHECK_CACHE_CONTRACT_VERSION,
+                    input_payload=cache_input,
+                    result=ai_text,
+                )
+            except Exception as exc:
+                print(
+                    "AI News Check result cache write error:",
+                    exc,
+                )
 
     novo_ai_news_file = log_path(
         "last_ai_news_check.log"
