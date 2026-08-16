@@ -6,12 +6,17 @@ import feedparser
 from urllib.parse import quote_plus
 
 from openai_service import create_chat_completion
+from ai_result_cache_service import get_cached_ai_result
+from ai_result_cache_service import save_cached_ai_result
 from stock_universe_service import get_deep_ai_stocks, get_news_query
 
 
 CACHE_FILE = cache_path(
     "stock_news_ai_cache.json"
 )
+
+
+STOCK_NEWS_CACHE_CONTRACT_VERSION = "stock_news:v1"
 
 
 def build_stock_news_ai_cache(client):
@@ -30,6 +35,78 @@ def build_stock_news_ai_cache(client):
 
             titles = [entry.title for entry in feed.entries[:5]]
             text = "\n".join(titles)
+
+            cache_input = {
+                "stock": stock_name,
+                "headlines": sorted(titles),
+            }
+
+            try:
+                cached_result = get_cached_ai_result(
+                    service="stock_news",
+                    operation="news_sentiment",
+                    model="gpt-4.1-mini",
+                    prompt_contract_version=STOCK_NEWS_CACHE_CONTRACT_VERSION,
+                    input_payload=cache_input,
+                )
+            except Exception as exc:
+                print(
+                    "Stock News exact cache read error:",
+                    exc,
+                )
+                cached_result = None
+
+            cached_score = None
+            cached_analysis = None
+
+            if isinstance(
+                cached_result,
+                dict,
+            ):
+                cached_score = cached_result.get(
+                    "news_score"
+                )
+                cached_analysis = cached_result.get(
+                    "ai_analysis"
+                )
+
+            valid_cached_score = (
+                isinstance(
+                    cached_score,
+                    int,
+                )
+                and not isinstance(
+                    cached_score,
+                    bool,
+                )
+                and 0
+                <= cached_score
+                <= 100
+            )
+
+            valid_cached_analysis = (
+                isinstance(
+                    cached_analysis,
+                    str,
+                )
+                and bool(
+                    cached_analysis.strip()
+                )
+            )
+
+            if (
+                valid_cached_score
+                and valid_cached_analysis
+            ):
+                results.append(
+                    {
+                        "stock": stock_name,
+                        "news_score": cached_score,
+                        "ai_analysis": cached_analysis,
+                        "headlines": titles,
+                    }
+                )
+                continue
 
             response = create_chat_completion(
                 service="stock_news",
@@ -100,6 +177,25 @@ Overskrifter:
                     if digits:
                         score = int(digits[:3])
                         score = max(0, min(score, 100))
+
+            if ai_text.strip():
+                try:
+                    save_cached_ai_result(
+                        service="stock_news",
+                        operation="news_sentiment",
+                        model="gpt-4.1-mini",
+                        prompt_contract_version=STOCK_NEWS_CACHE_CONTRACT_VERSION,
+                        input_payload=cache_input,
+                        result={
+                            "news_score": score,
+                            "ai_analysis": ai_text,
+                        },
+                    )
+                except Exception as exc:
+                    print(
+                        "Stock News result cache write error:",
+                        exc,
+                    )
 
             results.append(
                 {
