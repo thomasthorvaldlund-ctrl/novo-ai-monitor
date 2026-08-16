@@ -46,6 +46,7 @@ stock_screener_cache.json
 portfolio_alerts_sent.txt
 ai_learning_history.json
 ai_learning_feedback.json
+ai_learning_feedback.lock
 
 # Local environment backups
 venv-old-path-backup/

@@ -1,3 +1,4 @@
+import fcntl
 import json
 import os
 from datetime import datetime
@@ -9,6 +10,40 @@ from ai_signal_accuracy_service import get_signal_accuracy
 FEEDBACK_FILE = data_path(
     "ai_learning_feedback.json"
 )
+
+LEARNING_FEEDBACK_LOCK_FILE = data_path(
+    "ai_learning_feedback.lock"
+)
+
+
+def _open_learning_feedback_lock_file():
+    """
+    Åbner den persistente lock-fil for Learning Feedback.
+
+    Lock-filen indeholder ingen data. Den koordinerer kun
+    samtidige atomiske writes til feedback-filen.
+    """
+    LEARNING_FEEDBACK_LOCK_FILE.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    fd = os.open(
+        LEARNING_FEEDBACK_LOCK_FILE,
+        os.O_RDWR | os.O_CREAT,
+        0o600,
+    )
+
+    os.fchmod(
+        fd,
+        0o600,
+    )
+
+    return os.fdopen(
+        fd,
+        "a+",
+        encoding="utf-8",
+    )
 
 
 def get_learning_feedback():
@@ -63,27 +98,40 @@ def get_learning_feedback():
         "signal_weights": weights,
     }
 
-    temp_file = FEEDBACK_FILE.with_suffix(
-        FEEDBACK_FILE.suffix + ".tmp"
-    )
-
-    with open(
-        temp_file,
-        "w",
-        encoding="utf-8"
-    ) as f:
-        json.dump(
-            data,
-            f,
-            indent=2,
-            ensure_ascii=False,
+    with _open_learning_feedback_lock_file() as lock:
+        fcntl.flock(
+            lock.fileno(),
+            fcntl.LOCK_EX,
         )
 
-        f.flush()
-        os.fsync(f.fileno())
+        try:
+            temp_file = FEEDBACK_FILE.with_suffix(
+                FEEDBACK_FILE.suffix + ".tmp"
+            )
 
-    temp_file.replace(
-        FEEDBACK_FILE
-    )
+            with open(
+                temp_file,
+                "w",
+                encoding="utf-8"
+            ) as f:
+                json.dump(
+                    data,
+                    f,
+                    indent=2,
+                    ensure_ascii=False,
+                )
+
+                f.flush()
+                os.fsync(f.fileno())
+
+            temp_file.replace(
+                FEEDBACK_FILE
+            )
+
+        finally:
+            fcntl.flock(
+                lock.fileno(),
+                fcntl.LOCK_UN,
+            )
 
     return data
