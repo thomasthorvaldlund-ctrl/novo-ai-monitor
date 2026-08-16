@@ -100,7 +100,6 @@ def command_center():
     rebalancing_amount = cache.get("rebalancing_amount", 5000)
     today_take = cache.get("today_take", {})
     earnings = cache.get("earnings", {})
-    earnings_ai = cache.get("earnings_ai", [])
     earnings_risks = cache.get("earnings_risks", [])
     executive_summary = cache.get("executive_summary", {})
     ai_copilot = cache.get("ai_copilot", {})
@@ -156,7 +155,6 @@ def command_center():
         rebalancing_amount=rebalancing_amount,
         today_take=today_take,
         earnings=earnings,
-        earnings_ai=earnings_ai,
         earnings_risks=earnings_risks,
         executive_summary=executive_summary,
         ai_copilot=ai_copilot,
@@ -367,7 +365,6 @@ def simulate_rebalancing():
         rebalancing_amount=amount,
         today_take=cache.get("today_take", {}),
         earnings=cache.get("earnings", {}),
-        earnings_ai=cache.get("earnings_ai", []),
         earnings_risks=cache.get("earnings_risks", []),
         executive_summary=cache.get("executive_summary", {}),
         ai_copilot=cache.get("ai_copilot", {}),

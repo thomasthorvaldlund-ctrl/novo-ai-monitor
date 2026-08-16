@@ -19,7 +19,6 @@ from news_sentiment_service import (
     get_news_sentiment,
 )
 from earnings_intelligence_service import get_earnings_summary
-from earnings_ai_service import analyze_earnings_articles
 from earnings_risk_service import get_earnings_risks
 from market_score_history_service import save_market_score
 from ai_explain_service import explain_stock
@@ -101,9 +100,6 @@ def build_dashboard_cache():
         news_data.get("articles", [])
     )
 
-    earnings_ai = analyze_earnings_articles(
-        earnings.get("latest_company_reports", [])
-    )
 
     top_pick = top_picks[0] if top_picks else None
 
@@ -268,7 +264,6 @@ def build_dashboard_cache():
     "ai_maturity_explanation": ai_maturity_explanation,
     "ai_news": ai_news,
     "earnings": earnings,
-    "earnings_ai": earnings_ai,
     "earnings_risks": earnings_risks,
     "ai_risk_dashboard": ai_risk_dashboard,
     "stock_explanations": stock_explanations,
