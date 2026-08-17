@@ -40,6 +40,7 @@ dashboard_cache.json
 ai_copilot_history.json
 ai_copilot_history.lock
 ai_maturity_history.json
+ai_maturity_history.lock
 
 # Backup data files
 *_backup.csv
