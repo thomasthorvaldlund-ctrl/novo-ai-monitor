@@ -205,6 +205,86 @@
             </div>
         {% endif %}
 
+        <!-- Portfolio Evolution Sync START -->
+        {% if portfolio_evolution_sync %}
+            <div
+                class="
+                    portfolio-evolution-sync
+                    {% if portfolio_evolution_sync.is_current %}
+                        portfolio-evolution-sync-current
+                    {% else %}
+                        portfolio-evolution-sync-pending
+                    {% endif %}
+                "
+            >
+                <div class="portfolio-evolution-sync-icon">
+                    {% if portfolio_evolution_sync.is_current %}
+                        ✅
+                    {% else %}
+                        ⏳
+                    {% endif %}
+                </div>
+
+                <div class="portfolio-evolution-sync-copy">
+                    <strong>
+                        {% if portfolio_evolution_sync.is_current %}
+                            Seneste måling matcher den aktuelle portefølje
+                        {% else %}
+                            Aktuel portefølje afventer næste daglige måling
+                        {% endif %}
+                    </strong>
+
+                    <p>
+                        {% if portfolio_evolution_sync.is_current %}
+                            Evolution er synkroniseret med den senest
+                            gemte porteføljesammensætning
+                            {% if portfolio_evolution_sync.latest_date %}
+                                fra
+                                {{ portfolio_evolution_sync.latest_date }}
+                            {% endif %}.
+                        {% elif portfolio_evolution_sync.latest_date %}
+                            Seneste gemte måling er fra
+                            {{ portfolio_evolution_sync.latest_date }}.
+                            Historiske målinger ændres ikke. Aktuelle
+                            ændringer indgår i næste daglige snapshot.
+                        {% else %}
+                            Den første daglige Evolution-måling er endnu
+                            ikke gemt. Den aktuelle portefølje kommer
+                            med i næste snapshot.
+                        {% endif %}
+                    </p>
+
+                    {% if
+                        portfolio_evolution_sync.added
+                        or portfolio_evolution_sync.removed
+                    %}
+                        <div class="portfolio-evolution-sync-details">
+                            {% if portfolio_evolution_sync.added %}
+                                <span>
+                                    <b>Nye positioner:</b>
+                                    {{
+                                        portfolio_evolution_sync.added
+                                        | join(", ")
+                                    }}
+                                </span>
+                            {% endif %}
+
+                            {% if portfolio_evolution_sync.removed %}
+                                <span>
+                                    <b>Fjernede positioner:</b>
+                                    {{
+                                        portfolio_evolution_sync.removed
+                                        | join(", ")
+                                    }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        <!-- Portfolio Evolution Sync END -->
+
         {% if portfolio_evolution_explanation %}
             <div class="portfolio-evolution-explanation">
                 <div class="portfolio-evolution-explanation-title">

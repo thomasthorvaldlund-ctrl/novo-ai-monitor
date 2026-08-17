@@ -16,30 +16,121 @@ def portfolio_score(profit_pct):
     return 40
 
 
-def get_portfolio_summary():
-    data = get_real_portfolio_summary()
+def _identity_key(value):
+    return str(
+        value or ""
+    ).strip().upper()
+
+
+def get_portfolio_summary(
+    raw_portfolio=None,
+    ranking=None,
+):
+    """
+    Bygger AI-porteføljevurderingen.
+
+    raw_portfolio og ranking kan leveres af en caller,
+    så allerede hentede markeds- og cachedata genbruges.
+    Eksisterende callers uden argumenter bevarer den
+    tidligere live-adfærd.
+    """
+    if raw_portfolio is None:
+        data = get_real_portfolio_summary()
+    elif isinstance(
+        raw_portfolio,
+        dict,
+    ):
+        data = raw_portfolio
+    else:
+        data = {}
 
     total_value = data.get("total_value", 0)
     total_profit = data.get("total_profit", 0)
     total_profit_pct = data.get("total_profit_pct", 0)
-    positions = data.get("positions", [])
-    
-    combined = combined_stock_score(client)
 
-    score_lookup = {
-    s["stock"]: s["combined_score"]
-    for s in combined["combined_ranking"]
-    }
+    positions = data.get(
+        "positions",
+        [],
+    )
+
+    if not isinstance(
+        positions,
+        list,
+    ):
+        positions = []
+
+    if ranking is None:
+        combined = combined_stock_score(
+            client
+        )
+
+        ranking = combined.get(
+            "combined_ranking",
+            [],
+        )
+    elif not isinstance(
+        ranking,
+        list,
+    ):
+        ranking = []
+
+    stock_scores = {}
+    ticker_scores = {}
+
+    for item in ranking:
+        if not isinstance(
+            item,
+            dict,
+        ):
+            continue
+
+        score = item.get(
+            "combined_score"
+        )
+
+        if score is None:
+            continue
+
+        stock_key = _identity_key(
+            item.get("stock")
+        )
+
+        ticker_key = _identity_key(
+            item.get("ticker")
+        )
+
+        if stock_key:
+            stock_scores[
+                stock_key
+            ] = score
+
+        if ticker_key:
+            ticker_scores[
+                ticker_key
+            ] = score
 
     position_details = []
     
     for p in positions:
         profit_pct = p.get("profit_pct", 0)
 
-        score = score_lookup.get(
-            p.get("stock"),
-            portfolio_score(profit_pct)   # fallback hvis aktien ikke findes
+        score = stock_scores.get(
+            _identity_key(
+                p.get("stock")
+            )
         )
+
+        if score is None:
+            score = ticker_scores.get(
+                _identity_key(
+                    p.get("ticker")
+                )
+            )
+
+        if score is None:
+            score = portfolio_score(
+                profit_pct
+            )
 
         decision = get_ai_decision(score)
 

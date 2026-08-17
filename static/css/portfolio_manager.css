@@ -401,6 +401,70 @@ This rule is more specific than the older one-column rule.
     line-height: 1.5;
 }
 
+
+/* ===== Portfolio Evolution Snapshot Sync ===== */
+
+.portfolio-evolution-sync {
+    grid-column: 1 / -1;
+    align-items: flex-start;
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid;
+    border-radius: var(--radius-medium);
+}
+
+.portfolio-evolution-sync-pending {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.portfolio-evolution-sync-current {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.portfolio-evolution-sync-icon {
+    flex: 0 0 auto;
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+.portfolio-evolution-sync-copy {
+    min-width: 0;
+}
+
+.portfolio-evolution-sync-copy > strong {
+    display: block;
+    color: #334155;
+    line-height: 1.45;
+}
+
+.portfolio-evolution-sync-copy > p {
+    margin: 5px 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+}
+
+.portfolio-evolution-sync-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 8px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.portfolio-evolution-sync-details span {
+    margin: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+.portfolio-evolution-sync-details b {
+    color: #334155;
+}
+
 .portfolio-evolution-explanation {
     grid-column: 1 / -1;
     display: grid;

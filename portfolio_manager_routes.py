@@ -433,11 +433,123 @@ from flask import request
 
 @portfolio_manager_bp.route("/portfolio-manager-page")
 def portfolio_manager_v2_test():
-    data = get_raw_portfolio_summary()
-    ai_data = get_ai_portfolio_summary()
     cache = load_dashboard_cache()
-    portfolio_health = get_portfolio_health(ai_data)
+
+    data = get_raw_portfolio_summary()
+
+    ranking = cache.get(
+        "combined_ranking",
+        [],
+    )
+
+    ai_data = get_ai_portfolio_summary(
+        raw_portfolio=data,
+        ranking=ranking,
+    )
+
+    portfolio_health = get_portfolio_health(
+        ai_data
+    )
     portfolio_health_history = load_portfolio_health_history()
+
+    current_portfolio_names = {
+        str(
+            position.get(
+                "stock",
+                "",
+            )
+        ).strip().upper(): str(
+            position.get(
+                "stock",
+                "",
+            )
+        ).strip()
+        for position in data.get(
+            "positions",
+            [],
+        )
+        if isinstance(
+            position,
+            dict,
+        )
+        and str(
+            position.get(
+                "stock",
+                "",
+            )
+        ).strip()
+    }
+
+    latest_snapshot_names = {}
+    latest_snapshot_date = None
+
+    if portfolio_health_history:
+        latest_snapshot = (
+            portfolio_health_history[
+                -1
+            ]
+        )
+
+        latest_snapshot_date = (
+            latest_snapshot.get(
+                "date"
+            )
+        )
+
+        raw_snapshot = str(
+            latest_snapshot.get(
+                "portfolio_snapshot",
+                "",
+            )
+            or ""
+        )
+
+        latest_snapshot_names = {
+            name.upper(): name
+            for name in (
+                item.strip()
+                for item in raw_snapshot.split(
+                    ","
+                )
+            )
+            if name
+            and name != "-"
+        }
+
+    added_keys = (
+        current_portfolio_names.keys()
+        - latest_snapshot_names.keys()
+    )
+
+    removed_keys = (
+        latest_snapshot_names.keys()
+        - current_portfolio_names.keys()
+    )
+
+    portfolio_evolution_sync = {
+        "is_current": (
+            bool(
+                portfolio_health_history
+            )
+            and not added_keys
+            and not removed_keys
+        ),
+        "added": sorted(
+            current_portfolio_names[
+                key
+            ]
+            for key in added_keys
+        ),
+        "removed": sorted(
+            latest_snapshot_names[
+                key
+            ]
+            for key in removed_keys
+        ),
+        "latest_date": (
+            latest_snapshot_date
+        ),
+    }
 
     portfolio_evolution = None
     portfolio_evolution_explanation = None
@@ -454,19 +566,79 @@ def portfolio_manager_v2_test():
             explain_portfolio_evolution(portfolio_evolution)
         )
 
-    ranking = cache.get("combined_ranking", [])
+    ai_scores_by_stock = {
+        str(
+            item.get(
+                "stock",
+                "",
+            )
+        ).strip().upper(): item.get(
+            "score",
+            0,
+        )
+        for item in ai_data.get(
+            "position_details",
+            [],
+        )
+        if isinstance(
+            item,
+            dict,
+        )
+        and item.get("stock")
+    }
 
-    score_map = {
-        item.get("stock"): item.get("combined_score", 0)
-        for item in ranking
+    ai_scores_by_ticker = {
+        str(
+            item.get(
+                "ticker",
+                "",
+            )
+        ).strip().upper(): item.get(
+            "score",
+            0,
+        )
+        for item in ai_data.get(
+            "position_details",
+            [],
+        )
+        if isinstance(
+            item,
+            dict,
+        )
+        and item.get("ticker")
     }
 
     holdings = []
 
-    for position in data.get("positions", []):
-        stock = position.get("stock")
-        score = score_map.get(stock, 0)
-        decision = get_ai_decision(score)
+    for position in data.get(
+        "positions",
+        [],
+    ):
+        stock = position.get(
+            "stock"
+        )
+
+        ticker = position.get(
+            "ticker"
+        )
+
+        score = ai_scores_by_ticker.get(
+            str(
+                ticker or ""
+            ).strip().upper()
+        )
+
+        if score is None:
+            score = ai_scores_by_stock.get(
+                str(
+                    stock or ""
+                ).strip().upper(),
+                0,
+            )
+
+        decision = get_ai_decision(
+            score
+        )
 
         holdings.append({
             **position,
@@ -484,6 +656,7 @@ def portfolio_manager_v2_test():
         rebalancer=ai_data.get("position_details", []),
         portfolio_health=portfolio_health,
         portfolio_health_history=portfolio_health_history,
+        portfolio_evolution_sync=portfolio_evolution_sync,
         portfolio_evolution=portfolio_evolution,
         portfolio_evolution_explanation=portfolio_evolution_explanation,
         total_value=data.get("total_value", 0),
