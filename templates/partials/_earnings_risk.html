@@ -1,29 +1,244 @@
 <!-- Earnings Risk START -->
 
+<style>
+    .earnings-portfolio-alert-note {
+        background:
+            rgba(37, 99, 235, 0.08);
+        border:
+            1px solid
+            rgba(37, 99, 235, 0.20);
+        border-radius: 12px;
+        color: #334155;
+        line-height: 1.55;
+        margin: 4px 0 20px;
+        padding: 12px 16px;
+    }
+
+    .earnings-portfolio-alert-note strong {
+        color: #1d4ed8;
+    }
+
+    .earnings-universe-details {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        margin: 4px 0 16px;
+        padding: 12px 16px;
+    }
+
+    .earnings-universe-details summary {
+        color: #334155;
+        cursor: pointer;
+        font-weight: 700;
+    }
+
+    .earnings-universe-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 12px;
+    }
+
+    .earnings-universe-stock {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        color: #475569;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 4px 9px;
+    }
+
+    .earnings-universe-stock.is-portfolio {
+        background:
+            rgba(37, 99, 235, 0.08);
+        border-color:
+            rgba(37, 99, 235, 0.30);
+        color: #1d4ed8;
+    }
+
+    .earnings-portfolio-badge {
+        background:
+            rgba(37, 99, 235, 0.10);
+        border:
+            1px solid
+            rgba(37, 99, 235, 0.24);
+        border-radius: 999px;
+        color: #1d4ed8;
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        margin-top: 8px;
+        padding: 4px 9px;
+    }
+
+    .earnings-more-details {
+        margin-top: 18px;
+    }
+
+    .earnings-more-details > summary {
+        align-items: center;
+        background:
+            rgba(37, 99, 235, 0.08);
+        border:
+            1px solid
+            rgba(37, 99, 235, 0.22);
+        border-radius: 12px;
+        color: #1d4ed8;
+        cursor: pointer;
+        display: flex;
+        font-weight: 700;
+        gap: 8px;
+        justify-content: center;
+        list-style: none;
+        padding: 12px 16px;
+        transition:
+            background 0.18s ease,
+            border-color 0.18s ease;
+    }
+
+    .earnings-more-details > summary:hover {
+        background:
+            rgba(37, 99, 235, 0.13);
+        border-color:
+            rgba(37, 99, 235, 0.38);
+    }
+
+    .earnings-more-details > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .earnings-more-details > summary::after {
+        content: "⌄";
+        font-size: 1rem;
+    }
+
+    .earnings-more-details[open] > summary::after {
+        content: "⌃";
+    }
+
+    .earnings-more-grid {
+        margin-top: 16px;
+    }
+
+    .earnings-card-link {
+        color: inherit;
+        display: block;
+        text-decoration: none;
+        transition:
+            border-color 0.18s ease,
+            box-shadow 0.18s ease,
+            transform 0.18s ease;
+    }
+
+    .earnings-card-link:hover {
+        border-color: #2563eb;
+        box-shadow:
+            0 8px 22px
+            rgba(37, 99, 235, 0.14);
+        transform: translateY(-2px);
+    }
+
+    .earnings-card-link:focus-visible {
+        border-color: #2563eb;
+        outline: 3px solid
+            rgba(37, 99, 235, 0.28);
+        outline-offset: 3px;
+    }
+
+    .earnings-card-date {
+        color: #1d4ed8;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+
+    .earnings-card-updated {
+        color: #64748b;
+        font-size: 0.78rem;
+        margin-top: 12px;
+    }
+
+    .earnings-card-action {
+        color: #2563eb;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+</style>
+
 <section class="dashboard-card">
 
     <h2>
         📅 Kommende regnskaber
         <span
             class="info-icon"
-            data-tooltip="Viser kommende regnskaber og AI-vurderet risiko baseret på signal, score og tid til regnskab.">
+            data-tooltip="Viser de 20 højest rangerede Deep AI-aktier med tilgængelig regnskabsdato samt porteføljeaktier. Klik på et kort for at åbne den tilknyttede regnskabsside.">
             ?
         </span>
     </h2>
 
     <p class="section-description">
-        AI overvåger kommende regnskaber for at identificere potentielle risici og muligheder.
-        Vurderingen kombinerer tid til regnskab, AI-score og eksisterende markedssignaler.
+        De 20 aktier er de højest rangerede Deep AI-aktier med en tilgængelig kommende regnskabsdato.
+        Porteføljeaktier tilføjes oveni, hvis de ikke allerede er blandt de 20.
+        Det giver lige nu
+        <strong>{{ earnings_risks | length }} aktier i alt</strong>.
+        Udvælgelsen følger den aktuelle Deep AI-rangering og kan derfor ændre sig.
+        Datoerne kontrolleres automatisk hver 12. time.
+        Hvert kort åbner selskabets officielle finanskalender, når den er registreret;
+        ellers åbnes en ekstern regnskabsoversigt.
     </p>
+
+    {% if earnings_risks %}
+        <details
+            class="earnings-universe-details">
+
+            <summary>
+                Se præcis hvilke
+                {{ earnings_risks | length }}
+                aktier der overvåges
+            </summary>
+
+            <div class="earnings-universe-list">
+                {% for item in earnings_risks %}
+                    <span
+                        class="earnings-universe-stock{% if item.in_portfolio %} is-portfolio{% endif %}"
+                        data-earnings-stock="{{ item.stock }}">
+                        {{ item.stock }}
+                        {% if item.in_portfolio %}
+                            · portefølje
+                        {% endif %}
+                    </span>
+                {% endfor %}
+            </div>
+
+        </details>
+    {% endif %}
+
+    <div class="earnings-portfolio-alert-note">
+        <strong>
+            🔔 Porteføljealarm:
+        </strong>
+        Hvis aktien findes i din portefølje, får du automatisk en alarm i
+        <b>AI Alerts</b> på Command Center, når der er højst 7 dage til regnskabet.
+    </div>
 
 
     {% if earnings_risks %}
 
-        <div class="summary-grid">
+        {% set visible_earnings_count = 5 %}
 
-        {% for item in earnings_risks %}
+        <div class="summary-grid earnings-primary-grid">
 
-            <div class="summary-box">
+        {% for item in earnings_risks[:visible_earnings_count] %}
+
+            <a
+                class="summary-box earnings-card-link"
+                href="{{ item.calendar_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-earnings-stock="{{ item.stock }}"
+                data-in-portfolio="{{ 'true' if item.in_portfolio else 'false' }}"
+                aria-label="{{ item.link_label | default('Åbn regnskabsoversigt', true) }} for {{ item.company }} i en ny fane">
 
                 <div class="summary-title">
 
@@ -39,6 +254,17 @@
                         🟢 NORMAL
                     {% endif %}
 
+                </div>
+
+                {% if item.in_portfolio %}
+                    <div class="earnings-portfolio-badge">
+                        💼 I portefølje
+                    </div>
+                {% endif %}
+
+
+                <div class="earnings-card-date">
+                    📆 {{ item.date_display }}
                 </div>
 
 
@@ -63,11 +289,123 @@
                     {{ item.message }}
                 </div>
 
-            </div>
+
+                {% if item.calendar_checked_at_display %}
+                    <div class="earnings-card-updated">
+                        Dato kontrolleret:
+                        {{ item.calendar_checked_at_display }}
+                    </div>
+                {% endif %}
+
+
+                <div class="earnings-card-action">
+                    {{ item.link_label | default('Åbn regnskabsoversigt', true) }} ↗
+                </div>
+
+            </a>
 
         {% endfor %}
 
         </div>
+
+
+        {% if earnings_risks | length > visible_earnings_count %}
+
+            <details class="earnings-more-details">
+
+                <summary>
+                    Vis
+                    {{
+                        (earnings_risks | length)
+                        - visible_earnings_count
+                    }}
+                    øvrige regnskaber
+                </summary>
+
+                <div class="summary-grid earnings-more-grid">
+
+                {% for item in earnings_risks[visible_earnings_count:] %}
+
+            <a
+                class="summary-box earnings-card-link"
+                href="{{ item.calendar_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-earnings-stock="{{ item.stock }}"
+                data-in-portfolio="{{ 'true' if item.in_portfolio else 'false' }}"
+                aria-label="{{ item.link_label | default('Åbn regnskabsoversigt', true) }} for {{ item.company }} i en ny fane">
+
+                <div class="summary-title">
+
+                    {{ item.stock }}
+
+                    {% if item.alert_level == 'HIGH' %}
+                        🔴 HIGH
+                    {% elif item.alert_level == 'ALERT' %}
+                        🟠 ALERT
+                    {% elif item.alert_level == 'WATCH' %}
+                        🟡 WATCH
+                    {% else %}
+                        🟢 NORMAL
+                    {% endif %}
+
+                </div>
+
+                {% if item.in_portfolio %}
+                    <div class="earnings-portfolio-badge">
+                        💼 I portefølje
+                    </div>
+                {% endif %}
+
+
+                <div class="earnings-card-date">
+                    📆 {{ item.date_display }}
+                </div>
+
+
+                <div class="summary-meta">
+                    {{ item.date_message }}
+                </div>
+
+
+                <div class="summary-meta">
+                    Signal:
+                    {{ item.signal }}
+                </div>
+
+
+                <div class="summary-meta">
+                    AI Score:
+                    {{ item.score }}/100
+                </div>
+
+
+                <div class="summary-meta">
+                    {{ item.message }}
+                </div>
+
+
+                {% if item.calendar_checked_at_display %}
+                    <div class="earnings-card-updated">
+                        Dato kontrolleret:
+                        {{ item.calendar_checked_at_display }}
+                    </div>
+                {% endif %}
+
+
+                <div class="earnings-card-action">
+                    {{ item.link_label | default('Åbn regnskabsoversigt', true) }} ↗
+                </div>
+
+            </a>
+
+                {% endfor %}
+
+                </div>
+
+            </details>
+
+        {% endif %}
 
 
     {% else %}

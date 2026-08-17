@@ -7,16 +7,40 @@ from portfolio_stock_service import (
 )
 
 
-def get_ai_alerts():
-    data = combined_stock_score(client)
-    ranking = data.get("combined_ranking", [])
+def get_ai_alerts(
+    ranking=None,
+    earnings_risks=None,
+):
+    if ranking is None:
+        data = combined_stock_score(
+            client
+        )
+        ranking = data.get(
+            "combined_ranking",
+            [],
+        )
+    elif not isinstance(
+        ranking,
+        list,
+    ):
+        ranking = []
 
-    monitored_stocks = get_monitored_stocks()
-    monitored_stock_names = get_monitored_stock_names()
+    monitored_stocks = {
+        str(value).strip().upper()
+        for value in get_monitored_stocks()
+    }
+
+    monitored_stock_names = {
+        str(value).strip().upper()
+        for value in get_monitored_stock_names()
+    }
 
     alerts = []
 
-    earnings_risks = get_earnings_risks()
+    if earnings_risks is None:
+        earnings_risks = get_earnings_risks(
+            ranking
+        )
 
     priority_earnings_stocks = {
         item["stock"]: item
@@ -26,7 +50,12 @@ def get_ai_alerts():
 
     for stock in ranking:
 
-        ticker = stock.get("ticker")
+        ticker = str(
+            stock.get(
+                "ticker",
+                "",
+            )
+        ).strip().upper()
 
         if ticker not in monitored_stocks:
             continue
@@ -64,7 +93,32 @@ def get_ai_alerts():
 
     for item in earnings_risks:
 
-        if item["stock"].upper() not in monitored_stock_names:
+        item_stock = str(
+            item.get(
+                "stock",
+                "",
+            )
+        ).strip().upper()
+
+        item_ticker = str(
+            item.get(
+                "ticker",
+                "",
+            )
+        ).strip().upper()
+
+        is_portfolio_stock = (
+            bool(
+                item.get(
+                    "in_portfolio",
+                    False,
+                )
+            )
+            or item_stock in monitored_stock_names
+            or item_ticker in monitored_stocks
+        )
+
+        if not is_portfolio_stock:
             continue
 
         if (

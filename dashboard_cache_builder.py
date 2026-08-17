@@ -111,8 +111,13 @@ def build_dashboard_cache():
     ai_rebalancing_plan = generate_rebalancing_plan(
         rebalancing_amount
     )
-    alerts = get_ai_alerts()
-    earnings_risks = get_earnings_risks()
+    earnings_risks = get_earnings_risks(
+        ranking
+    )
+    alerts = get_ai_alerts(
+        ranking=ranking,
+        earnings_risks=earnings_risks,
+    )
     ai_risk_dashboard = calculate_dynamic_risk()
 
     executive_summary = get_ai_executive_summary(

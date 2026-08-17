@@ -79,3 +79,7 @@ ai_usage_history.jsonl
 ai_result_cache.json
 ai_result_cache.json.tmp
 ai_result_cache.lock
+# Runtime earnings calendar cache
+earnings_calendar_cache.json
+earnings_calendar_cache.lock
+.earnings_calendar_cache.json.*.tmp
