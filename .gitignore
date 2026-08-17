@@ -83,3 +83,8 @@ ai_result_cache.lock
 earnings_calendar_cache.json
 earnings_calendar_cache.lock
 .earnings_calendar_cache.json.*.tmp
+
+# Personal Deep AI selections (runtime state)
+deep_ai_selections.json
+deep_ai_selections.lock
+.deep_ai_selections.json.*.tmp

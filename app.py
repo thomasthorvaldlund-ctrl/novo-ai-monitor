@@ -382,11 +382,25 @@ def news_check():
     # mens den fulde AI-sentimentanalyse kun findes for
     # det aktuelle Deep AI-nyhedsudvalg.
     from stock_news_service import stock_news_ai_score
-    from stock_universe_service import get_deep_ai_stocks
+    from deep_ai_selection_service import (
+        get_effective_deep_ai_stocks,
+    )
+
+    deep_ai_user_ids = []
+
+    if (
+        request.authorization
+        and request.authorization.username
+    ):
+        deep_ai_user_ids = [
+            request.authorization.username
+        ]
 
     deep_ai_news_stocks = {
         str(stock).strip().upper()
-        for stock in get_deep_ai_stocks()
+        for stock in get_effective_deep_ai_stocks(
+            user_ids=deep_ai_user_ids,
+        )
     }
 
     is_deep_ai_news_stock = (

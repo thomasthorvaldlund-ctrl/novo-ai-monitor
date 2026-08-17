@@ -8,7 +8,10 @@ from urllib.parse import quote_plus
 from openai_service import create_chat_completion
 from ai_result_cache_service import get_cached_ai_result
 from ai_result_cache_service import save_cached_ai_result
-from stock_universe_service import get_deep_ai_stocks, get_news_query
+from stock_universe_service import get_news_query
+from deep_ai_selection_service import (
+    get_effective_deep_ai_stocks,
+)
 
 
 CACHE_FILE = cache_path(
@@ -22,7 +25,7 @@ STOCK_NEWS_CACHE_CONTRACT_VERSION = "stock_news:v1"
 def build_stock_news_ai_cache(client):
     watchlist = {
         stock_name: get_news_query(stock_name)
-        for stock_name in get_deep_ai_stocks()
+        for stock_name in get_effective_deep_ai_stocks()
     }
 
     results = []
