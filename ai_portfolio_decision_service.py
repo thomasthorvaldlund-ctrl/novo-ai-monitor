@@ -1,4 +1,6 @@
+import fcntl
 import json
+import os
 from pathlib import Path
 
 from aureum_paths import data_path
@@ -11,6 +13,40 @@ from portfolio_ai_service import get_portfolio_ai_insights
 DECISION_FILE = data_path(
     "ai_portfolio_decisions.json"
 )
+
+PORTFOLIO_DECISION_LOCK_FILE = data_path(
+    "ai_portfolio_decisions.lock"
+)
+
+
+def _open_portfolio_decision_lock_file():
+    """
+    Åbner den persistente lock-fil for Portfolio Decisions.
+
+    Lock-filen indeholder ingen data. Den bruges kun til
+    proces- og thread-sikker koordinering af writes.
+    """
+    PORTFOLIO_DECISION_LOCK_FILE.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    fd = os.open(
+        PORTFOLIO_DECISION_LOCK_FILE,
+        os.O_RDWR | os.O_CREAT,
+        0o600,
+    )
+
+    os.fchmod(
+        fd,
+        0o600,
+    )
+
+    return os.fdopen(
+        fd,
+        "a+",
+        encoding="utf-8",
+    )
 
 
 def load_portfolio_decisions():
@@ -89,35 +125,44 @@ def save_portfolio_decision():
     }
 
 
-    history = load_portfolio_decisions()
-
-    history.append(snapshot)
-
-
-    temp_file = DECISION_FILE.with_suffix(
-        DECISION_FILE.suffix + ".tmp"
-    )
-
-    with open(
-        temp_file,
-        "w",
-        encoding="utf-8"
-    ) as f:
-        json.dump(
-            history,
-            f,
-            indent=2,
-            ensure_ascii=False
+    with _open_portfolio_decision_lock_file() as lock:
+        fcntl.flock(
+            lock.fileno(),
+            fcntl.LOCK_EX,
         )
 
-        f.flush()
+        try:
+            history = load_portfolio_decisions()
 
-        import os
-        os.fsync(f.fileno())
+            history.append(snapshot)
 
-    temp_file.replace(
-        DECISION_FILE
-    )
+            temp_file = DECISION_FILE.with_suffix(
+                DECISION_FILE.suffix + ".tmp"
+            )
 
+            with open(
+                temp_file,
+                "w",
+                encoding="utf-8"
+            ) as f:
+                json.dump(
+                    history,
+                    f,
+                    indent=2,
+                    ensure_ascii=False
+                )
+
+                f.flush()
+                os.fsync(f.fileno())
+
+            temp_file.replace(
+                DECISION_FILE
+            )
+
+        finally:
+            fcntl.flock(
+                lock.fileno(),
+                fcntl.LOCK_UN,
+            )
 
     return snapshot

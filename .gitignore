@@ -72,6 +72,7 @@ ai_decision_history.lock
 ai_decision_learning_history.json
 ai_decision_learning_history.lock
 ai_portfolio_decisions.json
+ai_portfolio_decisions.lock
 stock_metadata_enrichment_cache.json
 ai_usage_history.jsonl
 # AI result cache
