@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, render_template, request
 
 from dashboard_cache_service import load_dashboard_cache
+from ai_portfolio_lab_context_service import build_portfolio_lab_context
 from system_health_service import get_system_health
 from market_score_service import get_market_score
 from market_summary_service import get_market_summary
@@ -35,7 +36,6 @@ from ai_context_engine_service import get_ai_context
 from ai_strategy_engine_service import get_ai_strategy
 from ai_copilot_engine_service import get_ai_copilot
 from ai_copilot_decision_service import get_copilot_decision
-from ai_decision_intelligence_service import get_decision_intelligence
 from ai_decision_performance_service import get_decision_performance
 from ai_portfolio_executive_service import get_ai_portfolio_executive
 from ai_portfolio_overview_service import get_ai_portfolio_overview
@@ -249,82 +249,26 @@ def ai_stock_library():
 
 @command_center_bp.route("/ai-portfolio-lab")
 def ai_portfolio_lab():
-
     cache = load_dashboard_cache()
 
-    decision_intelligence = get_decision_intelligence()
-
-    ai_portfolio_executive = get_ai_portfolio_executive(
-        decision_intelligence=decision_intelligence
+    context = cache.get(
+        "portfolio_lab_context"
     )
 
-    ai_portfolio_brain = get_ai_portfolio_brain(
-        portfolio_executive=ai_portfolio_executive,
-        decision_intelligence=decision_intelligence,
-    )
-
-    brain_score = get_brain_score(
-        portfolio_brain=ai_portfolio_brain
-    )
-
-    brain_score_explanation = get_brain_score_explanation(
-        brain_score=brain_score
-    )
-
-    memory_center = get_memory_center()
-
-    memory_intelligence = get_memory_intelligence(
-        memory_center=memory_center
-    )
+    if not isinstance(
+        context,
+        dict,
+    ):
+        context = (
+            build_portfolio_lab_context(
+                cache
+            )
+        )
 
     return render_template(
         "ai_portfolio_lab.html",
-        portfolio_insights=cache.get("portfolio_insights", []),
-        portfolio_recommendations=cache.get("portfolio_recommendations", []),
-        rebalancing=cache.get("rebalancing", {}),
-        portfolio_decision_history=load_portfolio_decisions(),
-        portfolio_changes=get_portfolio_changes(),
-        portfolio_performance=get_portfolio_performance(),
-        portfolio_analytics=get_portfolio_analytics(),
-        learning_report=get_learning_report(),
-        learning_timeline=get_learning_timeline(),
-        confidence_calibration=get_confidence_calibration(),
-        portfolio_confidence_calibration=get_portfolio_confidence_calibration(),
-        learning_by_stock=get_learning_by_stock(),
-        signal_accuracy=get_signal_accuracy(),
-        improvement_advisor=get_improvement_advisor(),
-        learning_trends=get_learning_trends(),
-        ai_insight=get_ai_insight(),
-        pattern_detection=get_pattern_detection(),
-        prediction_engine=get_prediction_engine(),
-        decision_optimizer=get_decision_optimizer(),
-        learning_feedback=get_learning_feedback(),
-        ai_context=get_ai_context(),
-        ai_strategy=get_ai_strategy(),
-        ai_copilot=get_ai_copilot(),
-        copilot_decision=get_copilot_decision(),
-        decision_intelligence=decision_intelligence,
-        decision_performance=get_decision_performance(),
-        ai_portfolio_executive=ai_portfolio_executive,
-        ai_portfolio_brain=ai_portfolio_brain,
-        brain_score=brain_score,
-        brain_score_explanation=brain_score_explanation,
-        decision_memory=get_decision_memory(),
-        memory_trends=get_memory_trends(),
-        memory_insights=get_memory_insights(),
-        memory_advisor=get_memory_advisor(),
-        memory_center=memory_center,
-        memory_intelligence=memory_intelligence,
-        memory_learning=get_memory_learning(),
-        learning_evolution=get_learning_evolution(),
-        learning_analytics=get_learning_analytics(),
-        confidence_intelligence=get_confidence_intelligence(),
-        stock_decision_intelligence=get_stock_decision_intelligence(),
-        ai_data_quality=get_ai_data_quality(),
-        decision_evolution=get_decision_evolution(),
-        ai_portfolio_overview=get_ai_portfolio_overview(),
+        **context,
     )
-
 
 
 @command_center_bp.route("/simulate-rebalancing")

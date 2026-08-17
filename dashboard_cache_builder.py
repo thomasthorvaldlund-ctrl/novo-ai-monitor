@@ -13,6 +13,8 @@ from portfolio_summary_service import get_portfolio_summary
 from system_health_service import get_system_health
 from morning_brief_service import get_morning_brief
 from performance_service import get_signal_statistics
+from ai_learning_feedback_service import refresh_learning_feedback
+from ai_portfolio_lab_context_service import build_portfolio_lab_context
 from dashboard_cache_service import save_dashboard_cache
 from news_sentiment_service import (
     get_ai_news_sentiment,
@@ -162,6 +164,10 @@ def build_dashboard_cache():
         decision_snapshot
     )
 
+    learning_feedback = (
+        refresh_learning_feedback()
+    )
+
     decision_performance = get_decision_performance()
     decision_learning = get_decision_learning()
 
@@ -237,6 +243,23 @@ def build_dashboard_cache():
         market.get("status", "Neutral"),
     )
     
+    portfolio_lab_context = (
+        build_portfolio_lab_context({
+            "portfolio_insights":
+                portfolio_insights,
+            "portfolio_recommendations":
+                portfolio_recommendations,
+            "rebalancing":
+                rebalancing,
+            "decision_intelligence":
+                decision_intelligence,
+            "decision_performance":
+                decision_performance,
+            "learning_feedback":
+                learning_feedback,
+        })
+    )
+
     data = {
     "updated_at": datetime.now().strftime("%d-%m-%Y %H:%M"),
     "combined_ranking": ranking,
@@ -259,6 +282,8 @@ def build_dashboard_cache():
     "performance": performance,
     "decision_quality": decision_quality,
     "decision_learning": decision_learning,
+    "learning_feedback": learning_feedback,
+    "portfolio_lab_context": portfolio_lab_context,
     "decision_learning_trend": decision_learning_trend,
     "adaptive_learning_summary": adaptive_learning_summary,
     "adaptive_behavior": adaptive_behavior,

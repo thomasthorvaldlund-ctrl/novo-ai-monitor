@@ -378,6 +378,80 @@ def news_check():
         selected_stock = "NOVO"
         stock_metadata = get_stock_metadata(selected_stock)
 
+    # News Check finder artikler for alle aktive aktier,
+    # mens den fulde AI-sentimentanalyse kun findes for
+    # det aktuelle Deep AI-nyhedsudvalg.
+    from stock_news_service import stock_news_ai_score
+    from stock_universe_service import get_deep_ai_stocks
+
+    deep_ai_news_stocks = {
+        str(stock).strip().upper()
+        for stock in get_deep_ai_stocks()
+    }
+
+    is_deep_ai_news_stock = (
+        selected_stock
+        in deep_ai_news_stocks
+    )
+
+    news_ai_cache = stock_news_ai_score(
+        None
+    )
+
+    news_ai_rows = news_ai_cache.get(
+        "news_ai_scores",
+        [],
+    )
+
+    news_ai_item = next(
+        (
+            item
+            for item in news_ai_rows
+            if isinstance(item, dict)
+            and str(
+                item.get("stock", "")
+            ).strip().upper()
+            == selected_stock
+        ),
+        None,
+    )
+
+    valid_news_ai_item = (
+        isinstance(news_ai_item, dict)
+        and isinstance(
+            news_ai_item.get("news_score"),
+            int,
+        )
+        and not isinstance(
+            news_ai_item.get("news_score"),
+            bool,
+        )
+        and 0
+        <= news_ai_item.get("news_score")
+        <= 100
+        and isinstance(
+            news_ai_item.get("ai_analysis"),
+            str,
+        )
+        and bool(
+            news_ai_item.get(
+                "ai_analysis",
+                "",
+            ).strip()
+        )
+        and not news_ai_item.get("error")
+    )
+
+    if (
+        is_deep_ai_news_stock
+        and valid_news_ai_item
+    ):
+        news_analysis_status = "full"
+    elif is_deep_ai_news_stock:
+        news_analysis_status = "unavailable"
+    else:
+        news_analysis_status = "limited"
+
     seen_file = state_path("seen_news.txt")
 
     try:
@@ -471,6 +545,20 @@ def news_check():
         watchlist=get_active_stocks(),
         selected_stock=selected_stock,
         query=query,
+        news_analysis_status=news_analysis_status,
+        news_ai_score=(
+            news_ai_item.get("news_score")
+            if valid_news_ai_item
+            else None
+        ),
+        news_ai_analysis=(
+            news_ai_item.get("ai_analysis")
+            if valid_news_ai_item
+            else ""
+        ),
+        deep_ai_news_count=len(
+            deep_ai_news_stocks
+        ),
     )
 
 AI_NEWS_CHECK_CACHE_CONTRACT_VERSION = "ai_news_check:v1"

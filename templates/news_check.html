@@ -7,7 +7,9 @@
 <h1>📰 News Check</h1>
 
 <p style="color:#6b7280; margin-top:-8px; margin-bottom:18px;">
-    Overvåger de seneste Novo Nordisk-relaterede nyheder for mulige negative signaler.
+    Henter de seneste nyhedsoverskrifter for den valgte aktie og screener dem
+    for faste negative nøgleord. Kun aktier i det aktuelle Deep AI-nyhedsudvalg
+    får en separat AI-sentimentanalyse.
 </p>
 
 <form method="get" action="/news-check" style="
@@ -79,9 +81,99 @@
     🕒 Sidst opdateret: {{ updated_at }}
 </p>
 
+{% if news_analysis_status == "full" %}
+    <div style="
+        margin:0 0 22px;
+        padding:16px 18px;
+        border:1px solid #86efac;
+        border-left:5px solid #16a34a;
+        border-radius:10px;
+        background:#f0fdf4;
+        color:#334155;
+        line-height:1.6;
+    ">
+        <strong style="color:#166534;">
+            🧠 Fuld Deep AI-nyhedsanalyse for {{ selected_stock }}
+        </strong>
+
+        <p style="margin:7px 0 0;">
+            Aktien indgår i det aktuelle Deep AI-nyhedsudvalg og har fået en
+            separat AI-sentimentvurdering.
+            Nyhedsscore:
+            <strong>{{ news_ai_score }}/100</strong>.
+            Nøgleordsfundene nedenfor er et supplerende alarmsignal.
+        </p>
+
+        <details style="margin-top:10px;">
+            <summary style="
+                cursor:pointer;
+                color:#166534;
+                font-weight:700;
+            ">
+                Vis den fulde AI-vurdering
+            </summary>
+
+            <div style="
+                margin-top:10px;
+                padding:12px 14px;
+                border-radius:8px;
+                background:#ffffff;
+                white-space:pre-wrap;
+            ">{{ news_ai_analysis }}</div>
+        </details>
+    </div>
+
+{% elif news_analysis_status == "limited" %}
+    <div style="
+        margin:0 0 22px;
+        padding:16px 18px;
+        border:1px solid #fcd34d;
+        border-left:5px solid #d97706;
+        border-radius:10px;
+        background:#fffbeb;
+        color:#334155;
+        line-height:1.6;
+    ">
+        <strong style="color:#92400e;">
+            ℹ️ Begrænset nyhedsanalyse for {{ selected_stock }}
+        </strong>
+
+        <p style="margin:7px 0 0;">
+            Aktien indgår ikke i det aktuelle Deep AI-nyhedsudvalg.
+            Artiklerne er derfor hentet og screenet for faste negative
+            nøgleord, men der er ikke udført en fuld AI-sentimentanalyse.
+            “0 negative nøgleordsfund” betyder kun, at ingen af de faste
+            negative ord blev fundet i overskrifterne.
+        </p>
+    </div>
+
+{% else %}
+    <div style="
+        margin:0 0 22px;
+        padding:16px 18px;
+        border:1px solid #fdba74;
+        border-left:5px solid #ea580c;
+        border-radius:10px;
+        background:#fff7ed;
+        color:#334155;
+        line-height:1.6;
+    ">
+        <strong style="color:#9a3412;">
+            ⚠️ Deep AI-analysen er midlertidigt utilgængelig
+            for {{ selected_stock }}
+        </strong>
+
+        <p style="margin:7px 0 0;">
+            Aktien indgår i Deep AI-nyhedsudvalget, men der findes ikke en
+            gyldig opdateret AI-sentimentanalyse i cachen lige nu.
+            De viste artikler er derfor kun screenet for negative nøgleord.
+        </p>
+    </div>
+{% endif %}
+
 <div class="card" style="
     margin-bottom:24px;
-    border-left:6px solid {% if alarm_sent %}#dc2626{% else %}#16a34a{% endif %};
+    border-left:6px solid {% if alarm_sent %}#dc2626{% else %}#2563eb{% endif %};
 ">
     <div style="
         display:grid;
@@ -163,12 +255,12 @@
         ">
             <summary style="list-style:none; cursor:pointer;">
                 <span class="morning-brief-label">
-                    ⚠️ Negative fund
+                    ⚠️ Negative nøgleordsfund
                 </span>
 
                 <div
                     class="morning-brief-value"
-                    style="color:{% if negative_matches %}#dc2626{% else %}#16a34a{% endif %};"
+                    style="color:{% if negative_matches %}#dc2626{% else %}#2563eb{% endif %};"
                 >
                     {{ negative_matches|length }}
                 </div>
@@ -178,7 +270,7 @@
                     color:#2563eb;
                     font-size:12px;
                 ">
-                    Vis negative fund ↓
+                    Vis nøgleordsfund ↓
                 </div>
             </summary>
 
@@ -217,7 +309,7 @@
                     </div>
                 {% else %}
                     <span style="color:#888;">
-                        Ingen nye negative fund.
+                        Ingen negative nøgleord fundet.
                     </span>
                 {% endfor %}
             </div>
@@ -229,12 +321,12 @@
             border-radius:10px;
             padding:16px;
         ">
-            <span class="morning-brief-label">🚨 Alarmstatus</span>
+            <span class="morning-brief-label">🚨 Nøgleordsalarm</span>
             <div class="morning-brief-value">
                 {% if alarm_sent %}
-                    Alarm sendt
+                    Nøgleordsalarm sendt
                 {% else %}
-                    Ingen alarm
+                    Ingen nøgleordsalarm
                 {% endif %}
             </div>
         </div>
@@ -243,7 +335,7 @@
     {% if negative_matches %}
         <div style="margin-top:22px;">
             <h2 style="margin-bottom:12px;">
-                Mulige negative nyhedssignaler
+                Mulige negative nøgleordssignaler
             </h2>
 
             {% for item in negative_matches %}
@@ -284,11 +376,11 @@
         <div style="
             margin-top:22px;
             padding:14px 16px;
-            background:#dcfce7;
-            border-left:4px solid #16a34a;
+            background:#eff6ff;
+            border-left:4px solid #2563eb;
             border-radius:8px;
         ">
-            Ingen nye negative nyhedssignaler blev fundet blandt de seneste artikler.
+            Ingen negative nøgleord blev fundet blandt de seneste overskrifter. Dette resultat er kun nøgleordsscreeningen; se analysestatus ovenfor.
         </div>
     {% endif %}
 </div>

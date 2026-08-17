@@ -244,7 +244,8 @@
 
 .explain-grid {
     display:grid;
-    grid-template-columns:repeat(2, 1fr);
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
     gap:16px;
 }
 
@@ -791,6 +792,37 @@
     .library-filter {
         padding: 8px 12px;
         font-size: 13px;
+    }
+}
+
+/* AI Stock Library: mobile width */
+.stock-library-page,
+.stock-library-page .explain-grid,
+.stock-library-page .explain-card {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.stock-library-page .explain-card {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+    .stock-library-page .explain-grid {
+        grid-template-columns:
+            minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .stock-library-page .explain-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .stock-library-page .summary-badge {
+        max-width: 100%;
+        white-space: normal;
     }
 }
 
