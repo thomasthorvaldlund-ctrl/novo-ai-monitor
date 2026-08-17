@@ -81,15 +81,38 @@
                 </div>
 
                 <div>
-                    <label for="buy_price">Købspris</label>
+                    <label for="buy_price">
+                        Købspris pr. aktie *
+                    </label>
+
                     <input
                         id="buy_price"
                         name="buy_price"
                         type="number"
                         step="0.01"
                         min="0"
+                        inputmode="decimal"
                         placeholder="Eksempel: 296.38"
+                        aria-describedby="buy-price-help"
+                        required
                     >
+
+                    <p
+                        id="buy-price-help"
+                        style="
+                            color: #64748b;
+                            font-size: 0.85rem;
+                            line-height: 1.5;
+                            margin: 8px 0 0;
+                        ">
+                        <strong style="color:#334155;">
+                            Obligatorisk:
+                        </strong>
+                        Indtast den præcise købspris pr. aktie
+                        med punktum som decimaltegn, fx
+                        <strong>296.38</strong>.
+                        Brug ikke komma.
+                    </p>
                 </div>
 
                 <div>

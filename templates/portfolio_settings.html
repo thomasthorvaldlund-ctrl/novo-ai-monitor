@@ -1,215 +1,219 @@
-<!DOCTYPE html>
-<html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Settings</title>
+{% extends "base.html" %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f4f6;
-            color: #111827;
+{% block title %}
+Portfolio Settings · Aureum AI Platform
+{% endblock %}
+
+{% block head %}
+<style>
+    .portfolio-settings-page {
+        margin: 0 auto;
+        max-width: 1200px;
+        width: 100%;
+    }
+
+    .portfolio-settings-page .page-header {
+        align-items: flex-start;
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .portfolio-settings-page .page-header-text {
+        min-width: 0;
+    }
+
+    .portfolio-settings-page .page-header h1 {
+        font-size: 32px;
+        margin: 0 0 8px;
+    }
+
+    .portfolio-settings-page .page-header p {
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .portfolio-settings-page .page-actions {
+        flex-shrink: 0;
+    }
+
+    .portfolio-settings-page .add-button,
+    .portfolio-settings-page .action-button {
+        align-items: center;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        font-weight: 600;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .portfolio-settings-page .add-button {
+        background: #2563eb;
+        color: #ffffff;
+        min-height: 42px;
+        padding: 10px 16px;
+    }
+
+    .portfolio-settings-page .add-button:hover {
+        background: #1d4ed8;
+    }
+
+    .portfolio-settings-page .action-buttons {
+        align-items: center;
+        display: flex;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .portfolio-settings-page .action-button {
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 13px;
+        min-height: 34px;
+        padding: 8px 10px;
+    }
+
+    .portfolio-settings-page .action-button:hover {
+        background: #e5e7eb;
+    }
+
+    .portfolio-settings-page .action-button.delete {
+        color: #b91c1c;
+    }
+
+    .portfolio-settings-page .action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .portfolio-settings-page .summary-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+        margin-bottom: 24px;
+    }
+
+    .portfolio-settings-page .summary-card,
+    .portfolio-settings-page .table-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow:
+            0 4px 14px
+            rgba(0, 0, 0, 0.06);
+    }
+
+    .portfolio-settings-page .summary-card {
+        min-width: 0;
+        padding: 20px;
+    }
+
+    .portfolio-settings-page .summary-label {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .portfolio-settings-page .summary-value {
+        font-size: 24px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .portfolio-settings-page .positive {
+        color: #15803d;
+    }
+
+    .portfolio-settings-page .negative {
+        color: #b91c1c;
+    }
+
+    .portfolio-settings-page .table-card {
+        overflow-x: auto;
+    }
+
+    .portfolio-settings-page .table-header {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 20px;
+    }
+
+    .portfolio-settings-page .table-header h2 {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .portfolio-settings-page table {
+        border-collapse: collapse;
+        min-width: 940px;
+        width: 100%;
+    }
+
+    .portfolio-settings-page th,
+    .portfolio-settings-page td {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 14px 18px;
+        text-align: left;
+    }
+
+    .portfolio-settings-page th {
+        background: #f9fafb;
+        color: #4b5563;
+        font-size: 13px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .portfolio-settings-page tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .portfolio-settings-page .stock-name {
+        font-weight: 700;
+    }
+
+    .portfolio-settings-page .ticker {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+        .portfolio-settings-page .summary-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        .portfolio-settings-page .page-header {
+            flex-direction: column;
         }
 
-        .page {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 20px;
-        }
-
-        .page-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .page-header-text {
-            min-width: 0;
-        }
-
-        .page-actions {
-            flex-shrink: 0;
-        }
-
-        .add-button,
-        .action-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .add-button {
-            min-height: 42px;
-            padding: 10px 16px;
-            background: #2563eb;
-            color: white;
-        }
-
-        .add-button:hover {
-            background: #1d4ed8;
-        }
-
-        .action-buttons {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .action-button {
-            min-height: 34px;
-            padding: 8px 10px;
-            background: #f3f4f6;
-            color: #374151;
-            font-size: 13px;
-        }
-
-        .action-button.delete {
-            color: #b91c1c;
-        }
-
-        .action-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .page-header h1 {
-            margin: 0 0 8px;
-            font-size: 32px;
-        }
-
-        .page-header p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .summary-card,
-        .table-card {
-            background: white;
-            border-radius: 14px;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-        }
-
-        .summary-card {
-            padding: 20px;
-        }
-
-        .summary-label {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .summary-value {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .positive {
-            color: #15803d;
-        }
-
-        .negative {
-            color: #b91c1c;
-        }
-
-        .table-card {
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 20px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .table-header h2 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        table {
+        .portfolio-settings-page .page-actions {
             width: 100%;
-            border-collapse: collapse;
         }
 
-        th,
-        td {
-            padding: 14px 18px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
+        .portfolio-settings-page .add-button {
+            width: 100%;
         }
 
-        th {
-            background: #f9fafb;
-            color: #4b5563;
-            font-size: 13px;
-            text-transform: uppercase;
+        .portfolio-settings-page .summary-grid {
+            grid-template-columns: 1fr;
         }
 
-        tbody tr:last-child td {
-            border-bottom: none;
+        .portfolio-settings-page .page-header h1 {
+            font-size: 26px;
         }
+    }
+</style>
+{% endblock %}
 
-        .stock-name {
-            font-weight: 700;
-        }
-
-        .ticker {
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        @media (max-width: 900px) {
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .table-card {
-                overflow-x: auto;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .page-header {
-                flex-direction: column;
-            }
-
-            .page-actions {
-                width: 100%;
-            }
-
-            .add-button {
-                width: 100%;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .page-header h1 {
-                font-size: 26px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <main class="page">
-        <header class="page-header">
+{% block content %}
+<div class="portfolio-settings-page">
+<header class="page-header">
             <div class="page-header-text">
                 <h1>Portfolio Settings</h1>
                 <p>Administrer og gennemse dine porteføljepositioner.</p>
@@ -324,6 +328,5 @@
                 </tbody>
             </table>
         </section>
-    </main>
-</body>
-</html>
+</div>
+{% endblock %}

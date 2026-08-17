@@ -254,7 +254,10 @@
             Portfolio
         </div>
 
-        <a class="nav-link {% if request.path == '/portfolio-manager-page' %}active{% endif %}" href="/portfolio-manager-page">
+        <a
+            class="nav-link {% if request.path in ['/portfolio-manager-page', '/portfolio-settings', '/portfolio-add'] or request.path.startswith('/portfolio-edit/') %}active{% endif %}"
+            href="/portfolio-manager-page"
+        >
             💼 Portfolio Manager
         </a>
 

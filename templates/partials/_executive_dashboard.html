@@ -78,7 +78,7 @@
 
         <a
             class="executive-metric executive-metric-link executive-action-card"
-            href="/portfolio-manager-v2-test"
+            href="/portfolio-manager-page"
             aria-label="Åbn Portfolio Manager"
         >
             <span>🩺 Portfolio Health</span>
@@ -251,7 +251,7 @@
         </a>
 
         <a
-            id="ai-alerts"
+            id="highest-priority"
             class="executive-metric executive-metric-link executive-action-card"
             href="/command-center#ai-alerts"
             aria-label="Åbn aktive AI-alerts"
@@ -381,6 +381,86 @@
         </a>
 
     </div>
+
+
+    <section
+        id="ai-alerts"
+        class="executive-alerts-detail"
+        aria-labelledby="ai-alerts-detail-title">
+
+        <div class="executive-alerts-detail-header">
+
+            <div>
+                <span class="executive-alerts-eyebrow">
+                    AI Alerts
+                </span>
+
+                <h3 id="ai-alerts-detail-title">
+                    🚨 Aktuelle AI-advarsler
+                </h3>
+
+                <p>
+                    Samlet status for alle aktive og informative
+                    AI-advarsler på Command Center.
+                </p>
+            </div>
+
+            <a
+                class="executive-alerts-close"
+                href="#highest-priority"
+                aria-label="Luk AI Alerts">
+                Luk ×
+            </a>
+
+        </div>
+
+
+        {% if alerts %}
+
+            <div class="executive-alerts-list">
+
+                {% for alert in alerts %}
+
+                    <article
+                        class="executive-alert-item executive-alert-item-{{ alert.level | default('neutral') }}">
+
+                        <div class="executive-alert-item-header">
+
+                            <strong>
+                                {{ alert.title }}
+                            </strong>
+
+                            {% if alert.level == "green" %}
+                                <span class="executive-alert-state executive-alert-state-good">
+                                    Informativ
+                                </span>
+                            {% else %}
+                                <span class="executive-alert-state executive-alert-state-active">
+                                    Aktiv
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                        <p>
+                            {{ alert.message }}
+                        </p>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="executive-alert-empty">
+                Ingen AI-advarsler er registreret lige nu.
+            </div>
+
+        {% endif %}
+
+    </section>
 
 </section>
 

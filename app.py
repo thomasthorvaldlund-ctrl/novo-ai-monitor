@@ -971,70 +971,31 @@ def history():
     import csv
 
     rows = []
+    error_message = None
 
     try:
-        with open(data_path("history.csv"), "r") as f:
-            reader = csv.DictReader(f)
+        with open(
+            data_path("history.csv"),
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as history_file:
+            reader = csv.DictReader(
+                history_file
+            )
             rows = list(reader)
-    except Exception:
-        rows = []
 
-    table_rows = ""
+    except (OSError, csv.Error):
+        error_message = (
+            "Historikdata kunne ikke indlæses."
+        )
 
-    for row in rows[-30:]:
-        table_rows += f"""
-        <tr>
-            <td>{row.get('date')}</td>
-            <td>{row.get('stock')}</td>
-            <td>{row.get('price')}</td>
-            <td>{row.get('technical_risk')}</td>
-            <td>{row.get('ai_risk')}</td>
-            <td>{row.get('total_risk')}</td>
-        </tr>
-        """
-
-    return f"""
-    <html>
-    <head>
-        <title>Historik</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background: #eef2f7;
-                padding: 40px;
-            }}
-            table {{
-                border-collapse: collapse;
-                width: 100%;
-                background: white;
-            }}
-            th, td {{
-                padding: 12px;
-                border-bottom: 1px solid #ddd;
-                text-align: left;
-            }}
-            th {{
-                background: #111827;
-                color: white;
-            }}
-        </style>
-    </head>
-    <body>
-        <h1>📈 Aktiehistorik</h1>
-        <table>
-            <tr>
-                <th>Dato</th>
-                <th>Aktie</th>
-                <th>Kurs</th>
-                <th>Teknisk risiko</th>
-                <th>AI-risiko</th>
-                <th>Samlet risiko</th>
-            </tr>
-            {table_rows}
-        </table>
-    </body>
-    </html>
-    """
+    return render_template(
+        "history.html",
+        rows=rows[-30:],
+        history_count=len(rows),
+        error_message=error_message,
+    )
 
 
 @app.route("/dashboard")
