@@ -189,61 +189,277 @@ def ai_stock_library():
 
     cache = load_dashboard_cache()
 
-    stock_explanations = cache.get(
+    cached_explanations = cache.get(
         "stock_explanations",
-        []
+        [],
     )
 
-    selected_stock = request.args.get("stock", "").strip().upper()
-    selected_signal = request.args.get("signal", "").strip().upper()
+    if not isinstance(
+        cached_explanations,
+        list,
+    ):
+        cached_explanations = []
 
-    performance = cache.get("performance", {})
+    performance = cache.get(
+        "performance",
+        {},
+    )
 
-    for item in stock_explanations:
-        stock = item.get("stock", "").strip().upper()
+    if not isinstance(
+        performance,
+        dict,
+    ):
+        performance = {}
 
-        if stock in [s.upper() for s in performance.get("buy_stocks", [])]:
-            item["signal"] = "BUY"
+    selected_stock = request.args.get(
+        "stock",
+        "",
+    ).strip().upper()
 
-        elif stock in [s.upper() for s in performance.get("hold_stocks", [])]:
-            item["signal"] = "HOLD"
+    selected_signal = request.args.get(
+        "signal",
+        "",
+    ).strip().upper()
 
-        elif stock in [s.upper() for s in performance.get("watch_stocks", [])]:
-            item["signal"] = "WATCH"
+    selected_query = request.args.get(
+        "q",
+        "",
+    ).strip()[:80]
 
-        elif stock in [s.upper() for s in performance.get("sell_stocks", [])]:
-            item["signal"] = "SELL"
+    signal_names = (
+        "BUY",
+        "HOLD",
+        "WATCH",
+        "SELL",
+    )
 
-        else:
-            item["signal"] = "UNKNOWN"
+    signal_stocks = {}
 
-    signal_stocks = {
-        "BUY": performance.get("buy_stocks", []),
-        "HOLD": performance.get("hold_stocks", []),
-        "WATCH": performance.get("watch_stocks", []),
-        "SELL": performance.get("sell_stocks", []),
+    for signal in signal_names:
+        values = performance.get(
+            f"{signal.lower()}_stocks",
+            [],
+        )
+
+        if not isinstance(values, list):
+            values = []
+
+        signal_stocks[signal] = {
+            str(stock).strip().upper()
+            for stock in values
+            if str(stock).strip()
+        }
+
+    ranking = cache.get(
+        "combined_ranking",
+        [],
+    )
+
+    if not isinstance(ranking, list):
+        ranking = []
+
+    ticker_by_stock = {}
+
+    for row in ranking:
+        if not isinstance(row, dict):
+            continue
+
+        stock = str(
+            row.get("stock", "")
+        ).strip().upper()
+
+        ticker = str(
+            row.get("ticker", "")
+        ).strip()
+
+        if stock and ticker:
+            ticker_by_stock[stock] = ticker
+
+    all_explanations = []
+
+    for cached_item in cached_explanations:
+        if not isinstance(
+            cached_item,
+            dict,
+        ):
+            continue
+
+        item = cached_item.copy()
+
+        stock = str(
+            item.get("stock", "")
+        ).strip().upper()
+
+        item["ticker"] = (
+            ticker_by_stock.get(
+                stock,
+                "",
+            )
+        )
+
+        item["signal"] = "UNKNOWN"
+
+        for signal in signal_names:
+            if stock in signal_stocks[signal]:
+                item["signal"] = signal
+                break
+
+        all_explanations.append(item)
+
+    actionable_explanations = [
+        item
+        for item in all_explanations
+        if item.get("signal") in signal_names
+    ]
+
+    total_stock_count = len(
+        all_explanations
+    )
+
+    signal_stock_count = len(
+        actionable_explanations
+    )
+
+    signal_counts = {
+        signal: len(signal_stocks[signal])
+        for signal in signal_names
     }
 
-    if selected_signal in signal_stocks:
-        allowed_stocks = {
-            stock.strip().upper()
-            for stock in signal_stocks[selected_signal]
-        }
+    query_too_short = bool(
+        selected_query
+        and len(selected_query) < 2
+    )
+
+    search_total_count = 0
+    results_truncated = False
+    search_result_limit = 40
+
+    if selected_stock:
+        display_mode = "stock"
 
         stock_explanations = [
             item
-            for item in stock_explanations
-            if item.get("stock", "").strip().upper() in allowed_stocks
+            for item in all_explanations
+            if str(
+                item.get("stock", "")
+            ).strip().upper()
+            == selected_stock
         ]
-    else:
+
+        search_total_count = len(
+            stock_explanations
+        )
+
+    elif selected_query:
+        display_mode = "search"
         selected_signal = ""
+
+        if query_too_short:
+            stock_explanations = []
+        else:
+            normalized_query = (
+                selected_query.casefold()
+            )
+
+            search_matches = []
+
+            for item in all_explanations:
+                searchable_text = " ".join(
+                    str(
+                        item.get(field, "")
+                    )
+                    for field in (
+                        "stock",
+                        "ticker",
+                        "headline",
+                        "summary",
+                    )
+                ).casefold()
+
+                if (
+                    normalized_query
+                    in searchable_text
+                ):
+                    search_matches.append(
+                        item
+                    )
+
+            search_total_count = len(
+                search_matches
+            )
+
+            results_truncated = (
+                search_total_count
+                > search_result_limit
+            )
+
+            stock_explanations = (
+                search_matches[
+                    :search_result_limit
+                ]
+            )
+
+    elif selected_signal in signal_stocks:
+        display_mode = "signal"
+
+        allowed_stocks = (
+            signal_stocks[
+                selected_signal
+            ]
+        )
+
+        stock_explanations = [
+            item
+            for item in all_explanations
+            if str(
+                item.get("stock", "")
+            ).strip().upper()
+            in allowed_stocks
+        ]
+
+        search_total_count = len(
+            stock_explanations
+        )
+
+    else:
+        display_mode = "signals"
+        selected_signal = ""
+
+        stock_explanations = (
+            actionable_explanations
+        )
+
+        search_total_count = len(
+            stock_explanations
+        )
 
     return render_template(
         "ai_stock_library.html",
-        stock_explanations=stock_explanations,
+        stock_explanations=(
+            stock_explanations
+        ),
         selected_stock=selected_stock,
         selected_signal=selected_signal,
+        selected_query=selected_query,
+        display_mode=display_mode,
         performance=performance,
+        signal_counts=signal_counts,
+        total_stock_count=(
+            total_stock_count
+        ),
+        signal_stock_count=(
+            signal_stock_count
+        ),
+        displayed_count=len(
+            stock_explanations
+        ),
+        search_total_count=(
+            search_total_count
+        ),
+        results_truncated=(
+            results_truncated
+        ),
+        query_too_short=query_too_short,
     )
 
 

@@ -11,41 +11,139 @@
 <section class="card stock-library-page">
 
 <h1>🧠 Aureum AI Stock Library</h1>
+
 <div class="library-filter-bar">
-    <a href="/ai-stock-library"
-       class="library-filter{% if not selected_signal %} active{% endif %}">
-        Alle
+    <a
+        href="/ai-stock-library"
+        class="library-filter{% if display_mode == 'signals' %} active{% endif %}"
+    >
+        Alle signaler ({{ signal_stock_count }})
     </a>
 
-    <a href="/ai-stock-library?signal=BUY"
-       class="library-filter{% if selected_signal == 'BUY' %} active{% endif %}">
-        BUY ({{ performance.buy }})
+    <a
+        href="/ai-stock-library?signal=BUY"
+        class="library-filter{% if selected_signal == 'BUY' %} active{% endif %}"
+    >
+        BUY ({{ signal_counts.BUY }})
     </a>
 
-    <a href="/ai-stock-library?signal=HOLD"
-       class="library-filter{% if selected_signal == 'HOLD' %} active{% endif %}">
-        HOLD ({{ performance.hold }})
+    <a
+        href="/ai-stock-library?signal=HOLD"
+        class="library-filter{% if selected_signal == 'HOLD' %} active{% endif %}"
+    >
+        HOLD ({{ signal_counts.HOLD }})
     </a>
 
-    <a href="/ai-stock-library?signal=WATCH"
-       class="library-filter{% if selected_signal == 'WATCH' %} active{% endif %}">
-        WATCH ({{ performance.watch }})
+    <a
+        href="/ai-stock-library?signal=WATCH"
+        class="library-filter{% if selected_signal == 'WATCH' %} active{% endif %}"
+    >
+        WATCH ({{ signal_counts.WATCH }})
     </a>
 
-    <a href="/ai-stock-library?signal=SELL"
-       class="library-filter{% if selected_signal == 'SELL' %} active{% endif %}">
-        SELL ({{ performance.sell }})
+    <a
+        href="/ai-stock-library?signal=SELL"
+        class="library-filter{% if selected_signal == 'SELL' %} active{% endif %}"
+    >
+        SELL ({{ signal_counts.SELL }})
     </a>
 </div>
 
 
 <p class="section-description">
-    AI overvåger {{ stock_explanations|length }} aktier.
-    Her vises den komplette AI-analyse af alle overvågede aktier baseret på
-    Combined Score, tekniske signaler, nyheder, momentum og AI-confidence.
+    AI overvåger
+    <strong>{{ total_stock_count }} aktier</strong>.
+    Som standard vises de
+    <strong>
+        {{ signal_stock_count }} aktier
+    </strong>
+    med et aktuelt BUY-, HOLD-, WATCH- eller
+    SELL-signal. Brug søgefeltet til at finde
+    enhver anden overvåget aktie uden at vise
+    hele aktieuniverset på én gang.
 </p>
 
 
+<form
+    class="stock-library-search"
+    method="get"
+    action="/ai-stock-library"
+>
+    <label for="stock-library-search-input">
+        Søg blandt alle {{ total_stock_count }} aktier
+    </label>
+
+    <div class="stock-library-search-row">
+        <input
+            id="stock-library-search-input"
+            name="q"
+            type="search"
+            value="{{ selected_query }}"
+            minlength="2"
+            maxlength="80"
+            autocomplete="off"
+            placeholder="Fx DSV, AMD, NVDA eller Microsoft"
+        >
+
+        <button type="submit">
+            Søg
+        </button>
+
+        {% if selected_query or selected_stock %}
+            <a
+                class="stock-library-search-clear"
+                href="/ai-stock-library"
+            >
+                Ryd søgning
+            </a>
+        {% endif %}
+    </div>
+
+    <small>
+        Søgningen bruger den eksisterende cache og
+        udløser ingen nye AI-analyser.
+    </small>
+</form>
+
+
+<div
+    class="stock-library-result-summary"
+    aria-live="polite"
+>
+    {% if display_mode == "search" %}
+        {% if query_too_short %}
+            Skriv mindst 2 tegn for at søge.
+        {% elif search_total_count %}
+            Fandt {{ search_total_count }} aktier for
+            “{{ selected_query }}”.
+
+            {% if results_truncated %}
+                De første 40 vises.
+            {% endif %}
+        {% else %}
+            Ingen aktier fundet for
+            “{{ selected_query }}”.
+        {% endif %}
+
+    {% elif display_mode == "stock" %}
+        {% if displayed_count %}
+            Viser den valgte aktie.
+        {% else %}
+            Den valgte aktie blev ikke fundet.
+        {% endif %}
+
+    {% elif display_mode == "signal" %}
+        Viser {{ displayed_count }}
+        {{ selected_signal }}-aktier.
+
+    {% else %}
+        Viser {{ displayed_count }} aktier med
+        et aktuelt signal.
+    {% endif %}
+</div>
+
+
+{% if stock_explanations %}
 <div class="explain-grid">
 
 {% for item in stock_explanations %}
@@ -149,6 +247,19 @@
 {% endfor %}
 
 </div>
+
+{% else %}
+
+<div class="stock-library-empty">
+    <strong>Ingen aktier at vise</strong>
+
+    <p>
+        Prøv en anden søgning eller vælg et
+        andet signalfilter.
+    </p>
+</div>
+
+{% endif %}
 
 </section>
 
