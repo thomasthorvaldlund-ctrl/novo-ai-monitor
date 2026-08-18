@@ -84,6 +84,89 @@
     overflow-wrap: anywhere;
 }
 
+.deep-ai-storage-status {
+    align-items: flex-start;
+    background: #f8fafc;
+    border: 1px solid #dbe3ee;
+    border-left: 4px solid #64748b;
+    border-radius: 14px;
+    color: #475569;
+    display: flex;
+    gap: 11px;
+    margin-bottom: 18px;
+    min-width: 0;
+    padding: 13px 15px;
+}
+
+.deep-ai-storage-status-indicator {
+    background: #64748b;
+    border-radius: 999px;
+    box-shadow:
+        0 0 0 4px
+        rgba(100, 116, 139, 0.12);
+    flex: 0 0 auto;
+    height: 9px;
+    margin-top: 6px;
+    width: 9px;
+}
+
+.deep-ai-storage-status strong {
+    color: #0f172a;
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.deep-ai-storage-status p {
+    line-height: 1.5;
+    margin: 4px 0 0;
+    overflow-wrap: anywhere;
+}
+
+.deep-ai-storage-status-synchronized {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    border-left-color: #16a34a;
+}
+
+.deep-ai-storage-status-synchronized
+.deep-ai-storage-status-indicator {
+    background: #16a34a;
+    box-shadow:
+        0 0 0 4px
+        rgba(22, 163, 74, 0.12);
+}
+
+.deep-ai-storage-status-fallback,
+.deep-ai-storage-status-database_only {
+    background: #fffbeb;
+    border-color: #fde68a;
+    border-left-color: #d97706;
+}
+
+.deep-ai-storage-status-fallback
+.deep-ai-storage-status-indicator,
+.deep-ai-storage-status-database_only
+.deep-ai-storage-status-indicator {
+    background: #d97706;
+    box-shadow:
+        0 0 0 4px
+        rgba(217, 119, 6, 0.12);
+}
+
+.deep-ai-storage-status-unavailable {
+    background: #fef2f2;
+    border-color: #fecaca;
+    border-left-color: #dc2626;
+}
+
+.deep-ai-storage-status-unavailable
+.deep-ai-storage-status-indicator {
+    background: #dc2626;
+    box-shadow:
+        0 0 0 4px
+        rgba(220, 38, 38, 0.12);
+}
+
 .deep-ai-settings-note {
     background: #eff6ff;
     border: 1px solid #bfdbfe;

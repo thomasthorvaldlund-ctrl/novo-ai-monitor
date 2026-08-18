@@ -18,6 +18,10 @@ from deep_ai_entitlement_service import (
     get_user_deep_ai_usage,
 )
 
+from deep_ai_storage_status_service import (
+    get_deep_ai_storage_status,
+)
+
 from user_identity_service import (
     require_current_user_id,
 )
@@ -193,6 +197,9 @@ def _settings_context(
         "usage": usage,
         "core_stocks": core_items,
         "selected_stocks": selected_items,
+        "storage_status": (
+            get_deep_ai_storage_status()
+        ),
         "status_message": (
             status_messages.get(
                 status_code

@@ -168,6 +168,31 @@ Deep AI-indstillinger · Aureum AI Platform
     </div>
 
 
+    {% if storage_status %}
+        <div
+            class="deep-ai-storage-status
+                   deep-ai-storage-status-{{ storage_status.status }}"
+            role="{% if storage_status.status == 'unavailable' %}alert{% else %}status{% endif %}"
+        >
+            <span
+                class="deep-ai-storage-status-indicator"
+                aria-hidden="true">
+            </span>
+
+            <div>
+                <strong>
+                    Deep AI-data ·
+                    {{ storage_status.label }}
+                </strong>
+
+                <p>
+                    {{ storage_status.message }}
+                </p>
+            </div>
+        </div>
+    {% endif %}
+
+
     <div class="deep-ai-settings-note">
         <strong>Sådan virker det:</strong>
         Nye tilvalg kommer med i det næste planlagte
