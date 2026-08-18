@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import http.client
+import json
 import os
 import stat
 import sys
@@ -26,6 +27,11 @@ TOKEN_HEADER_NAME = "X-Aureum-Job-Token"
 HOST = "127.0.0.1"
 PORT = 3000
 REQUEST_TIMEOUT_SECONDS = 300
+
+COMPACT_JSON_JOB_PATHS = frozenset({
+    "/update-stock-news-ai-cache",
+})
+
 
 ALLOWED_JOB_PATHS = frozenset({
     "/risk-check",
@@ -124,6 +130,90 @@ def validate_job_path(path: str) -> str:
     return path
 
 
+def compact_response_body(
+    path: str,
+    body: bytes,
+) -> bytes:
+    """
+    Komprimerer store, velkendte jobsvar til sikker logstatus.
+
+    Selve HTTP-endpointets svar og runtime-cachen ændres ikke.
+    Kun job-runnerens stdout gøres kompakt.
+    """
+
+    if (
+        path not in COMPACT_JSON_JOB_PATHS
+        or not body
+    ):
+        return body
+
+    try:
+        payload = json.loads(
+            body.decode("utf-8")
+        )
+    except (
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+    ):
+        return body
+
+    if not isinstance(payload, dict):
+        return body
+
+    items = payload.get(
+        "news_ai_scores"
+    )
+
+    if not isinstance(items, list):
+        return body
+
+    stocks = []
+    error_stocks = []
+    analyzed_count = 0
+
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+
+        stock = str(
+            item.get(
+                "stock",
+                "",
+            )
+        ).strip()
+
+        if stock:
+            stocks.append(stock)
+
+        if item.get("error"):
+            if stock:
+                error_stocks.append(stock)
+        else:
+            analyzed_count += 1
+
+    summary = {
+        "status": (
+            "stock_news_ai_cache_updated"
+        ),
+        "endpoint": path,
+        "result_count": len(items),
+        "analyzed_count": analyzed_count,
+        "error_count": len(error_stocks),
+        "error_stocks": error_stocks,
+        "stocks": stocks,
+        "source_response_bytes": len(body),
+    }
+
+    return (
+        json.dumps(
+            summary,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        + "\n"
+    ).encode("utf-8")
+
+
 def run_job(path: str, token: str) -> int:
     """
     Kalder det lokale endpoint og videresender svaret til stdout.
@@ -163,10 +253,17 @@ def run_job(path: str, token: str) -> int:
         file=sys.stderr,
     )
 
-    if body:
-        sys.stdout.buffer.write(body)
+    output_body = compact_response_body(
+        path,
+        body,
+    )
 
-        if not body.endswith(b"\n"):
+    if output_body:
+        sys.stdout.buffer.write(
+            output_body
+        )
+
+        if not output_body.endswith(b"\n"):
             sys.stdout.buffer.write(b"\n")
 
         sys.stdout.buffer.flush()
