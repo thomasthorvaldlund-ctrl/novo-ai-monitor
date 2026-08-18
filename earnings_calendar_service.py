@@ -20,8 +20,8 @@ CACHE_VERSION = 2
 CACHE_TTL = timedelta(hours=12)
 MARKET_TIMEZONE = ZoneInfo("Europe/Copenhagen")
 
-DEEP_AI_CANDIDATE_LIMIT = 30
-DEEP_AI_DISPLAY_LIMIT = 20
+EARNINGS_CANDIDATE_LIMIT = 30
+EARNINGS_DISPLAY_LIMIT = 20
 
 
 OFFICIAL_OVERRIDES = {
@@ -228,10 +228,10 @@ def _build_company_config(
         ),
         "ticker": ticker,
         "ticker_key": ticker_key,
-        "deep_ai_rank": position,
-        "is_deep_ai_candidate": (
+        "earnings_rank": position,
+        "is_earnings_candidate": (
             position
-            <= DEEP_AI_CANDIDATE_LIMIT
+            <= EARNINGS_CANDIDATE_LIMIT
         ),
         "in_portfolio": in_portfolio,
         "fallback_date": override.get(
@@ -298,7 +298,7 @@ def _select_companies(
 
         is_candidate = (
             position
-            <= DEEP_AI_CANDIDATE_LIMIT
+            <= EARNINGS_CANDIDATE_LIMIT
         )
 
         if (
@@ -662,7 +662,7 @@ def get_upcoming_earnings(
     force_refresh=False,
 ):
     """
-    Returnerer Top 20 Deep AI-regnskaber
+    Returnerer Top 20 rangerede regnskaber
     med gyldig dato samt alle gyldige
     regnskaber for porteføljeaktier.
 
@@ -792,12 +792,12 @@ def get_upcoming_earnings(
                 "status",
                 "unknown",
             ),
-            "deep_ai_rank": (
-                config["deep_ai_rank"]
+            "earnings_rank": (
+                config["earnings_rank"]
             ),
-            "is_deep_ai_candidate": (
+            "is_earnings_candidate": (
                 config[
-                    "is_deep_ai_candidate"
+                    "is_earnings_candidate"
                 ]
             ),
             "in_portfolio": (
@@ -805,19 +805,19 @@ def get_upcoming_earnings(
             ),
         })
 
-    deep_ai_results = sorted(
+    earnings_results = sorted(
         (
             item
             for item in valid
             if item[
-                "is_deep_ai_candidate"
+                "is_earnings_candidate"
             ]
         ),
         key=lambda item: (
-            item["deep_ai_rank"],
+            item["earnings_rank"],
             item["stock"],
         ),
-    )[:DEEP_AI_DISPLAY_LIMIT]
+    )[:EARNINGS_DISPLAY_LIMIT]
 
     portfolio_results = [
         item
@@ -825,15 +825,15 @@ def get_upcoming_earnings(
         if item["in_portfolio"]
     ]
 
-    deep_ai_tickers = {
+    earnings_tickers = {
         item["ticker_key"]
-        for item in deep_ai_results
+        for item in earnings_results
     }
 
     displayed = {}
 
     for item in (
-        deep_ai_results
+        earnings_results
         + portfolio_results
     ):
         displayed[
@@ -847,7 +847,7 @@ def get_upcoming_earnings(
     for item in results:
         item["is_deep_ai_top_20"] = (
             item["ticker_key"]
-            in deep_ai_tickers
+            in earnings_tickers
         )
 
     return sorted(
