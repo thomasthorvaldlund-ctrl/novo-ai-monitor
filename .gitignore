@@ -88,3 +88,5 @@ earnings_calendar_cache.lock
 deep_ai_selections.json
 deep_ai_selections.lock
 .deep_ai_selections.json.*.tmp
+deep_ai_entitlements.json
+deep_ai_entitlements.lock

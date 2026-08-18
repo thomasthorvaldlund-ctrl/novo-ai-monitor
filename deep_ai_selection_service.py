@@ -17,6 +17,9 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from aureum_paths import state_path
+from deep_ai_entitlement_service import (
+    validate_user_deep_ai_selection_count,
+)
 from stock_universe_service import (
     get_active_stocks,
     get_deep_ai_stocks,
@@ -87,6 +90,25 @@ def _normalize_symbols(symbols):
         raise ValueError(
             "Ukendte eller inaktive Deep AI-symboler: "
             + ", ".join(invalid)
+        )
+
+    core_symbols = set(
+        get_deep_ai_stocks()
+    )
+
+    redundant_core_symbols = [
+        symbol
+        for symbol in normalized
+        if symbol in core_symbols
+    ]
+
+    if redundant_core_symbols:
+        raise ValueError(
+            "Faste Deep AI-aktier skal ikke "
+            "gemmes som personlige tilvalg: "
+            + ", ".join(
+                redundant_core_symbols
+            )
         )
 
     return normalized
@@ -362,6 +384,11 @@ def set_user_deep_ai_selections(
         _normalize_symbols(
             symbols
         )
+    )
+
+    validate_user_deep_ai_selection_count(
+        normalized_user_id,
+        len(normalized_symbols),
     )
 
     with _state_lock(
