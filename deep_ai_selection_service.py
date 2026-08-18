@@ -451,6 +451,142 @@ def get_user_selected_deep_ai_stocks(
     }
 
 
+def add_user_deep_ai_selection(
+    user_id,
+    symbol,
+):
+    """
+    Tilføjer atomisk ét personligt Deep AI-valg.
+    """
+    normalized_user_id = (
+        _normalize_user_id(
+            user_id
+        )
+    )
+
+    normalized_symbol = (
+        _normalize_symbols(
+            [
+                symbol,
+            ]
+        )[0]
+    )
+
+    with _state_lock(
+        exclusive=True
+    ):
+        state = _read_state_unlocked()
+
+        existing_record = dict(
+            state["users"].get(
+                normalized_user_id,
+                {},
+            )
+        )
+
+        existing_symbols = list(
+            existing_record.get(
+                "selected_symbols",
+                [],
+            )
+        )
+
+        updated_symbols = sorted({
+            *existing_symbols,
+            normalized_symbol,
+        })
+
+        validate_user_deep_ai_selection_count(
+            normalized_user_id,
+            len(updated_symbols),
+        )
+
+        if updated_symbols != existing_symbols:
+            existing_record[
+                "selected_symbols"
+            ] = updated_symbols
+
+            state["users"][
+                normalized_user_id
+            ] = existing_record
+
+            _write_state_unlocked(
+                state
+            )
+
+    return {
+        "user_id": normalized_user_id,
+        "selected_symbols": updated_symbols,
+    }
+
+
+def remove_user_deep_ai_selection(
+    user_id,
+    symbol,
+):
+    """
+    Fjerner atomisk ét personligt Deep AI-valg.
+    """
+    normalized_user_id = (
+        _normalize_user_id(
+            user_id
+        )
+    )
+
+    normalized_symbol = (
+        _normalize_symbols(
+            [
+                symbol,
+            ]
+        )[0]
+    )
+
+    with _state_lock(
+        exclusive=True
+    ):
+        state = _read_state_unlocked()
+
+        existing_record = dict(
+            state["users"].get(
+                normalized_user_id,
+                {},
+            )
+        )
+
+        existing_symbols = list(
+            existing_record.get(
+                "selected_symbols",
+                [],
+            )
+        )
+
+        updated_symbols = [
+            existing_symbol
+            for existing_symbol
+            in existing_symbols
+            if existing_symbol
+            != normalized_symbol
+        ]
+
+        if updated_symbols != existing_symbols:
+            existing_record[
+                "selected_symbols"
+            ] = updated_symbols
+
+            state["users"][
+                normalized_user_id
+            ] = existing_record
+
+            _write_state_unlocked(
+                state
+            )
+
+    return {
+        "user_id": normalized_user_id,
+        "selected_symbols": updated_symbols,
+    }
+
+
 def _selected_user_ids(
     state,
     user_ids,

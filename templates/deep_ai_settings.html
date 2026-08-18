@@ -1,0 +1,589 @@
+{% extends "base.html" %}
+
+{% block title %}
+Deep AI-indstillinger · Aureum AI Platform
+{% endblock %}
+
+{% block head %}
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/deep_ai_settings.css') }}"
+>
+{% endblock %}
+
+{% block content %}
+
+<section class="deep-ai-settings-page">
+
+    <header class="deep-ai-settings-header">
+        <div>
+            <p class="deep-ai-settings-eyebrow">
+                🧠 PERSONLIG DEEP AI
+            </p>
+
+            <h1>Deep AI-indstillinger</h1>
+
+            <p>
+                Vælg hvilke ekstra aktier der skal have samme
+                planlagte AI-nyhedsanalyse som de faste
+                Deep AI-aktier.
+            </p>
+        </div>
+    </header>
+
+
+    {% if status_message %}
+        <div
+            class="deep-ai-settings-message
+                   deep-ai-settings-message-success"
+            role="status">
+            ✅ {{ status_message }}
+        </div>
+    {% endif %}
+
+
+    {% if error_message %}
+        <div
+            class="deep-ai-settings-message
+                   deep-ai-settings-message-error"
+            role="alert">
+            ⚠️ {{ error_message }}
+        </div>
+    {% endif %}
+
+
+    <section
+        class="deep-ai-settings-explainer"
+        aria-labelledby="deep-ai-explainer-title"
+    >
+        <div class="deep-ai-explainer-heading">
+            <span aria-hidden="true">🧠</span>
+
+            <div>
+                <h2 id="deep-ai-explainer-title">
+                    Hvad er en Deep AI-aktie?
+                </h2>
+
+                <p>
+                    En Deep AI-aktie får en udvidet og
+                    løbende AI-analyse af blandt andet
+                    nyheder, sentiment, risici og mulige
+                    kurspåvirkende begivenheder.
+                </p>
+            </div>
+        </div>
+
+        <p class="deep-ai-explainer-highlight">
+            <strong>
+                De 15 aktier i Aureums faste Deep AI-kerne
+                er altid Deep AI-aktier.
+            </strong>
+            De er udvalgt som platformens primære
+            analyseunivers og er automatisk inkluderet for
+            alle brugere. Det betyder <strong>ikke</strong>,
+            at de nødvendigvis er de bedste investeringer
+            eller har det højeste forventede afkast.
+        </p>
+
+        <p>
+            News Check kan finde nyhedsartikler for alle
+            overvågede aktier. Deep AI-aktier får derudover
+            en særskilt AI-vurdering af nyhedernes betydning,
+            herunder en nyhedsscore og mulige negative
+            signaler, risici og katalysatorer.
+        </p>
+
+        <p class="deep-ai-explainer-note">
+            Deep AI er beslutningsstøtte. Det er ikke en
+            garanti for afkast eller en automatisk
+            købs- eller salgsanbefaling.
+        </p>
+    </section>
+
+    <details class="deep-ai-core-details">
+
+        <summary>
+            Se de {{ core_stocks | length }}
+            faste Deep AI-aktier
+        </summary>
+
+        <p>
+            Disse aktier er inkluderet automatisk og
+            bruger ikke dine personlige pladser.
+        </p>
+
+        <div class="deep-ai-core-grid">
+
+            {% for stock in core_stocks %}
+                <article class="deep-ai-core-item">
+                    <strong>{{ stock.name }}</strong>
+                    <span>
+                        {{ stock.symbol }}
+                        ·
+                        {{ stock.ticker }}
+                    </span>
+                </article>
+            {% endfor %}
+
+        </div>
+
+    </details>
+
+    <div class="deep-ai-settings-overview">
+
+        <article class="deep-ai-settings-stat">
+            <span>Din plan</span>
+            <strong>{{ plan_label }}</strong>
+            <small>Bruger: {{ user_id }}</small>
+        </article>
+
+        <article class="deep-ai-settings-stat">
+            <span>Faste Deep AI-aktier</span>
+            <strong>{{ core_stocks | length }}</strong>
+            <small>Inkluderet automatisk</small>
+        </article>
+
+        <article class="deep-ai-settings-stat">
+            <span>Personlige tilvalg</span>
+
+            {% if usage.selection_limit is none %}
+                <strong>
+                    {{ usage.selected_count }}
+                    · Ubegrænset
+                </strong>
+                <small>Ingen personlig grænse</small>
+            {% else %}
+                <strong>
+                    {{ usage.selected_count }}
+                    af
+                    {{ usage.selection_limit }}
+                </strong>
+                <small>
+                    {{ usage.remaining_slots }}
+                    ledige pladser
+                </small>
+            {% endif %}
+        </article>
+
+    </div>
+
+
+    <div class="deep-ai-settings-note">
+        <strong>Sådan virker det:</strong>
+        Nye tilvalg kommer med i det næste planlagte
+        Stock News-job, som kører hver 6. time.
+        Den samme aktie analyseres kun én gang, selv hvis
+        flere brugere har valgt den.
+    </div>
+
+
+    <section class="deep-ai-settings-panel">
+
+        <div class="deep-ai-settings-panel-header">
+            <div>
+                <h2>Dine personlige Deep AI-aktier</h2>
+                <p>
+                    Disse aktier er lagt oven i den fælles
+                    Deep AI-kerne.
+                </p>
+            </div>
+
+            <span class="deep-ai-settings-count">
+                {{ selected_stocks | length }}
+            </span>
+        </div>
+
+
+        {% if selected_stocks %}
+
+            <div class="deep-ai-selected-grid">
+
+                {% for stock in selected_stocks %}
+
+                    <article class="deep-ai-selected-card">
+
+                        <div>
+                            <strong>{{ stock.name }}</strong>
+
+                            <span>
+                                {{ stock.symbol }}
+                                ·
+                                {{ stock.ticker }}
+                            </span>
+
+                            <small>
+                                {{ stock.country }}
+                                {% if stock.sector %}
+                                    · {{ stock.sector }}
+                                {% endif %}
+                            </small>
+                        </div>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('deep_ai_settings.deep_ai_settings_page') }}">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="remove"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="symbol"
+                                value="{{ stock.symbol }}"
+                            >
+
+                            <button
+                                class="deep-ai-remove-button"
+                                type="submit">
+                                Fjern
+                            </button>
+
+                        </form>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="deep-ai-settings-empty">
+                Du har endnu ingen personlige Deep AI-aktier.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <section class="deep-ai-settings-panel">
+
+        <div class="deep-ai-settings-panel-header">
+            <div>
+                <h2>Find en aktie</h2>
+                <p>
+                    Søg blandt de øvrige aktive aktier med
+                    navn, ticker, marked eller sektor.
+                </p>
+            </div>
+        </div>
+
+
+        {% if not usage.can_add %}
+
+            <div class="deep-ai-settings-limit">
+                Din nuværende kvote er opbrugt.
+                Flere pladser kan senere tilkøbes via
+                abonnementet.
+            </div>
+
+        {% endif %}
+
+
+        <label
+            class="deep-ai-search-label"
+            for="deep-ai-stock-search">
+            Søg efter aktie
+        </label>
+
+        <input
+            id="deep-ai-stock-search"
+            class="deep-ai-search-input"
+            type="search"
+            autocomplete="off"
+            placeholder="Fx DSV, AMD eller Novo..."
+        >
+
+        <p class="deep-ai-search-help">
+            Skriv mindst 2 tegn for at finde aktier,
+            du selv kan tilvælge.
+        </p>
+
+        <div
+            id="deep-ai-search-status"
+            class="deep-ai-search-status"
+            aria-live="polite">
+        </div>
+
+        <div
+            id="deep-ai-search-results"
+            class="deep-ai-search-results">
+        </div>
+
+    </section>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById(
+        "deep-ai-stock-search"
+    );
+
+    const status = document.getElementById(
+        "deep-ai-search-status"
+    );
+
+    const results = document.getElementById(
+        "deep-ai-search-results"
+    );
+
+    if (!input || !status || !results) {
+        return;
+    }
+
+    const searchUrl = {{
+        url_for(
+            "deep_ai_settings.deep_ai_stock_search"
+        )
+        | tojson
+    }};
+
+    const actionUrl = {{
+        url_for(
+            "deep_ai_settings.deep_ai_settings_page"
+        )
+        | tojson
+    }};
+
+    const canAdd = {{
+        usage.can_add
+        | tojson
+    }};
+
+    let requestController = null;
+    let debounceTimer = null;
+
+
+    function appendText(
+        element,
+        value
+    ) {
+        element.appendChild(
+            document.createTextNode(
+                value || ""
+            )
+        );
+    }
+
+
+    function createResult(stock) {
+        const card = document.createElement(
+            "article"
+        );
+
+        card.className = (
+            "deep-ai-search-result"
+        );
+
+        const information = document.createElement(
+            "div"
+        );
+
+        const name = document.createElement(
+            "strong"
+        );
+
+        appendText(
+            name,
+            stock.name
+        );
+
+        const identity = document.createElement(
+            "span"
+        );
+
+        appendText(
+            identity,
+            `${stock.symbol} · ${stock.ticker}`
+        );
+
+        const metadata = document.createElement(
+            "small"
+        );
+
+        const metadataParts = [
+            stock.country,
+            stock.market,
+            stock.sector
+        ].filter(Boolean);
+
+        appendText(
+            metadata,
+            metadataParts.join(" · ")
+        );
+
+        information.appendChild(name);
+        information.appendChild(identity);
+        information.appendChild(metadata);
+
+        card.appendChild(information);
+
+        if (stock.selected) {
+            const badge = document.createElement(
+                "span"
+            );
+
+            badge.className = (
+                "deep-ai-selected-badge"
+            );
+
+            appendText(
+                badge,
+                "Allerede valgt"
+            );
+
+            card.appendChild(badge);
+
+        } else {
+            const form = document.createElement(
+                "form"
+            );
+
+            form.method = "POST";
+            form.action = actionUrl;
+
+            const action = document.createElement(
+                "input"
+            );
+
+            action.type = "hidden";
+            action.name = "action";
+            action.value = "add";
+
+            const symbol = document.createElement(
+                "input"
+            );
+
+            symbol.type = "hidden";
+            symbol.name = "symbol";
+            symbol.value = stock.symbol;
+
+            const button = document.createElement(
+                "button"
+            );
+
+            button.type = "submit";
+            button.className = (
+                "deep-ai-add-button"
+            );
+
+            button.disabled = !canAdd;
+
+            appendText(
+                button,
+                canAdd
+                    ? "Tilføj"
+                    : "Kvote opbrugt"
+            );
+
+            form.appendChild(action);
+            form.appendChild(symbol);
+            form.appendChild(button);
+
+            card.appendChild(form);
+        }
+
+        return card;
+    }
+
+
+    async function searchStocks() {
+        const query = input.value.trim();
+
+        results.replaceChildren();
+
+        if (query.length < 2) {
+            status.textContent = "";
+            return;
+        }
+
+        if (requestController) {
+            requestController.abort();
+        }
+
+        requestController = (
+            new AbortController()
+        );
+
+        status.textContent = (
+            "Søger efter aktier..."
+        );
+
+        try {
+            const response = await fetch(
+                `${searchUrl}?q=${
+                    encodeURIComponent(query)
+                }`,
+                {
+                    signal:
+                        requestController.signal
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+            const data = await response.json();
+            const stocks = data.stocks || [];
+
+            results.replaceChildren();
+
+            if (!stocks.length) {
+                status.textContent = (
+                    "Ingen aktier fundet."
+                );
+                return;
+            }
+
+            status.textContent = (
+                `${stocks.length} aktier fundet`
+            );
+
+            stocks.forEach(function (stock) {
+                results.appendChild(
+                    createResult(stock)
+                );
+            });
+
+        } catch (error) {
+            if (error.name === "AbortError") {
+                return;
+            }
+
+            status.textContent = (
+                "Aktiesøgningen kunne ikke indlæses."
+            );
+        }
+    }
+
+
+    input.addEventListener(
+        "input",
+        function () {
+            window.clearTimeout(
+                debounceTimer
+            );
+
+            debounceTimer = window.setTimeout(
+                searchStocks,
+                180
+            );
+        }
+    );
+});
+</script>
+
+{% endblock %}

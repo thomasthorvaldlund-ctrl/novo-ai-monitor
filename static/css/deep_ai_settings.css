@@ -1,0 +1,449 @@
+/* Deep AI settings */
+
+.deep-ai-settings-page {
+    margin: 0 auto;
+    max-width: 1200px;
+    min-width: 0;
+    width: 100%;
+}
+
+.deep-ai-settings-header {
+    margin-bottom: 22px;
+}
+
+.deep-ai-settings-eyebrow {
+    color: #2563eb;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin: 0 0 8px;
+}
+
+.deep-ai-settings-header h1 {
+    color: #0f172a;
+    font-size: 2rem;
+    margin: 0 0 10px;
+}
+
+.deep-ai-settings-header > div > p:last-child {
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 760px;
+}
+
+.deep-ai-settings-message {
+    border-radius: 12px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+    padding: 13px 16px;
+}
+
+.deep-ai-settings-message-success {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #166534;
+}
+
+.deep-ai-settings-message-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.deep-ai-settings-overview {
+    display: grid;
+    gap: 14px;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+    margin-bottom: 18px;
+}
+
+.deep-ai-settings-stat {
+    background: #ffffff;
+    border: 1px solid #dbe3ee;
+    border-radius: 16px;
+    box-shadow:
+        0 8px 22px
+        rgba(15, 23, 42, 0.05);
+    min-width: 0;
+    padding: 18px;
+}
+
+.deep-ai-settings-stat span,
+.deep-ai-settings-stat small {
+    color: #64748b;
+    display: block;
+}
+
+.deep-ai-settings-stat strong {
+    color: #0f172a;
+    display: block;
+    font-size: 1.35rem;
+    margin: 8px 0 5px;
+    overflow-wrap: anywhere;
+}
+
+.deep-ai-settings-note {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+    color: #475569;
+    line-height: 1.55;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+}
+
+.deep-ai-settings-note strong {
+    color: #1d4ed8;
+}
+
+.deep-ai-settings-panel,
+.deep-ai-core-details {
+    background: #ffffff;
+    border: 1px solid #dbe3ee;
+    border-radius: 18px;
+    box-shadow:
+        0 8px 24px
+        rgba(15, 23, 42, 0.05);
+    margin-bottom: 18px;
+    min-width: 0;
+    padding: 20px;
+}
+
+.deep-ai-settings-panel-header {
+    align-items: flex-start;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.deep-ai-settings-panel-header h2 {
+    color: #0f172a;
+    margin: 0 0 6px;
+}
+
+.deep-ai-settings-panel-header p {
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.deep-ai-settings-count {
+    align-items: center;
+    background: #dbeafe;
+    border-radius: 999px;
+    color: #1d4ed8;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 34px;
+    padding: 5px 11px;
+}
+
+.deep-ai-selected-grid,
+.deep-ai-search-results,
+.deep-ai-core-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.deep-ai-selected-grid,
+.deep-ai-search-results {
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+}
+
+.deep-ai-core-grid {
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+    margin-top: 16px;
+}
+
+.deep-ai-selected-card,
+.deep-ai-search-result,
+.deep-ai-core-item {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.deep-ai-selected-card,
+.deep-ai-search-result {
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    padding: 15px;
+}
+
+.deep-ai-selected-card strong,
+.deep-ai-selected-card span,
+.deep-ai-selected-card small,
+.deep-ai-search-result strong,
+.deep-ai-search-result span,
+.deep-ai-search-result small,
+.deep-ai-core-item strong,
+.deep-ai-core-item span {
+    display: block;
+}
+
+.deep-ai-selected-card strong,
+.deep-ai-search-result strong,
+.deep-ai-core-item strong {
+    color: #0f172a;
+}
+
+.deep-ai-selected-card span,
+.deep-ai-search-result span,
+.deep-ai-core-item span {
+    color: #475569;
+    margin-top: 4px;
+}
+
+.deep-ai-selected-card small,
+.deep-ai-search-result small {
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.deep-ai-add-button,
+.deep-ai-remove-button {
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 750;
+    min-height: 38px;
+    padding: 9px 14px;
+}
+
+.deep-ai-add-button {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.deep-ai-add-button:hover {
+    background: #1d4ed8;
+}
+
+.deep-ai-add-button:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.deep-ai-remove-button {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.deep-ai-remove-button:hover {
+    background: #fecaca;
+}
+
+.deep-ai-settings-empty,
+.deep-ai-settings-limit {
+    border-radius: 12px;
+    color: #64748b;
+    line-height: 1.5;
+    padding: 14px;
+}
+
+.deep-ai-settings-empty {
+    background: #f8fafc;
+}
+
+.deep-ai-settings-limit {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    margin-bottom: 16px;
+}
+
+.deep-ai-search-label {
+    color: #334155;
+    display: block;
+    font-weight: 750;
+    margin-bottom: 7px;
+}
+
+.deep-ai-search-input {
+    border: 1px solid #cbd5e1;
+    border-radius: 11px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    max-width: 100%;
+    min-height: 46px;
+    padding: 10px 13px;
+    width: 100%;
+}
+
+.deep-ai-search-input:focus {
+    border-color: #2563eb;
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.15);
+    outline: 0;
+}
+
+.deep-ai-search-help,
+.deep-ai-search-status {
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.deep-ai-search-help {
+    font-size: 0.85rem;
+    margin: 8px 0;
+}
+
+.deep-ai-search-status {
+    min-height: 24px;
+    margin: 8px 0;
+}
+
+.deep-ai-selected-badge {
+    background: #dcfce7;
+    border-radius: 999px;
+    color: #166534;
+    flex: 0 0 auto;
+    font-size: 0.82rem;
+    font-weight: 750;
+    padding: 7px 10px;
+}
+
+.deep-ai-core-details summary {
+    color: #1d4ed8;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.deep-ai-core-details > p {
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.deep-ai-core-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 13px;
+}
+
+@media (max-width: 800px) {
+    .deep-ai-settings-overview,
+    .deep-ai-selected-grid,
+    .deep-ai-search-results {
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+
+    .deep-ai-core-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .deep-ai-settings-header h1 {
+        font-size: 1.65rem;
+    }
+
+    .deep-ai-settings-panel,
+    .deep-ai-core-details {
+        border-radius: 14px;
+        padding: 15px;
+    }
+
+    .deep-ai-settings-panel-header,
+    .deep-ai-selected-card,
+    .deep-ai-search-result {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .deep-ai-add-button,
+    .deep-ai-remove-button,
+    .deep-ai-selected-card form,
+    .deep-ai-search-result form {
+        width: 100%;
+    }
+
+    .deep-ai-core-grid {
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+}
+
+/* ===== Deep AI settings explanation ===== */
+
+.deep-ai-settings-explainer {
+    margin-bottom: 18px;
+    padding: 22px;
+    border: 1px solid #bfdbfe;
+    border-left: 5px solid #2563eb;
+    border-radius: 16px;
+    background: #eff6ff;
+    color: #334155;
+}
+
+.deep-ai-explainer-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.deep-ai-explainer-heading > span {
+    flex: 0 0 auto;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.deep-ai-explainer-heading h2 {
+    margin: 0 0 8px;
+    color: #0f172a;
+    font-size: 21px;
+}
+
+.deep-ai-settings-explainer p {
+    margin: 0;
+    line-height: 1.65;
+}
+
+.deep-ai-explainer-highlight {
+    margin-top: 16px !important;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.78);
+}
+
+.deep-ai-explainer-note {
+    margin-top: 14px !important;
+    color: #475569;
+    font-size: 0.92rem;
+}
+
+.deep-ai-settings-explainer
++ .deep-ai-core-details {
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 520px) {
+    .deep-ai-settings-explainer {
+        padding: 17px;
+    }
+
+    .deep-ai-explainer-heading h2 {
+        font-size: 19px;
+    }
+
+    .deep-ai-explainer-highlight {
+        padding: 12px;
+    }
+}

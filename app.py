@@ -44,6 +44,7 @@ from currency_service import (
 )
 from stock_utils import get_history
 from portfolio import get_portfolio_summary
+from deep_ai_settings_routes import deep_ai_settings_bp
 from portfolio_manager_routes import portfolio_manager_bp
 from portfolio_settings_routes import portfolio_settings_bp
 from market_dashboard_routes import market_dashboard_bp
@@ -74,6 +75,7 @@ import time
 app = Flask(__name__)
 from routes.system_status import system_status_bp
 app.register_blueprint(system_status_bp)
+app.register_blueprint(deep_ai_settings_bp)
 app.register_blueprint(portfolio_manager_bp)
 app.register_blueprint(portfolio_settings_bp)
 app.register_blueprint(market_dashboard_bp)
@@ -1668,4 +1670,3 @@ def update_dashboard_cache():
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=3000)
-    
