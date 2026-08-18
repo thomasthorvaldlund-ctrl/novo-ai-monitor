@@ -67,6 +67,9 @@ from stock_universe_service import (
     get_stock_metadata,
 )
 from stock_news_cache_builder import build_stock_news_ai_cache
+from user_identity_service import (
+    get_optional_current_user_id,
+)
 import requests
 
 
@@ -388,15 +391,15 @@ def news_check():
         get_effective_deep_ai_stocks,
     )
 
-    deep_ai_user_ids = []
+    deep_ai_user_id = (
+        get_optional_current_user_id()
+    )
 
-    if (
-        request.authorization
-        and request.authorization.username
-    ):
-        deep_ai_user_ids = [
-            request.authorization.username
-        ]
+    deep_ai_user_ids = (
+        [deep_ai_user_id]
+        if deep_ai_user_id
+        else []
+    )
 
     deep_ai_news_stocks = {
         str(stock).strip().upper()

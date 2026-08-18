@@ -18,6 +18,10 @@ from deep_ai_entitlement_service import (
     get_user_deep_ai_usage,
 )
 
+from user_identity_service import (
+    require_current_user_id,
+)
+
 from deep_ai_selection_service import (
     add_user_deep_ai_selection,
     get_user_selected_deep_ai_stocks,
@@ -38,15 +42,7 @@ deep_ai_settings_bp = Blueprint(
 
 
 def _current_user_id():
-    authorization = request.authorization
-
-    if (
-        authorization is None
-        or not authorization.username
-    ):
-        abort(401)
-
-    return authorization.username
+    return require_current_user_id()
 
 
 def _is_same_origin_post():
