@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 DEFAULT_ACCOUNT_DB = Path(
     os.environ.get(
@@ -158,10 +158,15 @@ def _row_to_account(row):
 
 def initialize_account_store(path=None):
     """
-    Opretter eller validerer kontodatabasen.
+    Opretter eller migrerer kontodatabasen additivt.
 
-    Funktionen foretager kun additive skemaændringer.
-    Fremtidige skemaversioner håndteres her.
+    Version 1:
+        users og user_identities.
+
+    Version 2:
+        Deep AI-rettigheder og personlige aktietilvalg.
+
+    Eksisterende tabeller og brugeridentiteter ændres ikke.
     """
 
     database_path = _database_path(path)
@@ -172,13 +177,10 @@ def initialize_account_store(path=None):
             "PRAGMA user_version"
         ).fetchone()[0]
 
-        if version not in (
-            0,
-            SCHEMA_VERSION,
-        ):
+        if version > SCHEMA_VERSION:
             raise AccountStoreError(
-                "Ukendt kontodatabaseskema: "
-                f"{version}."
+                "Kontodatabasen bruger en nyere "
+                f"skemaversion: {version}."
             )
 
         if version == 0:
@@ -232,6 +234,67 @@ def initialize_account_store(path=None):
                 """
             )
 
+            version = 1
+
+        if version == 1:
+            connection.executescript(
+                """
+                BEGIN IMMEDIATE;
+
+                CREATE TABLE deep_ai_entitlements (
+                    user_id TEXT PRIMARY KEY,
+                    plan_code TEXT NOT NULL,
+                    included_slots INTEGER NOT NULL
+                        CHECK (
+                            included_slots >= 0
+                        ),
+                    purchased_slots INTEGER NOT NULL
+                        CHECK (
+                            purchased_slots >= 0
+                        ),
+                    unlimited INTEGER NOT NULL
+                        CHECK (
+                            unlimited IN (0, 1)
+                        ),
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY (user_id)
+                        REFERENCES users(user_id)
+                        ON DELETE CASCADE
+                );
+
+                CREATE TABLE deep_ai_selections (
+                    user_id TEXT NOT NULL,
+                    symbol TEXT
+                        COLLATE NOCASE
+                        NOT NULL,
+                    created_at TEXT NOT NULL,
+                    PRIMARY KEY (
+                        user_id,
+                        symbol
+                    ),
+                    FOREIGN KEY (user_id)
+                        REFERENCES users(user_id)
+                        ON DELETE CASCADE
+                );
+
+                CREATE INDEX
+                    idx_deep_ai_selections_symbol
+                ON deep_ai_selections(symbol);
+
+                PRAGMA user_version = 2;
+
+                COMMIT;
+                """
+            )
+
+            version = 2
+
+        if version != SCHEMA_VERSION:
+            raise AccountStoreError(
+                "Kontodatabasen kunne ikke "
+                "migreres til forventet version."
+            )
+
     finally:
         connection.close()
         _secure_database_files(
@@ -239,7 +302,6 @@ def initialize_account_store(path=None):
         )
 
     return database_path
-
 
 def get_account_store_status(path=None):
     database_path = _database_path(path)
