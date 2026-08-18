@@ -12,11 +12,19 @@ import fcntl
 import json
 import os
 import re
+import sqlite3
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 
 from aureum_paths import state_path
+from deep_ai_database_service import (
+    load_deep_ai_selection_records,
+    replace_deep_ai_selection_records,
+)
+from user_account_service import (
+    AccountStoreError,
+)
 from deep_ai_entitlement_service import (
     validate_user_deep_ai_selection_count,
 )
@@ -359,12 +367,94 @@ def _write_state_unlocked(data):
 
 def load_deep_ai_selections():
     """
-    Læser selection-state uden at ændre den.
+    Læser primært fra SQLite med JSON-fallback.
     """
+    database_state = None
+
+    try:
+        records = (
+            load_deep_ai_selection_records()
+        )
+
+        database_state = _validate_state({
+            "version": STATE_VERSION,
+            "users": {
+                user_id: {
+                    "selected_symbols": symbols,
+                }
+                for user_id, symbols
+                in records.items()
+            },
+        })
+
+    except (
+        AccountStoreError,
+        OSError,
+        RuntimeError,
+        ValueError,
+        sqlite3.Error,
+    ):
+        database_state = None
+
     with _state_lock(
         exclusive=False
     ):
-        return _read_state_unlocked()
+        legacy_exists = (
+            SELECTIONS_FILE.exists()
+        )
+
+        try:
+            legacy_state = (
+                _read_state_unlocked()
+            )
+
+        except (
+            RuntimeError,
+            ValueError,
+        ):
+            if database_state is not None:
+                return database_state
+
+            raise
+
+    if database_state is None:
+        return legacy_state
+
+    if not legacy_exists:
+        return database_state
+
+    database_symbols = {
+        user_id: record.get(
+            "selected_symbols",
+            [],
+        )
+        for user_id, record
+        in database_state["users"].items()
+        if record.get(
+            "selected_symbols",
+            [],
+        )
+    }
+
+    legacy_symbols = {
+        user_id: record.get(
+            "selected_symbols",
+            [],
+        )
+        for user_id, record
+        in legacy_state["users"].items()
+        if record.get(
+            "selected_symbols",
+            [],
+        )
+    }
+
+    if database_symbols == legacy_symbols:
+        return database_state
+
+    return legacy_state
+
+
 
 
 def set_user_deep_ai_selections(
@@ -415,10 +505,26 @@ def set_user_deep_ai_selections(
             state
         )
 
+        try:
+            replace_deep_ai_selection_records(
+                normalized_user_id,
+                normalized_symbols,
+            )
+
+        except (
+            AccountStoreError,
+            OSError,
+            RuntimeError,
+            sqlite3.Error,
+        ):
+            pass
+
     return {
         "user_id": normalized_user_id,
         "selected_symbols": normalized_symbols,
     }
+
+
 
 
 def get_user_selected_deep_ai_stocks(
@@ -514,10 +620,26 @@ def add_user_deep_ai_selection(
                 state
             )
 
+        try:
+            replace_deep_ai_selection_records(
+                normalized_user_id,
+                updated_symbols,
+            )
+
+        except (
+            AccountStoreError,
+            OSError,
+            RuntimeError,
+            sqlite3.Error,
+        ):
+            pass
+
     return {
         "user_id": normalized_user_id,
         "selected_symbols": updated_symbols,
     }
+
+
 
 
 def remove_user_deep_ai_selection(
@@ -581,10 +703,26 @@ def remove_user_deep_ai_selection(
                 state
             )
 
+        try:
+            replace_deep_ai_selection_records(
+                normalized_user_id,
+                updated_symbols,
+            )
+
+        except (
+            AccountStoreError,
+            OSError,
+            RuntimeError,
+            sqlite3.Error,
+        ):
+            pass
+
     return {
         "user_id": normalized_user_id,
         "selected_symbols": updated_symbols,
     }
+
+
 
 
 def _selected_user_ids(

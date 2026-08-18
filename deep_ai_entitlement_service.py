@@ -12,10 +12,18 @@ import fcntl
 import json
 import os
 import re
+import sqlite3
 import tempfile
 from contextlib import contextmanager
 
 from aureum_paths import state_path
+from deep_ai_database_service import (
+    load_deep_ai_entitlement_records,
+    set_deep_ai_entitlement_record,
+)
+from user_account_service import (
+    AccountStoreError,
+)
 
 
 STATE_VERSION = 1
@@ -354,12 +362,64 @@ def _write_state_unlocked(data):
 
 def load_deep_ai_entitlements():
     """
-    Læser entitlement-state uden at ændre den.
+    Læser primært fra SQLite.
+
+    JSON anvendes automatisk, hvis databasen ikke kan
+    læses, eller hvis et tidligere fallback-skriveri
+    endnu ikke er synkroniseret til databasen.
     """
+    database_state = None
+
+    try:
+        database_state = _validate_state({
+            "version": STATE_VERSION,
+            "users": (
+                load_deep_ai_entitlement_records()
+            ),
+        })
+
+    except (
+        AccountStoreError,
+        OSError,
+        RuntimeError,
+        ValueError,
+        sqlite3.Error,
+    ):
+        database_state = None
+
     with _state_lock(
         exclusive=False
     ):
-        return _read_state_unlocked()
+        legacy_exists = (
+            ENTITLEMENTS_FILE.exists()
+        )
+
+        try:
+            legacy_state = (
+                _read_state_unlocked()
+            )
+
+        except (
+            RuntimeError,
+            ValueError,
+        ):
+            if database_state is not None:
+                return database_state
+
+            raise
+
+    if database_state is None:
+        return legacy_state
+
+    if not legacy_exists:
+        return database_state
+
+    if database_state == legacy_state:
+        return database_state
+
+    return legacy_state
+
+
 
 
 def set_user_deep_ai_entitlement(
@@ -371,7 +431,10 @@ def set_user_deep_ai_entitlement(
     unlimited=False,
 ):
     """
-    Opretter eller erstatter én brugers rettigheder.
+    Gemmer i JSON og synkroniserer derefter SQLite.
+
+    Hvis SQLite midlertidigt er utilgængelig, bevares
+    ændringen i JSON og læses som fallback.
     """
     normalized_user_id = (
         _normalize_user_id(
@@ -399,9 +462,25 @@ def set_user_deep_ai_entitlement(
             state
         )
 
+        try:
+            set_deep_ai_entitlement_record(
+                normalized_user_id,
+                **record,
+            )
+
+        except (
+            AccountStoreError,
+            OSError,
+            RuntimeError,
+            sqlite3.Error,
+        ):
+            pass
+
     return get_user_deep_ai_entitlement(
         normalized_user_id
     )
+
+
 
 
 def get_user_deep_ai_entitlement(
