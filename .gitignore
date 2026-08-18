@@ -90,3 +90,8 @@ deep_ai_selections.lock
 .deep_ai_selections.json.*.tmp
 deep_ai_entitlements.json
 deep_ai_entitlements.lock
+
+# Aureum user account runtime database
+aureum_accounts.sqlite3
+aureum_accounts.sqlite3-wal
+aureum_accounts.sqlite3-shm
