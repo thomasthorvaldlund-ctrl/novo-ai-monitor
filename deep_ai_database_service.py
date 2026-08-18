@@ -18,6 +18,7 @@ from user_account_service import (
     AccountNotFoundError,
     AccountStoreError,
     DEFAULT_ACCOUNT_DB,
+    SCHEMA_VERSION,
     initialize_account_store,
 )
 
@@ -177,12 +178,17 @@ def _connect_existing(path=None):
         "PRAGMA user_version"
     ).fetchone()[0]
 
-    if version != 2:
+    if (
+        version < 2
+        or version > SCHEMA_VERSION
+    ):
         connection.close()
 
         raise AccountStoreError(
-            "Kontodatabasen har ikke "
-            "Deep AI-schema version 2."
+            "Kontodatabasen har ikke en "
+            "understøttet Deep AI-schema-"
+            f"version mellem 2 og "
+            f"{SCHEMA_VERSION}."
         )
 
     return database_path, connection

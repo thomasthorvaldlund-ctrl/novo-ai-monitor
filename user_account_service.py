@@ -15,7 +15,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
+
+VALID_ACCOUNT_ROLES = frozenset({
+    "admin",
+})
 
 DEFAULT_ACCOUNT_DB = Path(
     os.environ.get(
@@ -166,6 +170,9 @@ def initialize_account_store(path=None):
     Version 2:
         Deep AI-rettigheder og personlige aktietilvalg.
 
+    Version 3:
+        Eksplicitte brugerroller til central adgangskontrol.
+
     Eksisterende tabeller og brugeridentiteter ændres ikke.
     """
 
@@ -288,6 +295,43 @@ def initialize_account_store(path=None):
             )
 
             version = 2
+
+        if version == 2:
+            connection.executescript(
+                """
+                BEGIN IMMEDIATE;
+
+                CREATE TABLE user_roles (
+                    user_id TEXT NOT NULL,
+                    role TEXT
+                        COLLATE NOCASE
+                        NOT NULL
+                        CHECK (
+                            role IN (
+                                'admin'
+                            )
+                        ),
+                    created_at TEXT NOT NULL,
+                    PRIMARY KEY (
+                        user_id,
+                        role
+                    ),
+                    FOREIGN KEY (user_id)
+                        REFERENCES users(user_id)
+                        ON DELETE CASCADE
+                );
+
+                CREATE INDEX
+                    idx_user_roles_role
+                ON user_roles(role);
+
+                PRAGMA user_version = 3;
+
+                COMMIT;
+                """
+            )
+
+            version = 3
 
         if version != SCHEMA_VERSION:
             raise AccountStoreError(
@@ -741,6 +785,263 @@ def resolve_user_identity(
         ).fetchone()
 
         return _row_to_account(row)
+
+    finally:
+        connection.close()
+        _secure_database_files(
+            database_path
+        )
+
+def _normalize_account_role(role):
+    normalized_role = _required_text(
+        role,
+        "role",
+        lowercase=True,
+    )
+
+    if (
+        normalized_role
+        not in VALID_ACCOUNT_ROLES
+    ):
+        raise ValueError(
+            "Ugyldig brugerrolle."
+        )
+
+    return normalized_role
+
+
+def get_user_account_roles(
+    user_id,
+    *,
+    path=None,
+):
+    """
+    Returnerer kontoens eksplicitte roller.
+
+    Funktionen er read-only og migrerer ikke databasen.
+    """
+
+    normalized_user_id = _required_text(
+        user_id,
+        "user_id",
+        lowercase=True,
+    )
+
+    database_path = _database_path(path)
+
+    if not database_path.exists():
+        return []
+
+    connection = _connect(database_path)
+
+    try:
+        version = connection.execute(
+            "PRAGMA user_version"
+        ).fetchone()[0]
+
+        if version < 3:
+            return []
+
+        rows = connection.execute(
+            """
+            SELECT role
+            FROM user_roles
+            WHERE user_id = ?
+            ORDER BY role
+            """,
+            (
+                normalized_user_id,
+            ),
+        ).fetchall()
+
+        return [
+            row["role"]
+            for row in rows
+        ]
+
+    finally:
+        connection.close()
+        _secure_database_files(
+            database_path
+        )
+
+
+def user_has_account_role(
+    user_id,
+    role,
+    *,
+    path=None,
+):
+    normalized_role = (
+        _normalize_account_role(
+            role
+        )
+    )
+
+    return (
+        normalized_role
+        in get_user_account_roles(
+            user_id,
+            path=path,
+        )
+    )
+
+
+def set_user_account_role(
+    user_id,
+    role,
+    *,
+    enabled=True,
+    path=None,
+):
+    normalized_user_id = _required_text(
+        user_id,
+        "user_id",
+        lowercase=True,
+    )
+
+    normalized_role = (
+        _normalize_account_role(
+            role
+        )
+    )
+
+    if not isinstance(enabled, bool):
+        raise ValueError(
+            "enabled skal være boolsk."
+        )
+
+    database_path = initialize_account_store(
+        path
+    )
+
+    if get_user_account(
+        normalized_user_id,
+        path=database_path,
+    ) is None:
+        raise AccountNotFoundError(
+            "Brugerkontoen findes ikke."
+        )
+
+    connection = _connect(database_path)
+
+    try:
+        with connection:
+            if enabled:
+                connection.execute(
+                    """
+                    INSERT INTO user_roles (
+                        user_id,
+                        role,
+                        created_at
+                    )
+                    VALUES (?, ?, ?)
+                    ON CONFLICT(
+                        user_id,
+                        role
+                    )
+                    DO NOTHING
+                    """,
+                    (
+                        normalized_user_id,
+                        normalized_role,
+                        _utc_now(),
+                    ),
+                )
+            else:
+                connection.execute(
+                    """
+                    DELETE FROM user_roles
+                    WHERE
+                        user_id = ?
+                        AND role = ?
+                    """,
+                    (
+                        normalized_user_id,
+                        normalized_role,
+                    ),
+                )
+
+    finally:
+        connection.close()
+        _secure_database_files(
+            database_path
+        )
+
+    return get_user_account_roles(
+        normalized_user_id,
+        path=database_path,
+    )
+
+
+def list_user_accounts(
+    *,
+    path=None,
+):
+    database_path = _database_path(path)
+
+    if not database_path.exists():
+        return []
+
+    connection = _connect(database_path)
+
+    try:
+        version = connection.execute(
+            "PRAGMA user_version"
+        ).fetchone()[0]
+
+        account_rows = connection.execute(
+            """
+            SELECT
+                user_id,
+                username,
+                email,
+                status,
+                created_at,
+                updated_at
+            FROM users
+            ORDER BY
+                username,
+                user_id
+            """
+        ).fetchall()
+
+        role_map = {}
+
+        if version >= 3:
+            role_rows = connection.execute(
+                """
+                SELECT
+                    user_id,
+                    role
+                FROM user_roles
+                ORDER BY
+                    user_id,
+                    role
+                """
+            ).fetchall()
+
+            for row in role_rows:
+                role_map.setdefault(
+                    row["user_id"],
+                    [],
+                ).append(
+                    row["role"]
+                )
+
+        accounts = []
+
+        for row in account_rows:
+            account = _row_to_account(row)
+            account["roles"] = list(
+                role_map.get(
+                    account["user_id"],
+                    [],
+                )
+            )
+            accounts.append(account)
+
+        return accounts
 
     finally:
         connection.close()
