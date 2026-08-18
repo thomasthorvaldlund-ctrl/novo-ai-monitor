@@ -197,6 +197,12 @@ def before_request():
     ):
         return require_auth()
 
+    if (
+        get_optional_current_user_id()
+        is None
+    ):
+        return require_auth()
+
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = "8532274659"

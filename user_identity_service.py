@@ -17,6 +17,7 @@ import sqlite3
 
 from flask import (
     abort,
+    g,
     has_request_context,
     request,
 )
@@ -46,19 +47,7 @@ def _get_basic_auth_username():
     return username or None
 
 
-def get_optional_current_user_id():
-    """
-    Returnerer det aktuelle kanoniske bruger-ID eller None.
-
-    Basic Auth-adgangskoden er allerede kontrolleret af
-    applikationens globale before_request-gate.
-
-    En aktiv konto returnerer sit kanoniske bruger-ID.
-    En deaktiveret eller afventende konto returnerer None.
-    Manglende eller utilgængelig kontodatabase falder tilbage
-    til Basic Auth-brugernavnet under migrationen.
-    """
-
+def _resolve_current_user_id_uncached():
     username = _get_basic_auth_username()
 
     if username is None:
@@ -99,6 +88,42 @@ def get_optional_current_user_id():
 
     return user_id or None
 
+
+def get_optional_current_user_id():
+    """
+    Returnerer det aktuelle kanoniske bruger-ID eller None.
+
+    Resultatet gemmes i Flask request-contexten, så den
+    centrale kontodatabase kun læses én gang per request.
+    """
+
+    if not has_request_context():
+        return None
+
+    cache_attribute = (
+        "_aureum_current_user_id"
+    )
+
+    if hasattr(
+        g,
+        cache_attribute,
+    ):
+        return getattr(
+            g,
+            cache_attribute,
+        )
+
+    user_id = (
+        _resolve_current_user_id_uncached()
+    )
+
+    setattr(
+        g,
+        cache_attribute,
+        user_id,
+    )
+
+    return user_id
 
 def require_current_user_id():
     """
