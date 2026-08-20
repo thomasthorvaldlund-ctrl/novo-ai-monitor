@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 VALID_ACCOUNT_ROLES = frozenset({
     "admin",
@@ -172,6 +172,9 @@ def initialize_account_store(path=None):
 
     Version 3:
         Eksplicitte brugerroller til central adgangskontrol.
+
+    Version 4:
+        Revisionslog for administrative kontoændringer.
 
     Eksisterende tabeller og brugeridentiteter ændres ikke.
     """
@@ -332,6 +335,51 @@ def initialize_account_store(path=None):
             )
 
             version = 3
+
+        if version == 3:
+            connection.executescript(
+                """
+                BEGIN IMMEDIATE;
+
+                CREATE TABLE admin_account_audit (
+                    id INTEGER PRIMARY KEY
+                        AUTOINCREMENT,
+                    actor_user_id TEXT NOT NULL,
+                    target_user_id TEXT NOT NULL,
+                    action TEXT NOT NULL
+                        CHECK (
+                            action IN (
+                                'status_changed',
+                                'admin_granted',
+                                'admin_revoked'
+                            )
+                        ),
+                    previous_value TEXT NOT NULL,
+                    new_value TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                );
+
+                CREATE INDEX
+                    idx_admin_account_audit_created
+                ON admin_account_audit(
+                    created_at DESC,
+                    id DESC
+                );
+
+                CREATE INDEX
+                    idx_admin_account_audit_target
+                ON admin_account_audit(
+                    target_user_id,
+                    id DESC
+                );
+
+                PRAGMA user_version = 4;
+
+                COMMIT;
+                """
+            )
+
+            version = 4
 
         if version != SCHEMA_VERSION:
             raise AccountStoreError(
@@ -1257,11 +1305,15 @@ def update_user_account_access(
                 "tildeles en aktiv konto."
             )
 
+        audit_events = []
+
         if (
             normalized_status is not None
             and normalized_status
             != target["status"]
         ):
+            changed_at = _utc_now()
+
             connection.execute(
                 """
                 UPDATE users
@@ -1272,12 +1324,24 @@ def update_user_account_access(
                 """,
                 (
                     normalized_status,
-                    _utc_now(),
+                    changed_at,
                     normalized_user_id,
                 ),
             )
 
-        if admin_enabled is True:
+            audit_events.append((
+                "status_changed",
+                target["status"],
+                normalized_status,
+                changed_at,
+            ))
+
+        if (
+            admin_enabled is True
+            and not target_is_admin
+        ):
+            changed_at = _utc_now()
+
             connection.execute(
                 """
                 INSERT INTO user_roles (
@@ -1286,19 +1350,26 @@ def update_user_account_access(
                     created_at
                 )
                 VALUES (?, 'admin', ?)
-                ON CONFLICT(
-                    user_id,
-                    role
-                )
-                DO NOTHING
                 """,
                 (
                     normalized_user_id,
-                    _utc_now(),
+                    changed_at,
                 ),
             )
 
-        elif admin_enabled is False:
+            audit_events.append((
+                "admin_granted",
+                "false",
+                "true",
+                changed_at,
+            ))
+
+        elif (
+            admin_enabled is False
+            and target_is_admin
+        ):
+            changed_at = _utc_now()
+
             connection.execute(
                 """
                 DELETE FROM user_roles
@@ -1310,6 +1381,13 @@ def update_user_account_access(
                     normalized_user_id,
                 ),
             )
+
+            audit_events.append((
+                "admin_revoked",
+                "true",
+                "false",
+                changed_at,
+            ))
 
         active_admin_count = (
             connection.execute(
@@ -1330,6 +1408,34 @@ def update_user_account_access(
             raise AccountAccessInvariantError(
                 "Den sidste aktive administrator "
                 "kan ikke fjernes eller deaktiveres."
+            )
+
+        for (
+            action,
+            previous_value,
+            new_value,
+            created_at,
+        ) in audit_events:
+            connection.execute(
+                """
+                INSERT INTO admin_account_audit (
+                    actor_user_id,
+                    target_user_id,
+                    action,
+                    previous_value,
+                    new_value,
+                    created_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    normalized_actor_id,
+                    normalized_user_id,
+                    action,
+                    previous_value,
+                    new_value,
+                    created_at,
+                ),
             )
 
         connection.commit()
@@ -1357,5 +1463,96 @@ def update_user_account_access(
     )
 
     return account
+
+def list_admin_account_audit(
+    *,
+    limit=50,
+    path=None,
+):
+    """
+    Returnerer de nyeste administrative kontoændringer.
+
+    Læsning af schema 3 returnerer en tom liste og
+    migrerer ikke databasen.
+    """
+
+    if (
+        isinstance(limit, bool)
+        or not isinstance(limit, int)
+        or limit < 1
+        or limit > 200
+    ):
+        raise ValueError(
+            "limit skal være mellem 1 og 200."
+        )
+
+    database_path = _database_path(path)
+
+    if not database_path.exists():
+        return []
+
+    connection = _connect(database_path)
+
+    try:
+        version = connection.execute(
+            "PRAGMA user_version"
+        ).fetchone()[0]
+
+        if version < 4:
+            return []
+
+        if version > SCHEMA_VERSION:
+            raise AccountStoreError(
+                "Kontodatabasen bruger en nyere "
+                f"skemaversion: {version}."
+            )
+
+        rows = connection.execute(
+            """
+            SELECT
+                id,
+                actor_user_id,
+                target_user_id,
+                action,
+                previous_value,
+                new_value,
+                created_at
+            FROM admin_account_audit
+            ORDER BY
+                created_at DESC,
+                id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+
+        return [
+            {
+                "id": row["id"],
+                "actor_user_id": row[
+                    "actor_user_id"
+                ],
+                "target_user_id": row[
+                    "target_user_id"
+                ],
+                "action": row["action"],
+                "previous_value": row[
+                    "previous_value"
+                ],
+                "new_value": row[
+                    "new_value"
+                ],
+                "created_at": row[
+                    "created_at"
+                ],
+            }
+            for row in rows
+        ]
+
+    finally:
+        connection.close()
+        _secure_database_files(
+            database_path
+        )
 
 # Account access administration END
