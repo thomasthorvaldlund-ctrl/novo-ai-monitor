@@ -349,6 +349,95 @@ Kontoadministration · Aureum AI Platform
 
     </div>
 
+
+    <!-- Admin account audit START -->
+
+    <div class="admin-accounts-section-heading admin-audit-heading">
+
+        <div>
+            <h2>Seneste kontoændringer</h2>
+
+            <p>
+                Sikker revisionslog over ændringer af
+                kontostatus og administratorroller.
+            </p>
+        </div>
+
+        <span>
+            {{ audit_events | length }} vist
+        </span>
+
+    </div>
+
+
+    <div
+        class="admin-audit-list"
+        data-audit-count="{{ audit_events | length }}">
+
+        {% for event in audit_events %}
+
+            <article
+                class="admin-audit-event
+                       admin-audit-event-{{ event.tone }}"
+                data-audit-action="{{ event.action }}">
+
+                <div
+                    class="admin-audit-icon"
+                    aria-hidden="true">
+                    {{ event.icon }}
+                </div>
+
+                <div class="admin-audit-content">
+
+                    <div class="admin-audit-event-header">
+                        <strong>{{ event.label }}</strong>
+
+                        <time datetime="{{ event.created_at }}">
+                            {{ event.display_time }}
+                        </time>
+                    </div>
+
+                    <p class="admin-audit-identity">
+                        <strong>{{ event.actor_user_id }}</strong>
+                        ændrede
+                        <strong>{{ event.target_user_id }}</strong>.
+                    </p>
+
+                    <div class="admin-audit-change">
+                        <span>{{ event.previous_label }}</span>
+                        <span
+                            class="admin-audit-arrow"
+                            aria-hidden="true">
+                            →
+                        </span>
+                        <strong>{{ event.new_label }}</strong>
+                    </div>
+
+                </div>
+
+            </article>
+
+        {% else %}
+
+            <div class="admin-audit-empty">
+                <span aria-hidden="true">🛡️</span>
+
+                <div>
+                    <strong>Ingen kontoændringer endnu</strong>
+
+                    <p>
+                        Nye administrative ændringer vises
+                        automatisk her.
+                    </p>
+                </div>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- Admin account audit END -->
+
 </section>
 
 {% endblock %}

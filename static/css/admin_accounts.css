@@ -467,3 +467,166 @@
 }
 
 /* Admin account editing END */
+
+/* Admin account audit START */
+
+.admin-audit-heading {
+    margin-top: 34px;
+}
+
+.admin-audit-list {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+}
+
+.admin-audit-event {
+    align-items: flex-start;
+    background: #ffffff;
+    border: 1px solid #dbe3ef;
+    border-left: 4px solid #3b82f6;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    display: grid;
+    gap: 13px;
+    grid-template-columns: auto minmax(0, 1fr);
+    min-width: 0;
+    padding: 15px 17px;
+}
+
+.admin-audit-event-granted {
+    border-left-color: #22c55e;
+}
+
+.admin-audit-event-revoked {
+    border-left-color: #f59e0b;
+}
+
+.admin-audit-icon {
+    align-items: center;
+    background: #eff6ff;
+    border-radius: 10px;
+    display: inline-flex;
+    font-size: 18px;
+    height: 38px;
+    justify-content: center;
+    width: 38px;
+}
+
+.admin-audit-content {
+    min-width: 0;
+}
+
+.admin-audit-event-header {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    justify-content: space-between;
+    min-width: 0;
+}
+
+.admin-audit-event-header strong {
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.admin-audit-event-header time {
+    color: #64748b;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.admin-audit-identity {
+    color: #475569;
+    font-size: 13px;
+    margin: 7px 0 10px;
+    overflow-wrap: anywhere;
+}
+
+.admin-audit-change {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    min-width: 0;
+}
+
+.admin-audit-change > span:not(.admin-audit-arrow),
+.admin-audit-change > strong {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    color: #334155;
+    font-size: 12px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    padding: 5px 9px;
+}
+
+.admin-audit-change > strong {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: #3730a3;
+}
+
+.admin-audit-arrow {
+    color: #94a3b8;
+    font-weight: 800;
+}
+
+.admin-audit-empty {
+    align-items: center;
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+    color: #475569;
+    display: flex;
+    gap: 13px;
+    min-width: 0;
+    padding: 19px;
+}
+
+.admin-audit-empty > span {
+    font-size: 24px;
+}
+
+.admin-audit-empty strong {
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.admin-audit-empty p {
+    font-size: 13px;
+    margin: 4px 0 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 460px) {
+    .admin-audit-event {
+        gap: 10px;
+        grid-template-columns: 1fr;
+        padding: 14px;
+    }
+
+    .admin-audit-event-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-audit-change {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-audit-arrow {
+        padding-left: 10px;
+        transform: rotate(90deg);
+    }
+
+    .admin-audit-empty {
+        align-items: flex-start;
+    }
+}
+
+/* Admin account audit END */

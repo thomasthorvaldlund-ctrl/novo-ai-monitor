@@ -24,6 +24,7 @@ from user_account_service import (
     AccountAccessInvariantError,
     AccountNotFoundError,
     AccountStoreError,
+    list_admin_account_audit,
     list_user_accounts,
     update_user_account_access,
 )
@@ -109,6 +110,127 @@ def _is_same_origin_post():
     )
 
 
+AUDIT_ACTIONS = {
+    "status_changed": {
+        "icon": "🔄",
+        "label": "Kontostatus ændret",
+        "tone": "status",
+    },
+    "admin_granted": {
+        "icon": "🔐",
+        "label": "Administrator tildelt",
+        "tone": "granted",
+    },
+    "admin_revoked": {
+        "icon": "🔓",
+        "label": "Administrator fjernet",
+        "tone": "revoked",
+    },
+}
+
+
+def _audit_value_label(
+    action,
+    value,
+):
+    if action == "status_changed":
+        return {
+            "active": "Aktiv",
+            "disabled": "Deaktiveret",
+            "pending": "Afventer",
+        }.get(value, value)
+
+    return {
+        "true": "Administrator",
+        "false": "Ingen administratorrolle",
+    }.get(value, value)
+
+
+def _format_audit_timestamp(value):
+    normalized = str(value or "").strip()
+
+    if not normalized:
+        return "Tidspunkt ikke registreret"
+
+    date_part, separator, time_part = (
+        normalized.partition("T")
+    )
+
+    if not separator:
+        return normalized
+
+    date_items = date_part.split("-")
+
+    if len(date_items) == 3:
+        date_part = ".".join(
+            reversed(date_items)
+        )
+
+    time_part = (
+        time_part
+        .replace("+00:00", "")
+        .replace("Z", "")
+    )
+
+    return f"{date_part} kl. {time_part} UTC"
+
+
+def _load_audit_events():
+    try:
+        events = list_admin_account_audit(
+            limit=20
+        )
+
+    except (
+        AccountStoreError,
+        OSError,
+        sqlite3.Error,
+    ):
+        abort(
+            503,
+            description=(
+                "Revisionsloggen kan midlertidigt "
+                "ikke indlæses."
+            ),
+        )
+
+    formatted = []
+
+    for event in events:
+        presentation = AUDIT_ACTIONS.get(
+            event.get("action"),
+            {
+                "icon": "📝",
+                "label": "Kontoændring",
+                "tone": "status",
+            },
+        )
+
+        formatted.append({
+            **event,
+            **presentation,
+            "previous_label": (
+                _audit_value_label(
+                    event.get("action"),
+                    event.get("previous_value"),
+                )
+            ),
+            "new_label": (
+                _audit_value_label(
+                    event.get("action"),
+                    event.get("new_value"),
+                )
+            ),
+            "display_time": (
+                _format_audit_timestamp(
+                    event.get("created_at")
+                )
+            ),
+        })
+
+    return formatted
+
+
 def _load_accounts():
     try:
         return list_user_accounts()
@@ -153,9 +275,11 @@ def _page_context(
     error_code="",
 ):
     accounts = _load_accounts()
+    audit_events = _load_audit_events()
 
     return {
         "accounts": accounts,
+        "audit_events": audit_events,
         "account_summary": (
             _build_summary(accounts)
         ),
