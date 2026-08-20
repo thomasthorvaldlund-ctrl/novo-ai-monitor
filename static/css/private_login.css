@@ -1,0 +1,207 @@
+:root {
+    color-scheme: light;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.private-login-page {
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #111827;
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(37, 99, 235, 0.13),
+            transparent 34rem
+        ),
+        #eef2f7;
+}
+
+.private-login-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.private-login-card {
+    width: min(100%, 440px);
+    padding: 36px;
+    border: 1px solid #d8e0ec;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 22px 55px rgba(15, 23, 42, 0.14);
+}
+
+.private-login-brand {
+    margin-bottom: 22px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.private-login-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 11px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    color: #1d4ed8;
+    background: #eff6ff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.private-login-card h1 {
+    margin: 18px 0 8px;
+    font-size: 32px;
+    line-height: 1.15;
+}
+
+.private-login-intro,
+.private-login-note {
+    color: #64748b;
+    line-height: 1.55;
+}
+
+.private-login-form {
+    display: grid;
+    gap: 9px;
+    margin-top: 24px;
+}
+
+.private-login-form label {
+    margin-top: 7px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.private-login-form input {
+    width: 100%;
+    min-width: 0;
+    padding: 13px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 11px;
+    color: #0f172a;
+    background: #ffffff;
+    font: inherit;
+}
+
+.private-login-form input:focus {
+    border-color: #2563eb;
+    outline: 3px solid rgba(37, 99, 235, 0.15);
+}
+
+.private-login-form button {
+    min-height: 48px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 11px;
+    color: #ffffff;
+    background: #2563eb;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.private-login-form button:hover {
+    background: #1d4ed8;
+}
+
+.private-login-message {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 11px;
+    line-height: 1.45;
+}
+
+.private-login-message.error {
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    background: #fef2f2;
+}
+
+.private-login-message.success {
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    background: #f0fdf4;
+}
+
+.private-login-note {
+    margin: 22px 0 0;
+    font-size: 12px;
+    text-align: center;
+}
+
+.private-access-panel {
+    margin-top: 28px;
+    padding: 18px 12px 2px;
+    border-top: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.private-access-label {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.private-access-user,
+.private-access-fallback {
+    margin-top: 5px;
+    color: #94a3b8;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.private-access-form {
+    margin-top: 12px;
+}
+
+.private-access-button,
+.private-access-link {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px;
+    border: 1px solid #475569;
+    border-radius: 9px;
+    color: #e2e8f0;
+    background: #1e293b;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.private-access-button:hover,
+.private-access-link:hover {
+    border-color: #60a5fa;
+    color: #ffffff;
+    background: #334155;
+    transform: none;
+}
+
+@media (max-width: 640px) {
+    .private-login-shell {
+        display: block;
+        padding: 18px 14px;
+    }
+
+    .private-login-card {
+        margin: 5vh auto 0;
+        padding: 26px 20px;
+        border-radius: 16px;
+    }
+
+    .private-login-card h1 {
+        font-size: 28px;
+    }
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="utf-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+    <meta
+        name="robots"
+        content="noindex, nofollow, noarchive"
+    >
+    <title>Privat login · Aureum AI Platform</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/private_login.css') }}"
+    >
+</head>
+<body class="private-login-page">
+    <main class="private-login-shell">
+        <section class="private-login-card">
+            <div class="private-login-brand">
+                🤖 Aureum AI Platform
+            </div>
+
+            <div class="private-login-badge">
+                🔒 Privat analyseværktøj
+            </div>
+
+            <h1>Log ind</h1>
+
+            <p class="private-login-intro">
+                Adgang er begrænset til godkendte private
+                brugerkonti.
+            </p>
+
+            {% if logged_out %}
+                <div
+                    class="private-login-message success"
+                    role="status"
+                >
+                    Du er nu logget sikkert ud.
+                </div>
+            {% endif %}
+
+            {% if error_message %}
+                <div
+                    class="private-login-message error"
+                    role="alert"
+                >
+                    {{ error_message }}
+                </div>
+            {% endif %}
+
+            <form
+                class="private-login-form"
+                method="post"
+                action="{{ url_for('private_login.login') }}"
+            >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token }}"
+                >
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{{ next_url }}"
+                >
+
+                <label for="private-login-username">
+                    Brugernavn
+                </label>
+                <input
+                    id="private-login-username"
+                    name="username"
+                    type="text"
+                    autocomplete="username"
+                    autocapitalize="none"
+                    spellcheck="false"
+                    maxlength="128"
+                    required
+                    autofocus
+                >
+
+                <label for="private-login-password">
+                    Adgangskode
+                </label>
+                <input
+                    id="private-login-password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    maxlength="4096"
+                    required
+                >
+
+                <button type="submit">
+                    Log sikkert ind
+                </button>
+            </form>
+
+            <p class="private-login-note">
+                Der kan ikke oprettes nye konti på siden.
+            </p>
+        </section>
+    </main>
+</body>
+</html>

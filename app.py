@@ -78,6 +78,13 @@ import time
 
 app = Flask(__name__)
 from routes.system_status import system_status_bp
+
+from private_login_service import (
+    configure_private_login,
+    get_authenticated_session_user_id,
+    is_private_login_path,
+    private_login_required,
+)
 app.register_blueprint(system_status_bp)
 app.register_blueprint(admin_accounts_bp)
 app.register_blueprint(deep_ai_settings_bp)
@@ -129,12 +136,14 @@ def check_auth(username, password):
     )
 
 
+configure_private_login(
+    app,
+    credential_checker=check_auth,
+)
+
+
 def require_auth():
-    return Response(
-        "Login required",
-        401,
-        {"WWW-Authenticate": 'Basic realm="Aureum AI Platform"'}
-    )
+    return private_login_required()
 
 
 INTERNAL_JOB_PATHS = frozenset({
@@ -185,25 +194,34 @@ def before_request():
     if request.path.startswith("/static/"):
         return
 
+    if is_private_login_path():
+        return
+
     if (
         request.path in INTERNAL_JOB_PATHS
         and _has_valid_internal_job_token()
     ):
         return
 
+    if (
+        get_authenticated_session_user_id()
+        is not None
+    ):
+        return
+
     auth = request.authorization
 
-    if not auth or not check_auth(
+    if auth and check_auth(
         auth.username,
         auth.password,
     ):
-        return require_auth()
+        if (
+            get_optional_current_user_id()
+            is not None
+        ):
+            return
 
-    if (
-        get_optional_current_user_id()
-        is None
-    ):
-        return require_auth()
+    return require_auth()
 
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")

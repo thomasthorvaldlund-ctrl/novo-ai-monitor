@@ -3,6 +3,14 @@
 <head>
     <title>{% block title %}Aureum AI Platform{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta
+    name="robots"
+    content="noindex, nofollow, noarchive"
+>
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/private_login.css') }}"
+>
 
     <style>
         body {
@@ -300,6 +308,50 @@
         <a class="nav-link {% if request.path == '/job-status' %}active{% endif %}" href="/job-status">
             ⚙️ Scheduler & Jobs
         </a>
+
+<div class="private-access-panel">
+    <div class="private-access-label">
+        🔒 Privat analyseværktøj
+    </div>
+
+    {% if private_login_enabled | default(false) %}
+        {% if private_session_active | default(false) %}
+            <div class="private-access-user">
+                Logget ind som
+                <strong>{{ private_session_user_id }}</strong>
+            </div>
+
+            <form
+                class="private-access-form"
+                method="post"
+                action="{{ url_for('private_login.logout') }}"
+            >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ private_logout_csrf_token }}"
+                >
+                <button
+                    class="private-access-button"
+                    type="submit"
+                >
+                    Log sikkert ud
+                </button>
+            </form>
+        {% else %}
+            <a
+                class="private-access-link"
+                href="{{ url_for('private_login.login', next=request.full_path) }}"
+            >
+                Åbn privat login
+            </a>
+        {% endif %}
+    {% else %}
+        <div class="private-access-fallback">
+            Basic Auth-fallback aktiv
+        </div>
+    {% endif %}
+</div>
 
     </aside>
 
