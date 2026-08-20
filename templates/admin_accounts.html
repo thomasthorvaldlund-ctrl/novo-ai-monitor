@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}
+Kontoadministration · Aureum AI Platform
+{% endblock %}
+
+{% block head %}
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/admin_accounts.css') }}"
+>
+{% endblock %}
+
+{% block content %}
+
+<section class="admin-accounts-page">
+
+    <header class="admin-accounts-header">
+
+        <div>
+            <p class="admin-accounts-eyebrow">
+                🔐 ADMINISTRATION
+            </p>
+
+            <h1>Kontoadministration</h1>
+
+            <p>
+                Skrivebeskyttet oversigt over platformens
+                centrale brugerkonti, kontostatus og roller.
+            </p>
+        </div>
+
+        <span class="admin-accounts-read-only">
+            Kun visning
+        </span>
+
+    </header>
+
+
+    <div
+        class="admin-accounts-notice"
+        role="status">
+
+        <strong>🔒 Sikker administratorvisning</strong>
+
+        <span>
+            Denne første version kan ikke ændre konti,
+            roller eller abonnementer.
+        </span>
+
+    </div>
+
+
+    <div class="admin-accounts-summary">
+
+        <article class="admin-accounts-stat">
+            <span>Konti</span>
+            <strong>
+                {{ account_summary.account_count }}
+            </strong>
+            <small>Registreret centralt</small>
+        </article>
+
+        <article class="admin-accounts-stat">
+            <span>Aktive</span>
+            <strong>
+                {{ account_summary.active_count }}
+            </strong>
+            <small>Aktive brugerkonti</small>
+        </article>
+
+        <article class="admin-accounts-stat">
+            <span>Administratorer</span>
+            <strong>
+                {{ account_summary.admin_count }}
+            </strong>
+            <small>Har administratorrollen</small>
+        </article>
+
+    </div>
+
+
+    <div class="admin-accounts-section-heading">
+
+        <div>
+            <h2>Brugerkonti</h2>
+
+            <p>
+                Konto-ID, loginidentitet, status
+                og nuværende roller.
+            </p>
+        </div>
+
+        <span>
+            {{ accounts | length }} i alt
+        </span>
+
+    </div>
+
+
+    <div class="admin-accounts-grid">
+
+        {% for account in accounts %}
+
+            <article
+                class="admin-account-card"
+                data-user-id="{{ account.user_id }}"
+                data-account-status="{{ account.status }}">
+
+                <div class="admin-account-card-header">
+
+                    <div class="admin-account-avatar">
+                        {{ account.username[:1] | upper }}
+                    </div>
+
+                    <div class="admin-account-title">
+                        <h3>{{ account.username }}</h3>
+                        <span>{{ account.user_id }}</span>
+                    </div>
+
+                    {% if account.user_id == current_admin_id %}
+                        <span class="admin-account-current">
+                            Din konto
+                        </span>
+                    {% endif %}
+
+                </div>
+
+
+                <dl class="admin-account-details">
+
+                    <div>
+                        <dt>Status</dt>
+                        <dd>
+                            <span
+                                class="admin-account-status
+                                {% if account.status == 'active' %}
+                                    admin-account-status-active
+                                {% else %}
+                                    admin-account-status-inactive
+                                {% endif %}">
+                                {{ account.status }}
+                            </span>
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>E-mail</dt>
+                        <dd>
+                            {{ account.email or "Ikke registreret" }}
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Oprettet</dt>
+                        <dd>{{ account.created_at }}</dd>
+                    </div>
+
+                    <div>
+                        <dt>Senest opdateret</dt>
+                        <dd>{{ account.updated_at }}</dd>
+                    </div>
+
+                </dl>
+
+
+                <div class="admin-account-roles">
+
+                    <strong>Roller</strong>
+
+                    <div class="admin-account-role-list">
+
+                        {% if account.roles %}
+
+                            {% for role in account.roles %}
+                                <span class="admin-account-role">
+                                    {{ role }}
+                                </span>
+                            {% endfor %}
+
+                        {% else %}
+
+                            <span class="admin-account-role-empty">
+                                Ingen særlige roller
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        {% else %}
+
+            <div class="admin-accounts-empty">
+                Ingen konti blev fundet.
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

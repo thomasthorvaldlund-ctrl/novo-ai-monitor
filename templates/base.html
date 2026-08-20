@@ -291,6 +291,12 @@
             System
         </div>
 
+        {% if current_user_is_admin | default(false) %}
+            <a class="nav-link {% if request.path == '/admin/accounts' %}active{% endif %}" href="/admin/accounts">
+                👥 Kontoadministration
+            </a>
+        {% endif %}
+
         <a class="nav-link {% if request.path == '/job-status' %}active{% endif %}" href="/job-status">
             ⚙️ Scheduler & Jobs
         </a>
