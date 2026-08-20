@@ -2626,3 +2626,96 @@
         text-align: center;
     }
 }
+
+/* Command Center: iPhone overflow containment */
+
+.decision-quality-grid,
+.decision-learning-trend-grid {
+    display: grid;
+    gap: 15px;
+    margin-top: 15px;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.decision-quality-grid {
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+}
+
+.decision-learning-trend-grid {
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+}
+
+.decision-quality-grid > *,
+.decision-learning-trend-grid > * {
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+    .main-content,
+    .main-content .container,
+    .main-content .card,
+    .main-content .dashboard-card,
+    .stock-library-page {
+        box-sizing: border-box;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .summary-grid,
+    .earnings-primary-grid,
+    .earnings-more-grid,
+    .explain-grid,
+    .copilot-timeline,
+    .decision-quality-grid,
+    .decision-learning-grid,
+    .decision-learning-trend-grid {
+        grid-template-columns:
+            minmax(0, 1fr) !important;
+        max-width: 100%;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .summary-grid > *,
+    .earnings-primary-grid > *,
+    .earnings-more-grid > *,
+    .explain-grid > *,
+    .copilot-timeline > *,
+    .decision-quality-grid > *,
+    .decision-learning-grid > *,
+    .decision-learning-trend-grid > * {
+        box-sizing: border-box;
+        max-width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        width: 100%;
+    }
+
+    .explain-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .summary-badge,
+    .earnings-portfolio-badge,
+    .earnings-card-action,
+    .timeline-event-content,
+    .section-description {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    .decision-quality-card,
+    .decision-learning-card,
+    .decision-learning-trend-card,
+    .ai-copilot-timeline-card {
+        overflow-wrap: anywhere;
+    }
+}
