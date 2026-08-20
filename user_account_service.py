@@ -1048,3 +1048,314 @@ def list_user_accounts(
         _secure_database_files(
             database_path
         )
+
+
+# Account access administration START
+
+class AccountAccessInvariantError(
+    AccountStoreError
+):
+    """
+    Afviser en kontoændring, som ville bryde
+    platformens adgangssikkerhed.
+    """
+
+
+def update_user_account_access(
+    user_id,
+    *,
+    actor_user_id,
+    status=None,
+    admin_enabled=None,
+    path=None,
+):
+    """
+    Ændrer status og/eller administratorrolle atomisk.
+
+    Sikkerhedsregler:
+    - Kun en aktiv administrator kan udføre ændringen.
+    - Administratoren kan ikke ændre egen status.
+    - Administratoren kan ikke fjerne sin egen rolle.
+    - En ny administrator skal have aktiv konto.
+    - Der skal altid være mindst én aktiv administrator.
+    """
+
+    normalized_user_id = _required_text(
+        user_id,
+        "user_id",
+        lowercase=True,
+    )
+
+    normalized_actor_id = _required_text(
+        actor_user_id,
+        "actor_user_id",
+        lowercase=True,
+    )
+
+    normalized_status = None
+
+    if status is not None:
+        normalized_status = _required_text(
+            status,
+            "status",
+            lowercase=True,
+        )
+
+        if (
+            normalized_status
+            not in VALID_ACCOUNT_STATUSES
+        ):
+            raise ValueError(
+                "Ugyldig kontostatus."
+            )
+
+    if (
+        admin_enabled is not None
+        and not isinstance(
+            admin_enabled,
+            bool,
+        )
+    ):
+        raise ValueError(
+            "admin_enabled skal være boolsk."
+        )
+
+    if (
+        normalized_status is None
+        and admin_enabled is None
+    ):
+        raise ValueError(
+            "Ingen kontoændring blev angivet."
+        )
+
+    database_path = initialize_account_store(
+        path
+    )
+
+    connection = _connect(
+        database_path
+    )
+
+    try:
+        connection.execute(
+            "BEGIN IMMEDIATE"
+        )
+
+        actor = connection.execute(
+            """
+            SELECT user_id, status
+            FROM users
+            WHERE user_id = ?
+            """,
+            (
+                normalized_actor_id,
+            ),
+        ).fetchone()
+
+        actor_is_admin = (
+            connection.execute(
+                """
+                SELECT 1
+                FROM user_roles
+                WHERE
+                    user_id = ?
+                    AND role = 'admin'
+                """,
+                (
+                    normalized_actor_id,
+                ),
+            ).fetchone()
+            is not None
+        )
+
+        if (
+            actor is None
+            or actor["status"] != "active"
+            or not actor_is_admin
+        ):
+            raise AccountAccessInvariantError(
+                "Kun en aktiv administrator "
+                "kan ændre kontoadgang."
+            )
+
+        target = connection.execute(
+            """
+            SELECT
+                user_id,
+                status
+            FROM users
+            WHERE user_id = ?
+            """,
+            (
+                normalized_user_id,
+            ),
+        ).fetchone()
+
+        if target is None:
+            raise AccountNotFoundError(
+                "Brugerkontoen findes ikke."
+            )
+
+        target_is_admin = (
+            connection.execute(
+                """
+                SELECT 1
+                FROM user_roles
+                WHERE
+                    user_id = ?
+                    AND role = 'admin'
+                """,
+                (
+                    normalized_user_id,
+                ),
+            ).fetchone()
+            is not None
+        )
+
+        effective_status = (
+            normalized_status
+            if normalized_status is not None
+            else target["status"]
+        )
+
+        effective_admin = (
+            admin_enabled
+            if admin_enabled is not None
+            else target_is_admin
+        )
+
+        if (
+            normalized_user_id
+            == normalized_actor_id
+            and normalized_status is not None
+            and normalized_status
+            != target["status"]
+        ):
+            raise AccountAccessInvariantError(
+                "Du kan ikke ændre status "
+                "på din egen konto."
+            )
+
+        if (
+            normalized_user_id
+            == normalized_actor_id
+            and admin_enabled is False
+            and target_is_admin
+        ):
+            raise AccountAccessInvariantError(
+                "Du kan ikke fjerne din egen "
+                "administratorrolle."
+            )
+
+        if (
+            effective_admin
+            and effective_status != "active"
+            and not target_is_admin
+        ):
+            raise AccountAccessInvariantError(
+                "En administratorrolle kan kun "
+                "tildeles en aktiv konto."
+            )
+
+        if (
+            normalized_status is not None
+            and normalized_status
+            != target["status"]
+        ):
+            connection.execute(
+                """
+                UPDATE users
+                SET
+                    status = ?,
+                    updated_at = ?
+                WHERE user_id = ?
+                """,
+                (
+                    normalized_status,
+                    _utc_now(),
+                    normalized_user_id,
+                ),
+            )
+
+        if admin_enabled is True:
+            connection.execute(
+                """
+                INSERT INTO user_roles (
+                    user_id,
+                    role,
+                    created_at
+                )
+                VALUES (?, 'admin', ?)
+                ON CONFLICT(
+                    user_id,
+                    role
+                )
+                DO NOTHING
+                """,
+                (
+                    normalized_user_id,
+                    _utc_now(),
+                ),
+            )
+
+        elif admin_enabled is False:
+            connection.execute(
+                """
+                DELETE FROM user_roles
+                WHERE
+                    user_id = ?
+                    AND role = 'admin'
+                """,
+                (
+                    normalized_user_id,
+                ),
+            )
+
+        active_admin_count = (
+            connection.execute(
+                """
+                SELECT COUNT(*)
+                FROM users
+                INNER JOIN user_roles
+                    ON user_roles.user_id
+                    = users.user_id
+                WHERE
+                    users.status = 'active'
+                    AND user_roles.role = 'admin'
+                """
+            ).fetchone()[0]
+        )
+
+        if active_admin_count < 1:
+            raise AccountAccessInvariantError(
+                "Den sidste aktive administrator "
+                "kan ikke fjernes eller deaktiveres."
+            )
+
+        connection.commit()
+
+    except Exception:
+        connection.rollback()
+        raise
+
+    finally:
+        connection.close()
+        _secure_database_files(
+            database_path
+        )
+
+    account = get_user_account(
+        normalized_user_id,
+        path=database_path,
+    )
+
+    account["roles"] = (
+        get_user_account_roles(
+            normalized_user_id,
+            path=database_path,
+        )
+    )
+
+    return account
+
+# Account access administration END

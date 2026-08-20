@@ -25,13 +25,13 @@ Kontoadministration · Aureum AI Platform
             <h1>Kontoadministration</h1>
 
             <p>
-                Skrivebeskyttet oversigt over platformens
-                centrale brugerkonti, kontostatus og roller.
+                Administrer platformens centrale brugerkonti,
+                kontostatus og administratorroller.
             </p>
         </div>
 
         <span class="admin-accounts-read-only">
-            Kun visning
+            Sikker redigering
         </span>
 
     </header>
@@ -41,14 +41,35 @@ Kontoadministration · Aureum AI Platform
         class="admin-accounts-notice"
         role="status">
 
-        <strong>🔒 Sikker administratorvisning</strong>
+        <strong>🛡️ Beskyttet kontoadministration</strong>
 
         <span>
-            Denne første version kan ikke ændre konti,
-            roller eller abonnementer.
+            Ændringer kræver administratoradgang og gemmes
+            atomisk. Din egen konto og den sidste aktive
+            administrator er beskyttet.
         </span>
 
     </div>
+
+
+    {% if status_message %}
+        <div
+            class="admin-accounts-message
+                   admin-accounts-message-success"
+            role="status">
+            ✅ {{ status_message }}
+        </div>
+    {% endif %}
+
+
+    {% if error_message %}
+        <div
+            class="admin-accounts-message
+                   admin-accounts-message-error"
+            role="alert">
+            ⚠️ {{ error_message }}
+        </div>
+    {% endif %}
 
 
     <div class="admin-accounts-summary">
@@ -86,8 +107,8 @@ Kontoadministration · Aureum AI Platform
             <h2>Brugerkonti</h2>
 
             <p>
-                Konto-ID, loginidentitet, status
-                og nuværende roller.
+                Konto-ID, loginidentitet, status,
+                roller og sikre kontohandlinger.
             </p>
         </div>
 
@@ -187,6 +208,132 @@ Kontoadministration · Aureum AI Platform
                         {% endif %}
 
                     </div>
+
+                </div>
+
+
+                <div class="admin-account-actions">
+
+                    <strong>Kontohandlinger</strong>
+
+                    {% if account.user_id == current_admin_id %}
+
+                        <p class="admin-account-action-note">
+                            Din egen status og administratorrolle
+                            kan ikke ændres her.
+                        </p>
+
+                    {% else %}
+
+                        <div class="admin-account-action-grid">
+
+                            <form
+                                method="post"
+                                action="{{ url_for(
+                                    'admin_accounts.update_admin_account_access',
+                                    user_id=account.user_id
+                                ) }}"
+                                onsubmit="return confirm(
+                                    'Bekræft ændring af kontostatus for {{ account.username }}.'
+                                );">
+
+                                {% if account.status == "active" %}
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="disable"
+                                    >
+
+                                    <button
+                                        class="admin-account-button
+                                               admin-account-button-danger"
+                                        type="submit">
+                                        Deaktiver konto
+                                    </button>
+                                {% else %}
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="activate"
+                                    >
+
+                                    <button
+                                        class="admin-account-button
+                                               admin-account-button-success"
+                                        type="submit">
+                                        Aktivér konto
+                                    </button>
+                                {% endif %}
+
+                            </form>
+
+
+                            {% if "admin" in account.roles %}
+
+                                <form
+                                    method="post"
+                                    action="{{ url_for(
+                                        'admin_accounts.update_admin_account_access',
+                                        user_id=account.user_id
+                                    ) }}"
+                                    onsubmit="return confirm(
+                                        'Bekræft fjernelse af administratorrollen fra {{ account.username }}.'
+                                    );">
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="revoke_admin"
+                                    >
+
+                                    <button
+                                        class="admin-account-button
+                                               admin-account-button-secondary"
+                                        type="submit">
+                                        Fjern administrator
+                                    </button>
+
+                                </form>
+
+                            {% elif account.status == "active" %}
+
+                                <form
+                                    method="post"
+                                    action="{{ url_for(
+                                        'admin_accounts.update_admin_account_access',
+                                        user_id=account.user_id
+                                    ) }}"
+                                    onsubmit="return confirm(
+                                        'Bekræft administratoradgang til {{ account.username }}.'
+                                    );">
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="grant_admin"
+                                    >
+
+                                    <button
+                                        class="admin-account-button
+                                               admin-account-button-primary"
+                                        type="submit">
+                                        Gør til administrator
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <p class="admin-account-action-note">
+                                    Aktivér kontoen, før den kan
+                                    få administratorrollen.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
 
                 </div>
 

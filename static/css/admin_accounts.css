@@ -351,3 +351,119 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Admin account editing START */
+
+.admin-accounts-message {
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 18px;
+    padding: 13px 15px;
+}
+
+.admin-accounts-message-success {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #166534;
+}
+
+.admin-accounts-message-error {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+}
+
+.admin-account-actions {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 17px;
+    padding-top: 16px;
+}
+
+.admin-account-actions > strong {
+    color: #334155;
+    display: block;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.admin-account-action-grid {
+    display: grid;
+    gap: 9px;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+}
+
+.admin-account-action-grid form {
+    margin: 0;
+    min-width: 0;
+}
+
+.admin-account-button {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 40px;
+    padding: 9px 11px;
+    text-align: center;
+    transition:
+        background 0.16s ease,
+        border-color 0.16s ease,
+        transform 0.16s ease;
+    width: 100%;
+}
+
+.admin-account-button:hover {
+    transform: translateY(-1px);
+}
+
+.admin-account-button:focus-visible {
+    outline: 3px solid
+        rgba(37, 99, 235, 0.24);
+    outline-offset: 2px;
+}
+
+.admin-account-button-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.admin-account-button-success {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #166534;
+}
+
+.admin-account-button-secondary {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+.admin-account-button-danger {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    color: #be123c;
+}
+
+.admin-account-action-note {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@media (max-width: 460px) {
+    .admin-account-action-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Admin account editing END */
