@@ -95,3 +95,5 @@ deep_ai_entitlements.lock
 aureum_accounts.sqlite3
 aureum_accounts.sqlite3-wal
 aureum_accounts.sqlite3-shm
+quiet_alert_state.json
+quiet_alert_state.json.lock

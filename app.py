@@ -343,21 +343,14 @@ def risk_check():
     alarm_sent = False
     reasons = []
 
-    if daily_change <= -4:
-        alarm_sent = True
+    if daily_change <= -5:
         reasons.append(f"Dagsfald: {daily_change:.2f}%")
 
-    if weekly_change <= -8:
-        alarm_sent = True
+    if weekly_change <= -10:
         reasons.append(f"Ugefald: {weekly_change:.2f}%")
 
-    if alarm_sent:
-        message = (
-            f"🚨 {selected_stock} RISIKOALARM 🚨\n"
-            "Risiko: HØJ\n\n"
-            + "\n".join(reasons)
-        )
-        send_telegram(message)
+    # Øjeblikkelige beskeder håndteres samlet af /smart-alerts.
+    # Denne side er derfor kun en skrivebeskyttet risikovurdering.
 
     dashboard_cache = load_dashboard_cache()
     combined_item = next(
@@ -549,16 +542,8 @@ def news_check():
                 new_negative_articles.append(article)
                 seen.add(title)
 
-    if new_negative_articles:
-        message = (
-            f"📰 {selected_stock} NYHEDSALARM\n"
-            "Nyt muligt negativt nyhedssignal:\n\n"
-            + "\n\n".join(
-                item.get("title", "")
-                for item in new_negative_articles[:5]
-            )
-        )
-        send_telegram(message)
+    # Nye negative overskrifter opsamles til morgenrapporten.
+    # De udløser ikke længere selvstændige Telegram-beskeder.
 
     seen_temp_file = Path(seen_file).with_suffix(
         Path(seen_file).suffix + ".tmp"
@@ -730,8 +715,8 @@ Overskrifter:
         novo_ai_news_file
     )
 
-    if "Høj" in ai_text or "Kritisk" in ai_text:
-        send_telegram("🧠 NOVO AI NYHEDSALARM\n\n" + ai_text)
+    # AI-resultatet gemmes til den centrale alarmmotor.
+    # Kun en ny eller ændret Kritisk-status kan varsles derfra.
 
     return {
         "checked_articles": len(titles),
@@ -756,21 +741,19 @@ def status_report():
     score = 0
     reasons = []
 
-    if daily_change <= -2:
-        score += 15
+    if daily_change <= -5:
+        score += 50
+        reasons.append(f"Kraftigt dagsfald: {daily_change:.2f}%")
+    elif daily_change <= -3:
+        score += 25
         reasons.append(f"Dagsfald: {daily_change:.2f}%")
 
-    if daily_change <= -4:
-        score += 25
-        reasons.append("Kraftigt dagsfald")
-
-    if weekly_change <= -5:
+    if weekly_change <= -10:
+        score += 40
+        reasons.append(f"Kraftigt ugefald: {weekly_change:.2f}%")
+    elif weekly_change <= -7:
         score += 20
         reasons.append(f"Ugefald: {weekly_change:.2f}%")
-
-    if weekly_change <= -8:
-        score += 30
-        reasons.append("Kraftigt ugefald")
 
     feed = feedparser.parse(
         "https://news.google.com/rss/search?q=Novo+Nordisk+stock+OR+Wegovy+OR+Ozempic&hl=en-US&gl=US&ceid=US:en"
@@ -780,22 +763,19 @@ def status_report():
         "falls", "drops", "lawsuit", "warning", "cuts",
         "misses", "pressure", "competition", "decline",
         "risk", "probe", "investigation", "side effects",
-        "Eli Lilly", "price war"
+        "Eli Lilly", "price war",
     ]
-
     news_matches = []
-
     for entry in feed.entries[:10]:
         title = entry.title
         if any(word.lower() in title.lower() for word in negative_words):
             news_matches.append(title)
 
     if news_matches:
-        score += min(len(news_matches) * 10, 30)
+        score += min(len(news_matches) * 5, 20)
         reasons.append(f"{len(news_matches)} negative nyhedssignaler")
 
     score = min(score, 100)
-
     if score < 30:
         risk_level = "Lav"
     elif score < 60:
@@ -805,19 +785,31 @@ def status_report():
     else:
         risk_level = "Kritisk"
 
+    ranking_data = combined_stock_score()
+    ranking = ranking_data.get("combined_ranking", [])[:5]
+    ranking_lines = []
+    for index, item in enumerate(ranking, start=1):
+        ranking_lines.append(
+            f"{index}. {item.get('stock')} · "
+            f"{item.get('combined_score', 0)}/100 · "
+            f"{item.get('rating', 'Ingen vurdering')}"
+        )
+
     message = (
-        "📊 NOVO AI STATUS\n\n"
-        f"Kurs: {latest:.2f}\n"
+        "🌅 AUREUM AI MORGENRAPPORT\n\n"
+        "NOVO\n"
+        f"Kurs: {latest:.2f} DKK\n"
         f"Dagsændring: {daily_change:.2f}%\n"
-        f"Ugeændring: {weekly_change:.2f}%\n\n"
-        f"Samlet risiko: {risk_level}\n"
-        f"Score: {score}/100\n\n"
+        f"Ugeændring: {weekly_change:.2f}%\n"
+        f"Samlet risiko: {risk_level} ({score}/100)\n\n"
         "Årsager:\n"
         + ("\n".join(reasons) if reasons else "Ingen store faresignaler")
+        + "\n\nTop 5 samlet AI-score:\n"
+        + ("\n".join(ranking_lines) if ranking_lines else "Ingen rangering tilgængelig")
+        + "\n\nKun nye eller væsentligt ændrede kritiske forhold sendes straks."
     )
 
     send_telegram(message)
-
     return {
         "price": round(float(latest), 2),
         "daily_change": round(float(daily_change), 2),
@@ -825,7 +817,8 @@ def status_report():
         "risk_level": risk_level,
         "score": score,
         "reasons": reasons,
-        "news_matches": news_matches[:5]
+        "news_matches": news_matches[:5],
+        "top5": ranking,
     }
 
 @app.route("/chart")
@@ -896,120 +889,132 @@ def daily_report():
         f"Samlet risiko: {novo_total_risk}"
     )
 
-    send_telegram(message)
-    return {"status": "Daily report sent"}
+    # Aftenrapporten beregnes fortsat, men sendes ikke som notifikation.
+    return {"status": "Daily report prepared without notification"}
 
 @app.route("/smart-alerts")
 def smart_alerts():
+    import hashlib
     import json
-    from datetime import datetime
+    import re
 
-    state_file = state_path(
-        "smart_alert_state.json"
+    from earnings_risk_service import get_earnings_risks
+    from quiet_alert_service import (
+        format_alert_digest,
+        process_alert_events,
     )
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    try:
-        with open(state_file, "r") as f:
-            state = json.load(f)
-    except Exception:
-        state = {}
 
     def extract_ai_risk(path):
         try:
-            with open(path, "r") as f:
-                text = json.load(f).get("ai_analysis", "")
+            with open(path, "r", encoding="utf-8") as handle:
+                text = json.load(handle).get("ai_analysis", "")
         except Exception:
             text = ""
 
-        if "Risiko: Kritisk" in text:
-            return "Kritisk"
-        if "Risiko: Høj" in text:
-            return "Høj"
-        if "Risiko: Moderat" in text:
-            return "Moderat"
-        return "Lav"
-
-    levels = {"Lav": 1, "Moderat": 2, "Høj": 3, "Kritisk": 4}
-
-    stocks = [
-        {
-            "name": "NOVO",
-            "ticker": get_stock_metadata("NOVO")["ticker"],
-            "ai_log": log_path("last_ai_news_check.log"),
-        },
-    ]
-
-    alerts = []
-
-    for item in stocks:
-        data = get_stock_data(item["ticker"])
-        ai_risk = extract_ai_risk(item["ai_log"])
-
-        total_risk = data["risk_level"]
-        if levels[ai_risk] > levels[total_risk]:
-            total_risk = ai_risk
-
-        alert_key = f"{item['name']}_{today}"
-
-        if alert_key not in state:
-            should_alert = False
-            reasons = []
-
-            if data["daily_change"] <= -3:
-                should_alert = True
-                reasons.append(f"Dagsfald: {data['daily_change']:.2f}%")
-
-            if data["weekly_change"] <= -7:
-                should_alert = True
-                reasons.append(f"Ugefald: {data['weekly_change']:.2f}%")
-
-            if total_risk in ["Høj", "Kritisk"]:
-                should_alert = True
-                reasons.append(f"Samlet risiko: {total_risk}")
-
-            if should_alert:
-                message = (
-                    f"🚨 SMART AKTIEALARM - {item['name']}\n\n"
-                    f"Kurs: {data['price']:.2f} DKK\n"
-                    f"Dagsændring: {data['daily_change']:.2f}%\n"
-                    f"Ugeændring: {data['weekly_change']:.2f}%\n\n"
-                    f"Teknisk risiko: {data['risk_level']}\n"
-                    f"AI-risiko: {ai_risk}\n"
-                    f"Samlet risiko: {total_risk}\n\n"
-                    "Årsager:\n"
-                    + "\n".join(reasons)
-                )
-
-                send_telegram(message)
-                alerts.append(message)
-                state[alert_key] = True
-
-    temp_state_file = state_file.with_suffix(
-        state_file.suffix + ".tmp"
-    )
-
-    with open(
-        temp_state_file,
-        "w",
-        encoding="utf-8"
-    ) as f:
-        json.dump(
-            state,
-            f,
-            ensure_ascii=False,
+        match = re.search(
+            r"(?im)^\s*Risiko\s*:\s*(Lav|Moderat|Høj|Kritisk)\b",
+            text,
         )
+        return (match.group(1) if match else "Lav"), text
 
-        f.flush()
-        os.fsync(f.fileno())
+    events = []
+    novo_ticker = get_stock_metadata("NOVO")["ticker"]
+    market = get_stock_data(novo_ticker)
 
-    temp_state_file.replace(
-        state_file
+    daily_critical = market["daily_change"] <= -8
+    weekly_critical = market["weekly_change"] <= -15
+    daily_high = market["daily_change"] <= -5
+    weekly_high = market["weekly_change"] <= -10
+    market_active = daily_high or weekly_high
+    market_severity = (
+        "critical"
+        if daily_critical or weekly_critical
+        else "high"
     )
+    market_bands = {
+        "daily": "critical" if daily_critical else "high" if daily_high else "normal",
+        "weekly": "critical" if weekly_critical else "high" if weekly_high else "normal",
+    }
+    market_reasons = []
+    if daily_high:
+        market_reasons.append(f"Dagsfald: {market['daily_change']:.2f}%")
+    if weekly_high:
+        market_reasons.append(f"Ugefald: {market['weekly_change']:.2f}%")
+
+    events.append({
+        "key": "market:NOVO",
+        "active": market_active,
+        "severity": market_severity,
+        "fingerprint": json.dumps(market_bands, sort_keys=True),
+        "title": "NOVO markedsrisiko",
+        "body": (
+            "\n".join(market_reasons)
+            if market_active
+            else "Kursfaldbetingelsen er ikke længere aktiv."
+        ),
+    })
+
+    ai_risk, ai_text = extract_ai_risk(
+        log_path("last_ai_news_check.log")
+    )
+    ai_active = ai_risk == "Kritisk"
+    events.append({
+        "key": "ai-news:NOVO",
+        "active": ai_active,
+        "severity": "critical" if ai_active else "low",
+        "fingerprint": hashlib.sha256(
+            ai_text.strip().encode("utf-8")
+        ).hexdigest() if ai_text.strip() else "",
+        "title": "NOVO kritisk AI-nyhedsrisiko",
+        "body": (
+            ai_text.strip()
+            if ai_active
+            else "AI-nyhedsrisikoen er ikke længere kritisk."
+        ),
+    })
+
+    for item in get_earnings_risks():
+        stock = str(item.get("stock", "")).strip().upper()
+        signal = str(item.get("signal", "")).strip().upper()
+        days_left = item.get("days_left")
+        if not stock or not isinstance(days_left, int):
+            continue
+
+        earnings_active = (
+            0 <= days_left <= 2
+            and signal in {"WATCH", "REDUCE"}
+        )
+        earnings_severity = (
+            "critical" if signal == "REDUCE" else "high"
+        )
+        events.append({
+            "key": f"earnings:{stock}",
+            "active": earnings_active,
+            "severity": earnings_severity if earnings_active else "low",
+            "fingerprint": f"{signal}:{item.get('alert_level', '')}",
+            "title": f"{stock} regnskab nærmer sig",
+            "body": (
+                f"Regnskab om {days_left} dage. Signal: {signal}. "
+                f"{item.get('message', '')}"
+                if earnings_active
+                else "Den øjeblikkelige regnskabsalarm er ikke længere aktiv."
+            ),
+        })
+
+    decisions = process_alert_events(
+        events,
+        path=state_path("quiet_alert_state.json"),
+        reminder_hours=72,
+        changed_hours=24,
+    )
+    message = format_alert_digest(decisions)
+    if message:
+        send_telegram(message)
 
     return {
-        "alerts_sent": len(alerts),
-        "alerts": alerts
+        "events_evaluated": len(events),
+        "notifications": decisions,
+        "alerts_sent": 1 if message else 0,
     }
 
 @app.route("/save-history")
@@ -1530,7 +1535,7 @@ def combined_stock_score_report():
 
     msg += "Dette er AI-baseret analyse og ikke finansiel rådgivning."
 
-    send_telegram(msg)
+    # Top-5 indgår i morgenrapporten og sendes ikke separat.
 
     return {
         "status": "screener report sent",
