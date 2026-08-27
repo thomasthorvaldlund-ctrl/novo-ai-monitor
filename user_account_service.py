@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 VALID_ACCOUNT_ROLES = frozenset({
     "admin",
@@ -175,6 +175,9 @@ def initialize_account_store(path=None):
 
     Version 4:
         Revisionslog for administrative kontoændringer.
+
+    Version 5:
+        Krypterede TOTP-oplysninger og engangskoder.
 
     Eksisterende tabeller og brugeridentiteter ændres ikke.
     """
@@ -380,6 +383,56 @@ def initialize_account_store(path=None):
             )
 
             version = 4
+
+        if version == 4:
+            connection.executescript(
+                """
+                BEGIN IMMEDIATE;
+
+                CREATE TABLE user_totp_credentials (
+                    user_id TEXT PRIMARY KEY,
+                    encrypted_secret TEXT NOT NULL,
+                    enabled INTEGER NOT NULL
+                        CHECK (enabled IN (0, 1)),
+                    last_used_step INTEGER
+                        CHECK (
+                            last_used_step IS NULL
+                            OR last_used_step >= 0
+                        ),
+                    created_at TEXT NOT NULL,
+                    confirmed_at TEXT,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY (user_id)
+                        REFERENCES users(user_id)
+                        ON DELETE CASCADE
+                );
+
+                CREATE TABLE user_mfa_recovery_codes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id TEXT NOT NULL,
+                    code_digest TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    used_at TEXT,
+                    UNIQUE (user_id, code_digest),
+                    FOREIGN KEY (user_id)
+                        REFERENCES users(user_id)
+                        ON DELETE CASCADE
+                );
+
+                CREATE INDEX
+                    idx_user_mfa_recovery_available
+                ON user_mfa_recovery_codes(
+                    user_id,
+                    used_at
+                );
+
+                PRAGMA user_version = 5;
+
+                COMMIT;
+                """
+            )
+
+            version = 5
 
         if version != SCHEMA_VERSION:
             raise AccountStoreError(

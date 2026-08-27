@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="utf-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+    <meta
+        name="robots"
+        content="noindex, nofollow, noarchive"
+    >
+    <title>Tofaktorgodkendelse · Aureum AI Platform</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/private_login.css') }}"
+    >
+</head>
+<body class="private-login-page">
+    <main class="private-login-shell">
+        <section class="private-login-card">
+            <div class="private-login-brand">
+                🤖 Aureum AI Platform
+            </div>
+
+            <div class="private-login-badge">
+                🛡️ Tofaktorgodkendelse
+            </div>
+
+            <h1>Bekræft login</h1>
+
+            <p class="private-login-intro">
+                Indtast den 6-cifrede kode fra din
+                authenticator-app eller en ubrugt
+                gendannelseskode.
+            </p>
+
+            {% if error_message %}
+                <div
+                    class="private-login-message error"
+                    role="alert"
+                >
+                    {{ error_message }}
+                </div>
+            {% endif %}
+
+            <form
+                class="private-login-form"
+                method="post"
+                action="{{ url_for('private_login.two_factor_challenge') }}"
+            >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token }}"
+                >
+
+                <label for="private-two-factor-code">
+                    Sikkerhedskode
+                </label>
+                <input
+                    id="private-two-factor-code"
+                    name="verification_code"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    maxlength="32"
+                    required
+                    autofocus
+                >
+
+                <button type="submit">
+                    Bekræft og log ind
+                </button>
+            </form>
+
+            <p class="private-login-note">
+                Ubrugte koder kan kun anvendes én gang.
+            </p>
+        </section>
+    </main>
+</body>
+</html>

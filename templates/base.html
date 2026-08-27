@@ -305,6 +305,10 @@
             </a>
         {% endif %}
 
+        <a class="nav-link {% if request.path.startswith('/security/two-factor') %}active{% endif %}" href="{{ url_for('private_login.two_factor_settings') }}">
+            🛡️ Login-sikkerhed
+        </a>
+
         <a class="nav-link {% if request.path == '/job-status' %}active{% endif %}" href="/job-status">
             ⚙️ Scheduler & Jobs
         </a>

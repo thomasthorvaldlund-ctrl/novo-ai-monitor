@@ -8,3 +8,6 @@ praw
 ta
 schedule
 gunicorn
+cryptography
+pyotp
+qrcode

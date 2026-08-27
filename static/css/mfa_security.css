@@ -1,0 +1,234 @@
+.mfa-security-page {
+    width: min(100%, 1120px);
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+    color: #142033;
+}
+
+.mfa-security-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.mfa-security-eyebrow {
+    color: #60728d;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .08em;
+}
+
+.mfa-security-header h1 {
+    margin: 6px 0 8px;
+    font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.05;
+}
+
+.mfa-security-header p,
+.mfa-card p,
+.mfa-security-note {
+    color: #5c6f8b;
+    line-height: 1.55;
+}
+
+.mfa-status-badge {
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    border: 1px solid #cbd8eb;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.mfa-status-badge.enabled {
+    color: #08783c;
+    background: #e3faec;
+    border-color: #a9e9c1;
+}
+
+.mfa-status-badge.disabled {
+    color: #6a7382;
+    background: #f3f6fa;
+}
+
+.mfa-card,
+.mfa-message {
+    padding: 24px;
+    border: 1px solid #d7e0ed;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(28, 47, 78, .07);
+}
+
+.mfa-message {
+    margin-bottom: 18px;
+    box-shadow: none;
+}
+
+.mfa-message.error {
+    color: #a31131;
+    background: #fff1f3;
+    border-color: #ffc7cf;
+}
+
+.mfa-message.success {
+    color: #08783c;
+    background: #ecfbf2;
+    border-color: #b7ebca;
+}
+
+.mfa-card h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+}
+
+.mfa-step {
+    color: #245de8;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.mfa-card-grid,
+.mfa-setup-grid,
+.recovery-code-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.mfa-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mfa-setup-grid {
+    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+    align-items: center;
+    margin: 22px 0;
+}
+
+.mfa-qr {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 12px;
+    border: 1px solid #d7e0ed;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.mfa-manual-secret span {
+    display: block;
+    margin-bottom: 8px;
+    color: #60728d;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.mfa-manual-secret code,
+.recovery-code-grid code {
+    display: block;
+    overflow-wrap: anywhere;
+    padding: 12px;
+    border-radius: 9px;
+    background: #f2f6fc;
+    color: #17233a;
+    font: 700 14px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.recovery-card {
+    margin-bottom: 18px;
+    border-color: #f0c56a;
+}
+
+.recovery-code-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 18px;
+}
+
+.mfa-form {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.mfa-form label {
+    color: #34445d;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.mfa-form input {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 13px;
+    border: 1px solid #bdcaDC;
+    border-radius: 10px;
+    background: #fff;
+    color: #142033;
+    font: inherit;
+}
+
+.mfa-form input:focus {
+    border-color: #2868ef;
+    outline: 3px solid rgba(40, 104, 239, .15);
+}
+
+.mfa-form button {
+    min-height: 44px;
+    padding: 11px 16px;
+    border: 0;
+    border-radius: 10px;
+    background: #2868ef;
+    color: #fff;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.danger-card {
+    border-color: #ffc6cf;
+}
+
+.mfa-form .danger-button {
+    background: #c9173e;
+}
+
+.mfa-security-note {
+    margin: 18px 0 0;
+    font-size: 13px;
+}
+
+@media (max-width: 760px) {
+    .mfa-security-page {
+        padding: 22px 14px 36px;
+    }
+
+    .mfa-security-header,
+    .mfa-card-grid,
+    .mfa-setup-grid,
+    .recovery-code-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mfa-security-header {
+        display: grid;
+    }
+
+    .mfa-status-badge {
+        justify-self: start;
+    }
+
+    .mfa-card,
+    .mfa-message {
+        padding: 18px;
+    }
+
+    .mfa-qr {
+        width: min(100%, 260px);
+        justify-self: center;
+    }
+}

@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Login-sikkerhed · Aureum AI Platform{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/mfa_security.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+<section class="mfa-security-page">
+    <header class="mfa-security-header">
+        <div>
+            <div class="mfa-security-eyebrow">
+                🛡️ PRIVAT SIKKERHED
+            </div>
+            <h1>Tofaktorgodkendelse</h1>
+            <p>
+                Beskyt din private konto med en tidsbaseret
+                kode fra en authenticator-app.
+            </p>
+        </div>
+
+        <span class="mfa-status-badge {{ 'enabled' if mfa_status.enabled else 'disabled' }}">
+            {{ 'Aktiv' if mfa_status.enabled else 'Ikke aktiv' }}
+        </span>
+    </header>
+
+    {% if error_message %}
+        <div class="mfa-message error" role="alert">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
+    {% if success_message %}
+        <div class="mfa-message success" role="status">
+            {{ success_message }}
+        </div>
+    {% endif %}
+
+    {% if recovery_codes %}
+        <section class="mfa-card recovery-card">
+            <h2>Gem dine gendannelseskoder nu</h2>
+            <p>
+                De vises kun denne ene gang. Opbevar dem
+                offline og adskilt fra din adgangskode.
+            </p>
+            <div class="recovery-code-grid">
+                {% for code in recovery_codes %}
+                    <code>{{ code }}</code>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {% if mfa_status.pending and setup_details %}
+        <section class="mfa-card setup-card">
+            <div class="mfa-step">Trin 1</div>
+            <h2>Scan QR-koden</h2>
+            <p>
+                Scan koden i din authenticator-app. Du kan
+                også indtaste nøglen manuelt.
+            </p>
+
+            <div class="mfa-setup-grid">
+                <img
+                    class="mfa-qr"
+                    src="{{ setup_details.qr_data_uri }}"
+                    alt="QR-kode til Aureum AI 2FA"
+                >
+                <div class="mfa-manual-secret">
+                    <span>Manuel nøgle</span>
+                    <code>{{ setup_details.manual_secret }}</code>
+                </div>
+            </div>
+
+            <form
+                class="mfa-form"
+                method="post"
+                action="{{ url_for('private_login.confirm_two_factor_setup') }}"
+            >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <label for="mfa-confirmation-code">
+                    Bekræft med den aktuelle 6-cifrede kode
+                </label>
+                <input
+                    id="mfa-confirmation-code"
+                    name="verification_code"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    maxlength="6"
+                    required
+                >
+                <button type="submit">Aktivér 2FA sikkert</button>
+            </form>
+        </section>
+
+    {% elif not mfa_status.enabled %}
+        <section class="mfa-card">
+            <h2>Aktivér 2FA</h2>
+            <p>
+                Din adgangskode kontrolleres igen, før en
+                ny authenticator-nøgle oprettes.
+            </p>
+
+            <form
+                class="mfa-form"
+                method="post"
+                action="{{ url_for('private_login.start_two_factor_setup') }}"
+            >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <label for="mfa-current-password">
+                    Nuværende adgangskode
+                </label>
+                <input
+                    id="mfa-current-password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    maxlength="4096"
+                    required
+                >
+                <button type="submit">Start sikker opsætning</button>
+            </form>
+        </section>
+
+    {% else %}
+        <div class="mfa-card-grid">
+            <section class="mfa-card">
+                <h2>Gendannelseskoder</h2>
+                <p>
+                    {{ mfa_status.recovery_codes_remaining }}
+                    ubrugte koder er tilbage.
+                </p>
+                <form
+                    class="mfa-form"
+                    method="post"
+                    action="{{ url_for('private_login.regenerate_two_factor_recovery_codes') }}"
+                >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <label for="mfa-regenerate-code">
+                        Aktuel 2FA- eller gendannelseskode
+                    </label>
+                    <input
+                        id="mfa-regenerate-code"
+                        name="verification_code"
+                        type="text"
+                        autocomplete="one-time-code"
+                        maxlength="32"
+                        required
+                    >
+                    <button type="submit">Lav nye gendannelseskoder</button>
+                </form>
+            </section>
+
+            <section class="mfa-card danger-card">
+                <h2>Deaktivér 2FA</h2>
+                <p>
+                    Kræver både din adgangskode og en gyldig
+                    2FA- eller gendannelseskode.
+                </p>
+                <form
+                    class="mfa-form"
+                    method="post"
+                    action="{{ url_for('private_login.disable_two_factor') }}"
+                    onsubmit="return confirm('Vil du deaktivere tofaktorgodkendelse?');"
+                >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <label for="mfa-disable-password">Adgangskode</label>
+                    <input
+                        id="mfa-disable-password"
+                        name="password"
+                        type="password"
+                        autocomplete="current-password"
+                        maxlength="4096"
+                        required
+                    >
+                    <label for="mfa-disable-code">
+                        2FA- eller gendannelseskode
+                    </label>
+                    <input
+                        id="mfa-disable-code"
+                        name="verification_code"
+                        type="text"
+                        autocomplete="one-time-code"
+                        maxlength="32"
+                        required
+                    >
+                    <button class="danger-button" type="submit">
+                        Deaktivér 2FA
+                    </button>
+                </form>
+            </section>
+        </div>
+    {% endif %}
+
+    <p class="mfa-security-note">
+        2FA aktiveres ikke, før en kode fra appen er
+        bekræftet. Almindeligt login virker indtil da.
+    </p>
+</section>
+{% endblock %}

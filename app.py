@@ -80,6 +80,7 @@ app = Flask(__name__)
 from routes.system_status import system_status_bp
 
 from private_login_service import (
+    basic_auth_allowed_for_user,
     configure_private_login,
     get_authenticated_session_user_id,
     is_private_login_path,
@@ -215,9 +216,15 @@ def before_request():
         auth.username,
         auth.password,
     ):
-        if (
+        current_user_id = (
             get_optional_current_user_id()
-            is not None
+        )
+
+        if (
+            current_user_id is not None
+            and basic_auth_allowed_for_user(
+                current_user_id
+            )
         ):
             return
 
