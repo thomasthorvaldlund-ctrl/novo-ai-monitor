@@ -603,6 +603,27 @@ AI_NEWS_CHECK_CACHE_CONTRACT_VERSION = "ai_news_check:v1"
 
 @app.route("/ai-news-check")
 def ai_news_check():
+
+    from portfolio_stock_service import (
+        is_monitored_stock,
+    )
+
+    novo_ticker = get_stock_metadata(
+        "NOVO"
+    )["ticker"]
+
+    if not is_monitored_stock(
+        stock="NOVO",
+        ticker=novo_ticker,
+    ):
+        return {
+            "status": (
+                "skipped_not_in_portfolio"
+            ),
+            "stock": "NOVO",
+            "additional_openai_calls": 0,
+        }
+
     feed = feedparser.parse(
         "https://news.google.com/rss/search?q=Novo+Nordisk+stock+OR+Wegovy+OR+Ozempic&hl=en-US&gl=US&ceid=US:en"
     )
@@ -732,100 +753,124 @@ Overskrifter:
 
 @app.route("/status-report")
 def status_report():
-    ticker = get_stock_metadata("NOVO")["ticker"]
-    data = provider_get_history(
-        ticker,
-        period="10d",
+    from portfolio import (
+        load_portfolio_rows,
     )
 
-    latest = data["Close"].iloc[-1]
-    yesterday = data["Close"].iloc[-2]
-    week_ago = data["Close"].iloc[-6]
-
-    daily_change = ((latest - yesterday) / yesterday) * 100
-    weekly_change = ((latest - week_ago) / week_ago) * 100
-
-    score = 0
-    reasons = []
-
-    if daily_change <= -5:
-        score += 50
-        reasons.append(f"Kraftigt dagsfald: {daily_change:.2f}%")
-    elif daily_change <= -3:
-        score += 25
-        reasons.append(f"Dagsfald: {daily_change:.2f}%")
-
-    if weekly_change <= -10:
-        score += 40
-        reasons.append(f"Kraftigt ugefald: {weekly_change:.2f}%")
-    elif weekly_change <= -7:
-        score += 20
-        reasons.append(f"Ugefald: {weekly_change:.2f}%")
-
-    feed = feedparser.parse(
-        "https://news.google.com/rss/search?q=Novo+Nordisk+stock+OR+Wegovy+OR+Ozempic&hl=en-US&gl=US&ceid=US:en"
+    portfolio_rows = (
+        load_portfolio_rows()
     )
+    portfolio_results = []
+    portfolio_lines = []
 
-    negative_words = [
-        "falls", "drops", "lawsuit", "warning", "cuts",
-        "misses", "pressure", "competition", "decline",
-        "risk", "probe", "investigation", "side effects",
-        "Eli Lilly", "price war",
-    ]
-    news_matches = []
-    for entry in feed.entries[:10]:
-        title = entry.title
-        if any(word.lower() in title.lower() for word in negative_words):
-            news_matches.append(title)
+    for row in portfolio_rows:
+        stock = str(
+            row.get("stock", "")
+        ).strip()
+        ticker = str(
+            row.get("ticker", "")
+        ).strip()
 
-    if news_matches:
-        score += min(len(news_matches) * 5, 20)
-        reasons.append(f"{len(news_matches)} negative nyhedssignaler")
+        if not stock or not ticker:
+            continue
 
-    score = min(score, 100)
-    if score < 30:
-        risk_level = "Lav"
-    elif score < 60:
-        risk_level = "Moderat"
-    elif score < 80:
-        risk_level = "Høj"
-    else:
-        risk_level = "Kritisk"
+        try:
+            market = get_stock_data(
+                ticker
+            )
+            currency = get_currency(
+                ticker
+            )
+        except Exception as exc:
+            portfolio_results.append({
+                "stock": stock,
+                "ticker": ticker,
+                "status": "unavailable",
+                "error_type": (
+                    type(exc).__name__
+                ),
+            })
+            portfolio_lines.append(
+                f"{stock}\n"
+                "Markedsdata er midlertidigt "
+                "utilgængelige."
+            )
+            continue
 
-    ranking_data = combined_stock_score()
-    ranking = ranking_data.get("combined_ranking", [])[:5]
+        portfolio_results.append({
+            "stock": stock,
+            "ticker": ticker,
+            "status": "ok",
+            **market,
+        })
+
+        portfolio_lines.append(
+            f"{stock}\n"
+            f"Kurs: {market['price']:.2f} "
+            f"{currency}\n"
+            "Dagsændring: "
+            f"{market['daily_change']:.2f}%\n"
+            "Ugeændring: "
+            f"{market['weekly_change']:.2f}%\n"
+            "Samlet markedsrisiko: "
+            f"{market['risk_level']} "
+            f"({market['score']}/100)"
+        )
+
+    ranking_data = (
+        combined_stock_score()
+    )
+    ranking = ranking_data.get(
+        "combined_ranking",
+        [],
+    )[:5]
+
     ranking_lines = []
-    for index, item in enumerate(ranking, start=1):
+
+    for index, item in enumerate(
+        ranking,
+        start=1,
+    ):
         ranking_lines.append(
-            f"{index}. {item.get('stock')} · "
-            f"{item.get('combined_score', 0)}/100 · "
+            f"{index}. "
+            f"{item.get('stock')} · "
+            f"{item.get('combined_score', 0)}"
+            "/100 · "
             f"{item.get('rating', 'Ingen vurdering')}"
         )
 
     message = (
         "🌅 AUREUM AI MORGENRAPPORT\n\n"
-        "NOVO\n"
-        f"Kurs: {latest:.2f} DKK\n"
-        f"Dagsændring: {daily_change:.2f}%\n"
-        f"Ugeændring: {weekly_change:.2f}%\n"
-        f"Samlet risiko: {risk_level} ({score}/100)\n\n"
-        "Årsager:\n"
-        + ("\n".join(reasons) if reasons else "Ingen store faresignaler")
-        + "\n\nTop 5 samlet AI-score:\n"
-        + ("\n".join(ranking_lines) if ranking_lines else "Ingen rangering tilgængelig")
-        + "\n\nKun nye eller væsentligt ændrede kritiske forhold sendes straks."
+        "📌 AKTUEL PORTEFØLJE\n\n"
+        + (
+            "\n\n".join(
+                portfolio_lines
+            )
+            if portfolio_lines
+            else "Ingen aktuelle positioner."
+        )
+        + "\n\n🏆 GENEREL TOP 5 "
+        "(MARKEDSINFO – IKKE ALARM)\n"
+        + (
+            "\n".join(
+                ranking_lines
+            )
+            if ranking_lines
+            else "Ingen rangering tilgængelig"
+        )
+        + "\n\nØjeblikkelige alarmer "
+        "sendes kun for aktuelle "
+        "porteføljeaktier."
     )
 
     send_telegram(message)
+
     return {
-        "price": round(float(latest), 2),
-        "daily_change": round(float(daily_change), 2),
-        "weekly_change": round(float(weekly_change), 2),
-        "risk_level": risk_level,
-        "score": score,
-        "reasons": reasons,
-        "news_matches": news_matches[:5],
+        "portfolio": portfolio_results,
         "top5": ranking,
+        "portfolio_position_count": len(
+            portfolio_results
+        ),
     }
 
 @app.route("/chart")
@@ -901,127 +946,227 @@ def daily_report():
 
 @app.route("/smart-alerts")
 def smart_alerts():
-    import hashlib
     import json
-    import re
 
-    from earnings_risk_service import get_earnings_risks
+    from earnings_risk_service import (
+        get_earnings_risks,
+    )
+    from portfolio_stock_service import (
+        get_monitored_stock_map,
+    )
     from quiet_alert_service import (
         format_alert_digest,
         process_alert_events,
     )
 
-    def extract_ai_risk(path):
-        try:
-            with open(path, "r", encoding="utf-8") as handle:
-                text = json.load(handle).get("ai_analysis", "")
-        except Exception:
-            text = ""
-
-        match = re.search(
-            r"(?im)^\s*Risiko\s*:\s*(Lav|Moderat|Høj|Kritisk)\b",
-            text,
-        )
-        return (match.group(1) if match else "Lav"), text
-
     events = []
-    novo_ticker = get_stock_metadata("NOVO")["ticker"]
-    market = get_stock_data(novo_ticker)
-
-    daily_critical = market["daily_change"] <= -8
-    weekly_critical = market["weekly_change"] <= -15
-    daily_high = market["daily_change"] <= -5
-    weekly_high = market["weekly_change"] <= -10
-    market_active = daily_high or weekly_high
-    market_severity = (
-        "critical"
-        if daily_critical or weekly_critical
-        else "high"
+    errors = []
+    monitored = (
+        get_monitored_stock_map()
     )
-    market_bands = {
-        "daily": "critical" if daily_critical else "high" if daily_high else "normal",
-        "weekly": "critical" if weekly_critical else "high" if weekly_high else "normal",
-    }
-    market_reasons = []
-    if daily_high:
-        market_reasons.append(f"Dagsfald: {market['daily_change']:.2f}%")
-    if weekly_high:
-        market_reasons.append(f"Ugefald: {market['weekly_change']:.2f}%")
 
-    events.append({
-        "key": "market:NOVO",
-        "active": market_active,
-        "severity": market_severity,
-        "fingerprint": json.dumps(market_bands, sort_keys=True),
-        "title": "NOVO markedsrisiko",
-        "body": (
-            "\n".join(market_reasons)
-            if market_active
-            else "Kursfaldbetingelsen er ikke længere aktiv."
-        ),
-    })
+    for stock, ticker in sorted(
+        monitored.items()
+    ):
+        try:
+            market = get_stock_data(
+                ticker
+            )
+        except Exception as exc:
+            errors.append({
+                "stock": stock,
+                "ticker": ticker,
+                "error_type": (
+                    type(exc).__name__
+                ),
+            })
+            continue
 
-    ai_risk, ai_text = extract_ai_risk(
-        log_path("last_ai_news_check.log")
-    )
-    ai_active = ai_risk == "Kritisk"
-    events.append({
-        "key": "ai-news:NOVO",
-        "active": ai_active,
-        "severity": "critical" if ai_active else "low",
-        "fingerprint": hashlib.sha256(
-            ai_text.strip().encode("utf-8")
-        ).hexdigest() if ai_text.strip() else "",
-        "title": "NOVO kritisk AI-nyhedsrisiko",
-        "body": (
-            ai_text.strip()
-            if ai_active
-            else "AI-nyhedsrisikoen er ikke længere kritisk."
-        ),
-    })
+        daily_critical = (
+            market["daily_change"] <= -8
+        )
+        weekly_critical = (
+            market["weekly_change"] <= -15
+        )
+        daily_high = (
+            market["daily_change"] <= -5
+        )
+        weekly_high = (
+            market["weekly_change"] <= -10
+        )
+
+        market_active = (
+            daily_high or weekly_high
+        )
+
+        if market_active:
+            market_severity = (
+                "critical"
+                if (
+                    daily_critical
+                    or weekly_critical
+                )
+                else "high"
+            )
+        else:
+            market_severity = "low"
+
+        market_bands = {
+            "daily": (
+                "critical"
+                if daily_critical
+                else "high"
+                if daily_high
+                else "normal"
+            ),
+            "weekly": (
+                "critical"
+                if weekly_critical
+                else "high"
+                if weekly_high
+                else "normal"
+            ),
+        }
+
+        reasons = []
+
+        if daily_high:
+            reasons.append(
+                "Dagsfald: "
+                f"{market['daily_change']:.2f}%"
+            )
+
+        if weekly_high:
+            reasons.append(
+                "Ugefald: "
+                f"{market['weekly_change']:.2f}%"
+            )
+
+        events.append({
+            "key": f"market:{ticker}",
+            "active": market_active,
+            "severity": market_severity,
+            "fingerprint": json.dumps(
+                market_bands,
+                sort_keys=True,
+            ),
+            "title": (
+                f"{stock} markedsrisiko"
+            ),
+            "body": (
+                "\n".join(reasons)
+                if market_active
+                else (
+                    "Kursfaldbetingelsen er "
+                    "ikke aktiv."
+                )
+            ),
+        })
 
     for item in get_earnings_risks():
-        stock = str(item.get("stock", "")).strip().upper()
-        signal = str(item.get("signal", "")).strip().upper()
-        days_left = item.get("days_left")
-        if not stock or not isinstance(days_left, int):
+        if item.get(
+            "in_portfolio"
+        ) is not True:
+            continue
+
+        stock = str(
+            item.get("stock", "")
+        ).strip().upper()
+        signal = str(
+            item.get("signal", "")
+        ).strip().upper()
+        days_left = item.get(
+            "days_left"
+        )
+
+        if (
+            not stock
+            or not isinstance(
+                days_left,
+                int,
+            )
+        ):
             continue
 
         earnings_active = (
             0 <= days_left <= 2
-            and signal in {"WATCH", "REDUCE"}
+            and signal
+            in {"WATCH", "REDUCE"}
         )
         earnings_severity = (
-            "critical" if signal == "REDUCE" else "high"
+            "critical"
+            if signal == "REDUCE"
+            else "high"
         )
+
+        identifier = str(
+            item.get("ticker_key")
+            or item.get("ticker")
+            or stock
+        ).strip().upper()
+
         events.append({
-            "key": f"earnings:{stock}",
+            "key": (
+                f"earnings:{identifier}"
+            ),
             "active": earnings_active,
-            "severity": earnings_severity if earnings_active else "low",
-            "fingerprint": f"{signal}:{item.get('alert_level', '')}",
-            "title": f"{stock} regnskab nærmer sig",
-            "body": (
-                f"Regnskab om {days_left} dage. Signal: {signal}. "
-                f"{item.get('message', '')}"
+            "severity": (
+                earnings_severity
                 if earnings_active
-                else "Den øjeblikkelige regnskabsalarm er ikke længere aktiv."
+                else "low"
+            ),
+            "fingerprint": (
+                f"{signal}:"
+                f"{item.get('alert_level', '')}"
+            ),
+            "title": (
+                f"{stock} regnskab nærmer sig"
+            ),
+            "body": (
+                (
+                    f"{item.get('date_message', '')}. "
+                    f"Signal: {signal}. "
+                    f"{item.get('message', '')}"
+                )
+                if earnings_active
+                else (
+                    "Regnskabsbetingelsen er "
+                    "ikke aktiv."
+                )
             ),
         })
 
     decisions = process_alert_events(
         events,
-        path=state_path("quiet_alert_state.json"),
+        path=state_path(
+            "quiet_alert_state.json"
+        ),
         reminder_hours=72,
         changed_hours=24,
+        retire_prefixes=(
+            "market:",
+            "ai-news:",
+            "earnings:",
+        ),
     )
-    message = format_alert_digest(decisions)
+
+    message = format_alert_digest(
+        decisions
+    )
+
     if message:
         send_telegram(message)
 
     return {
+        "portfolio_stocks": sorted(
+            monitored
+        ),
         "events_evaluated": len(events),
         "notifications": decisions,
-        "alerts_sent": 1 if message else 0,
+        "alerts_sent": (
+            1 if message else 0
+        ),
+        "errors": errors,
     }
 
 @app.route("/save-history")

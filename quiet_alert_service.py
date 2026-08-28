@@ -106,10 +106,20 @@ def process_alert_events(
     now=None,
     reminder_hours=72,
     changed_hours=24,
+    retire_prefixes=(),
 ):
     if reminder_hours < 1 or changed_hours < 1:
         raise ValueError("Cooldown skal være mindst én time.")
     normalized_events = [_validate_event(event) for event in events]
+    normalized_retire_prefixes = tuple(
+        str(prefix)
+        for prefix in retire_prefixes
+        if str(prefix)
+    )
+    observed_keys = {
+        event["key"]
+        for event in normalized_events
+    }
     state_path = Path(path)
     lock_path = state_path.with_suffix(state_path.suffix + ".lock")
     lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -167,6 +177,30 @@ def process_alert_events(
                 decisions.append({**event, "action": action})
 
             records[event["key"]] = record
+
+        if normalized_retire_prefixes:
+            for key, previous in list(
+                records.items()
+            ):
+                if (
+                    key in observed_keys
+                    or not key.startswith(
+                        normalized_retire_prefixes
+                    )
+                    or not isinstance(
+                        previous,
+                        dict,
+                    )
+                ):
+                    continue
+
+                records[key] = {
+                    **previous,
+                    "active": False,
+                    "severity": "low",
+                    "last_seen_at": current_text,
+                    "retired_at": current_text,
+                }
 
         state["updated_at"] = current_text
         _write_state(state_path, state)
