@@ -17,7 +17,7 @@
         href="/ai-stock-library"
         class="library-filter{% if display_mode == 'signals' %} active{% endif %}"
     >
-        Alle signaler ({{ signal_stock_count }})
+        Alle seneste signaler ({{ signal_stock_count }})
     </a>
 
     <a
@@ -57,10 +57,10 @@
     <strong>
         {{ signal_stock_count }} aktier
     </strong>
-    med et aktuelt BUY-, HOLD-, WATCH- eller
-    SELL-signal. Brug søgefeltet til at finde
-    enhver anden overvåget aktie uden at vise
-    hele aktieuniverset på én gang.
+    med et senest registreret BUY-, HOLD-, WATCH-
+    eller SELL-signal. Signalet og den samlede
+    AI-vurdering er separate modeller og vises
+    derfor hver for sig.
 </p>
 
 
@@ -138,7 +138,7 @@
 
     {% else %}
         Viser {{ displayed_count }} aktier med
-        et aktuelt signal.
+        et senest registreret signal.
     {% endif %}
 </div>
 
@@ -158,17 +158,19 @@
         <strong>{{ item.stock }}</strong>
 
         <span class="summary-badge
-            {% if item.score >= 70 %}
+            {% if item.rating == "Stærk kandidat" %}
                 badge-green
-            {% elif item.score >= 50 %}
+            {% elif item.rating == "Kandidat"
+                or item.rating == "Neutral" %}
                 badge-yellow
             {% else %}
                 badge-red
             {% endif %}
         ">
-            {% if item.score >= 70 %}
+            {% if item.rating == "Stærk kandidat" %}
                 🟢
-            {% elif item.score >= 50 %}
+            {% elif item.rating == "Kandidat"
+                or item.rating == "Neutral" %}
                 🟡
             {% else %}
                 🔴
@@ -180,15 +182,15 @@
 
 
     <div class="explain-signal
-        {% if item.score >= 70 %}
+        {% if item.signal == "BUY" %}
             signal-buy
-        {% elif item.score >= 50 %}
+        {% elif item.signal == "HOLD" %}
             signal-hold
         {% else %}
             signal-watch
         {% endif %}
     ">
-
+        Seneste registrerede signal:
         {% if item.signal == "BUY" %}
             ⭐ BUY
         {% elif item.signal == "HOLD" %}
@@ -200,7 +202,11 @@
         {% else %}
             ⚪ UKENDT
         {% endif %}
+    </div>
 
+    <div class="explain-row">
+        <b>Samlet AI-vurdering:</b>
+        {{ item.rating|default("Ukendt") }}
     </div>
 
 
@@ -230,9 +236,13 @@
     <div class="explain-row">
         <b>Positive faktorer:</b><br>
 
-        {% for p in item.positives %}
-            ✓ {{ p }}<br>
-        {% endfor %}
+        {% if item.positives %}
+            {% for p in item.positives %}
+                ✓ {{ p }}<br>
+            {% endfor %}
+        {% else %}
+            Ingen tydelige positive signaler
+        {% endif %}
 
     </div>
 

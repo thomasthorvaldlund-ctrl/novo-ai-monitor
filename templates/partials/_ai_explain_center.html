@@ -28,17 +28,19 @@
                 <strong>{{ item.stock }}</strong>
 
                 <span class="summary-badge
-                    {% if item.score >= 70 %}
+                    {% if item.rating == "Stærk kandidat" %}
                         badge-green
-                    {% elif item.score >= 50 %}
+                    {% elif item.rating == "Kandidat"
+                        or item.rating == "Neutral" %}
                         badge-yellow
                     {% else %}
                         badge-red
                     {% endif %}
                 ">
-                    {% if item.score >= 70 %}
+                    {% if item.rating == "Stærk kandidat" %}
                         🟢
-                    {% elif item.score >= 50 %}
+                    {% elif item.rating == "Kandidat"
+                        or item.rating == "Neutral" %}
                         🟡
                     {% else %}
                         🔴
@@ -50,15 +52,10 @@
 
 
             <div class="explain-signal">
-
-                {% if item.score >= 70 %}
-                    ⭐ BUY
-                {% elif item.score >= 50 %}
-                    ⏸ HOLD
-                {% else %}
-                    👀 WATCH
-                {% endif %}
-
+                📊 Samlet AI-vurdering:
+                <strong>
+                    {{ item.rating|default("Ukendt") }}
+                </strong>
             </div>
 
 
@@ -76,9 +73,13 @@
             <div class="explain-row">
                 <b>Positive faktorer:</b><br>
 
-                {% for p in item.positives[:2] %}
-                    ✓ {{ p }}<br>
-                {% endfor %}
+                {% if item.positives %}
+                    {% for p in item.positives[:2] %}
+                        ✓ {{ p }}<br>
+                    {% endfor %}
+                {% else %}
+                    Ingen tydelige positive signaler
+                {% endif %}
 
             </div>
 

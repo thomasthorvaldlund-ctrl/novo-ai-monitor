@@ -14,7 +14,12 @@ def explain_stock(stock_data):
         weekly_change,
         (int, float),
     )
-    rating = stock_data.get("rating", "Ukendt")
+    rating = str(
+        stock_data.get(
+            "rating",
+            "Ukendt",
+        )
+    ).strip() or "Ukendt"
 
     positives = []
     negatives = []
@@ -41,12 +46,17 @@ def explain_stock(stock_data):
     if score is None:
         headline = f"Ingen samlet score for {stock}"
         confidence = 30
-    elif score >= 70:
+    elif rating == "Stærk kandidat":
         headline = f"{stock} vurderes som en stærk kandidat"
         confidence = 85
-    elif score >= 55:
-        headline = f"{stock} vurderes som neutral til positiv"
-        confidence = 70
+    elif rating == "Kandidat":
+        headline = f"{stock} vurderes som kandidat"
+        confidence = 75
+    elif rating == "Neutral":
+        headline = (
+            f"{stock} har blandede eller neutrale signaler"
+        )
+        confidence = 60
     else:
         headline = f"{stock} kræver ekstra forsigtighed"
         confidence = 60
@@ -83,21 +93,28 @@ def explain_stock(stock_data):
     )
 
     if score is None:
-        conclusion = "Der er endnu ikke nok data til en sikker vurdering."
-    elif score >= 70:
         conclusion = (
-            "Den samlede vurdering understøttes af flere stærke signaler "
-            "og aktien fremstår attraktiv lige nu."
+            "Der er endnu ikke nok data til en sikker vurdering."
         )
-    elif score >= 55:
+    elif rating == "Stærk kandidat":
         conclusion = (
-            "Signalerne er overvejende positive, men der er også forhold, "
-            "som bør overvåges."
+            "Den samlede vurdering understøttes af flere stærke "
+            "signaler, og aktien fremstår attraktiv lige nu."
+        )
+    elif rating == "Kandidat":
+        conclusion = (
+            "Den samlede vurdering er positiv, men der er også "
+            "forhold, som bør overvåges."
+        )
+    elif rating == "Neutral":
+        conclusion = (
+            "Den samlede vurdering er neutral, fordi signalerne "
+            "er blandede eller uden tydelig retning."
         )
     else:
         conclusion = (
-            "De nuværende signaler er svage eller blandede, og aktien "
-            "kræver ekstra forsigtighed."
+            "Den samlede vurdering er svag, og aktien kræver "
+            "ekstra forsigtighed."
         )
 
     return {
@@ -106,6 +123,7 @@ def explain_stock(stock_data):
         "summary": summary,
         "conclusion": conclusion,
         "score": score,
+        "rating": rating,
         "confidence": confidence,
         "primary_reason": primary_reason,
         "technical": technical_score,

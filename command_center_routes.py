@@ -259,6 +259,7 @@ def ai_stock_library():
         ranking = []
 
     ticker_by_stock = {}
+    rating_by_stock = {}
 
     for row in ranking:
         if not isinstance(row, dict):
@@ -271,6 +272,16 @@ def ai_stock_library():
         ticker = str(
             row.get("ticker", "")
         ).strip()
+
+        rating = str(
+            row.get(
+                "rating",
+                "Ukendt",
+            )
+        ).strip() or "Ukendt"
+
+        if stock:
+            rating_by_stock[stock] = rating
 
         if stock and ticker:
             ticker_by_stock[stock] = ticker
@@ -294,6 +305,19 @@ def ai_stock_library():
             ticker_by_stock.get(
                 stock,
                 "",
+            )
+        )
+
+        item["rating"] = (
+            rating_by_stock.get(
+                stock,
+                str(
+                    item.get(
+                        "rating",
+                        "Ukendt",
+                    )
+                ).strip()
+                or "Ukendt",
             )
         )
 
