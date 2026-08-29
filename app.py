@@ -1157,6 +1157,32 @@ def smart_alerts():
     if message:
         send_telegram(message)
 
+    try:
+        from critical_sms_service import (
+            dispatch_critical_sms,
+        )
+
+        sms_delivery = dispatch_critical_sms(
+            decisions,
+            path=state_path(
+                "critical_sms_state.json"
+            ),
+        )
+    except Exception as exc:
+        sms_delivery = {
+            "enabled": True,
+            "status": "error",
+            "error_type": (
+                type(exc).__name__
+            ),
+        }
+        errors.append({
+            "channel": "sms",
+            "error_type": (
+                type(exc).__name__
+            ),
+        })
+
     return {
         "portfolio_stocks": sorted(
             monitored
@@ -1166,6 +1192,7 @@ def smart_alerts():
         "alerts_sent": (
             1 if message else 0
         ),
+        "sms_delivery": sms_delivery,
         "errors": errors,
     }
 

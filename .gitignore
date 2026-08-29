@@ -97,3 +97,8 @@ aureum_accounts.sqlite3-wal
 aureum_accounts.sqlite3-shm
 quiet_alert_state.json
 quiet_alert_state.json.lock
+
+# Runtime critical SMS delivery state
+critical_sms_state.json
+critical_sms_state.json.lock
+.critical_sms_state.json.*.tmp
