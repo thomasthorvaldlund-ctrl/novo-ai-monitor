@@ -1664,19 +1664,915 @@ Datakontrakt, snapshotidentitet, provenance, freshness, AI-cache og rapportgyldi
 
 ### V3-D005
 
-**Status:** PENDING
+**Status:** LOCKED
 
-Skal definere:
+D005 fastlægger Aureums globale AI-budget, modelrouting,
+research-kontrakter og versionsstyring. Budgetpres må reducere
+analysemængden, men aldrig kvalitetskravene til en analyse, der faktisk
+gennemføres.
 
-- modelrouting
-- research-kontrakter/outputformater
-- budget-controller
-- prisestimering før kald
-- prioritering ved budgetpres
-- soft target/warning/critical/hard cap
-- model-/promptversionsstyring
+#### D005.1 Global AI-budgetkontrakt
 
-Aktuelle modelnavne og priser verificeres mod officiel OpenAI-dokumentation på implementeringstidspunktet.
+Budgettet gælder samlet for alle betalingsudløsende OpenAI API-kald fra
+både V2 og V3. Ingen service, route, cronjob eller manuel funktion må
+have et separat ubudgetteret OpenAI-forbrug.
+
+Den aktive, versionerede `budget_policy` bruger kalender­måned i
+`Europe/Copenhagen` og følgende DKK-grænser:
+
+- soft target: 70,00 DKK
+- warning: 80,00 DKK
+- critical: 90,00 DKK
+- hard cap: 100,00 DKK
+
+Når D005 er implementeret, er 100,00 DKK et teknisk loft i controllerens
+konservative DKK-ækvivalent og ikke blot et rapporteringsmål.
+
+Budgeteksponering beregnes som mindst:
+
+`settled_spend + active_reservations + unresolved_exposure`
+
+Ethvert betalingsudløsende OpenAI-kald kræver en succesfuld,
+transaktionel reservation før provider-kaldet starter.
+
+En reservation skal konservativt dække den maksimale tilladte pris for
+kaldet ud fra mindst:
+
+- versioneret priskatalog
+- valgt provider/modelrute
+- estimerede inputtokens
+- eksplicit maksimalt outputbudget
+- reasoning-/tool-omkostninger, når relevante
+- versioneret budget-FX-regel
+- konfigureret sikkerhedsmargin
+
+Cached-input-rabat må kun reducere reservationen, når rabatten kan
+forudsiges deterministisk. Ellers reserveres som ikke-cachet input.
+
+Et nyt kald må kun accepteres, når den samlede eksponering inklusive
+den nye reservation fortsat er højst hard cap.
+
+Hvis prisdata, FX-data, reservationslager eller anden nødvendig
+budgetinformation mangler eller er upålidelig, skal controlleren
+`fail closed`: det betalingsudløsende kald må ikke starte.
+
+Efter et gennemført kald afregnes reservationen mod faktisk usage og
+den faktiske modelidentitet/priskontrakt. Ubrugt reservation frigives.
+
+Hvis faktisk usage mangler eller kaldets betalingsstatus er uklar,
+bevares reservationen som `unresolved_exposure`, indtil den kan
+reconciles. Usikkerhed må aldrig frigive budget tidligt.
+
+Budgetzonerne betyder:
+
+- under 70 DKK: normal admission efter prioritet og øvrige gates
+- 70 til under 80 DKK: lavværdi-/enrichment-kald kan udskydes
+- 80 til under 90 DKK: lavprioritets-AI reduceres aggressivt og cache/fallback foretrækkes
+- 90 til under 100 DKK: kun beslutningskritiske kald kan optages, når hele reservationen kan rummes
+- ved 100 DKK eller utilstrækkeligt resterende budget: alle nye betalingsudløsende kald afvises
+
+Budgetpres må aldrig:
+
+- sænke High-Conviction-gates
+- erstatte krævet Deep Research med en utilstrækkelig billig analyse
+- gøre en krævet second opinion mindre uafhængig
+- genbruge et cache-hit som en ny analyse eller bekræftelse
+
+Hvis den krævede kvalitetsklasse ikke kan rummes i budgettet, skal
+analysen udskydes frem for at kvalitetsnedgraderes.
+
+Der er ét globalt budgetledger. V2 og V3 får ikke permanente,
+uigennemtrængelige delbudgetter; admission og shedding styres af den
+versionerede prioritetspolitik, som defineres i D005.
+
+Aktuelle modelnavne og priser er ikke en del af den låste blueprint-
+kontrakt. De ligger i versioneret model- og priskonfiguration og skal
+verificeres mod officiel provider-dokumentation ved implementering og
+ved senere pris-/modelændringer.
+
+#### D005.2 Budgetledger, perioder og reservationsidentitet
+
+Budgetledgeren er canonical source of truth for budget-admission. Den eksisterende usage-JSONL er audit/telemetri og må ikke alene håndhæve hard cap.
+
+Ledgeren skal ligge i et transaktionelt, concurrency-sikkert store. Den præcise databasestruktur låses senere i D006.
+
+Hver budgetperiode identificeres eksplicit med `budget_period_id` og følger kalendermåned i `Europe/Copenhagen`.
+
+En reservation bindes til den budgetperiode, hvor provider-kaldet bliver optaget. Hvis et allerede startet kald krydser månedsskiftet, afregnes det fortsat i den oprindelige periode.
+
+En reservation, som endnu ikke er startet ved månedsskiftet, må ikke automatisk flyttes til næste måned. Den skal frigives eller udløbe og kræver ny admission i den nye periode.
+
+Hver reservation indeholder mindst:
+
+- `reservation_id`
+- `reservation_key`
+- `budget_period_id`
+- `request_id`
+- service og operation
+- instrument/scope, når relevant
+- `budget_policy_version`
+- `priority_policy_version`
+- `priority_class`
+- `quality_class`
+- `budget_zone_at_admission`
+- `model_route_decision_id`
+- `price_catalog_version`
+- `budget_fx_policy_version`
+- `budget_fx_snapshot_id`
+- estimerede inputtokens
+- maksimalt outputbudget
+- `reserved_dkk`
+- state
+- admission-/reason codes
+- `created_at`, `expires_at` og relevante transition-timestamps
+
+`request_id` er stabilt for hele samme logical AI-request og grupperer
+primary-, retry- og fallback-attempts.
+
+`reservation_key` er den egentlige reservations-idempotency-nøgle og
+skal være stabil for samme tilsigtede budgetreservation. Et retry af
+samme reservationsoperation skal derfor returnere den eksisterende
+reservation frem for at reservere igen.
+
+Et ekstra betalt generation-attempt må kun få en ny `reservation_key`,
+når den aktive `generation_policy` tillader forsøget, og enten en
+eksisterende samlet reservation allerede dækker det fuldt ud eller en
+ny atomisk budget-admission gennemføres efter D005.2/D005.4.
+
+`request_id` må ikke alene bruges som uniqueness-key for reservationer,
+fordi ét logical request legitimt kan have flere særskilt budgetterede
+providerforsøg.
+
+Admission skal i én atomisk transaktion:
+
+1. læse periodens settled spend, aktive reservationer og unresolved exposure
+2. beregne den nye konservative reservation
+3. kontrollere hard cap og zone-/prioritetsregler
+4. oprette præcis én reservation eller returnere en entydig afvisning
+
+Read-check og reservation må aldrig ske i separate ubeskyttede trin.
+
+Der findes ingen normal runtime-override af hard cap. En ændring af 100 DKK-loftet kræver en ny eksplicit V3-beslutning og versioneret budget-policy.
+
+Reservations-state machine:
+
+- `RESERVED`: optaget, men provider-kaldet er ikke startet
+- `STARTED`: provider-kaldet kan have påført omkostning
+- `SETTLED`: faktisk usage/pris er afregnet
+- `RELEASED`: kaldet startede aldrig, og reservationen er frigivet
+- `EXPIRED`: en ikke-startet reservation udløb og er frigivet
+- `UNRESOLVED`: kaldet kan have kostet penge, men korrekt afregning kan endnu ikke bevises
+
+Kun `RESERVED` må udløbe automatisk. `STARTED` må aldrig frigives alene på timeout eller procescrash.
+
+Tilladte normale state transitions er:
+
+- `RESERVED` → `STARTED`, `RELEASED` eller `EXPIRED`
+- `STARTED` → `SETTLED` eller `UNRESOLVED`
+- `UNRESOLVED` → `SETTLED`, når auditerbar reconciliation foreligger
+
+Terminale states må ikke genåbnes eller omskrives; korrektioner sker som nye immutable reconciliation-/auditrecords.
+
+Overgangen fra `RESERVED` til `STARTED` skal committes før provider-kaldet starter. Ved denne overgang bindes et stabilt `generation_attempt_id` til reservationen. Det samme ID skal forbinde reservation, providerforsøg, usage-event og efterfølgende settlement.
+
+Budgeteksponering tæller:
+
+- `RESERVED` og `STARTED`: hele `reserved_dkk`
+- `UNRESOLVED`: mindst hele den senest konservativt kendte eksponering
+- `SETTLED`: faktisk afregnet DKK-beløb
+- `RELEASED` og `EXPIRED`: 0 DKK
+
+Settlement skal være idempotent. Samme provider-/usage-resultat må ikke afregnes to gange.
+
+Hvis faktisk usage eller pris bliver højere end reservationen, må settlement aldrig klippes ned til `reserved_dkk`. Den faktiske eksponering registreres fuldt ud, nye betalingsudløsende kald blokeres, og hændelsen markeres som budget-integritetsafvigelse til reconciliation.
+
+Reconciliation skal kunne behandle mindst:
+
+- manglende usage-data
+- provider-timeout efter muligt gennemført kald
+- procescrash efter provider-kald men før settlement
+- ukendt eller ændret response-model
+- pris-/FX-kontrakt, som ikke længere kan verificeres
+- dublerede eller forsinkede usage-events
+
+En `UNRESOLVED` reservation må først reduceres eller lukkes, når der findes auditerbar evidens for korrekt betalingsstatus og afregning.
+
+Ledger, reservation, settlement og reconciliation må ikke afhænge af application-memory og skal overleve service-restart.
+
+#### D005.3 Prioritering og budget-shedding
+
+Alle betalingsudløsende AI-requests får en versioneret `priority_class`.
+Prioritet bestemmes af beslutningsværdi og aktualitet, ikke af hvilken
+route, cron eller brugerhandling der udløste requestet.
+
+Klasser:
+
+- `P1_DECISION_CRITICAL`: AI, der er nødvendig for næste bindende
+  beslutningsgate, efter at casen allerede har bestået de relevante
+  lokale score-, data-, freshness- og lifecycle-pre-gates; fx krævet
+  Deep Research eller uafhængig second opinion tæt på High Conviction
+- `P2_MATERIAL_REVIEW`: væsentlig ny information eller stærk kandidat,
+  hvor AI-review kan ændre næste beslutningstrin
+- `P3_MONITORING_ENRICHMENT`: nyttig løbende AI-fortolkning af
+  portfolio-, kandidat- eller nyhedsdata, men uden aktuel gate-afhængighed
+- `P4_NARRATIVE_OPTIONAL`: præsentations-/dashboardnarrativ og anden
+  tekst, hvor lokale data, cache eller fallback er tilstrækkeligt
+
+Standardmapping for eksisterende V2-operationer:
+
+- `ai_analyst/market_briefing` → `P4_NARRATIVE_OPTIONAL`
+- `news_sentiment/market_news_sentiment` → `P3_MONITORING_ENRICHMENT`
+- `stock_news/news_sentiment` → `P3_MONITORING_ENRICHMENT`, med mulighed
+  for `P2_MATERIAL_REVIEW` ved dokumenteret portfolio-/Opportunity-
+  relevans og materielt ændrede input
+- `ai_news_check/novo_news_risk` → `P2_MATERIAL_REVIEW`, når nye input
+  faktisk kræver AI-vurdering; cache-hit bruger intet nyt budget
+
+En manuel Deep Research-request får ikke automatisk `P1`. Den skal
+opfylde samme versionerede prioriteringsregler og lokale pre-gates som
+automatiske requests. At en researchtype er krævet af D002 er ikke alene
+nok til at gøre et request `P1`.
+
+Priority class må aldrig:
+
+- omgå hard cap
+- omgå freshness-, input- eller D003-kalderegler
+- omgå cache
+- sænke den krævede model-/research-kvalitetsklasse
+- gøre et ikke-kritisk request beslutningskritisk alene pga. caller
+
+Den konkrete mapping og eventuelle promotion-regler ligger i en
+versioneret `priority_policy` og gemmes på reservationen.
+
+Budgetzonernes admission-regler:
+
+- `NORMAL`, under 70 DKK: `P1`–`P4` kan optages efter cache-, input-,
+  freshness- og øvrige kalderegler
+- `SOFT`, 70 til under 80 DKK: `P4` defereres som udgangspunkt; `P1`–`P3`
+  kan fortsat optages
+- `WARNING`, 80 til under 90 DKK: `P4` får som udgangspunkt
+  `DEFERRED_BUDGET`; `P3` defereres som udgangspunkt; `P1` og `P2` kan
+  optages
+- `CRITICAL`, 90 til under 100 DKK: kun `P1_DECISION_CRITICAL` kan
+  optages, og kun når hele den konservative reservation kan rummes
+- `HARD_CAP`, ved 100 DKK eller utilstrækkeligt resterende budget:
+  ingen nye betalingsudløsende OpenAI-kald må starte
+
+Et `P3`-request må kun fortsætte i `WARNING`, hvis det gennem den aktive
+`priority_policy` først kvalificerer til `P2`; caller må ikke selv
+opgradere prioriteten.
+
+Et budget-admission-resultat skal mindst være én af:
+
+- `ADMITTED`
+- `DEFERRED_BUDGET`
+- `REJECTED_HARD_CAP`
+- `REJECTED_POLICY`
+
+Ved `DEFERRED_BUDGET` må caller anvende en fortsat gyldig cache eller
+dokumenteret lokal fallback, men må ikke foregive, at en ny AI-analyse
+er gennemført.
+
+Deferred requests må ikke ligge som en ubetinget betalingskø til næste
+måned. Før et deferred request senere kan optages, skal Aureum igen
+kontrollere:
+
+- D003-kalderegler
+- aktuelt input-hash
+- freshness og rapportgyldighed
+- eksisterende cache
+- opportunity-status og materialitet
+- den aktuelle budget- og priority-policy
+
+Et request, der ikke længere er relevant, skal udløbe uden API-kald.
+
+Aging af et deferred request må ikke alene hæve dets `priority_class`.
+Inden for samme klasse skal rækkefølgen være deterministisk og mindst
+kunne tage højde for beslutningsdeadline, materialitet,
+portfolio-relevans, request-tidspunkt og stabil tie-breaker.
+
+Budget-controlleren må ikke reservere en fast permanent V2- eller
+V3-pulje. Den kan anvende versionerede rate-/concurrency-grænser for at
+forhindre én operation i at dominere admission, men sådanne grænser må
+aldrig skabe en vej rundt om hard cap.
+
+#### D005.4 Modelrouting og kvalitetsklasser
+
+`priority_class` og `quality_class` er separate begreber. Prioritet afgør,
+om et request må bruge budget nu; kvalitetsklasse afgør, hvilke
+modelruter der overhovedet er fagligt acceptable.
+
+Mindst følgende kvalitetsklasser bruges:
+
+- `Q1_STRUCTURED_LIGHT`: Candidate Review, V2-enrichment, sentiment og
+  korte strukturerede narrativer
+- `Q2_DEEP_RESEARCH`: beslutningsrelevant Deep Research med stærkere
+  analyse-, sammenhængs- og modargumentationskrav
+- `Q3_INDEPENDENT_OPINION`: second opinion med mindst Q2-analytisk
+  kapabilitet plus D005s særskilte independence-krav
+
+En versioneret `model_route_policy` definerer for hver research-/operationstype:
+
+- krævet `quality_class`
+- krævede modelkapabiliteter
+- tilladte provider-/modelruter
+- foretrukken rækkefølge
+- maksimalt input- og outputbudget
+- reasoning-/tool-konfiguration, når relevant
+- struktureret response-kontrakt
+- tilladte fallback-ruter
+- `effective_from` og eventuelt `effective_until`
+
+En konkret route-decision gemmes som immutable `model_route_decision`
+og indeholder mindst:
+
+- `model_route_decision_id`
+- `model_route_policy_version`
+- service, operation og researchtype
+- `priority_class`
+- `quality_class`
+- valgt provider og requested model
+- `effective_route_hash`
+- anvendte capability-checks
+- valgt fallback-niveau, hvis relevant
+- beslutningstidspunkt og reason codes
+
+Budget-controlleren må vælge den billigste godkendte rute, der opfylder
+hele den krævede kvalitets- og capability-kontrakt.
+
+En billigere rute, som ikke opfylder kvalitetsklassen, er ikke en
+fallback; requestet skal i stedet defereres eller afvises.
+
+Aktuelle modelnavne må ikke hardcodes i research-services. De bindes via
+den versionerede route-policy og det versionerede priskatalog.
+
+Fallback-regler:
+
+- fallback må kun ske til en rute, som er eksplicit godkendt til samme
+  `quality_class`
+- fallback må ikke ske alene, fordi budgettet er presset, hvis den
+  billigere rute har lavere faglig kapabilitet
+- providerfejl, rate-limit eller midlertidig utilgængelighed må kun
+  udløse fallback efter aktiv `model_route_policy`
+- hver fallback skal gemme reason code og den oprindeligt foretrukne rute
+- flere modelkald for samme logical request kræver hver sin
+  budgetreservation eller en samlet konservativ reservation, som
+  eksplicit dækker alle mulige providerforsøg
+
+For `Q3_INDEPENDENT_OPINION` gælder desuden:
+
+- second opinion skal genereres i et separat provider-/modelkald
+- den må ikke modtage den primære rapports konklusion, anbefaling,
+  AI Confidence eller færdige argumentation som input
+- den skal bruge samme væsentlige evidensgrundlag gennem den immutable
+  evidence-input-kontrakt fra D004
+- `independence_policy` skal definere minimumskrav til model-/provider-
+  uafhængighed og versioneres
+- den konkrete second-opinion-rute skal opfylde mindst Q2-kapabilitet
+- den må ikke bruge samme response eller cache-entry som den primære
+  rapport
+- den må gerne bruge en tidligere selvstændigt genereret og fortsat
+  gyldig second opinion, når D004s evidence-, cache- og
+  reconciliation-regler tillader det
+- en billigere second-opinion-rute er kun tilladt, hvis den stadig
+  opfylder hele `Q3_INDEPENDENT_OPINION`-kontrakten
+
+Hvis ingen godkendt Q3-rute kan reserveres inden for hard cap, skal
+High-Conviction-processen vente. Aureum må ikke erstatte second opinion
+med en lavere kvalitetsklasse.
+
+Modelrouting skal ske før budgetreservationen, så reservationen kan
+beregnes på den konkrete rute. Hvis fallback efterfølgende bliver
+nødvendig, skal controlleren sikre, at den eksisterende reservation
+fortsat dækker fallback-rutens maksimale pris; ellers kræves ny atomisk
+budget-admission før fallback-kaldet starter.
+
+#### D005.5 Research-kontrakter og strukturerede outputs
+
+Alle V3-researchoutputs skal følge en versioneret
+`response_contract_version` og schema-valideres før de kan gemmes som en
+gyldig researchrapport.
+
+Et AI-svar må ikke blive gate-evidens alene, fordi det er syntaktisk
+læsbart. Manglende obligatoriske felter, ugyldige enums, uventede typer
+eller brud på response-kontrakten gør generationen ugyldig.
+
+AI må ikke opfinde finansielle tal, datoer, events eller kilder.
+Kvantitative fakta og andre materielle evidenspåstande i rapporten skal
+kunne spores til den immutable inputpakke gennem strukturerede
+`evidence_refs` eller markeres som AI-fortolkning frem for fakta.
+
+En `evidence_ref` skal mindst kunne identificere relevant snapshot,
+inputfelt eller anden immutable inputrecord. En reference til en kilde,
+som ikke findes i inputpakken, må ikke fabrikeres.
+
+##### Candidate Review
+
+Candidate Review bruger mindst `Q1_STRUCTURED_LIGHT` og skal mindst
+returnere:
+
+- `candidate_review_contract_version`
+- `instrument_id`
+- `opportunity_profile`
+- `case_summary`
+- `positive_evidence`
+- `negative_evidence`
+- `material_changes`
+- `evidence_refs`
+- `key_risks`
+- `candidate_counterarguments`
+- `missing_or_uncertain_evidence`
+- `thesis_invalidation_candidates`
+- `ai_confidence`
+- `recommended_next_step`
+- `reason_codes`
+
+`recommended_next_step` er en begrænset enum og må mindst understøtte:
+
+- `KEEP_MONITORING`
+- `PROMOTE_FOR_DEEP_RESEARCH`
+- `NO_FURTHER_AI_NOW`
+- `DATA_HOLD_RECOMMENDED`
+
+Candidate Review må ikke selv ændre lifecycle-status, objektiv score,
+Data Confidence eller sende alert.
+
+##### Deep Research
+
+Deep Research bruger mindst `Q2_DEEP_RESEARCH` og skal mindst returnere:
+
+- `deep_research_contract_version`
+- `instrument_id`
+- `opportunity_profile`
+- `investment_thesis`
+- `why_now`
+- `what_market_may_underestimate`
+- `financial_strengths`
+- `financial_weaknesses`
+- `growth_and_margin_analysis`
+- `cash_flow_and_balance_analysis`
+- `valuation_analysis`
+- `evidence_refs`
+- `catalysts`
+- `key_risks`
+- `counterarguments`
+- `bull_case`
+- `base_case`
+- `bear_case`
+- `thesis_invalidation`
+- `evidence_gaps`
+- `ai_confidence`
+- `time_horizon`
+- `next_relevant_event`
+- `conclusion`
+- `reason_codes`
+
+Deep Research skal tydeligt adskille:
+
+- observerede inputfakta
+- deterministisk beregnede værdier
+- AI-fortolkning
+- usikkerhed/manglende evidens
+
+AI Confidence skal begrundes ud fra evidensens sammenhæng og styrke og
+må aldrig kompensere for lav Data Confidence.
+
+Deep Research må ikke frit ændre Compounder Score eller Catalyst Score.
+Hvis AI finder en mulig data-, beregnings- eller kontraktfejl, markeres
+den som en særskilt anomali til efterfølgende deterministisk kontrol.
+
+##### Independent Second Opinion
+
+Second opinion bruger `Q3_INDEPENDENT_OPINION` og skal mindst returnere:
+
+- `second_opinion_contract_version`
+- `instrument_id`
+- `opportunity_profile`
+- `evidence_input_hash`
+- `independent_thesis`
+- `supporting_evidence`
+- `contrary_evidence`
+- `evidence_refs`
+- `counterarguments`
+- `key_risks`
+- `thesis_invalidation`
+- `missing_or_uncertain_evidence`
+- `independent_ai_confidence`
+- `independent_conclusion`
+- `reason_codes`
+
+Second-opinion-outputtet må ikke indeholde et felt, som antager kendskab
+til den primære rapports konklusion. Sammenligning med primærrapporten
+sker først i D004s separate reconciliation-trin.
+
+Reconciliation skal bruge immutable referencer til begge rapporter og må
+ikke omskrive deres outputs. D004s `alignment_status` er den bindende
+gate-fortolkning; second opinion må ikke selv erklære
+`ALIGNED` eller `MATERIAL_CONTRADICTION`.
+
+##### Schemafejl, retry og outputvalidering
+
+En generation er kun succesfuld, når:
+
+- provider-kaldet er gennemført
+- usage/budgetstatus er håndteret efter D005.2
+- output kan parses
+- response-schemaet validerer
+- alle obligatoriske enums og typer er gyldige
+- outputtet ikke bryder den relevante research-kontrakt
+
+Et ugyldigt AI-output må aldrig gemmes som en gyldig Candidate Review,
+Deep Research eller second opinion.
+
+Et repair-, retry- eller fallback-kald er et nyt potentielt
+betalingsudløsende providerforsøg og kræver budgetdækning efter D005.2
+og D005.4.
+
+En versioneret `generation_policy` skal mindst definere:
+
+- `generation_policy_version`
+- maksimalt antal betalte attempts pr. logical request
+- hvilke fejlklasser der må retries
+- hvilke fejlklasser der må bruge fallback
+- retry/backoff-regler
+- output-/schema-valideringskontrakt
+
+I V3.0 må et logical research-request som standard højst bruge to
+betalingsudløsende generation-attempts. Et højere loft kræver en ny
+versioneret policy og skal fortsat kunne rummes konservativt under hard
+cap.
+
+Retry må aldrig ske automatisk ved:
+
+- budgetafvisning
+- manglende freshness
+- ugyldige kritiske input
+- uopfyldte lokale pre-gates
+- uændret cache-hit
+- permanent policy-/kontraktbrud
+
+Hvis alle tilladte attempts fejler, afsluttes det logical request med
+`research_request_status = FAILED_GENERATION`. Dette er en
+research-request-status og ikke en D003 lifecycle-status.
+
+Aureum må derefter bruge gyldig cache eller lokal fallback, hvor
+kontrakten tillader det, men må ikke fremstille dette som en ny
+gennemført AI-researchrapport.
+
+#### D005.6 Pre-call token-, pris- og FX-estimering
+
+Ingen betalingsudløsende modelrute må optages, før dens maksimale
+konservative DKK-eksponering kan beregnes.
+
+En versioneret `price_catalog` indeholder mindst:
+
+- `price_catalog_version`
+- provider
+- model-/route-identitet
+- `effective_from` og eventuelt `effective_until`
+- inputpris
+- cached-input-pris, når relevant
+- outputpris
+- reasoning-/tool-/modality-priser, når relevante
+- `price_currency`
+- prismåleenhed
+- kilde-/verifikationsmetadata
+- `verified_at`
+
+Priskataloget må ikke baseres på modelnavnet alene, når providerens pris
+afhænger af endpoint, modality, reasoning, tools eller anden
+route-konfiguration.
+
+En versioneret `budget_fx_policy` skal mindst definere:
+
+- `budget_fx_policy_version`
+- DKK som budgetvaluta
+- tilladte FX-kilder
+- konservativ sikkerhedsmargin
+- maksimal tilladt FX-alder
+- validerings- og fail-closed-regler
+
+Den konkrete kurs gemmes separat som et immutable `budget_fx_snapshot`
+med mindst:
+
+- `budget_fx_snapshot_id`
+- kildevaluta
+- DKK som budgetvaluta
+- `fx_rate_dkk_per_source_unit`, entydigt defineret som antal DKK pr. 1 enhed kildevaluta
+- FX-kilde
+- `fx_observed_at`
+- `fx_retrieved_at`
+- `budget_fx_policy_version`
+- snapshot-hash
+
+En reservation refererer til præcis det `budget_fx_snapshot_id`, som
+blev brugt ved admission. Senere FX-opdateringer må ikke omskrive
+reservationens historiske DKK-beregning.
+
+Budget-FX bruges kun til budgetkontrol og må ikke forveksles med D004s
+investeringsdata-FX.
+
+Pre-call inputestimatet skal dække hele det betalingsrelevante request,
+herunder mindst:
+
+- system- og user-input
+- developer-/policytekst, når den sendes til provideren
+- strukturerede schemas og response-format
+- tool-definitioner og øvrig request-overhead
+- immutable research-input
+- eventuel conversation/context, som faktisk sendes
+
+Når providerens officielle tokenizer eller anden deterministisk
+tokenberegning er tilgængelig for den valgte rute, skal den anvendes.
+
+Når inputtokens ikke kan bestemmes eksakt før kaldet, skal Aureum bruge
+en dokumenteret konservativ estimator og sikkerhedsmargin. Et
+optimistisk gennemsnit må ikke bruges til hard-cap-admission.
+
+Hvert betalingsudløsende request skal have et eksplicit
+`max_output_tokens` eller tilsvarende provider-håndhævet outputloft.
+Det outputloft, som bruges i reservationen, skal være det samme eller
+højere end det loft, der faktisk sendes til provideren.
+
+En modelrute uden et håndhæveligt eller konservativt begrænseligt
+maksimalt output-/omkostningsloft må ikke bruges under V3-hard-cap,
+medmindre en anden dokumenteret provider-mekanisme giver samme
+konservative omkostningsgaranti.
+
+Reservationens konservative prisberegning skal mindst svare til:
+
+`max_input_cost + max_output_cost + max_reasoning_tool_cost + other_route_costs`
+
+konverteret til DKK med reservationens immutable
+`budget_fx_snapshot_id` under den aktive `budget_fx_policy` og derefter
+justeret med den aktive sikkerhedsmargin.
+
+Reservationen må aldrig bruge forventet gennemsnitsoutput som loft.
+Den skal bruge det faktisk håndhævede maksimale outputbudget for requestet.
+
+Hvis flere betalte providerforsøg kan ske under samme logical request,
+skal admission enten:
+
+- reservere konservativt for alle tilladte forsøg på forhånd, eller
+- kræve ny atomisk budget-admission før hvert ekstra betalt forsøg
+
+Priskataloget skal være immutable pr. version. En prisændring opretter en
+ny `price_catalog_version`; historiske reservations- og settlementrecords
+bevarer reference til den version, de faktisk brugte.
+
+En eksisterende `RESERVED` reservation må ikke stiltiende genberegnes
+efter en ny pris- eller FX-version. Hvis den valgte route ændres før
+kaldstart, skal controlleren kontrollere den nye maksimale eksponering
+atomisk og enten justere reservationen sikkert eller kræve ny admission.
+
+Et `STARTED` kald afregnes efter den verificerbare pris-/routekontrakt,
+der faktisk gjaldt for providerforsøget. Historisk settlement må ikke
+omskrives, fordi prislisten senere ændres.
+
+`price_catalog` skal have versionerede validitetsregler.
+`budget_fx_snapshot` skal vurderes mod den aktive
+`budget_fx_policy` og dens maksimale tilladte FX-alder.
+
+Fail-closed gælder mindst når:
+
+- den valgte route ikke findes entydigt i priskataloget
+- priskatalogets gyldighed er udløbet
+- budget-FX er ældre end policyens maksimale alder
+- pricing units eller route-specifikke tillæg er uklare
+- den maksimale output-/reasoning-/tool-eksponering ikke kan begrænses
+- den konservative DKK-reservation ikke kan beregnes reproducerbart
+
+En pris-/FX-opdatering må foretages uden AI-kald og skal auditeres med
+kilde, tidspunkt og version.
+
+Ved implementation skal aktuelle modelnavne, endpointregler og priser
+verificeres mod officiel provider-dokumentation. D005 låser mekanismen,
+ikke dagens konkrete prisniveau.
+
+#### D005.7 Model-, prompt-, tool- og response-versionsstyring
+
+Enhver betalingsudløsende AI-generation skal kunne rekonstruere præcis,
+hvilken kontrakt Aureum sendte til provideren, og hvilken kontrakt der
+blev brugt til at validere svaret.
+
+En versioneret generationskontrakt skal mindst referere til:
+
+- `prompt_contract_version`
+- `response_contract_version`
+- `generation_policy_version`
+- `model_route_policy_version`
+- `model_route_decision_id`
+- `effective_route_hash`
+- relevante `tool_contract_versions`
+- `independence_policy_version`, når relevant
+- `price_catalog_version`
+- `budget_fx_policy_version`
+- relevante research-/operation-contract versions
+
+Hver kontraktversion skal være immutable og mindst have:
+
+- stabil version-ID
+- `effective_from` og eventuelt `effective_until`
+- content-hash
+- schema-/formatversion
+- ændringsårsag
+- auditmetadata
+
+Prompten må bygges af dynamiske inputdata, men selve promptstrukturen,
+instruktionerne og outputkravene skal komme fra versionerede
+promptkontrakter. Research-services må ikke indeholde skjulte,
+uversionerede promptregler, som ændrer modeladfærden.
+
+Tool-definitioner, tool-inputschemas og tool-outputschemas, som kan
+påvirke modelsvaret, skal have egne versionerede kontrakter og indgå i
+`generation_contract_hash`.
+
+Response-schemaet skal være versionsbundet til den researchkontrakt, som
+outputtet skal opfylde. Et response-schema må ikke ændres stiltiende
+under samme `response_contract_version`.
+
+En immutable `generation_attempt` skal mindst gemme:
+
+- `generation_attempt_id`
+- `request_id`
+- `reservation_id`
+- reservationens `price_catalog_version`
+- reservationens `budget_fx_policy_version`
+- reservationens `budget_fx_snapshot_id`
+- `input_package_id`
+- `prompt_contract_version`
+- `response_contract_version`
+- `generation_policy_version`
+- `model_route_decision_id`
+- `effective_route_hash`
+- `generation_contract_hash`
+- relevante tool-/research-contract versions
+- requested model
+- resolved response-model, når tilgængelig
+- provider response-ID, når tilgængelig
+- start-/sluttidspunkt
+- attempt-resultat og reason codes
+- usage-reference
+- output-hash, når output blev modtaget
+
+Cache- og kompatibilitetsregler:
+
+- en ændring i `prompt_contract_version`, `response_contract_version`,
+  `generation_contract_hash`, `effective_route_hash` eller anden
+  outputpåvirkende kontrakt skaber som udgangspunkt et nyt cache-scope
+- en administrativ metadataændring uden outputpåvirkning må ikke alene
+  skabe et dyrt cache-miss
+- kompatibilitet mellem kontraktversioner må kun erklæres gennem en
+  eksplicit versioneret compatibility-policy
+- research-services må aldrig antage kompatibilitet alene ud fra ens
+  feltnavne eller samme requested model
+- et tidligere cache-resultat må kun genbruges, når D004s
+  rapportgyldighed og den aktive compatibility-policy begge tillader det
+
+Modelaliaser behandles som routingkonfiguration, ikke som stabile
+reproduktionsidentiteter.
+
+Når provideren returnerer en mere præcis response-model end den
+requested alias, gemmes begge. Når en præcis response-model ikke
+returneres, skal Aureum registrere dette ærligt og må kun love
+reproduktion af input, kontrakter og routingvalg — ikke et identisk nyt
+modelsvar.
+
+En ændring af konkret modelroute kræver mindst:
+
+- ny immutable `model_route_decision`
+- ny vurdering af capability-krav
+- ny konservativ prisreservation
+- korrekt cache-scope efter D004/D005
+- audit af årsagen til routeændringen
+
+Ændringer i prompt-, tool-, response-, generation- eller
+research-kontrakter må ikke foretages stiltiende i production.
+Hver ændring kræver ny version, auditspor og relevante regressionstests.
+
+En kontraktversion, som allerede er refereret af en bevaret rapport,
+gate, reservation eller generation-attempt, må ikke omskrives eller
+slettes, så historisk audit og reproduktion brydes.
+
+Ved deployment af nye kontrakt-/modelversioner skal Aureum kunne køre
+shadow-/canary-validering uden at gøre den nye version til automatisk
+default for alle betalte kald.
+
+#### D005.8 Acceptance criteria
+
+D005 er implementeringsklar, når mindst følgende kan dokumenteres i
+automatiserede tests og auditdata:
+
+Budget og admission:
+
+- alle betalingsudløsende OpenAI-kald går gennem den globale
+  budget-controller; direkte ubudgetterede provider-kald kan ikke
+  omgå gatewayen
+- to eller flere samtidige reservationsforsøg kan ikke tilsammen
+  bringe budgeteksponeringen over 100,00 DKK-hard-cap
+- grænserne 70/80/90/100 DKK testes eksplicit ved og omkring hver
+  zonegrænse
+- budgeteksponering medregner settled spend, aktive reservationer og
+  unresolved exposure
+- manglende pris-, FX- eller ledgerdata giver fail-closed
+- et `STARTED` kald frigives ikke ved timeout, crash eller restart
+- settlement og reconciliation er idempotente
+- manglende usage ender konservativt som `UNRESOLVED`
+- faktisk omkostning over reservation registreres fuldt og blokerer nye
+  betalte kald, indtil integritetsafvigelsen er håndteret
+- månedsskifte i `Europe/Copenhagen` flytter ikke gamle reservationer
+  stiltiende til en ny budgetperiode
+- service-restart mister ikke reservationer, settlement eller
+  unresolved exposure
+
+Prioritering og shedding:
+
+- caller, route, cron og manuel trigger kan ikke selv hæve priority class
+- `CRITICAL`-zonen optager kun gyldige `P1_DECISION_CRITICAL`-requests
+- `HARD_CAP` starter ingen nye betalingsudløsende OpenAI-kald
+- deferred requests revaliderer cache, input-hash, freshness,
+  materialitet, lifecycle-status og budget før senere admission
+- irrelevante deferred requests udløber uden AI-kald
+- budgetpres reducerer analysemængde, men ændrer ikke krævet
+  kvalitetsklasse eller High-Conviction-gates
+- eksisterende V2-operationer er underlagt samme globale budget- og
+  priority-policy som V3
+
+Modelrouting og kvalitet:
+
+- hver betalt generation har en immutable `model_route_decision`
+- valgt route opfylder den krævede `quality_class`
+- en billigere utilstrækkelig model kan ikke anvendes som fallback
+- hvert ekstra betalt fallback-/retry-attempt har dokumenteret
+  budgetdækning
+- manglende godkendt Q2/Q3-rute defererer research frem for at
+  kvalitetsnedgradere den
+- second opinion er et separat provider-/modelkald og opfylder den
+  aktive independence-policy
+- second opinion modtager ikke primærrapportens konklusion,
+  anbefaling eller AI Confidence som modelinput
+
+Research og output:
+
+- Candidate Review, Deep Research og second opinion validerer mod deres
+  versionerede response-contracts
+- et schema-invalidt eller ufuldstændigt output kan ikke blive en gyldig
+  researchrapport eller gate-evidens
+- materielle evidenspåstande kan spores gennem `evidence_refs`
+- AI kan ikke omskrive objektive Compounder-/Catalyst-scores
+- et fejlet logical research-request får eksplicit
+  `research_request_status = FAILED_GENERATION`
+- et logical research-request overskrider ikke generation-policyens
+  maksimale antal betalte attempts
+- repair/retry/fallback kan ikke ske automatisk efter budgetafvisning,
+  manglende freshness eller permanente kontraktbrud
+
+Pris- og tokenkontrol:
+
+- reservationens inputestimat omfatter hele det betalingsrelevante
+  request
+- hvert betalt kald har et provider-håndhævet eller tilsvarende
+  konservativt output-/omkostningsloft
+- reservation bruger maksimal tilladt eksponering og ikke forventet
+  gennemsnitsoutput
+- cached-input-rabat anvendes kun pre-call, når den kan forudsiges
+  deterministisk
+- stale eller ukendt priskatalog blokerer kald
+- stale eller ugyldigt `budget_fx_snapshot` blokerer kald
+- historiske price-/FX-versioner omskrives ikke efter settlement
+- reservationens DKK-beregning kan reproduceres fra priskatalog,
+  route-decision, tokenestimat, outputloft, FX-snapshot og policyversion
+
+Versionering, cache og audit:
+
+- enhver outputpåvirkende prompt-, tool-, response-, generation- eller
+  routeændring får korrekt nyt cache-scope
+- rent administrativ metadataændring skaber ikke alene et betalt
+  cache-miss
+- cache-hit bruger intet nyt AI-budget og tæller ikke som ny generation,
+  second opinion eller tidsmæssig bekræftelse
+- modelalias alene behandles ikke som reproduktionsidentitet
+- bevarede rapporter, gates, reservationer og attempts beholder
+  referencer til de immutable kontraktversioner, de faktisk brugte
+- `generation_attempt_id` binder reservation, providerforsøg,
+  usage-event og settlement sammen
+- generation-attemptets pris-/FX-referencer matcher den immutable
+  reservation, som blev brugt ved admission; eventuelle senere
+  settlement-korrektioner bevares som særskilte immutable auditrecords
+- nye kontrakt-/modelversioner kan shadow-/canary-valideres uden
+  automatisk at blive production-default
+
+Production-sikkerhed:
+
+- almindelig sidevisning starter fortsat ingen provider- eller AI-kald
+- D005-implementering kan feature-flages og rulles tilbage uden tab af
+  V2-data
+- budget-controlleren må ikke erklæres aktiv, før alle eksisterende
+  betalingsudløsende OpenAI-call paths er dækket af admission,
+  reservation og settlement
+- aktuelle modelnavne og priser verificeres mod officiel
+  provider-dokumentation ved implementering; blueprint-kontrakten
+  forbliver model- og prisneutral
 
 ### V3-D006
 
