@@ -1,9 +1,9 @@
 # Aureum AI Platform V3 Blueprint
 
 **Dokumentstatus:** Working blueprint checkpoint  
-**Checkpointdato:** 31. august 2026  
+**Checkpointdato:** 1. september 2026  
 **Production branch:** `main`  
-**Production baseline:** `bcdb9a49c6203460912ce1aa8a5dcc10f7459d3d`  
+**Production baseline:** `d75816f4ab438ef47dcf3b1db9aa22055f98176b`  
 **V3-kode implementeret:** Nej  
 **Production runtime ændret af V3-arbejdet:** Nej
 
@@ -27,12 +27,12 @@ Statusord:
 | Punkt | Status |
 |---|---|
 | Git branch | `main` |
-| Git HEAD | `bcdb9a49c6203460912ce1aa8a5dcc10f7459d3d` |
-| Remote | `origin/main` på samme commit |
-| Working tree | Ren |
-| Aureum service | Senest verificeret aktiv 29. august; ikke genstartet/deployeret af D006-arbejdet |
+| Production-baseline Git HEAD | `d75816f4ab438ef47dcf3b1db9aa22055f98176b` |
+| Remote ved production-baseline-checkpoint | `origin/main` på `d75816f4ab438ef47dcf3b1db9aa22055f98176b` |
+| Working tree ved production-baseline-checkpoint | Ren |
+| Aureum service | Senest verificeret aktiv 29. august; ikke genstartet/deployeret af V3-blueprintarbejdet |
 | Main PID ved 29. august-checkpoint | `538331` |
-| Seneste commit | `Lock V3-D005 AI budget and research contracts` |
+| Seneste production-baseline commit | `Lock V3-D006 persistence and database contracts` |
 | Critical SMS | Implementeret, men deaktiveret |
 | Twilio credentials | Ikke installeret i production |
 | V3 implementation | Ikke startet |
@@ -6285,18 +6285,1756 @@ efterfølgende relevante V3-beslutninger fortsat respekteres.
 
 ### V3-D007
 
-**Status:** PENDING
+**Status:** LOCKED
 
-Opportunities UX:
+D007 låser Opportunities-UX oven på D001-D006. D007 må ikke ændre
+Opportunity-profiler, scoredefinitioner, confidence-semantik, lifecycle-
+states, High-Conviction-gates, alertregler, persistence-kontrakter eller
+AI-budgetregler.
 
-- oversigt
+#### D007.1 Informationsarkitektur og user-facing semantics
+
+Opportunities-siden er den dedikerede arbejdsflade for V3-opportunities.
+Den er ikke Command Center V3; tværgående executive informationsarkitektur
+hører fortsat til D009.
+
+##### Primær informationsenhed
+
+Den primære UI-enhed er en opportunity-case identificeret ved
+`opportunity_id`, ikke blot en aktie eller ticker.
+
+Samme instrument kan derfor have to separate cases:
+
+- `COMPOUNDER`
+- `CATALYST`
+
+De må ikke fusioneres til én samlet aktievurdering. Hver case beholder
+egen lifecycle-status, score, confidence, labels, research, timeline og
+alert-historik.
+
+Hvis samme instrument har begge profiler, må UI give tydelig navigation
+mellem dem, men profilerne skal fortsat fremstå som selvstændige cases med
+forskellig tidshorisont, evidens og lifecycle.
+
+##### At-a-glance hierarchy på opportunity-card
+
+Et opportunity-card skal som minimum vise følgende som tydeligt adskilte
+felter:
+
+1. instrumentnavn og ticker
+2. opportunity-profile: `COMPOUNDER` eller `CATALYST`
+3. current lifecycle-status
+4. profilens objektive Opportunity Score
+5. AI Confidence
+6. Data Confidence
+7. relevante qualification labels
+8. Portfolio Fit som separat portfolio-vurdering
+9. tidspunkt for seneste relevante vurdering/observation
+10. tydelig validity/freshness-indikation, når data eller research ikke er
+    fuldt aktuelle
+
+Profilens score skal navngives konkret som `Compounder Score` eller
+`Catalyst Score`; UI må ikke erstatte dem med ét samlet overall-score.
+
+##### Visuel og semantisk adskillelse
+
+Følgende begreber må aldrig smeltes sammen til ét tal, én badge eller én
+uklar samlet vurdering:
+
+- Opportunity Score
+- AI Confidence
+- Data Confidence
+- lifecycle-status
+- qualification labels
+- Portfolio Fit
+
+Lifecycle-status er den primære state-badge.
+
+Opportunity-profile vises som en separat, stabil profilmarkør og må ikke
+ligne en lifecycle-status.
+
+Qualification labels er sekundære. Især
+`PROVISIONAL_CATALYST_OPPORTUNITY` skal vises som label og må aldrig
+fremstilles som lifecycle-status, High Conviction eller sendt alert.
+
+Portfolio Fit vises separat fra opportunity-kvaliteten. Det må påvirke
+prioritering, anbefalet portfoliohandling og visning, men må ikke ændre
+Opportunity Score, AI Confidence, Data Confidence eller gate-resultat.
+
+AI Confidence må ikke visuelt eller tekstligt fremstilles som kompensation
+for lav Data Confidence. Hvis datagrundlaget er svagt, stale eller blokeret,
+skal dette være synligt også ved høj AI Confidence.
+
+`High-Conviction-eligible` fra D002s scoreintervaller er ikke det samme som
+canonical lifecycle-status `HIGH_CONVICTION`. UI må kun vise
+`HIGH_CONVICTION` som status efter en faktisk committed D003/D004-godkendt
+lifecycle-overgang.
+
+`DEEP_RESEARCH` er en arbejdsstatus og må ikke styles som et kvalitetsstempel
+eller som en højere conviction end `STRONG_CANDIDATE`.
+
+##### Lifecycle-specifik UX-semantik
+
+UI skal bevare D003-betydningen af hver canonical lifecycle-status:
+
+- `SCREENED`: kvalificeret til videre pipeline, men ikke en aktiv stærk case
+- `MONITOR`: interessant, men utilstrækkelig evidens; normalt sekundær visning
+- `CANDIDATE`: aktiv opportunity, som fortjener brugerens opmærksomhed
+- `STRONG_CANDIDATE`: stærkere aktiv case, men ikke High Conviction
+- `DEEP_RESEARCH`: arbejdsstatus, ikke kvalitetsstempel
+- `HIGH_CONVICTION`: kun efter faktisk committed og gyldig lifecycle-overgang
+- `DATA_HOLD`: neutral datablokering, ikke negativ investeringsdom
+- `REJECTED`: casen opfylder ikke aktive krav; historikken bevares
+- `EXPIRED`: primært Catalyst-case, hvor event/katalysator ikke længere er relevant
+- `THESIS_BROKEN`: materiel thesis-invalidation og skal være visuelt tydelig
+
+`BLOCKED_DATA` er et gate-resultat og må ikke vises som en ekstra
+lifecycle-status. Hvis canonical lifecycle er `DATA_HOLD`, vises
+`DATA_HOLD`; `BLOCKED_DATA` kan vises som forklaring/evidens.
+
+##### Default relevant universe
+
+Opportunities-arbejdsfladen skal gøre følgende aktive eller
+beslutningsrelevante cases direkte tilgængelige:
+
+- `CANDIDATE`
+- `STRONG_CANDIDATE`
+- `DEEP_RESEARCH`
+- `HIGH_CONVICTION`
+- `DATA_HOLD`
+- `THESIS_BROKEN`
+
+Disse cases behøver ikke ligge i samme tab. D007.2 fastlægger den konkrete
+fordeling mellem `ACTIVE` og `NEEDS_ATTENTION`.
+
+`SCREENED` og `MONITOR` findes som udgangspunkt i sekundære views/filtre.
+
+`REJECTED` og `EXPIRED` bevares og kan findes via historik/filtre, men skal
+ikke dominere den normale arbejdsflade.
+
+Denne view-definition ændrer ingen canonical state og er ikke en business-
+regel for scoring, gates eller lifecycle.
+
+##### Alert-semantik i UI
+
+UI skal skelne mellem mindst:
+
+- lifecycle-status
+- logical alert oprettet
+- delivery-status
+- delivery-/recovery-problem
+
+`HIGH_CONVICTION` betyder derfor ikke automatisk "Telegram leveret".
+Levering må kun vises som gennemført, når canonical delivery-state
+dokumenterer det.
+
+`THESIS_BROKEN` kan være alert-relevant efter D003, men UI må ikke fabrikere
+en sendt alert alene ud fra lifecycle-status.
+
+##### Freshness og ærlighed
+
+Opportunities-UX må aldrig skjule dataproblemer ved blot at vise seneste
+kendte score.
+
+Når relevant skal brugeren kunne se:
+
+- vurderingens/scorens observationstidspunkt
+- Data Confidence
+- stale/aging/error eller anden validity-begrænsning
+- `DATA_HOLD`, når canonical lifecycle faktisk er sat dertil
+- om research er gyldig, udløbet eller invalideret
+
+Providerfejl i sig selv må ikke fremstilles som negativt investeringssignal.
+
+##### Side-effect-fri rendering
+
+Åbning, refresh, sortering, filtrering eller navigation på Opportunities-
+siden må ikke i sig selv:
+
+- starte provider-fetch
+- starte OpenAI-generation
+- starte Deep Research eller second opinion
+- skabe lifecycle-transition
+- skabe alert
+- ændre Portfolio Fit
+- ændre budgetledger
+
+Siden læser canonical state og versionerede projections/caches.
+Eventuelle senere brugerhandlinger med side effects skal defineres som
+separate, eksplicitte actions med egne guards.
+
+#### D007.2 Tabs, filtre, sortering, søgning og prioritering
+
+Tabs og filtre er read-only views over canonical opportunity-state. De må
+ikke oprette eller ændre lifecycle-status, labels, score, confidence,
+Portfolio Fit, alerts eller research.
+
+##### Primære tabs
+
+Den normale Opportunities-side bruger fire primære workflow-tabs:
+
+1. `ACTIVE`
+   - `CANDIDATE`
+   - `STRONG_CANDIDATE`
+   - `DEEP_RESEARCH`
+   - `HIGH_CONVICTION`
+2. `NEEDS_ATTENTION`
+   - `DATA_HOLD`
+   - `THESIS_BROKEN`
+3. `PIPELINE`
+   - `SCREENED`
+   - `MONITOR`
+4. `HISTORY`
+   - `REJECTED`
+   - `EXPIRED`
+
+Tabs er præsentationsgrupper og bliver ikke nye lifecycle-states.
+
+`ACTIVE` er default-tab og svarer til den normale aktive liste fra D007.1,
+mens `DATA_HOLD` og `THESIS_BROKEN` bevidst flyttes til
+`NEEDS_ATTENTION`, så datablokering og thesis-invalidation ikke drukner
+blandt normale aktive kandidater.
+
+`HIGH_CONVICTION` må gerne have en sekundær quick-filter/chip, men må ikke
+defineres som en separat canonical state ud over D003s eksisterende
+`HIGH_CONVICTION`.
+
+##### Opportunity-profile filter
+
+Alle primære tabs kan filtreres på:
+
+- `ALL_PROFILES`
+- `COMPOUNDER`
+- `CATALYST`
+
+Profilfilteret ændrer kun visningen. En case skifter aldrig profile på grund
+af et UI-filter.
+
+Hvis samme instrument har både Compounder- og Catalyst-case, skal begge
+kunne vises samtidigt under `ALL_PROFILES` som separate opportunity-cases.
+
+##### Canonical filtre
+
+UI skal mindst kunne filtrere på:
+
+- exact lifecycle-status
+- opportunity-profile
+- Opportunity Score eller scoreinterval
+- AI Confidence eller interval
+- Data Confidence eller interval
+- qualification labels
+- Portfolio Fit-kategori, når den relevante portfolio-vurdering findes
+- research-validity/status
+- freshness/data-validity
+- logical alert-status og delivery-status, når alert-records findes
+
+Et filter må ikke skjule, at en case er `DATA_HOLD`, stale eller har
+udløbet/invalideret research, hvis brugeren samtidig ser andre felter fra
+den case. Kritiske validity-begrænsninger skal fortsat være synlige på
+kort/detailvisning.
+
+##### Søgning
+
+Søgning er read-only og må kun arbejde på allerede tilgængelig canonical
+state/projection. En søgning må ikke udløse provider-fetch eller AI-kald.
+
+Søgning skal mindst kunne matche:
+
+- instrumentnavn
+- ticker
+- `instrument_id` ved eksplicit identifikatorsøgning
+- `opportunity_id` ved eksplicit identifikatorsøgning
+
+Søgning må ikke deduplikere Compounder- og Catalyst-cases til én række.
+Hvis begge profiler matcher, vises de som separate opportunity-cases.
+
+##### Bruger-valgt sortering
+
+UI skal mindst tilbyde:
+
+- `RECOMMENDED` som default
+- Opportunity Score faldende
+- AI Confidence faldende
+- Data Confidence faldende
+- seneste relevante vurdering/ændring først
+- instrumentnavn alfabetisk
+
+For Catalyst kan næste gyldige relevante event tilbydes som særskilt
+sortering, når event-data faktisk findes og er valide.
+
+En bruger-valgt sortering ændrer kun præsentationen og må aldrig ændre
+canonical score, lifecycle, gates, Portfolio Fit eller persistence.
+
+##### Default prioritering
+
+`RECOMMENDED` er en deterministisk præsentationsprioritering og er ikke en
+ny score.
+
+I `ACTIVE` prioriteres først canonical `HIGH_CONVICTION`. Derefter holdes
+`DEEP_RESEARCH` som en tydeligt navngivet workflow-gruppe, så arbejdsstatus
+ikke fejlagtigt fremstilles som højere conviction. `STRONG_CANDIDATE` og
+`CANDIDATE` prioriteres efter deres eksisterende canonical status og score.
+
+Inden for samme relevante status-/workflow-gruppe bruges som udgangspunkt:
+
+1. højere objektiv Opportunity Score
+2. højere AI Confidence
+3. højere Data Confidence
+4. relevant Portfolio Fit som sekundær prioritering, når den findes
+5. seneste materielle vurdering/ændring
+6. `opportunity_id` som stabil sidste tie-breaker
+
+Portfolio Fit må aldrig flytte en svagere canonical lifecycle-status til at
+se ud som en stærkere status; det er kun en sekundær præsentationsfaktor.
+
+For Catalyst kan en nært forestående, gyldig og relevant katalysator/event
+bruges som yderligere præsentationsprioritet inden for samme canonical
+status, men må ikke ændre Catalyst Score eller lifecycle-status.
+
+I `NEEDS_ATTENTION` prioriteres `THESIS_BROKEN` før `DATA_HOLD`; inden for
+samme status prioriteres portfolio-relevans og derefter nyeste relevante
+transition/ændring.
+
+I `PIPELINE` prioriteres `MONITOR` før `SCREENED`; inden for samme status
+bruges Opportunity Score og derefter confidence som sekundære nøgler.
+
+I `HISTORY` vises nyeste terminale lifecycle-transition som default først.
+
+Alle default-rækkefølger skal være stabile og reproducerbare, så samme
+canonical input giver samme ordering og undgår unødvendig UI-støj.
+
+##### Filterkombinationer og mixed-profile visning
+
+Filtre kombineres deterministisk:
+
+- forskellige filterdimensioner kombineres som AND
+- flere valgte værdier inden for samme multi-select-dimension kombineres som OR
+- søgning kombineres med de aktive filtre
+
+Et filterresultat er kun en view-projection og må ikke fortolkes som en ny
+opportunity-vurdering.
+
+Ved `ALL_PROFILES` skal UI fortsat bevare Compounder og Catalyst som
+semantisk separate profiler. En numerisk Opportunity Score må ikke bruges
+til at antyde, at Compounder Score og Catalyst Score er én fælles
+tværprofil-ranking.
+
+Default- og scoreprioritering anvendes derfor inden for den relevante
+opportunity-profile. Hvis begge profiler vises samlet, skal profiltilhørsforhold
+forblive tydeligt, og UI må ikke fremstille forskellen mellem de to
+scoremodeller som direkte investeringsmæssig overlegenhed.
+
+Ved `RECOMMENDED` sammen med `ALL_PROFILES` grupperes cases først efter
+opportunity-profile og prioriteres derefter inden for hver profil. Der skabes
+ingen samlet attraktivitetstotalorden mellem Compounder og Catalyst.
+
+Ved eksplicitte ikke-scorebaserede sorteringer, fx instrumentnavn eller
+tidspunkt, må profilerne godt interleaves, fordi rækkefølgen da ikke
+repræsenterer relativ opportunity-kvalitet.
+
+##### URL- og view-state
+
+Read-only view-state må kunne repræsenteres reproducerbart i URL/query-state
+for mindst:
+
+- valgt tab
+- opportunity-profile filter
+- øvrige aktive filtre
+- søgetekst
+- sortering
+
+View-state må ikke indeholde secrets, provider-credentials, account secrets
+eller andre følsomme værdier.
+
+Ukendte eller ugyldige enum-/filterværdier må ikke skabe canonical writes.
+De skal ignoreres eller normaliseres til en sikker default-visning.
+
+Genindlæsning af samme gyldige URL/view-state skal give samme view over samme
+canonical snapshot/projection og må ikke udløse side effects.
+
+##### Counts
+
+Tab- og filter-counts skal beregnes fra samme canonical snapshot/projection
+som den viste liste.
+
+Counts må ikke blandes fra forskellige refresh-tidspunkter på en måde, der
+får UI til at vise et antal, som den aktuelle liste ikke kan forklare.
+
+Hvis et count ikke kan beregnes pålideligt, vises det som utilgængeligt
+frem for som `0`.
+
+##### Empty states
+
+UI skal skelne mellem mindst:
+
+- ingen canonical cases i det valgte view
+- aktive filtre/søgning skjuler alle cases
+- nødvendig projection/data er utilgængelig eller ugyldig
+
+Et tomt søgeresultat må ikke fremstilles som bevis for, at Aureum ikke har
+opportunities i universet.
+
+En data-/projection-fejl må ikke fremstilles som `0 opportunities`.
+
+##### Anti-misleading regler
+
+UI må ikke:
+
+- vise manglende score/confidence som `0`, medmindre canonical værdi faktisk er 0
+- fremstille stale eller invalideret research som aktuelt
+- skjule `DATA_HOLD` bag en tidligere positiv score
+- fremstille `DEEP_RESEARCH` som højere conviction end `STRONG_CANDIDATE`
+- fremstille `PROVISIONAL_CATALYST_OPPORTUNITY` som lifecycle-status
+- fremstille High-Conviction-eligible score som committed `HIGH_CONVICTION`
+- fremstille Portfolio Fit som en del af den objektive Opportunity Score
+- fremstille Compounder- og Catalyst-score som én fælles scoremodel
+- fremstille manglende alert-delivery som leveret
+
+#### D007.3 Opportunity-detailrapport, thesis, research og evidens
+
+Detailvisningen beskriver præcis én canonical opportunity-case identificeret
+ved `opportunity_id` og dens `opportunity_profile`.
+
+Den må ikke fusionere en Compounder- og Catalyst-case for samme instrument
+til én samlet thesis, score eller conviction.
+
+Detailvisningen er read-only ved almindelig åbning og rendering. Den må ikke
+i sig selv starte provider-fetch, OpenAI-kald, Deep Research, second opinion,
+lifecycle-transition, alert eller budgetreservation.
+
+##### Top-level summary
+
+Øverst skal brugeren kunne se mindst:
+
+- instrumentnavn og ticker
+- `COMPOUNDER` eller `CATALYST`
+- current canonical lifecycle-status
+- Compounder Score eller Catalyst Score
+- AI Confidence
+- Data Confidence
+- relevante qualification labels
+- Portfolio Fit som separat portfolio-vurdering
+- seneste relevante evaluation-/observationstidspunkt
+- data-/research-validity eller freshness-begrænsning, når relevant
+
+`HIGH_CONVICTION`, `DEEP_RESEARCH`, `DATA_HOLD` og øvrige states skal
+bevare præcis samme UX-semantik som i D007.1.
+
+##### Detailrapportens sektioner
+
+Detailrapporten organiseres mindst i følgende semantiske sektioner:
+
+1. `OVERVIEW`
+   - case-summary, profile, lifecycle, score og confidence
+2. `THESIS`
+   - investeringscase, katalysatorer, risici og thesis-invalidation
+3. `SCORE_EXPLANATION`
+   - objektiv score, delkomponenter og forklarbarhed
+4. `RESEARCH`
+   - Candidate Review, Deep Research og independent second opinion
+5. `CONFIDENCE_AND_DATA`
+   - AI Confidence, Data Confidence, freshness og validity
+6. `EVIDENCE`
+   - beslutningsrelevant evidens, provenance og kildegrundlag
+7. `PORTFOLIO_FIT`
+   - separat portfolio-relevans uden at ændre opportunity-kvaliteten
+
+Disse sektioner er UI-grupper og bliver ikke nye persistence-objekter eller
+business-states.
+
+##### Thesis-visning
+
+`THESIS` skal fremstille investeringscasen som en struktureret,
+efterprøvbar case og ikke som et fritstående AI-resume.
+
+Når de relevante data findes, skal thesis-visningen mindst kunne vise:
+
+- tidshorisont for den konkrete opportunity-profile
+- business quality og centrale konkurrencemæssige styrker/svagheder
+- vækst og indtjeningsudvikling
+- marginer og relevante afkastmål som ROIC/ROE
+- balance, gæld, likviditet og cash flow
+- valuation relativt til kvalitet, vækst og relevante peers/metoder
+- konkrete katalysatorer og deres forventede tidshorisont
+- centrale risici og red flags
+- bull-, base- og bear-case
+- eksplicitte thesis-invalidation-kriterier
+- næste relevante event, når en valid event findes
+
+Ikke alle felter behøver være relevante for begge opportunity-profiler.
+UI skal bevare profilens semantik og må ikke fremstille et manglende eller
+ikke-relevant felt som negativ evidens.
+
+For Catalyst skal en konkret katalysator, eventvindue og invalidation være
+tydeligt adskilt fra en langsigtet Compounder-thesis.
+
+For Compounder må kortvarigt momentum eller en enkelt event ikke få
+thesis-visningen til at ligne en Catalyst-case uden separat Catalyst-evidens.
+
+##### Bull, base og bear
+
+Bull/base/bear skal vises som scenarier og ikke som sandsynlighedsgaranterede
+kursmål.
+
+Hvert scenario skal, når data findes, gøre det muligt at forstå:
+
+- hvilke antagelser scenariet bygger på
+- hvilke fundamentale eller eventdrevne forhold der skal udvikle sig
+- hvilke risici der kan føre casen mod bear-scenariet
+- hvilke observationer der vil invalidere den aktuelle thesis
+
+Et scenario må ikke skjule Data Confidence, freshness eller kildebegrænsninger.
+
+##### Thesis-invalidation
+
+Thesis-invalidation skal være synlig som en selvstændig del af detailrapporten
+og må ikke gemmes nederst i generisk risikotekst.
+
+UI skal skelne mellem:
+
+- et defineret invalidationskriterium
+- observation/evidens der nærmer sig kriteriet
+- et faktisk canonical thesis-brud/lifecycle-status `THESIS_BROKEN`
+
+Et opfyldt eller næsten opfyldt kriterium må ikke i UI alene fabrikere en
+lifecycle-transition. Canonical `THESIS_BROKEN` vises kun, når den låste
+lifecycle-kontrakt faktisk har committed overgangen.
+
+##### Research-visning
+
+`RESEARCH` skal bevare de låste research-roller og rapporttyper separat:
+
+- `CANDIDATE_REVIEW`
+- `DEEP_RESEARCH`
+- `SECOND_OPINION`
+
+og mindst skelne mellem research-role:
+
+- `PRIMARY`
+- `INDEPENDENT_SECOND_OPINION`
+
+En second opinion må ikke præsenteres som en fortsættelse eller redigering
+af primary research. Dens uafhængige rolle skal være synlig.
+
+For hver rapport skal brugeren, når felterne findes, kunne se mindst:
+
+- report type og research role
+- genereringstidspunkt
+- data-/input-observationstidspunkt
+- validity/expiry-status
+- om rapporten er current, expired eller invalidated
+- relevant input-/contract-version eller tilsvarende audit-reference
+
+En udløbet eller invalideret rapport bevares som historik, men må ikke
+styles som aktuel beslutningsstøtte.
+
+##### Reconciliation
+
+Når både primary research og independent second opinion findes, skal UI
+vise den canonical reconciliation separat fra begge rapporter.
+
+Mindst følgende alignment-statusser skal kunne vises:
+
+- `ALIGNED`
+- `MATERIAL_CONTRADICTION`
+- `INCONCLUSIVE`
+
+`ALIGNED` betyder ikke i sig selv `HIGH_CONVICTION`; de øvrige låste gates
+skal fortsat være opfyldt.
+
+`MATERIAL_CONTRADICTION` og `INCONCLUSIVE` skal være tydelige som blockers
+for High Conviction, men må ikke omskrive eller skjule nogen af de to
+underliggende researchrapporter.
+
+UI må ikke fremstille reconciliation som en tredje uafhængig opinion.
+
+##### Scoreforklaring
+
+`SCORE_EXPLANATION` skal forklare den canonical objektive score, ikke
+beregne en ny UI-score.
+
+UI skal vise `Compounder Score` eller `Catalyst Score` efter den aktive,
+versionerede score-policy for den konkrete opportunity-profile.
+
+Når de canonical beregningsdata findes, skal brugeren mindst kunne se:
+
+- total Opportunity Score
+- relevante delkomponenter/delscores
+- anvendte vægte eller anden canonical bidragslogik
+- datadækning for de komponenter, hvor coverage er relevant
+- score-/policyversion eller tilsvarende audit-reference
+- evaluation-/observationstidspunkt
+
+UI må ikke:
+
+- genberegne score med egne vægte
+- udfylde manglende komponenter som `0`, medmindre canonical policy gør det
+- lade AI-fortolkning overskrive den objektive score
+- fusionere Compounder- og Catalyst-score til én samlet score
+- fremstille afrunding eller grafisk præcision som mere præcis end inputdata
+
+##### Gate-forklaring
+
+Når en canonical gate-evaluation findes, må detailvisningen forklare dens
+gemte resultat uden at genkøre gaten.
+
+UI skal skelne mellem:
+
+- `PASS`
+- `FAIL`
+- `BLOCKED_DATA`
+
+og skal, når canonical data findes, kunne vise relevante opfyldte, ikke-
+opfyldte eller datablokerede krav samt evaluationstidspunkt og validity.
+
+`FAIL` må ikke fremstilles som synonym for `REJECTED` eller
+`THESIS_BROKEN`.
+
+`BLOCKED_DATA` må ikke fremstilles som lifecycle-status.
+
+Et tidligere `PASS` må ikke fremstilles som aktuelt, hvis gaten er udløbet,
+invalideret eller ikke længere matcher current opportunity/input/policies.
+
+##### AI Confidence
+
+AI Confidence skal vises som en separat vurdering af, hvor robust og
+sammenhængende investeringscasen er.
+
+AI Confidence må ikke:
+
+- ændre den objektive Opportunity Score
+- skjule modsigelser mellem primary research og second opinion
+- kompensere visuelt eller semantisk for utilstrækkelig Data Confidence
+- fremstilles som sandsynligheden for et bestemt fremtidigt afkast
+
+Når relevant skal UI vise, hvilken current research/reconciliation der
+understøtter den viste AI Confidence.
+
+##### Data Confidence
+
+Data Confidence skal vises som en separat vurdering af datagrundlagets
+komplethed, aktualitet og konsistens.
+
+UI skal gøre det tydeligt, når Data Confidence begrænses af eksempelvis:
+
+- manglende kritiske data
+- stale eller aging data
+- modstridende kilder
+- provider-/valideringsfejl
+- utilstrækkelig relevant datadækning
+
+En providerfejl må ikke i sig selv fremstilles som et negativt
+investeringssignal.
+
+Ved `DATA_HOLD` skal dataårsagen kunne forklares uden at skjule den seneste
+historiske score, men den historiske score skal samtidig markeres som ikke
+tilstrækkelig til en aktuel beslutning.
+
+##### Evidens og provenance
+
+`EVIDENCE` skal gøre det muligt at skelne mellem:
+
+- canonical input/data
+- afledte objektive metrics/scores
+- AI-researchfortolkning
+- gate-/reconciliation-resultater
+
+AI-genereret tekst må ikke fremstilles som den oprindelige datakilde.
+
+For beslutningsrelevant evidens skal UI, når canonical provenance findes,
+kunne vise mindst:
+
+- kilde/provider-identitet
+- relevant data-/observationstidspunkt
+- freshness/validity-status
+- reference til den immutable input-, evidence- eller source-record
+
+Hvis provenance mangler eller ikke kan valideres, skal UI vise dette
+ærligt frem for at fabrikere en kilde eller skjule begrænsningen.
+
+Detailvisningen må ikke omskrive immutable research-, evidence-, gate- eller
+reconciliation-records for at gøre forklaringen mere læsevenlig.
+
+##### Falsk præcision og usikkerhed
+
+UI må ikke bruge grafisk eller sproglig præcision til at skjule usikkerhed.
+
+Det betyder mindst:
+
+- ingen opdigtede decimaler ud over canonical præcision
+- ingen implicit afkastsandsynlighed ud fra AI Confidence
+- ingen falsk sikkerhed ved manglende eller stale data
+- ingen skjult konflikt mellem rapporter eller evidenskilder
+- ingen omdøbning af `BLOCKED_DATA` til en negativ investeringsdom
+
+#### D007.4 Timeline, lifecycle-historik, ændringsforklaring og outcomes
+
+Timeline er en read-only historisk visning af canonical records for én
+`opportunity_id`. Den er ikke en alternativ state machine og må ikke
+rekonstruere eller omskrive canonical lifecycle.
+
+##### Timeline-semantik
+
+Timeline skal gøre det muligt at forstå, hvad der faktisk skete med casen
+over tid, uden at blande forskellige recordtyper sammen til én syntetisk
+historie.
+
+Når de relevante canonical records findes, kan timeline mindst vise:
+
+- lifecycle-transitions
+- score-/evaluation-observationer
+- ændringer i AI Confidence og Data Confidence
+- qualification-label events
+- Candidate Review, Deep Research og second-opinion events
+- research expiry/invalidation
+- reconciliation-resultater
+- gate-evaluations
+- relevante data-/freshness-blockers
+- logical alert creation og efterfølgende delivery/recovery-status
+- relevante outcome-observationer
+
+De enkelte eventtyper skal fortsat kunne identificeres som forskellige
+canonical typer. UI må ikke fremstille fx en gate-evaluation som en
+lifecycle-transition eller en alert-delivery som en ny opportunity-status.
+
+##### Tidsorden
+
+Timeline sorteres efter de canonical event-/evaluation-/observationstider,
+som hører til de underliggende records.
+
+Hvis flere records har samme relevante tidspunkt, skal visningen bruge en
+stabil, reproducerbar tie-breaker fra canonical identitet/orden. UI må ikke
+opfinde en falsk sekvens alene for at gøre historien mere læsevenlig.
+
+Registrerings- eller ingestionstid må ikke stiltiende fremstilles som
+økonomisk observationstid, når de to tider er forskellige.
+
+##### Lifecycle-historik
+
+Lifecycle-historikken skal vise de faktisk committed transitions og mindst
+kunne forklare:
+
+- `from_status`
+- `to_status`
+- transitionens canonical tidspunkt
+- relevant reason/trigger-reference, når den findes
+- den evidens/gate-reference, som canonical transitionen faktisk knytter til
+
+UI må aldrig udlede en manglende transition ud fra score alene.
+
+Eksempelvis må en score i et High-Conviction-eligible interval ikke
+fabrikeres som en historisk transition til `HIGH_CONVICTION`.
+
+`DEEP_RESEARCH` bevares som arbejdsstatus også i historikken og må ikke
+efterfølgende styles som et historisk kvalitetsstempel.
+
+`DATA_HOLD` skal i historikken fortsat fremstå som datablokering og ikke som
+en bearish investeringsdom.
+
+`THESIS_BROKEN`, `REJECTED` og `EXPIRED` skal vises som de canonical states,
+de er, uden at UI omskriver dem til en fælles negativ slutstatus.
+
+##### Current state versus history
+
+Detailvisningen skal visuelt skelne mellem current canonical state og
+historiske states/evalueringer.
+
+En gammel `HIGH_CONVICTION`, `PASS`, høj score eller høj confidence må ikke
+fremstå som current, hvis en nyere canonical transition, invalidation,
+freshness-vurdering eller anden gældende record har afløst den.
+
+Historiske records må gerne forklares, men deres originale betydning,
+timestamp, identitet og immutable indhold må ikke ændres af UI-laget.
+
+##### Hvad ændrede sig?
+
+Detailvisningen må tilbyde en forklaring af ændringer mellem to relevante
+canonical observationer eller evaluations, men forklaringen skal være
+forankret i de records, der faktisk findes.
+
+En ændringsforklaring skal skelne mellem mindst:
+
+- observeret ændring i canonical input/data
+- ændring i objektiv score eller delscore
+- ændring i AI Confidence
+- ændring i Data Confidence
+- ændring i research/reconciliation
+- lifecycle-transition
+- qualification-label event
+- alert-/delivery-event
+
+UI må ikke fremstille tidsmæssig samtidighed som dokumenteret kausalitet.
+
+Eksempelvis må en kursbevægelse og en scoreændring, der sker tæt på
+hinanden, ikke automatisk beskrives som årsag og virkning uden canonical
+evidens for den sammenhæng.
+
+##### Før/efter-sammenligning
+
+Når to kompatible canonical records sammenlignes, skal UI tydeligt vise:
+
+- hvilket tidspunkt/version der er `before`
+- hvilket tidspunkt/version der er `after`
+- hvilke felter der faktisk ændrede sig
+- hvilke felter der er uændrede
+- hvilke felter der ikke kan sammenlignes pålideligt
+
+Sammenligning må kun ske mellem semantisk kompatible felter. UI må fx ikke
+sammenligne Compounder Score direkte med Catalyst Score som om de var samme
+måleenhed.
+
+Hvis score-policy, input-contract eller anden relevant beslutningskontrakt
+har ændret sig mellem to records, skal dette være synligt. En numerisk
+forskel må ikke fremstilles som ren økonomisk ændring, hvis definitionen
+eller beregningsgrundlaget samtidig er ændret.
+
+##### Material change
+
+`material change` er en præsentationsklassifikation over canonical events
+og må ikke blive en ny lifecycle-status eller en ny objektiv score.
+
+En event må kun fremhæves som material, når en versioneret canonical regel,
+eventtype eller allerede gemt vurdering understøtter det.
+
+UI-laget må ikke selv opfinde nye tærskler for materialitet.
+
+Material changes kan blandt andet omfatte:
+
+- væsentlig ændring i score eller relevant delscore
+- væsentlig ændring i AI Confidence eller Data Confidence
+- nyt eller ændret thesis-invalidation-signal
+- ny eller ændret væsentlig katalysator
+- research invalidation/expiry
+- reconciliation der skifter alignment-status
+- lifecycle-transition
+- væsentlig freshness-/datablokering
+
+Listen er kun en UX-kategorisering; de underliggende canonical records
+forbliver autoritative.
+
+##### Forklaring versus evidens
+
+En menneskeligt læsbar forklaring må opsummere canonical før/efter-data,
+men må ikke erstatte evidensen.
+
+Brugeren skal kunne skelne mellem:
+
+- fakta fra canonical records
+- beregnede forskelle
+- AI-/systemforklaring
+- dokumenteret årsag/trigger, når en sådan faktisk findes
+
+Hvis årsagen ikke kan dokumenteres, skal UI bruge formuleringer som
+"samtidig med" eller "ændrede sig fra/til" frem for at hævde kausalitet.
+
+##### Outcome-visning
+
+Outcome-visningen er read-only og viser canonical outcome-observationer for
+den konkrete opportunity-case. UI må ikke hente live markedsdata eller
+genberegne historiske outcomes ved almindelig rendering.
+
+Outcome-horisonterne følger D001 og holdes profilspecifikke:
+
+- Catalyst: 1, 3, 6, 12 og 18 måneder
+- Compounder: 6, 12, 24, 36 og 60 måneder
+
+UI må ikke fusionere de to profiler til én fælles performance-horisont eller
+bruge en Catalyst-horisont som direkte kvalitetsdom over en Compounder-case.
+
+##### Outcome-status
+
+For hver relevant horisont skal UI skelne mellem mindst:
+
+- endnu ikke moden/pending
+- canonical outcome tilgængeligt
+- outcome-data utilgængelige eller ugyldige
+
+En fremtidig eller endnu ikke moden horisont må aldrig vises som `0%`.
+
+Manglende eller ugyldige outcome-data må heller ikke fremstilles som nulafkast.
+
+Når canonical outcome-recorden indeholder dem, skal brugeren kunne se:
+
+- opportunity-profile
+- reference-/starttidspunkt
+- outcome-horisont
+- observationstidspunkt/as-of
+- den canonical målte performance/outcome-værdi
+- relevant benchmark eller relativ performance, hvis canonical record faktisk
+  indeholder og validerer dette
+- data-/validity-status
+
+UI må ikke konstruere et benchmark efterfølgende alene for at få casen til at
+se bedre eller dårligere ud.
+
+##### Outcome versus beslutningskvalitet
+
+Et realiseret kursafkast er ikke i sig selv bevis for, at den oprindelige
+thesis, score eller AI-vurdering var korrekt eller forkert.
+
+Outcome-visningen skal derfor holde mindst følgende adskilt:
+
+- hvad systemet vurderede på beslutningstidspunktet
+- hvilke data/evidenser der var tilgængelige på det tidspunkt
+- hvad der efterfølgende faktisk skete
+- hvilke senere events eller ændringer der først blev kendt bagefter
+
+UI må ikke retroaktivt omskrive en historisk score, thesis, confidence eller
+lifecycle-status ud fra et senere outcome.
+
+##### Hindsight- og look-ahead-beskyttelse
+
+Historiske vurderinger skal præsenteres med deres daværende input-, policy-,
+research- og freshness-kontekst.
+
+Senere kendte data må ikke fremstilles som om de var kendt ved den oprindelige
+beslutning.
+
+En ændringsforklaring eller outcome-kommentar må ikke bruge efterfølgende
+information til at fabrikere en årsag, som ikke var dokumenteret i de
+canonical records.
+
+##### Survivor- og selection-bias
+
+Outcome-visningen må ikke kun fremhæve succesfulde eller stadig aktive cases.
+
+`REJECTED`, `EXPIRED`, `THESIS_BROKEN` og øvrige historiske cases skal kunne
+indgå i outcome-evaluering, når canonical outcome-data findes og retention-
+kontrakten tillader det.
+
+Filtrering i UI må gerne ændre den viste population, men det skal være tydeligt,
+hvilket udvalg brugeren ser. Et filtreret subset må ikke fremstilles som hele
+systemets historiske performance.
+
+##### Performance-præsentation
+
+UI må ikke:
+
+- bruge én enkelt kort horisont som samlet bevis på modelkvalitet
+- sammenligne Compounder og Catalyst uden tydeligt at bevare profil og horisont
+- skjule manglende eller umodne outcomes
+- erstatte canonical outcomes med live-genberegnede tal
+- omskrive historiske vurderinger efter resultatet er kendt
+- fremstille korrelation mellem efterfølgende events og afkast som dokumenteret
+  kausalitet uden canonical evidens
+
+Outcome-data er evaluerings- og kalibreringsgrundlag. De er ikke nye
+lifecycle-states, gates eller Opportunity Scores.
+
+#### D007.5 Portfolio Fit, portfolio-relevans og personaliseret visning
+
+Portfolio Fit er et separat personaliseringslag oven på den canonical
+opportunity-case. Det er ikke en del af den objektive Compounder- eller
+Catalyst-vurdering.
+
+##### Objektiv case versus portfolio-kontekst
+
+UI skal altid holde følgende adskilt:
+
+- objektiv Opportunity Score
+- AI Confidence
+- Data Confidence
+- lifecycle-status
+- gate-resultat
+- Portfolio Fit
+- faktisk portfolio-medlemskab/position, når den findes
+
+Portfolio Fit må efter D002 påvirke anbefalet portfoliohandling,
+prioritering og visning, men må ikke:
+
+- ændre Compounder Score eller Catalyst Score
+- ændre AI Confidence
+- ændre Data Confidence
+- opfylde eller underkende en High-Conviction-gate
+- ændre lifecycle-status
+- omskrive research eller reconciliation
+- skabe qualification labels
+
+En stærk Portfolio Fit må derfor ikke få en svagere opportunity-case til at
+fremstå som `HIGH_CONVICTION`, og en svag Portfolio Fit må ikke nedskrive
+den objektive opportunity-kvalitet.
+
+##### Portfolio-medlemskab versus Portfolio Fit
+
+UI skal skelne mellem:
+
+- om instrumentet faktisk findes i den aktuelle portfolio
+- den aktuelle positions relevante portfolio-kontekst
+- Portfolio Fit-vurderingen
+
+`IN_PORTFOLIO` eller tilsvarende visningsindikator er portfolio-kontekst og
+må ikke fremstilles som en opportunity lifecycle-status.
+
+En aktie kan have høj objektiv opportunity-kvalitet uden at være i
+portfolioen, og en eksisterende portfolio-position kan have lav Portfolio
+Fit uden at dette i sig selv ændrer opportunity-status.
+
+##### Read-only portfolio-visning
+
+Almindelig åbning, refresh, sortering, filtrering eller navigation må ikke
+i sig selv:
+
+- købe, sælge eller ændre en position
+- ændre portfolio-vægte
+- ændre Portfolio Fit
+- starte provider-fetch eller OpenAI-kald
+- skabe lifecycle-transition eller alert
+- ændre budgetledger
+
+Opportunities-UX læser kun den autoriserede canonical portfolio-kontekst
+eller en versioneret read-only projection.
+
+##### Manglende portfolio-kontekst
+
+Hvis portfolio-data eller Portfolio Fit ikke findes, er utilgængelig eller
+ikke kan valideres, skal UI vise dette som utilgængeligt/ukendt.
+
+Manglende Portfolio Fit må ikke fremstilles som neutral, dårlig eller `0`.
+
+Manglende portfolio-kontekst må heller ikke ændre den objektive
+Opportunity Score, AI Confidence, Data Confidence eller lifecycle-status.
+
+##### Portfolio Fit-faktorer
+
+Når den canonical portfolio-kontekst indeholder dem, skal UI kunne forklare
+Portfolio Fit med de underliggende faktorer frem for kun at vise et samlet
+personaliseret label eller tal.
+
+Relevante faktorer omfatter mindst de D002-låste portfolio-dimensioner:
+
+- sektor-/enkeltaktiekoncentration
+- overlap med eksisterende eksponeringer
+- valuta-/markedsrisiko
+
+Derudover må UI vise factual portfolio-kontekst, når den findes, fx om
+instrumentet allerede er i portfolioen og relevant eksisterende eksponering.
+
+UI må ikke selv konstruere nye Portfolio Fit-faktorer, vægte eller tærskler
+og derefter fremstille dem som canonical beslutningslogik.
+
+##### Ingen skjult samlet opportunity-score
+
+Portfolio Fit må gerne have sin egen canonical kategori eller værdi, hvis
+den eksisterer i den låste portfolio-vurdering, men UI må ikke kombinere
+den med Opportunity Score, AI Confidence eller Data Confidence til et nyt
+samlet attractiveness-, conviction- eller recommendation-score.
+
+Der må heller ikke skabes en skjult UI-formel, hvor fx høj Portfolio Fit
+automatisk løfter en `CANDIDATE` over en objektivt stærkere case.
+
+Når Portfolio Fit bruges som sekundær sorterings- eller prioriteringsfaktor
+efter D007.2, skal den fortsat vises som portfolio-kontekst og ikke som
+objektiv opportunity-kvalitet.
+
+##### Anbefalet portfoliohandling
+
+Hvis canonical portfolio-logik producerer en anbefalet portfoliohandling,
+må Opportunities-UX vise den som et separat personaliseret output.
+
+Anbefalet portfoliohandling må ikke:
+
+- fremstilles som lifecycle-status
+- ændre Opportunity Score eller confidence
+- fremstilles som selve High-Conviction-gaten
+- fabrikeres af UI ud fra Portfolio Fit alene
+- fremstilles som gennemført handel eller ordre
+
+UI skal skelne mellem mindst:
+
+- objektiv opportunity-vurdering
+- personaliseret anbefalet portfoliohandling
+- faktisk portfolio-/positionsstate
+- eventuel senere udført brugerhandling, hvis en sådan canonical record findes
+
+En anbefaling om portfoliohandling er derfor ikke det samme som, at en
+position er blevet købt, solgt eller ændret.
+
+##### Konflikt mellem stærk case og svag Portfolio Fit
+
+Hvis en opportunity er objektivt stærk, men Portfolio Fit er svag, skal UI
+vise begge vurderinger samtidigt og forklare portfolio-begrænsningen uden
+at nedskrive den objektive case.
+
+Tilsvarende må en høj Portfolio Fit ikke skjule en lavere Opportunity Score,
+lav Data Confidence, `DATA_HOLD`, `THESIS_BROKEN` eller andre canonical
+begrænsninger.
+
+Personaliseret prioritering må aldrig skjule canonical risici eller
+validity-problemer.
+
+##### Portfolio-freshness og tidssemantik
+
+Portfolio-kontekst og opportunity-kontekst kan have forskellige canonical
+observationstidspunkter. UI må ikke antyde, at de er synkrone, hvis de ikke er det.
+
+Når relevant skal brugeren kunne se:
+
+- portfolio-snapshot/as-of
+- Portfolio Fit evaluation/as-of
+- opportunity evaluation/as-of
+- freshness/validity for den anvendte portfolio-kontekst
+
+En gammel portfolio-position, vægt eller Portfolio Fit må ikke fremstilles som
+current, hvis den relevante canonical portfolio-kontekst er stale, invalid eller
+afløst.
+
+Stale portfolio-data må ikke skjules bag en aktuel opportunity-score.
+
+##### Identitets- og cross-store-grænse
+
+Når portfolio- og opportunity-data kommer fra forskellige stores eller projections,
+skal sammenkoblingen ske via de låste stabile identiteter og canonical mappings.
+
+UI må ikke gætte et portfolio-match alene ud fra displaynavn eller ticker, hvis
+instrumentidentiteten er tvetydig.
+
+Ved identitetskonflikt eller manglende sikker mapping vises portfolio-konteksten
+som utilgængelig frem for at knytte den til den forkerte opportunity-case.
+
+D007 ændrer ikke D006s fysiske persistence-, database- eller transaktionsgrænser.
+En read-only detailvisning må ikke skabe en skjult cross-store write eller
+distribueret side effect.
+
+##### Autorisation og privacy
+
+Personaliseret portfolio-kontekst må kun vises, når den aktuelle request er
+autoriseret til de relevante portfolio-data.
+
+Autorisation skal håndhæves server-side; det er ikke tilstrækkeligt blot at skjule
+et UI-element.
+
+Opportunities-UX må ikke eksponere eller kopiere secrets som:
+
+- passwords
+- session-/auth-tokens
+- provider-credentials
+- API-nøgler
+- andre account secrets
+
+sådanne secrets må heller ikke placeres i URL/query-state, client-visible debugdata
+eller opportunity-/Portfolio Fit-visningsfelter.
+
+Hvis portfolio-kontekst ikke er autoriseret, skal UI udelade den personaliserede
+information uden at ændre den objektive opportunity-case.
+
+##### Anti-misleading portfolio-regler
+
+UI må ikke:
+
+- fremstille utilgængelig portfolio-kontekst som `ikke i portfolio`
+- fremstille manglende Portfolio Fit som `0` eller neutral fit
+- fremstille stale Portfolio Fit som current
+- skjule tidspunktet for en væsentligt ældre portfolio-vurdering
+- gætte instrumentmatch ved tvetydig identitet
+- kombinere Portfolio Fit med Opportunity Score til en skjult samlet score
+- fremstille anbefalet portfoliohandling som udført handel
+- fremstille portfolio-medlemskab som lifecycle-status
+- skjule `DATA_HOLD`, `THESIS_BROKEN` eller andre canonical begrænsninger
+  fordi den personaliserede portfolio-kontekst ser positiv ud
+
+##### Side-effect-fri personalisering
+
+Al almindelig rendering af personaliseret portfolio-kontekst skal være read-only.
+
+En senere eksplicit brugerhandling, som faktisk ændrer portfolio eller anden
+canonical state, skal være en separat navngivet action med egne authorization-,
+validation-, concurrency- og persistence-guards. Den må ikke skjules i page load,
+filter, sortering eller navigation.
+
+#### D007.6 Alert-historik, delivery/recovery og alert-relaterede handlinger
+
+Alert-UX er en read-only visning af de canonical alert-, outbox-, delivery-
+og recovery-records, medmindre brugeren senere udfører en særskilt eksplicit
+handling, som er defineret med egne guards.
+
+D007.6 ændrer ikke D003-D006s regler for, hvornår en alert må oprettes,
+deduplikeres, leveres, retries eller sendes gennem recovery.
+
+##### Fire separate lag
+
+UI skal altid kunne skelne mellem mindst:
+
+1. opportunity/lifecycle-event
+2. logical alert oprettet
+3. delivery attempt/status pr. kanal
+4. recovery-/ambiguity-status
+
+Disse lag må ikke fusioneres til én badge som fx `ALERTED`.
+
+En lifecycle-transition kan eksistere uden en logical alert, og en logical
+alert kan eksistere uden dokumenteret succesfuld levering.
+
+##### Alert-historik pr. opportunity
+
+For den konkrete `opportunity_id` skal alert-historikken, når canonical
+records findes, kunne vise mindst:
+
+- alert type
+- relevant lifecycle-transition/reference
+- kanal
+- logical alert created-at
+- delivery-status
+- seneste delivery-attempt tidspunkt
+- provider-/delivery-reference, når den canonical record indeholder den
+- recovery-/ambiguity-status, når relevant
+
+UI skal bevare den canonical identitet mellem status-transition, logical
+alert, kanal og delivery-records og må ikke rekonstruere en ny alertidentitet
+ud fra ticker, timestamp eller tekst alene.
+
+##### HIGH_CONVICTION
+
+`HIGH_CONVICTION` må kun fremstilles som årsag til en normal opportunity-alert,
+når den canonical committed transition faktisk har oprettet den logical alert
+efter de låste D003-D006-regler.
+
+En case med lifecycle-status `HIGH_CONVICTION` må derfor ikke automatisk
+vises som `alert sendt` eller `Telegram leveret`.
+
+UI skal kunne vise forskellen mellem:
+
+- `HIGH_CONVICTION` uden logical alert
+- logical alert oprettet
+- delivery pending/attempted
+- delivery dokumenteret gennemført
+- delivery/recovery-problem
+
+##### THESIS_BROKEN
+
+`THESIS_BROKEN` kan være alert-relevant efter D003, men lifecycle-status alene
+er ikke dokumentation for, at en logical alert blev oprettet eller leveret.
+
+Kun eksisterende canonical alert-/delivery-records må bruges til at vise en
+faktisk sendt eller leveret Thesis Broken-alert.
+
+##### Qualification labels og gate-resultater
+
+`PROVISIONAL_CATALYST_OPPORTUNITY`, `PASS`, `FAIL` og `BLOCKED_DATA` må ikke
+i sig selv fremstilles som opportunity-alerts.
+
+UI må gerne forklare, at sådanne records indgår i beslutningsgrundlaget, men
+må ikke fabrikere alert creation ud fra dem.
+
+##### Read-only alert rendering
+
+Åbning, refresh, filtrering, sortering eller navigation i alert-historikken må
+ikke i sig selv:
+
+- oprette en logical alert
+- oprette et nyt outbox-item
+- starte et delivery-attempt
+- retry en delivery
+- ændre recovery-state
+- ændre lifecycle-status
+- starte provider-fetch eller OpenAI-kald
+
+##### Dedup og idempotency i visningen
+
+UI skal respektere den canonical logical-alert-identitet og må ikke fremstille
+retries eller flere delivery-attempts som flere forskellige alerts.
+
+For normal opportunity-alerting følger logical dedup fortsat den låste
+alert-/outbox-kontrakt, herunder kombinationen af:
+
+- `status_transition_id`
+- `alert_type`
+- `channel`
+
+UI må ikke skabe sin egen alternative dedup-nøgle.
+
+Hvis flere attempts tilhører samme logical alert, skal de vises som attempts
+under den samme alert og ikke som nye opportunity-alerts.
+
+##### Delivery attempts
+
+Et delivery-attempt er ikke det samme som dokumenteret levering.
+
+Når canonical records findes, skal UI kunne skelne mellem mindst:
+
+- attempt endnu ikke startet
+- attempt startet/pending
+- dokumenteret succes
+- dokumenteret fejl
+- udfald der kræver recovery eller afklaring
+
+Provider-reference eller request-id må gerne vises som auditinformation, når
+den canonical record indeholder det, men må ikke bruges af UI til at gætte
+delivery-status.
+
+En timeout eller manglende provider-respons må ikke automatisk vises som
+`FAILED`, hvis canonical delivery/recovery-state siger, at udfaldet er
+uafklaret.
+
+##### Recovery og ambiguity
+
+UI skal bevare forskellen mellem canonical recovery-resultater, herunder
+`AUTHORIZED` og `AMBIGUOUS`, når disse findes i den låste recovery-kontrakt.
+
+`AUTHORIZED` betyder kun, at den konkrete recovery-kontrakt tillader den
+næste definerede handling. Det er ikke dokumentation for, at en ny levering
+allerede er gennemført.
+
+`AMBIGUOUS` betyder, at systemet ikke med tilstrækkelig sikkerhed kan afgøre
+det tidligere delivery-udfald.
+
+Ved `AMBIGUOUS` må UI aldrig tilbyde eller udføre blind resend som en
+ubegrænset direkte handling.
+
+Recovery skal følge den canonical recovery-proces, så systemet ikke skaber
+semantiske dubletter ved at gensende en besked, der muligvis allerede blev
+leveret.
+
+##### Retry er ikke en ny logical alert
+
+Et autoriseret retry/recovery-attempt må ikke:
+
+- skabe en ny lifecycle-transition
+- fremstilles som en ny High-Conviction-hændelse
+- skabe en ny logical alert for samme dedup-identitet
+- nulstille den historiske delivery/recovery-kontekst
+
+UI skal vise retry/recovery som fortsættelse af den eksisterende logical
+alert-historik.
+
+##### Concurrent og gentagen rendering
+
+Gentagne page loads, refreshes eller parallelle browserrequests må ikke skabe
+nye alerts, attempts eller recovery-records.
+
+Hvis canonical backend-state ændres mellem to reads, skal UI vise den senest
+læste canonical state uden selv at forsøge at reparere eller komplettere
+alert-workflowet.
+
+##### Eksplicitte alert-handlinger
+
+Hvis Opportunities-UX senere tilbyder brugerhandlinger omkring alerts, skal
+de være separate, navngivne actions og aldrig skjulte side effects ved
+page load, refresh, filter, sortering eller navigation.
+
+En action skal operere på canonical alert-/delivery-identitet og må ikke
+udlede target alene ud fra ticker, visningstekst eller seneste synlige række.
+
+Før en action med side effects må udføres, skal backend mindst validere:
+
+- authorization
+- den konkrete logical-alert-/delivery-identitet
+- current canonical state
+- idempotency/dedup-kontrakt
+- recovery-/ambiguity-state, når relevant
+- at handlingen fortsat er tilladt efter concurrent ændringer
+
+UI-tilgængelighed af en knap er ikke authorization. Server-side validation
+er autoritativ.
+
+##### Confirmation og konsekvens
+
+En handling, der kan medføre en ny ekstern delivery, skal gøre konsekvensen
+tydelig for brugeren før udførelse.
+
+UI må ikke formulere en recovery-action som generisk `Send igen`, hvis den
+canonical state ikke med sikkerhed tillader et resend.
+
+Ved `AMBIGUOUS` skal UI i stedet vise, at tidligere delivery-udfald ikke er
+sikkert kendt, og at normal blind resend ikke er tilladt.
+
+En eventuel autoriseret recovery-action skal navngives efter den canonical
+handling, den faktisk udfører, og følge backendens egne guards.
+
+##### Delivery-status skal være evidensbaseret
+
+UI må kun vise fx `leveret`, `sendt` eller tilsvarende successtatus, når den
+canonical delivery-state dokumenterer den relevante betydning.
+
+Følgende må ikke sidestilles:
+
+- request accepteret til behandling
+- delivery-attempt startet
+- provider request-id modtaget
+- logical alert oprettet
+- dokumenteret succesfuld levering
+
+Hvis provideren eller canonical state ikke kan bevise levering, skal UI vise
+pending, failed, ambiguous eller anden faktisk canonical status frem for
+at optimistisk antage succes.
+
+##### Alertkanaler
+
+Delivery-status skal vises pr. kanal. Succes på én kanal må ikke fremstilles
+som succes på en anden kanal.
+
+Hvis flere kanaler senere understøttes, forbliver logical alert og channel-
+delivery adskilte. UI må ikke komprimere dem til én samlet `delivered`-status,
+hvis channel-states er forskellige.
+
+##### Anti-misleading alert-regler
+
+UI må ikke:
+
+- fremstille lifecycle-status som bevis for alert creation
+- fremstille alert creation som bevis for delivery
+- fremstille attempt som bevis for delivery
+- fremstille provider-reference som bevis for delivery
+- fremstille timeout som sikker failure, hvis canonical state er ambiguous
+- fremstille retry som en ny logical alert
+- fremstille `AUTHORIZED` som allerede gennemført recovery
+- tilbyde blind resend ved `AMBIGUOUS`
+- skjule delivery-/recovery-problemer bag en grøn opportunity-status
+- ændre alert-historik eller canonical state ved almindelig rendering
+
+##### Alert-action auditability
+
+Hvis en eksplicit brugerhandling faktisk udføres, skal den efter de låste
+persistence- og auditkontrakter kunne spores til den relevante canonical
+alert/delivery/recovery-identitet og authorization-kontekst.
+
+UI må ikke omskrive historiske attempts eller recovery-records efterfølgende
+for at få et senere udfald til at se ud som om det var kendt tidligere.
+
+#### D007.7 Tværgående præsentationskrav, accessibility og resilience
+
+D007.7 fastlægger tværgående UX-regler for Opportunities-arbejdsfladen.
+Det er ikke Command Center V3-design; den tværgående executive
+informationsarkitektur hører fortsat til D009.
+
+##### Loading og read-state
+
+Loading er en UI-tilstand og må aldrig fremstilles som en canonical
+opportunity-, lifecycle-, gate-, research-, alert- eller portfolio-state.
+
+Ved almindelig loading må UI kun vente på/read canonical data eller en
+versioneret projection/cache. Loading må ikke i sig selv udløse:
+
+- provider-fetch
+- OpenAI-generation
+- Deep Research eller second opinion
+- lifecycle-transition
+- gate-evaluation
+- alert/delivery
+- portfolio-write
+- budgetreservation
+
+Skeletons/placeholders må ikke indeholde opdigtede scores, confidence,
+statusser eller performance-tal, der kan forveksles med rigtige data.
+
+##### Partial data
+
+Hvis nogle sektioner kan vises sikkert og andre ikke kan, må UI vise den
+gyldige del som partial view i stedet for nødvendigvis at skjule hele casen.
+
+Den utilgængelige del skal markeres som utilgængelig, stale, invalid eller
+anden faktisk canonical/read-fejl efter den relevante kontrakt.
+
+Partial rendering må ikke:
+
+- udfylde manglende felter med `0`
+- genbruge en gammel værdi som current uden validity/freshness-indikation
+- beregne manglende canonical felter i browseren
+- skjule at en beslutningskritisk sektion mangler
+
+Hvis fraværet betyder, at den canonical lifecycle faktisk er `DATA_HOLD`,
+skal `DATA_HOLD` fortsat vises. Et rent UI-/read-problem må omvendt ikke
+fabrikere `DATA_HOLD`.
+
+##### Error states
+
+UI skal skelne mellem mindst:
+
+- view/read-fejl
+- projection/cache utilgængelig
+- canonical data utilgængelig eller ugyldig
+- authorization-fejl
+- konkret domæne-/validity-state, når en sådan canonical state findes
+
+En teknisk UI- eller read-fejl må ikke fremstilles som negativ
+investeringsvurdering, `REJECTED`, `THESIS_BROKEN` eller `DATA_HOLD`.
+
+En fejl i én ikke-kritisk sektion må ikke automatisk gøre andre gyldige
+sektioner ugyldige.
+
+##### Retry af UI-read
+
+En brugerhandling som `Prøv igen` må som default kun gentage den read-only
+applikationsforespørgsel/projection-read, der fejlede.
+
+Den må ikke skjult starte provider-fetch, AI-research, alert-retry eller
+andre side effects.
+
+Hvis en senere eksplicit recovery-/refresh-action har side effects, skal den
+være særskilt navngivet og følge de relevante D004-D006-guards.
+
+##### Fejldetaljer og secrets
+
+Brugerrettede fejlbeskeder må gerne være diagnostiske, men må ikke eksponere:
+
+- stack traces med secrets
+- passwords eller auth/session-tokens
+- provider-credentials eller API-nøgler
+- interne secrets fra environment/configuration
+
+Tekniske correlation-/request-identifikatorer må kun vises, når det er
+sikkert og nyttigt for audit/support.
+
+##### Responsive informationshierarki
+
+Opportunities-UX skal bevare samme semantiske informationshierarki på
+desktop, tablet og mindre skærme.
+
+Responsive layout må ændre placering, kolonner, tabs eller disclosure, men
+må ikke skjule eller ændre betydningen af beslutningskritiske felter som:
+
+- opportunity-profile
+- lifecycle-status
+- Opportunity Score
+- AI Confidence
+- Data Confidence
+- freshness/validity
+- `DATA_HOLD` eller `THESIS_BROKEN`
+
+På mindre skærme må sekundære detaljer gerne foldes sammen, men kritiske
+status-, confidence- og validity-signaler skal fortsat være direkte synlige
+eller entydigt markerede.
+
+Brede tabeller eller evidensvisninger må bruge kontrolleret horizontal scroll,
+stacking eller detail-disclosure frem for at trunkere centrale værdier uden
+mulighed for at se dem.
+
+##### Keyboard og fokus
+
+Alle interaktive Opportunities-funktioner skal kunne anvendes uden mus.
+
+Det gælder mindst:
+
+- tabs
 - filtre
-- detailrapport
-- scoreforklaring
-- confidence
-- timeline
-- portfolio fit
-- alert-historik
+- sortering
+- søgning
+- åbning/lukning af detailsektioner
+- navigation mellem opportunity-cases
+- eksplicitte actions, hvis sådanne senere aktiveres
+
+Keyboard-fokus skal være synligt og følge en logisk rækkefølge, der svarer
+til den visuelle og semantiske informationsstruktur.
+
+En dialog, disclosure eller modal må ikke efterlade fokus et
+uforudsigeligt sted efter lukning.
+
+##### Semantisk struktur
+
+Siden skal bruge en klar heading- og landmark-struktur, så bruger og
+assistive technology kan forstå:
+
+- hvilken opportunity-case der vises
+- hvilken opportunity-profile der gælder
+- hvilken sektion man befinder sig i
+- hvilke controls der påvirker den aktuelle visning
+
+Interaktive elementer skal have et entydigt accessible name. Ikoner alene
+må ikke være eneste tekstlige forklaring på en væsentlig funktion.
+
+##### Farve-uafhængig statuskommunikation
+
+Farve må gerne understøtte status og risiko, men må aldrig være den eneste
+bærer af betydning.
+
+`HIGH_CONVICTION`, `DATA_HOLD`, `THESIS_BROKEN`, delivery-status, freshness
+og confidence-begrænsninger skal også kunne forstås via tekst, label, ikon
+med accessible name eller anden ikke-farvebaseret information.
+
+Grøn må eksempelvis ikke alene betyde `leveret`, og rød må ikke alene
+betyde `THESIS_BROKEN`.
+
+##### Kontrast og læsbarhed
+
+Tekst, controls, fokusindikatorer og statusmarkører skal have tilstrækkelig
+visuel kontrast i de understøttede temaer.
+
+Små sekundære metadata må ikke gøres så svage, at observationstidspunkt,
+freshness, validity eller provenance reelt bliver ulæselige.
+
+Kompakt informationsdensitet må ikke opnås ved at gøre kritiske labels,
+timestamps eller confidence-/validity-information så små eller nedtonede,
+at deres betydning går tabt.
+
+##### Tooltips og disclosure
+
+Kritisk information må ikke kun eksistere i hover-tooltip.
+
+Tooltips må bruges til supplerende forklaring, men information som ændrer
+fortolkningen af score, confidence, freshness, gate eller delivery skal også
+være tilgængelig via keyboard/touch og kunne findes uden hover.
+
+Progressive disclosure må gerne reducere visuel kompleksitet, men må ikke
+skjule en kritisk blocker eller validity-begrænsning på en måde, der får
+casens primære state til at fremstå misvisende.
+
+##### Charts og grafiske forklaringer
+
+Hvis score-, confidence-, timeline- eller outcome-data vises grafisk, skal
+de samme centrale værdier og betydninger også være tilgængelige i tekstlig
+eller struktureret form.
+
+Et chart må ikke være den eneste måde at opdage fx:
+
+- en scoreændring
+- stale data
+- et thesis-brud
+- manglende outcome-data
+- forskellen mellem Compounder og Catalyst
+
+Grafik må ikke skabe falsk præcision gennem akser, decimaler eller visuel
+skalering, som går ud over canonical data.
+
+Hvis to dataserier ikke er semantisk direkte sammenlignelige, må fælles
+akse, normalisering eller anden grafik ikke få dem til at fremstå som samme
+måleenhed.
+
+##### Motion og dynamiske opdateringer
+
+Dynamiske UI-opdateringer må ikke bruge unødvendig animation til at
+signalere investeringsmæssig betydning.
+
+Ændringer i sortering, loading eller status skal kunne forstås uden at være
+afhængige af bevægelse alene.
+
+Den konkrete implementation skal kunne respektere reduceret motion, hvor
+platformen/browseren understøtter det.
+
+Automatiske visuelle opdateringer må ikke flytte fokus eller reorganisere
+brugerens aktuelle kontekst på en måde, der gør det uklart, hvilken
+opportunity-case eller handling der var aktiv.
+
+##### Deterministic rendering og stabil view-state
+
+Samme canonical input/projection og samme gyldige view-state skal give samme
+semantiske UI-resultat.
+
+Rendering må ikke afhænge af tilfældig rækkefølge, browser-side beregninger
+eller ikke-versioneret skjult state, som kan ændre:
+
+- hvilke cases der vises
+- hvilken lifecycle-status der fremhæves
+- score/confidence-værdier
+- freshness/validity
+- alert-/delivery-status
+- Portfolio Fit
+
+Hvis flere records har samme relevante sorteringsnøgler, skal den stabile
+tie-breaker fra D007.2 anvendes.
+
+Et almindeligt page reload må ikke ændre betydningen af en case alene fordi
+UI-komponenterne mountes eller loader i en anden rækkefølge.
+
+##### Performance og progressive disclosure
+
+Opportunities-UX skal kunne håndtere den forventede mængde cases uden at
+kræve, at alle detaildata renderes samtidigt.
+
+Performance-optimering må bruge fx:
+
+- server-side eller canonical pagination
+- begrænset initial rendering
+- lazy rendering af allerede tilgængelige read-only detaljer
+- progressive disclosure
+- versionerede projections/caches
+
+Performance-optimering må ikke:
+
+- starte skjulte provider- eller OpenAI-kald
+- ændre canonical sortering eller filtre
+- skjule kritiske blockers eller validity-problemer
+- vise stale data som current for at reducere loadtid
+- droppe cases uden tydelig pagination/view-semantik
+
+Lazy rendering er ikke det samme som lazy data generation. Åbning af en
+detaljesektion må ved almindelig read-only UX ikke starte ny research eller
+anden betalt behandling.
+
+##### Deep links
+
+Det skal være muligt at linke reproducerbart til en konkret opportunity-case
+og relevante read-only views, når authorization tillader det.
+
+Et deep link skal bygge på stabile canonical identiteter som
+`opportunity_id` og må ikke afhænge alene af ticker eller displaynavn.
+
+Deep links og URL/query-state må ikke indeholde:
+
+- passwords
+- session-/auth-tokens
+- API-nøgler
+- provider-credentials
+- andre account secrets
+
+Et deep link må ikke omgå authorization eller give adgang til portfolio-,
+alert- eller andre personaliserede data, som requesten ellers ikke må læse.
+
+Hvis den refererede case ikke findes, er udløbet fra retention eller ikke er
+autoriseret, skal UI vise den faktiske read-/authorization-state frem for at
+fabrikere en ny case.
+
+##### Browser-navigation og reproducerbarhed
+
+Back/forward-navigation skal så vidt muligt kunne genskabe den read-only
+view-state, som URL/query-state beskriver:
+
+- tab
+- filtre
+- søgning
+- sortering
+- valgt opportunity-case
+
+Genskabelse af view-state må ikke gentage tidligere side effects eller
+genstarte research, alerts, deliveries eller portfoliohandlinger.
+
+##### Opportunities-UX acceptance criteria
+
+D007-UX er først klar til implementation, når mindst følgende kan testes:
+
+- Compounder og Catalyst for samme instrument forbliver separate cases
+- lifecycle-status, Opportunity Score, AI Confidence, Data Confidence,
+  labels og Portfolio Fit vises som separate begreber
+- `PROVISIONAL_CATALYST_OPPORTUNITY` vises aldrig som lifecycle-status
+- `DEEP_RESEARCH` fremstilles som arbejdsstatus, ikke kvalitetsstempel
+- `DATA_HOLD` fremstilles som datablokering, ikke bearish investeringsdom
+- High-Conviction-eligible fremstilles ikke som committed `HIGH_CONVICTION`
+- Compounder Score og Catalyst Score bruges ikke som én fælles
+  tværprofil-ranking
+- stale, invalid eller manglende data kan ikke skjules bag en tidligere score
+- manglende data, Portfolio Fit eller outcomes fremstilles ikke som `0`
+- normal page load, refresh, filtrering, sortering og navigation er
+  side-effect-fri
+- almindelig UI-read starter ingen provider-fetch eller OpenAI-generation
+- alert creation, delivery attempt og dokumenteret levering kan skelnes
+- `AMBIGUOUS` recovery giver ikke blind resend
+- historical timeline omskriver ikke immutable records
+- outcome-visning bevarer de separate Catalyst- og Compounder-horisonter
+- portfolio-personalisering ændrer ikke objektiv opportunity-kvalitet
+- authorization håndhæves server-side for personaliserede data og actions
+- secrets eksponeres ikke i UI, fejlbeskeder eller URL/view-state
+- kritisk statusinformation er forståelig uden farve alene
+- centrale funktioner kan anvendes med keyboard
+- kritisk information findes ikke kun i hover-tooltips eller charts
+- partial/error states kan ikke forveksles med negative investeringsstates
+- samme canonical data og samme view-state giver stabil, reproducerbar
+  semantisk rendering
+
+Disse acceptance criteria ændrer ingen D001-D006 business-, data-,
+budget-, persistence- eller alertkontrakter. De operationaliserer alene,
+hvordan de låste kontrakter må præsenteres og interageres med i
+Opportunities-UX.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### V3-D008
 
@@ -6323,14 +8061,13 @@ Command Center V3 og samlet informationsarkitektur.
 
 Ved næste arbejdssession:
 
-1. Kontrollér Git HEAD, `origin/main`, ren worktree og kandidatens SHA-256.
-2. Gennemgå hele den låste candidate-vs-repository-diff én sidste gang.
-3. Kopiér derefter den låste kandidat til `docs/aureum_v3_blueprint.md`,
-   verificér kun den forventede blueprint-diff og commit/push som et separat
-   kontrolleret trin.
-4. Fortsæt derefter med V3-D007. V3-D008 og V3-D009 forbliver `PENDING`,
-   indtil deres egne beslutningskontrakter er designet og godkendt.
-5. Implementér ingen V3-kode, før de efterfølgende relevante V3-kontrakter,
+1. Kontrollér Git HEAD, `origin/main`, ren worktree og at V3-D007 fortsat er
+   `LOCKED`.
+2. Fortsæt med V3-D008 — shadow mode og kalibrering — uden at genåbne
+   D001-D007s låste kontrakter.
+3. V3-D009 forbliver `PENDING`, indtil dens egen Command Center V3- og
+   informationsarkitekturkontrakt er designet og godkendt.
+4. Implementér ingen V3-kode, før de efterfølgende relevante V3-kontrakter,
    som implementationen afhænger af, er formelt låst.
 
 ---
@@ -6346,7 +8083,9 @@ Ved dette checkpoint er:
 - V3-D005 låst
 - V3-D006 låst efter D006.1-D006.8, structural/coverage-review,
   semantisk cross-review og final pre-lock diff-/integritetskontrol
-- V3-D007, V3-D008 og V3-D009 er fortsat `PENDING`
+- V3-D007 låst efter D007.1-D007.7, individuelle kritiske reviews,
+  samlet D001-D006 cross-review og final diff-/integritetskontrol
+- V3-D008 og V3-D009 er fortsat `PENDING`
 - 100 DKK/måned er låst i D005 som global hard cap for samlet paid
   OpenAI-forbrug på tværs af V2 og V3
 - Opportunity Radar er fortsat defineret som V3’s vigtigste nye funktion
