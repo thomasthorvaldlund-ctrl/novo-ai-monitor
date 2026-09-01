@@ -3,7 +3,7 @@
 **Dokumentstatus:** Working blueprint checkpoint  
 **Checkpointdato:** 1. september 2026  
 **Production branch:** `main`  
-**Production baseline:** `d75816f4ab438ef47dcf3b1db9aa22055f98176b`  
+**Production baseline:** `67de73957ffaf8fe77179d6f99f97d4933557fab`  
 **V3-kode implementeret:** Nej  
 **Production runtime ændret af V3-arbejdet:** Nej
 
@@ -27,12 +27,12 @@ Statusord:
 | Punkt | Status |
 |---|---|
 | Git branch | `main` |
-| Production-baseline Git HEAD | `d75816f4ab438ef47dcf3b1db9aa22055f98176b` |
-| Remote ved production-baseline-checkpoint | `origin/main` på `d75816f4ab438ef47dcf3b1db9aa22055f98176b` |
+| Production-baseline Git HEAD | `67de73957ffaf8fe77179d6f99f97d4933557fab` |
+| Remote ved production-baseline-checkpoint | `origin/main` på `67de73957ffaf8fe77179d6f99f97d4933557fab` |
 | Working tree ved production-baseline-checkpoint | Ren |
 | Aureum service | Senest verificeret aktiv 29. august; ikke genstartet/deployeret af V3-blueprintarbejdet |
 | Main PID ved 29. august-checkpoint | `538331` |
-| Seneste production-baseline commit | `Lock V3-D006 persistence and database contracts` |
+| Seneste production-baseline commit | `Lock V3-D007 Opportunities UX contracts` |
 | Critical SMS | Implementeret, men deaktiveret |
 | Twilio credentials | Ikke installeret i production |
 | V3 implementation | Ikke startet |
@@ -8038,16 +8038,2402 @@ Opportunities-UX.
 
 ### V3-D008
 
-**Status:** PENDING
+**Status:** LOCKED
 
-Shadow mode/kalibrering:
+D008 låser shadow-mode- og kalibreringskontrakten oven på D001-D007.
+D008 må ikke ændre opportunity-profiler, scoremodeller, confidence-semantik,
+lifecycle-states, High-Conviction-gates, AI-kvalitetskrav, budgetgrænser,
+persistence-kontrakter eller Opportunities-UX-kontrakter.
 
-- varighed
-- benchmark
-- false positives
-- scorestabilitet
-- outcome-måling
-- kriterier for aktivering af alerts
+#### D008.1 Shadow-mode formål, execution boundary og måleprincipper
+
+Shadow mode er V3's kontrollerede valideringsfase før eventuel aktivering af
+LIVE business side effects.
+
+Formålet er at måle, om de allerede låste D001-D007-kontrakter fungerer
+stabilt, reproducerbart og beslutningsmæssigt nyttigt på faktiske data, før
+Aureum må skabe automatiske High-Conviction-overgange og normale
+opportunity-alerts.
+
+##### Execution boundary
+
+`execution_mode` bevarer D004s låste semantik:
+
+- `SHADOW`
+- `LIVE`
+
+Samme gate-evidens, input, kontraktversioner og policyversioner skal give
+samme gate-checks, samme gate-resultat, samme `gate_basis_hash` og samme
+`gate_valid_until` i `SHADOW` og `LIVE`.
+
+`execution_mode` må kun styre, om en efterfølgende LIVE lifecycle-transition
+overhovedet er tilladt. Det må ikke ændre investeringslogik eller gøre en
+SHADOW-case lettere eller sværere at kvalificere.
+
+En gate-evaluering har fortsat ingen side effects i sig selv.
+
+I `SHADOW` må Aureum gemme canonical:
+
+- provider-/datasnapshots og freshness
+- objective scores og delkomponenter
+- AI Confidence og Data Confidence
+- Candidate Review og øvrig tilladt research
+- confirmations og reconciliation
+- gate-evaluations
+- lifecycle-relevante observations-/evaluation-records
+- outcome- og kalibreringsrecords
+- audit- og reproducibility-data
+
+men `SHADOW` må aldrig automatisk:
+
+- committe en LIVE lifecycle-transition
+- sætte `HIGH_CONVICTION` som følge af gate-evalueringen
+- oprette normal opportunity-alert/outbox
+- sende Telegram opportunity-alert
+- fremstille en shadow-kvalifikation som en faktisk LIVE alert-hændelse
+
+D006s låste regel gælder fortsat: `execution_mode = SHADOW` kan gemme
+gate-evaluation, men kan ikke skabe LIVE lifecycle-transition eller
+opportunity-alert.
+
+##### Ingen shadow-speciallogik
+
+Shadow mode må ikke have en særskilt "lettere" score-, confidence-,
+freshness-, research-, confirmation- eller gate-policy for at skabe flere
+positive cases.
+
+Kalibreringen skal teste den kontrakt, som senere forventes at kunne bruges
+i LIVE.
+
+Hvis en policy ændres under shadow-perioden, skal ændringen være versioneret
+og auditerbar efter den relevante låste kontrakt. Resultater før og efter
+policyændringen må ikke sammenblandes som om de kom fra samme policyversion.
+
+##### Profiler kalibreres separat
+
+`COMPOUNDER` og `CATALYST` kalibreres som separate opportunity-profiler.
+
+De må ikke fusioneres til:
+
+- én fælles scorefordeling
+- én fælles High-Conviction-rate
+- én fælles false-positive-rate
+- én fælles outcome-horisont
+- én samlet ranking, der skjuler forskellen mellem profilerne
+
+Samme instrument kan indgå i begge profiler, men hver opportunity-case
+bevarer egen identitet, score, confidence, research, gate-evidens og outcome.
+
+D001s outcome-horisonter bevares:
+
+- Catalyst: 1, 3, 6, 12 og 18 måneder
+- Compounder: 6, 12, 24, 36 og 60 måneder
+
+##### Måleprincipper
+
+Shadow-kalibrering skal være reproducerbar og uden look-ahead bias.
+
+Alle analyser skal så vidt muligt kunne knyttes til de canonical data,
+policies, inputpakker, research, gate-evaluations og timestamps, som faktisk
+var tilgængelige på vurderingstidspunktet.
+
+Senere kendte data må ikke bruges til at forbedre en historisk shadow-
+vurdering retroaktivt.
+
+Kalibreringen skal mindst kunne måle:
+
+- datamangler og Data Confidence
+- score- og signalstabilitet
+- candidate-/Strong Candidate-kvalitet
+- shadow High-Conviction-kvalifikationer
+- false positives og relevante false negatives
+- ranking-kvalitet mod definerede benchmarks
+- research-/reconciliation-stabilitet
+- gate-blockers og `BLOCKED_DATA`
+- profilernes outcomes på de låste horisonter
+- alert-kandidater uden faktisk alert delivery
+- ressource- og AI-forbrug under D005-budgetgrænsen
+
+Shadow-målinger er evaluerings- og kalibreringsdata. De bliver ikke nye
+lifecycle-states, Opportunity Scores eller gate-resultater.
+
+##### Budget og AI-kvalitet
+
+Shadow mode må ikke omgå eller midlertidigt hæve D005s globale hard cap på
+100 DKK pr. kalendermåned for samlet paid OpenAI-forbrug på tværs af V2 og
+V3.
+
+Budgetpres må fortsat reducere analysemængden, men må ikke sænke de låste
+kvalitetskrav eller vælge en dårligere research-kvalitetsklasse alene for
+at få flere shadow-cases igennem.
+
+Et shadow-resultat er ikke gyldigt som sammenligningsgrundlag, hvis den
+tilsvarende LIVE-kontrakt ville have afvist kaldet på grund af budget-,
+freshness-, input- eller lifecycle-regler.
+
+##### Schedule-policy under shadow mode
+
+De D004-låste startfrekvenser er startværdier/-intervaller til shadow mode.
+
+Justering inden for en allerede låst ramme kræver:
+
+- ny versioneret `schedule_policy`
+- auditerbar begrundelse
+- tydelig adskillelse af målinger før og efter ændringen
+
+En ændring uden for den låste ramme eller en ændring, der svækker freshness-
+eller High-Conviction-gates, kræver en ny eksplicit V3-beslutning og må ikke
+indføres som almindelig D008-kalibrering.
+
+##### LIVE er ikke implicit
+
+At en shadow-case ville have fået gate-resultatet `PASS`, betyder ikke, at
+LIVE er aktiveret.
+
+D008 skal senere fastlægge eksplicitte, målbare exit-/aktiveringskriterier.
+Indtil disse kriterier er opfyldt og den krævede aktivering er særskilt
+godkendt, forbliver normal automatisk High-Conviction-transition og
+opportunity-alerting deaktiveret.
+
+D008.2 fastlægger shadow-periodens varighed, minimumsdækning, cohorts og
+regler for gyldige observationsvinduer.
+
+#### D008.2 Varighed, minimumsdækning, cohorts og observationsvinduer
+
+Shadow-perioden skal være lang nok til at måle drift, datakvalitet,
+scorestabilitet, budgetadfærd og opportunity-flow på tværs af flere
+uafhængige kørselscyklusser.
+
+Den må samtidig ikke foregive, at Compounders langsigtede 6-60 måneders
+outcomes kan være fuldt valideret før LIVE.
+
+##### Starttidspunkt for den målbare shadow-periode
+
+Den formelle kalibreringsperiode starter først ved et eksplicit
+`shadow_readiness_at`, hvor mindst følgende er opfyldt:
+
+- de relevante D001-D007-kontrakter er låst
+- den versionerede shadow-konfiguration er identificeret
+- de relevante schedule-, score-, gate-, research- og budgetpolicies er kendte
+- canonical timestamps, provenance og input-identitet kan auditeres
+- shadow execution kan gennemføres uden LIVE lifecycle-transition eller
+  opportunity-alert
+- nødvendige kalibreringsrecords kan gemmes reproducerbart
+
+Udviklingskørsler, lokale tests, backfills og debugging før
+`shadow_readiness_at` må gerne bruges til engineering, men tæller ikke
+automatisk med i den prospektive shadow-kalibrering.
+
+##### Minimumsvarighed
+
+Den prospektive shadow-periode skal vare mindst:
+
+- **8 komplette uger**
+- mindst én fuld kalendermåned efter D005s `Europe/Copenhagen`-budgetperiode
+- mindst én faktisk månedsskifte-boundary, så reservation, settlement og ny
+  budgetperiode kan observeres
+
+Ingen metric, positiv case eller tidlig succes må forkorte denne
+minimumsvarighed.
+
+Otte uger er et minimum og ikke et automatisk LIVE-tidspunkt.
+
+Den 8-ugers regel er et operationelt tidsmæssigt gulv. Den er ikke i sig
+selv dokumentation for statistisk power, modne outcomes eller tilstrækkelig
+LIVE-evidens.
+
+Shadow fortsætter efter uge 8, hvis de øvrige D008-kriterier endnu ikke er
+opfyldt.
+
+##### Minimum universe- og datadækning
+
+Før D008 kan betragte den generelle shadow-population som dækket, skal mindst:
+
+- 95 % af det på daværende tidspunkt eligibility-godkendte univers have mindst
+  én gyldig canonical opportunity/data-observation i shadow-perioden
+- 90 % af det eligibility-godkendte univers have observationer på mindst fire
+  forskellige datoer eller fire relevante planlagte universe-cycles
+- hver obligatorisk sector-/scoring-profile være repræsenteret
+- relevante markeder/regioner i det faktiske eligibility-univers være
+  repræsenteret
+- datamangler, stale data, providerfejl og `BLOCKED_DATA` være målt som egne
+  udfald og ikke slettet fra populationen
+
+Et instrument må ikke tælle som dækket alene på grund af et cache-hit eller
+en replay af nøjagtig samme immutable observation.
+
+Grænserne på 95 % og 90 % er operationelle coverage-gulve. De er ikke
+kvalitetsmål i sig selv og må ikke bruges til at omgå Data Confidence,
+freshness, blockers eller D008.3s senere metric-specifikke krav til
+sample-tilstrækkelighed.
+
+##### Opportunity-dækning
+
+Kalibreringen skal måle opportunity-flowet separat for `COMPOUNDER` og
+`CATALYST`.
+
+For hver profil skal D008 mindst kunne rapportere antallet af distinkte:
+
+- `SCREENED`
+- `MONITOR`
+- `CANDIDATE`
+- `STRONG_CANDIDATE`
+- `DEEP_RESEARCH`
+- shadow gate-evaluations med `PASS`
+- shadow gate-evaluations med `FAIL`
+- shadow gate-evaluations med `BLOCKED_DATA`
+
+Der må ikke skabes ekstra paid AI-kald eller kunstigt promoveres cases alene
+for at opfylde et ønsket sampleantal.
+
+Hvis en sjælden positiv cohort, fx shadow `PASS` tæt på
+`HIGH_CONVICTION`, er for lille til en robust konklusion, skal metrikken
+markeres som `INSUFFICIENT_SAMPLE` og shadow-perioden kan forlænges.
+
+Mangel på positive cases er selv et legitimt kalibreringsresultat og må ikke
+føre til svækkede gates.
+
+##### Candidate-sample density
+
+For stabilitets- og rankinganalyse bruger D008 mindst 25 distinkte
+`CANDIDATE`-eller-højere opportunities pr. profile som et
+**planlægningsmål for sample density** i den prospektive
+kalibreringspopulation.
+
+Tallet 25 er ikke i sig selv en statistisk sufficiency-threshold.
+
+At en profile når 25 cases gør derfor ikke automatisk dens false-positive-,
+ranking-, stability- eller outcome-metrics tilstrækkeligt validerede.
+
+D008.3 skal fastlægge metric-specifik sample-tilstrækkelighed ud fra mindst:
+
+- relevant denominator og event-/fejlrate
+- antal modne outcomes
+- variation/usikkerhed i den målte metric
+- case-level versus observation-level analyseenhed
+- clustering/gentagne observationer fra samme opportunity
+- profile og relevant policy epoch
+
+En metric kan derfor fortsat være `INSUFFICIENT_SAMPLE`, selv om 25 cases er
+nået.
+
+Hvis en profile ikke når 25 organiske distinkte cases efter de låste regler,
+skal samplemanglen rapporteres. Shadow-perioden kan forlænges eller senere
+LIVE-scope begrænses, men systemet må ikke skabe ekstra paid AI-kald,
+kunstigt promovere cases eller svække gates for at nå tallet.
+
+D005-budgettet må aldrig overskrides for at nå samplemålet.
+
+##### Coverage må ikke skjule fejl
+
+Coverage beregnes både som:
+
+- rå population
+- gyldig analyseklar population
+- blokeret/partial population
+
+Det skal derfor være muligt at se, om en høj rå coverage skjuler lav
+Data Confidence, stale input, providerproblemer eller andre blockers.
+
+Manglende data må ikke fjernes fra denominator alene for at forbedre
+coverage-procenten, medmindre instrumentet efter en allerede låst
+eligibility-regel faktisk ikke hører til populationen.
+
+##### Forlængelse af shadow-perioden
+
+Shadow-perioden forlænges ud over minimumsperioden, når mindst én af følgende
+gælder:
+
+- minimum universe-/datadækning er ikke opfyldt
+- en profile har utilstrækkeligt candidate-sample til de metrics, der kræves
+  for LIVE-beslutningen
+- væsentlige calibration-metrics er `INSUFFICIENT_SAMPLE`
+- en kritisk data-/providerfejl har gjort en væsentlig del af perioden
+  ikke-repræsentativ
+- en væsentlig policy-/contract-version er ændret så sent, at den nye version
+  ikke har et tilstrækkeligt selvstændigt observationsvindue
+- D005-budgetadfærd gennem mindst én fuld budgetperiode ikke er valideret
+
+Forlængelse giver ikke ret til at ændre D001-D007-kontrakter stiltiende.
+
+##### Cohort-kontrakt
+
+Kalibreringsresultater skal organiseres i eksplicitte cohorts, så population,
+policyversioner og tidsvindue kan reproduceres.
+
+En calibration cohort skal mindst kunne identificere:
+
+- `calibration_cohort_id`
+- cohort-type
+- opportunity-profile
+- inklusionsperiode
+- relevante inclusion-/exclusion-regler
+- eligibility-/universe-definition
+- policy-/contract-epoch
+- oprettelsestidspunkt
+- observation cutoff/as-of
+
+Cohort-definitionen skal fastlægges før dens outcomes analyseres og må ikke
+efterfølgende ændres for at forbedre resultaterne.
+
+##### Tre cohort-typer
+
+D008 skelner mindst mellem:
+
+- `PROSPECTIVE_SHADOW`
+- `RETROSPECTIVE_REPLAY`
+- `ENGINEERING_VALIDATION`
+
+`PROSPECTIVE_SHADOW` er den primære population for D008s LIVE-exitbeslutning.
+
+Den består af cases og observationer, som opstår efter
+`shadow_readiness_at` under faktisk shadow-drift og uden viden om deres
+efterfølgende outcomes.
+
+`RETROSPECTIVE_REPLAY` må bruges som supplerende robustness-, stress- og
+sjældne-event-analyse, men må kun bruge data og information, der kan
+rekonstrueres som tilgængelige på det historiske as-of-tidspunkt.
+
+Retrospektiv replay må ikke:
+
+- erstatte D008s prospektive minimumsvarighed
+- tælle som en faktisk observeret D005-budgetmåned
+- tælle som faktisk production-lignende concurrency-/driftsvalidering
+- bruges til at vælge regler efter at outcome er kendt
+- fremstilles som prospektiv evidens
+
+`ENGINEERING_VALIDATION` omfatter fx debugging, backfills, fault-injection,
+syntetiske tests og udviklingskørsler.
+
+Engineering-validation kan bevise teknisk correctness, men må ikke blandes
+ind i prospektive performance-, false-positive- eller outcome-rater.
+
+##### Policy-/contract-epochs
+
+Kalibrering skal kunne opdeles efter en reproducerbar
+`calibration_policy_epoch`.
+
+En epoch skal mindst identificere de versioner, der materielt kan påvirke
+resultatet, herunder når relevant:
+
+- eligibility/universe-regler
+- schedule policy
+- data-/freshness-policy
+- score-policy
+- research-/prompt-/model-route-policy
+- confirmation-policy
+- gate-policy
+- budget-/admission-policy
+
+En ændring, der materielt påvirker score, qualification, gate-resultat,
+researchkvalitet, freshness eller population, starter en ny calibration
+policy epoch.
+
+Metrics på tværs af forskellige epochs må kun aggregeres, når:
+
+- versionerne fortsat er synlige i resultatet
+- forskellen ikke skjules
+- den aggregerede metric ikke bruges som om alle cases kom fra samme policy
+
+Den policy-epoch, som foreslås til senere LIVE-aktivering, skal have et eget
+tilstrækkeligt prospektivt observationsvindue.
+
+Efter en sen materiel policyændring kræves som udgangspunkt mindst fire
+komplette uger under den nye calibration policy epoch, hvis policykombination
+foreslås til senere LIVE-aktivering.
+
+Fire uger er et tidsmæssigt minimum for den nye epoch og ikke i sig selv
+dokumentation for statistisk tilstrækkelighed. Shadow fortsætter længere,
+hvis D008s øvrige minimumsdækning eller D008.3s metric-specifikke
+samplekrav stadig ikke er opfyldt.
+
+##### Case-level versus observation-level sample
+
+D008 skal skelne mellem:
+
+- distinkte opportunity-cases
+- tidsmæssige observationer af samme case
+- AI-/research-generationer
+- gate-evaluations
+- lifecycle-relevante events
+- outcome-observationer
+
+Samme `opportunity_id` må bidrage med flere tidsobservationer til
+stabilitetsanalyse, men må ikke tælles som flere uafhængige opportunity-cases
+i en case-level sample size.
+
+Når samme instrument har både `COMPOUNDER` og `CATALYST`, er de separate
+cases i deres respektive profile-cohorts.
+
+##### Uafhængig observation
+
+En observation er ikke automatisk uafhængig, blot fordi et job er kørt igen.
+
+Følgende må ikke tælle som ny uafhængig evidens alene:
+
+- retry med samme idempotency key
+- replay af samme immutable inputpakke
+- cache-hit på samme uændrede researchrapport
+- genlæsning af samme score/evaluation-record
+- samme gate-basis og samme gate-evaluation
+- duplikeret providerpayload uden ny økonomisk observation
+
+En ny tidsobservation kan tælle i stabilitetsanalyse, når den har et nyt
+canonical observationstidspunkt og et legitimt nyt observation-/inputgrundlag
+efter den relevante policy.
+
+Den må stadig ikke automatisk tælle som en ny uafhængig D002/D003-
+confirmation, medmindre de låste confirmation-regler særskilt er opfyldt.
+
+##### Pseudo-replikation
+
+D008 må ikke forbedre statistisk sikkerhed kunstigt ved at behandle mange
+korrelerede observationer fra samme opportunity som mange uafhængige cases.
+
+Metrics skal derfor mærkes som mindst:
+
+- case-level
+- observation-level
+- event-level
+- outcome-level
+
+Når confidence intervals, rates eller andre usikkerhedsmål beregnes, skal
+den valgte analyseenhed være eksplicit.
+
+Gentagne observationer fra samme opportunity skal enten:
+
+- analyseres som et tidsforløb inden for samme case, eller
+- håndteres med en metode, der eksplicit tager højde for clustering
+
+De må ikke stiltiende betragtes som uafhængige cases.
+
+##### Population og denominator fryses
+
+For en afsluttet cohort-window skal denominator og inclusion/exclusion-regler
+kunne reproduceres fra canonical records.
+
+Cases må ikke fjernes fra en historisk cohort, fordi de senere:
+
+- blev `REJECTED`
+- blev `EXPIRED`
+- fik `THESIS_BROKEN`
+- blev delistet eller corporate-action-ramt
+- fik dårlige outcomes
+- mistede datadækning efter den oprindelige observation
+
+Hvis en case efter canonical regler aldrig var eligible for cohorten, må den
+ekskluderes med en auditerbar reason code.
+
+Dette skal forhindre survivor- og selection-bias.
+
+##### Prospektiv versus retrospektiv evidens
+
+Alle D008-metrics skal kunne mærkes med evidenstype.
+
+Mindst:
+
+- `PROSPECTIVE`
+- `RETROSPECTIVE_REPLAY`
+- `ENGINEERING`
+
+En LIVE-exitrapport må ikke vise en kombineret rate uden samtidig at gøre
+det tydeligt, hvor stor en del der kommer fra hver evidenstype.
+
+Prospektive resultater er primære. Retrospektiv replay kan understøtte, men
+ikke erstatte, den prospektive shadow-evidens.
+
+##### Outcome-reference
+
+Et outcome skal være bundet til et eksplicit canonical referencepunkt for
+den metric, der analyseres.
+
+Referencepunktet kan fx være:
+
+- første relevante candidate-evaluation
+- første `STRONG_CANDIDATE`-evaluation
+- en specifik shadow gate-evaluation
+- en anden eksplicit D008-defineret evaluation/event
+
+D008 må ikke vælge referencepunktet efter at have set efterfølgende
+kursudvikling.
+
+Hver outcome-analyse skal derfor angive:
+
+- reference-record-id
+- reference timestamp/as-of
+- opportunity-profile
+- target horizon
+- outcome observation/as-of
+- relevant policy-/contract-epoch
+
+##### Gyldige outcome-observationsvinduer
+
+D008 ændrer ikke den canonical outcome-/return-beregning. D008 fastlægger
+kun, hvornår et outcome er tidsmæssigt modent og gyldigt til kalibrering.
+
+For en target horizon beregnes først den canonical måldato fra det låste
+referencepunkt.
+
+Hvis måldatoen ikke er en gyldig handelsdag for instrumentets relevante
+marked, bruges den første efterfølgende gyldige handelsdag.
+
+Den canonical outcome-observation skal som udgangspunkt ligge på denne
+første gyldige handelsdag eller senest fem relevante handelsdage efter
+måldatoen.
+
+Hvis der ikke findes en valid canonical observation inden for vinduet,
+markeres outcome som utilgængeligt/ugyldigt for den pågældende horizon
+frem for at hente en vilkårlig senere kurs.
+
+Det faktiske offset fra måldatoen skal bevares i outcome-recorden eller den
+tilhørende kalibreringsprojection.
+
+Markedslukning, handelsstop eller manglende data må ikke håndteres ved at
+bruge en tidligere kurs, som om target horizon allerede var nået.
+
+##### Pending og right-censoring
+
+En horizon, hvis måldato endnu ikke er passeret, er `PENDING` og må ikke
+indgå i numerator eller denominator for modne outcome-rater.
+
+En case med nogle modne og nogle umodne horizons må bidrage til de modne
+horizons uden at de senere horizons fremstilles som `0` eller failures.
+
+Antallet af:
+
+- modne outcomes
+- pending outcomes
+- unavailable/invalid outcomes
+
+skal rapporteres separat.
+
+Dette gør det muligt at starte en eventuel senere LIVE-fase uden at foregive,
+at Compounders 24-60 måneders outcomes allerede er kendt.
+
+De langsigtede D001-outcomes fortsætter derfor som post-shadow/post-LIVE
+kalibrering og performance-evaluering, hvis LIVE senere aktiveres.
+
+##### Corporate actions og exits
+
+Delisting, fusion, opkøb, tickerændring eller anden corporate action må ikke
+automatisk få casen til at forsvinde fra outcome-populationen.
+
+Når den låste canonical data-/outcome-kontrakt kan måle hændelsen korrekt,
+bevares casen i cohort/outcome-analysen.
+
+Hvis outcome ikke kan måles validt, markeres det eksplicit
+unavailable/invalid med auditerbar årsag.
+
+UI- eller analyse-laget må ikke efterfølgende vælge at droppe sådanne cases
+for at forbedre performance-resultater.
+
+##### Benchmark-tidsvindue
+
+Når D008 senere sammenligner mod et benchmark, skal benchmarkets
+reference- og outcome-tidspunkt følge samme tidslige vindue som den
+opportunity, der sammenlignes.
+
+Benchmark må ikke måles fra en mere fordelagtig start- eller slutdato end
+casen.
+
+Selve benchmark-definitionerne og false-positive-/stabilitetsmetrics låses
+i D008.3.
+
+#### D008.3 Benchmarkhierarki, false positives/false negatives og metric-kontrakter
+
+D008.3 fastlægger, hvordan shadow-resultater sammenlignes og klassificeres.
+Det ændrer ikke D001-D007s score-, lifecycle-, gate-, outcome- eller
+benchmarkberegninger.
+
+Kalibreringsmetrics må ikke bruges til retroaktivt at omskrive en historisk
+opportunity-vurdering.
+
+##### Calibration metric policy
+
+Alle beslutningsrelevante D008-metrics skal tilhøre en versioneret
+`calibration_metric_policy`.
+
+Policyen skal fastlægges før de relevante outcomes analyseres og mindst
+identificere:
+
+- `calibration_metric_policy_version`
+- opportunity-profile
+- relevant calibration policy epoch
+- analyseenhed: case, observation, event eller outcome
+- reference-event/-record
+- target horizon
+- benchmarkrolle
+- success-/failure-definition
+- denominator-regel
+- håndtering af pending/unavailable outcomes
+- minimum sample-adequacy-regel
+- rapporterings-/usikkerhedsmetode
+
+En metric-definition må ikke ændres efter at outcome er kendt for at forbedre
+resultatet.
+
+Hvis definitionen ændres materielt, oprettes en ny metric-policy-version, og
+resultaterne rapporteres separat.
+
+##### Benchmarkhierarki
+
+D008 skelner mindst mellem følgende benchmarkroller:
+
+1. `ABSOLUTE_OUTCOME`
+   - casens canonical outcome uden relativ benchmarkfortolkning
+2. `MARKET_BENCHMARK`
+   - den versioneret valgte relevante markedsreference for instrumentet
+3. `SECTOR_BENCHMARK`
+   - relevant sektorreference, når en valid mapping og data findes
+4. `ELIGIBLE_UNIVERSE_BASELINE`
+   - den samtidige eligibility-population som discovery-/rankingbaseline
+5. `V2_RANKING_COMPARATOR`
+   - eksisterende V2/Combined Ranking som systemkomparator, når samme
+     instrument- og tidsmæssige sammenligning kan laves validt
+
+Benchmarkrollerne besvarer forskellige spørgsmål og må ikke fusioneres til
+én skjult samlet benchmarkscore.
+
+`ABSOLUTE_OUTCOME` er referenceinformation og ikke i sig selv en ekstern
+benchmarkserie.
+
+##### Benchmark vælges ex ante
+
+Market-/sector-benchmark mapping skal være versioneret og bestemt ud fra
+information, der var tilgængelig ved referencepunktet.
+
+D008 må ikke efter outcome:
+
+- vælge det indeks, som giver den ønskede konklusion
+- skifte sektorbenchmark, fordi et andet benchmark ser bedre ud
+- ændre start-/slutdato asymmetrisk
+- vælge en anden valuta-/FX-behandling end den canonical outcome-kontrakt
+- droppe et benchmark, fordi casen underperformer det
+
+Hvis et relevant benchmark ikke kan måles validt, markeres den pågældende
+relative metric `UNAVAILABLE` frem for at bruge et vilkårligt alternativ.
+
+##### Tidsmæssig benchmark-alignment
+
+Benchmarkets referencepunkt og outcome-vindue skal følge samme canonical
+reference-event, target horizon og observationsvindue som opportunity-casen.
+
+Benchmark og case skal derfor være aligned på mindst:
+
+- reference/as-of
+- target horizon
+- relevant handelskalender/vindue
+- canonical return-/outcome-definition
+- relevant valuta-/normaliseringskontrakt
+
+D008 må ikke give benchmark eller case en mere fordelagtig tidsperiode end
+den anden.
+
+##### Market versus sector benchmark
+
+`MARKET_BENCHMARK` er den primære relative markedsreference.
+
+`SECTOR_BENCHMARK` er en supplerende kontrol for, om performance primært
+kan forklares af sektoren.
+
+En case kan derfor:
+
+- slå markedet men ikke sektoren
+- slå sektoren men ikke markedet
+- slå begge
+- underperforme begge
+
+D008 skal bevare disse som separate resultater.
+
+Manglende sector-benchmark må ikke gøre market-benchmark ugyldigt og omvendt.
+
+##### Eligible-universe baseline
+
+`ELIGIBLE_UNIVERSE_BASELINE` bruges til at vurdere, om Opportunity Engine
+faktisk prioriterer bedre cases end den samtidige population, den vælger fra.
+
+Populationen skal være den eligibility-definition og policy epoch, der var
+gældende på referencepunktet.
+
+D008 må ikke sammenligne kandidater med en senere, retrospektivt ændret eller
+survivorship-filtreret universe-population.
+
+##### V2 ranking comparator
+
+`V2_RANKING_COMPARATOR` bruges til at måle, om V3 tilføjer beslutningsværdi
+ud over den eksisterende V2/Combined Ranking.
+
+Sammenligningen skal ske på et fair fælles udsnit:
+
+- samme eller kompatibelt instrument-univers
+- samme reference/as-of
+- samme target horizon
+- samme canonical outcome-definition
+- ingen efterfølgende selection af kun de bedste V2- eller V3-cases
+
+Hvis V2 mangler en observation for et instrument/tidspunkt, må D008 ikke
+fabrikere en V2-score eller behandle manglen som `0`.
+
+V2-comparison ændrer ikke V3s objektive Opportunity Score og bliver ikke en
+ny V3-gate.
+
+##### Positive og negative shadow-klasser
+
+D008 må ikke bruge én universel positiv/negativ label til alle analyser.
+
+Metric-policyen skal eksplicit angive den klassifikation, der evalueres.
+
+Eksempler på positive shadow-klasser kan være:
+
+- `CANDIDATE_OR_HIGHER`
+- `STRONG_CANDIDATE_OR_HIGHER`
+- `SHADOW_GATE_PASS`
+
+Eksempler på negative/reference-klasser kan være:
+
+- `SCREENED_OR_MONITOR`
+- ikke-promoverede eligible cases
+- relevant comparator-/control-population
+
+En `SHADOW_GATE_PASS` er fortsat kun en shadow gate-evaluation og ikke en
+committed `HIGH_CONVICTION`.
+
+##### False positive
+
+En false positive er en **kalibreringsklassifikation**, ikke en ny lifecycle-
+status og ikke en retroaktiv dom over canonical historik.
+
+En case kan kun klassificeres som false positive for en bestemt metric, når:
+
+- den tilhørte den på forhånd definerede positive shadow-klasse ved
+  referencepunktet
+- metric-policyens target horizon er moden
+- outcome-data er valide
+- metric-policyens på forhånd definerede success-kriterium ikke er opfyldt
+
+False-positive-labelen skal derfor altid referere til:
+
+- metric-policy-version
+- positive class
+- reference-record
+- target horizon
+- benchmarkrolle
+- outcome-record
+
+Et dårligt senere afkast må ikke automatisk omskrive den historiske
+lifecycle-status til `REJECTED` eller `THESIS_BROKEN`.
+
+##### False-positive typer
+
+D008 skal mindst kunne rapportere false positives separat for:
+
+- candidate-level classification
+- Strong-Candidate-level classification
+- shadow gate `PASS`
+
+Disse rates må ikke sammenblandes, fordi deres thresholds og beslutningsværdi
+er forskellige.
+
+En thesis-invalidation eller `THESIS_BROKEN` kan være vigtig fejlevidens,
+men må ikke uden metric-policyens definition automatisk tælles som en
+outcome false positive.
+
+##### False negative / missed opportunity
+
+En false negative er ligeledes en kalibreringsklassifikation.
+
+En case kan kun klassificeres som false negative/missed opportunity for en
+bestemt metric, når:
+
+- den tilhørte den på forhånd definerede negative/reference-klasse ved
+  referencepunktet
+- target horizon er moden
+- outcome-data er valide
+- den på forhånd definerede success-definition faktisk er opfyldt
+
+D008 må ikke lede bagud efter store vindere og derefter konstruere et nyt
+historisk referencepunkt, som gør dem til false negatives.
+
+False-negative-analyse kræver derfor outcome tracking også for en relevant
+control-/eligible population og ikke kun for promoted opportunities.
+
+##### False negative er ikke automatisk model-fejl
+
+En missed opportunity skal kunne analyseres efter årsag, fx:
+
+- score lå under promotion threshold
+- Data Confidence var utilstrækkelig
+- case var `BLOCKED_DATA`
+- eligibility-regel ekskluderede instrumentet
+- katalysator/evidens opstod først efter referencepunktet
+- relevant input manglede
+- ranking/prioritering placerede casen for lavt
+
+D008 skal skelne mellem en reel model-/rankingmiss og en case, som systemet
+ikke kunne have kvalificeret validt med de data, der faktisk var tilgængelige.
+
+##### Pending og unavailable må ikke blive fejl
+
+Cases med:
+
+- umodent outcome
+- invalid outcome
+- manglende valid benchmarkdata
+
+må ikke tælles som false positive eller false negative i den pågældende
+metric.
+
+De rapporteres separat som mindst:
+
+- `PENDING`
+- `UNAVAILABLE`
+
+Dette gælder både numerator og denominator.
+
+##### No hindsight relabeling
+
+False-positive/false-negative-labels er afledte calibration records.
+
+De må ikke:
+
+- ændre canonical opportunity-lifecycle
+- ændre historisk Opportunity Score
+- ændre historisk AI Confidence eller Data Confidence
+- omskrive research eller gate-evaluation
+- skabe eller annullere historiske alerts
+
+D008.3 fortsætter med scorestabilitet, rankingmetrics, usikkerhed og
+metric-specifik sample-tilstrækkelighed.
+
+##### Scorestabilitet
+
+Scorestabilitet skal måle, om Opportunity Engine reagerer på reel ny
+information uden unødvendig støj eller threshold-churn.
+
+Compounder og Catalyst analyseres separat og kun inden for kompatible
+score-/policy-epochs.
+
+D008 skal mindst kunne rapportere:
+
+- fordeling af absolutte og signerede scoreændringer
+- ændringer i relevante delscores
+- frekvens af threshold-crossings
+- frekvens af lifecycle-relevante promotions/demotions
+- rank-position churn blandt sammenlignelige cases
+- andel af cases med gentagne frem-og-tilbage-bevægelser
+- stabilitet når inputgrundlaget er materielt uændret
+- ændringsadfærd efter dokumenteret materiel ny information
+
+D003s allerede låste støjsemantik bevares:
+
+- <3 point: støj
+- 3-7 point: registreres normalt uden ny AI-analyse
+- >=8 point: kan udløse revurdering
+- væsentlig ny begivenhed kan tilsidesætte pointgrænsen
+
+D008 må ikke ændre disse grænser stiltiende.
+
+##### Legitimate change versus instability
+
+En scoreændring er ikke automatisk ustabilitet.
+
+D008 skal skelne mellem mindst:
+
+- ændring efter nyt regnskab/fundamental information
+- ændring efter relevant nyhed/katalysator
+- ændring efter væsentligt nyt markeds-/momentuminput
+- ændring efter Data Confidence/freshness-ændring
+- ændring efter policy-/contract-version
+- ændring uden identificerbar materiel inputændring
+
+Den sidste kategori er særlig vigtig som potentiel model-/pipeline-instabilitet,
+men må ikke automatisk klassificeres som fejl uden reproducerbar evidens.
+
+Et nyt input-hash er ikke i sig selv bevis på en økonomisk materiel ændring;
+D008 skal så vidt muligt bruge de allerede låste materialitets-/reason-codes
+og canonical provenance.
+
+##### Threshold-churn
+
+D008 skal måle, hvor ofte en case krydser centrale candidate-/promotion-
+thresholds frem og tilbage uden tilsvarende materiel ny information.
+
+Threshold-churn skal mindst kunne opdeles efter:
+
+- opportunity-profile
+- threshold
+- calibration policy epoch
+- Data Confidence/freshness-state
+- om der forelå materiel ny information
+- om threshold-crossingen senere blev vedvarende eller reverserede
+
+En threshold-crossing er en observation og må ikke omskrives til en
+lifecycle-transition, medmindre den canonical lifecycle faktisk ændrede sig.
+
+##### Ranking-quality
+
+Ranking-quality skal måles uden at konstruere én ny samlet V3-kvalitetsscore.
+
+D008 skal bruge flere separate metrics, som mindst kan belyse:
+
+- om højere score-bands har bedre modne outcomes end lavere score-bands
+- om top-prioriterede cases har højere success-rate end relevant baseline
+- om promoted cases giver positiv lift over `ELIGIBLE_UNIVERSE_BASELINE`
+- om V3 giver målbar beslutningsværdi over `V2_RANKING_COMPARATOR`
+- om rank-ordering er stabil nok til at være operationelt anvendelig
+- om performance primært drives af market/sector beta frem for stock selection
+
+Hver rankingmetric skal bevare opportunity-profile, policy epoch, reference-
+tidspunkt, horizon og benchmarkrolle.
+
+##### Score-band monotonicity
+
+Når sample er tilstrækkeligt, skal D008 kunne teste, om højere score-bands
+generelt viser bedre outcome-/success-adfærd end lavere score-bands inden for
+samme profile og policy epoch.
+
+Score-bands skal defineres ex ante i den relevante metric-policy.
+
+D008 må ikke efter outcome:
+
+- flytte band-grænser
+- slå bands sammen selektivt
+- droppe dårlige bands
+- vælge kun den horizon, der giver den ønskede monotonicitet
+
+Hvis sample er for lille, rapporteres analysen som utilstrækkelig i stedet
+for at skabe meget små bands med falsk præcision.
+
+##### Top-K metrics
+
+Hvis D008 bruger Top-K-metrics, skal `K` være fastlagt i metric-policyen før
+outcome-analyse.
+
+Top-K skal mindst sammenlignes med en relevant samtidige baseline, fx:
+
+- samme antal cases fra eligible universe
+- en på forhånd defineret baseline-strategi
+- V2-ranking på et fair matched sample
+
+D008 må ikke vælge `K` efter outcome for at maksimere den rapporterede lift.
+
+Hvis flere K-værdier analyseres eksplorativt, skal de markeres som
+eksplorative og ikke fremstilles som én pre-committed primary metric.
+
+##### Promotion yield
+
+D008 skal kunne måle, hvad der sker med cases, som når højere shadow-niveauer.
+
+Mindst separat for:
+
+- `CANDIDATE`
+- `STRONG_CANDIDATE`
+- shadow gate `PASS`
+
+kan D008 rapportere:
+
+- antal distinkte cases
+- antal modne outcomes
+- success/failure efter metric-policyen
+- pending/unavailable
+- benchmark-relative resultater
+- efterfølgende thesis-/data-blockers
+
+Promotion yield må ikke fremstilles som sandsynligheden for fremtidigt afkast
+for en enkelt case.
+
+##### Data-/coverage-stratificering
+
+Kalibreringsmetrics skal kunne opdeles efter relevant Data Confidence,
+freshness og coverage.
+
+D008 skal kunne undersøge, om performance eller false-positive-rate ændrer
+sig væsentligt mellem fx:
+
+- høj versus lavere gyldig Data Confidence
+- fuld versus partial ikke-kritisk coverage
+- stabile versus hyppigt skiftende provider-/freshness-forhold
+
+`BLOCKED_DATA` og `DATA_HOLD` må ikke smeltes sammen med almindelige negative
+investeringsudfald.
+
+##### Metric-specifik sample adequacy
+
+Der findes ikke én universel sample-size, som gør alle D008-metrics
+tilstrækkeligt validerede.
+
+Hver beslutningsrelevant `calibration_metric_policy` skal definere en
+sample-adequacy-regel før outcome-analyse.
+
+Reglen skal mindst tage højde for:
+
+- analyseenhed
+- relevant denominator
+- antal modne outcomes
+- antal positive/negative events
+- event-/fejlratens sjældenhed
+- clustering/gentagne observationer
+- opportunity-profile
+- calibration policy epoch
+- missing/pending/unavailable data
+- den valgte usikkerhedsmetode
+
+D008.2s planlægningsmål på 25 candidate-or-higher cases pr. profile er ikke
+en erstatning for denne metric-specifikke vurdering.
+
+##### Sample-adequacy status
+
+En rapporteret metric skal mindst kunne klassificeres som:
+
+- `SUFFICIENT_FOR_INTERPRETATION`
+- `INSUFFICIENT_SAMPLE`
+- `INSUFFICIENT_MATURE_OUTCOMES`
+- `UNAVAILABLE`
+
+Disse er calibration/reporting-statusser og må ikke blive lifecycle-states,
+gate-resultater eller nye opportunity-labels.
+
+`SUFFICIENT_FOR_INTERPRETATION` betyder heller ikke automatisk, at metricen
+opfylder D008s senere LIVE-exitkrav.
+
+##### Usikkerhedsrapportering
+
+Rates, lifts, rankingmetrics og outcome-estimater skal rapporteres sammen med
+den usikkerhed, der er relevant for den valgte analyseenhed og sample.
+
+Metric-policyen skal angive:
+
+- usikkerheds-/intervalmetode
+- intervalniveau eller tilsvarende rapporteringsniveau
+- hvordan clustering håndteres
+- hvordan små samples håndteres
+- hvordan unavailable/pending data påvirker denominator
+
+D008 må ikke vise en punktestimate alene som om den var præcis.
+
+Ved små eller sjældne samples skal bred usikkerhed vises ærligt frem for at
+afrundes væk eller skjules.
+
+##### Case-level clustering
+
+Når flere observationer kommer fra samme `opportunity_id`, skal
+usikkerhedsberegningen respektere D008.2s pseudo-replikationsregel.
+
+Hvis en metric bruger observation-level data, skal analysemetoden enten:
+
+- aggregere passende til case-level, eller
+- eksplicit håndtere clustering på opportunity-case
+
+Gentagne observationer må ikke stiltiende behandles som uafhængige cases.
+
+##### Multiple comparisons og metric-shopping
+
+D008 skal skelne mellem:
+
+- primary/pre-committed metrics
+- secondary metrics
+- exploratory metrics
+
+Primary metrics skal være defineret før de relevante outcomes analyseres.
+
+Hvis mange alternative:
+
+- horizons
+- score-bands
+- K-værdier
+- benchmarks
+- subgroups
+- success-definitioner
+
+afprøves, må D008 ikke fremhæve kun den bedste variant og fremstille den som
+pre-committed evidens.
+
+Exploratory fund kan bruges til at foreslå en senere versioneret policy, men
+de må ikke retroaktivt ændre den cohort/metric-policy, der allerede evalueres.
+
+##### Missingness og metric denominator
+
+For hver metric skal rapporten vise mindst:
+
+- eligible cases
+- included cases
+- excluded cases med reason codes
+- modne outcomes
+- pending outcomes
+- unavailable outcomes
+- endelig denominator
+
+Manglende outcomes eller benchmarkdata må ikke fjernes lydløst.
+
+En høj success-rate med lav outcome-coverage skal derfor ikke fremstilles som
+lige så robust som samme rate med høj coverage.
+
+##### Reproducerbarhed
+
+Enhver beslutningsrelevant calibration metric skal kunne reproduceres fra
+de bevarede canonical records/projections, som D004-D006 tillader.
+
+Rapporten skal mindst kunne knyttes til:
+
+- cohort-id
+- metric-policy-version
+- policy epoch
+- profile
+- reference-window
+- outcome cutoff/as-of
+- benchmarkrolle
+- analyseenhed
+
+En senere genberegning må ikke stiltiende ændre historical metric-resultatet,
+hvis input-, policy- eller cutoff-konteksten er anderledes.
+
+##### Ingen skjult LIVE-gate i D008.3
+
+D008.3 definerer målinger og statistisk fortolkning.
+
+Det må ikke alene:
+
+- aktivere LIVE
+- aktivere Telegram opportunity-alerts
+- skabe automatic `HIGH_CONVICTION`
+- sænke D002/D004-gates
+- ændre D005-budgettet
+
+#### D008.4 Outcome-/driftskalibrering, alert-simulation og LIVE-exit
+
+D008.4 fastlægger, hvordan Aureum validerer den operationelle shadow-drift
+og simulerer de beslutnings- og alert-effekter, som senere kan blive
+LIVE-side effects.
+
+D008.4 må ikke i sig selv aktivere LIVE.
+
+##### Production-lignende shadow-drift
+
+Den prospektive shadow-periode skal så vidt muligt bruge samme planlagte
+runtime-paths, canonical dataflows, policies, persistence og budgetcontroller,
+som den senere LIVE-canary-konfiguration forventes at bruge.
+
+Shadow må ikke kaldes production-lignende alene fordi den bruger production-
+data, hvis centrale runtime-paths i praksis er omgået eller manuelt
+substitueret.
+
+Prospektiv driftskalibrering skal derfor kunne måle mindst:
+
+- schedule adherence og faktisk jobfrekvens
+- job-success, partial og failure
+- runtime/latency for relevante pipeline-trin
+- providerfejl, timeouts og circuit-breaker-adfærd
+- freshness- og Data Confidence-udvikling
+- cache-hit versus ny canonical observation/generation
+- AI-request admission, reservation, settlement og unresolved budget-state
+- concurrency conflicts, stale workers og lease/CAS-afvisninger
+- SQLite busy/locked-adfærd, når den forekommer
+- crash/restart-resumption uden semantiske dubletter
+- gate-evaluation throughput og blockers
+- shadow alert-candidate-volume
+- relevante read-/projection-fejl uden business side effects
+
+En teknisk fejlrate skal rapporteres separat fra investeringsmæssige
+negative outcomes.
+
+##### Operational denominators
+
+Driftsmetrics skal have eksplicit denominator.
+
+Eksempler:
+
+- scheduled runs versus completed runs
+- eligible instruments versus valid observations
+- admitted AI-requests versus settled generations
+- gate-evaluations versus `PASS`/`FAIL`/`BLOCKED_DATA`
+- shadow alert-candidates versus suppression reasons
+- write-attempts versus concurrency-/busy-afvisninger
+
+D008 må ikke rapportere en succesrate uden samtidig at kunne forklare, hvad
+der indgår i denominator og hvilke records der er excluded/unavailable.
+
+##### Prospective drift versus engineering fault tests
+
+D008.2s evidenstyper bevares.
+
+Prospektiv shadow-drift bruges til at måle faktisk production-lignende
+adfærd.
+
+Fault-injection, syntetiske concurrency-tests, backup/restore-tests og
+andre engineering-validation-kørsler må bruges til correctness- og
+resilience-evidens, men deres events må ikke blandes ind i den prospektive
+runtime-fejlrate som om de var naturligt forekommende production-fejl.
+
+De to evidenstyper skal rapporteres separat.
+
+##### Alert-simulation
+
+Shadow mode skal kunne måle, hvilke logical opportunity-alerts systemet
+**ville have været berettiget til at oprette**, hvis den relevante
+LIVE-canary execution/feature policy havde tilladt side effects.
+
+Dette er en counterfactual calibration-evaluation og ikke en rigtig alert.
+
+Alert-simulation må aldrig:
+
+- oprette en rigtig `alert_outbox`-record
+- oprette et delivery-attempt
+- autorisere ekstern delivery
+- sende Telegram
+- skabe en LIVE lifecycle-transition
+- ændre canonical opportunity-head for at få simulationen til at passe
+
+##### Would-transition / would-alert basis
+
+En simuleret High-Conviction-alert må kun klassificeres som
+`WOULD_ALERT`, når alle de allerede låste krav, bortset fra den bevidste
+SHADOW-suppression af LIVE-side effects, er opfyldt.
+
+Det omfatter mindst:
+
+- relevant gate-resultat er `PASS`
+- gate-evaluation er stadig valid
+- opportunity/input/policy-versioner matcher
+- ingen nyere invalidation eller kritisk dataændring blokerer
+- confirmations/research/reconciliation er aktuelle og gyldige
+- den relevante lifecycle-transition ellers ville være tilladt efter de
+  låste D002-D006-kontrakter
+- logical alert ellers ville være berettiget efter D003-D006
+
+Simulationen må ikke svække et krav for at øge `WOULD_ALERT`-volumen.
+
+##### Shadow alert simulation record
+
+En beslutningsrelevant alert-simulation skal kunne reproduceres fra en
+versioneret calibration record/projection og mindst referere til:
+
+- opportunity-id
+- opportunity-profile
+- relevant lifecycle-state/head-version
+- gate-evaluation-id eller anden canonical trigger-reference
+- calibration policy epoch
+- alert-simulation-policy-version
+- evaluation/as-of
+- simulated alert type
+- simulated channel
+- resultat
+- reason/suppression codes
+
+Minimum resultater:
+
+- `WOULD_ALERT`
+- `WOULD_NOT_ALERT`
+- `BLOCKED_OR_INVALID`
+
+Disse er calibration-statusser og må ikke blive lifecycle-states,
+gate-resultater eller rigtige alert/outbox-states.
+
+##### Alert suppression reasons
+
+Når resultatet ikke er `WOULD_ALERT`, skal D008 så vidt muligt kunne
+rapportere den konkrete grund.
+
+Eksempler:
+
+- gate er ikke `PASS`
+- gate er udløbet/invalideret
+- lifecycle-head matcher ikke
+- confirmations er utilstrækkelige
+- research/reconciliation er ikke current
+- `BLOCKED_DATA`
+- relevant feature-/scope-policy ville ikke tillade alerten
+- alerttypen er ikke berettiget efter D003-alert-hierarkiet
+- canonical prerequisite mangler
+
+Suppression må ikke skjules som blot `ingen alert`.
+
+##### Alert-volume og dedup-simulation
+
+D008 skal måle projected alert-volume separat for mindst:
+
+- opportunity-profile
+- alert type
+- kanal
+- calibration policy epoch
+- relevante lifecycle-/trigger-klasser
+
+Simulationen skal anvende samme logical dedup-identitet, som den låste
+alert-/outbox-kontrakt forventer, når den relevante trigger findes.
+
+Flere retries, replays eller gentagne observationer af samme semantiske
+alert må ikke tælles som flere projected logical alerts.
+
+##### Ingen faktisk delivery i prospective shadow
+
+Prospektiv shadow-kalibrering sender ikke opportunity-alerts til Telegram
+eller andre eksterne kanaler.
+
+Det er tilladt at validere fx:
+
+- payload-/message-rendering
+- required fields
+- canonical alert-identitet
+- dedup-key generation
+- channel routing decision
+- suppression/reason codes
+
+som side-effect-fri simulation.
+
+Faktisk ekstern delivery-test hører til særskilt engineering-validation eller
+en senere eksplicit LIVE-/canary-kontrakt og må ikke skjules som almindelig
+shadow rendering.
+
+##### Alert-simulation er ikke delivery-success
+
+`WOULD_ALERT` betyder alene, at den logical alert efter simulationens
+pre-committed policy ville være berettiget.
+
+Det betyder ikke:
+
+- at en outbox-record er committed
+- at Telegram request er accepteret
+- at delivery-attempt er startet
+- at beskeden er leveret
+
+D007.6s fire separate alert-/delivery-lag bevares.
+
+##### Outcome-kalibrering under shadow
+
+D008.3s outcome- og benchmarkmetrics opdateres, når horizons bliver modne,
+uden at historiske shadow-vurderinger ændres.
+
+D008.4 skal mindst kunne rapportere outcome-maturity som:
+
+- modne outcomes
+- pending outcomes
+- unavailable/invalid outcomes
+
+separat for profile, metric-policy, horizon og policy epoch.
+
+Manglende modne langsigtede Compounder-outcomes må ikke erstattes af kortere
+horizons og fremstilles som ækvivalent evidens.
+
+##### Drift- og metric-anomalier
+
+D008 skal kunne markere relevante calibration anomalies, fx:
+
+- uventet kraftig score-/rank-churn
+- pludselig coverage-forringelse
+- stigende `BLOCKED_DATA`
+- usædvanlig providerfejlrate
+- budget-reservationer der forbliver unresolved
+- concurrency-/lease-problemer
+- projected alert-volume der afviger kraftigt fra forventet drift
+- uventet høj duplicate-/suppression-rate
+
+En calibration anomaly er ikke automatisk en opportunity- eller
+system-lifecycle-state.
+
+Den skal undersøges og knyttes til auditerbar evidens.
+
+##### Ingen automatisk tuning
+
+Shadow-resultater må ikke automatisk omskrive:
+
+- scorevægtning
+- thresholds
+- gate-policy
+- schedule-policy
+- prompt-/model-route-policy
+- benchmarkvalg
+- alert-regler
+
+En foreslået ændring skal følge den relevante versionerede policy-/decision-
+proces og derefter måles i en ny eller tydeligt adskilt calibration epoch.
+
+##### LIVE-exit kommer efter evidensen
+
+D008.4 fastlægger i næste del de konkrete kriterier, som samlet skal være
+opfyldt, før en **begrænset LIVE-canary-fase** overhovedet kan foreslås.
+
+At en enkelt metric ser god ud, eller at en shadow gate giver `PASS`, er
+aldrig alene nok.
+
+##### Versioneret LIVE-exit-policy
+
+En eventuel overgang fra ren shadow til begrænset LIVE-canary kræver en
+versioneret `live_exit_policy`.
+
+`LIVE-canary` er ikke en tredje `execution_mode`.
+
+For den aktiverede profile bruger de relevante cases fortsat canonical
+`execution_mode = LIVE`. Det begrænsede canary-scope håndhæves af en
+versioneret feature-/activation-policy.
+
+Den ikke-aktiverede profile forbliver canonical `execution_mode = SHADOW`.
+
+Policyen skal være fastlagt før den afsluttende exit-evaluering og mindst
+identificere:
+
+- `live_exit_policy_version`
+- opportunity-profile
+- calibration policy epoch, som foreslås til LIVE-canary
+- exit-evaluation window
+- required operational metrics
+- required calibration metrics
+- metric-policy-versioner
+- pass-/fail-boundaries for exit-kritiske metrics
+- hvilke langsigtede metrics der eksplicit må være deferred
+- projected alert-volume/capacity boundary
+- hard-stop conditions
+- initial canary-scope
+- minimum canary-varighed
+- expansion-/rollback-regler
+
+En exit-policy må ikke ændres efter at de relevante exit-window-resultater
+er kendt for at få shadow-perioden til at bestå.
+
+Materiel ændring kræver en ny version og en ny relevant observationsperiode.
+
+##### Stable exit window
+
+Den policykombination, der foreslås til LIVE-canary, skal have mindst fire
+komplette sammenhængende uger i prospektiv shadow under samme materielle
+calibration policy epoch før exit-beslutningen.
+
+Dette fire-ugers vindue ligger inden for D008.2s samlede minimum på otte uger
+og kan ikke erstatte det.
+
+Hvis en materiel policy ændres i exit-vinduet, starter et nyt relevant
+fire-ugers minimum for den nye calibration policy epoch, som foreslås til
+LIVE-canary.
+
+##### Hårde exit-blockers
+
+LIVE-canary må ikke foreslås, hvis nogen af følgende er observeret i den
+relevante calibration policy epoch, som foreslås til LIVE-canary, og ikke er
+fuldt forklaret, korrigeret, retestet og afgrænset fra
+LIVE-canary-konfigurationen:
+
+- D005 hard-cap breach
+- SHADOW-run der skabte en LIVE lifecycle-transition
+- SHADOW-run der skabte rigtig opportunity-alert/outbox
+- uautoriseret ekstern alert-delivery
+- committed `HIGH_CONVICTION` uden gyldig current gate-basis
+- decision-critical gate, der passerede med stale/invalid kritisk input
+- High-Conviction-basis uden required current research/confirmation/
+  reconciliation
+- duplicate logical opportunity-alert fra canonical retry/concurrency-path
+- irreversibel eller uafklaret canonical data corruption
+- ukendt commit-state, som ikke kan reconciles sikkert
+- security-/authorization-fejl, som kan give uautoriseret business side effect
+
+Disse er nul-tolerance correctness-invarianter.
+
+Én sådan violation må ikke "opvejes" af gode outcome- eller rankingmetrics.
+
+##### Budget readiness
+
+Før LIVE-canary kan foreslås, skal D005-budgetcontrolleren i den relevante
+prospektive shadow-periode have demonstreret:
+
+- nul hard-cap breaches
+- canonical reservation før hvert paid call
+- provider authorization efter den låste pre-call boundary
+- settlement eller konservativ `UNRESOLVED` accounting
+- ingen uregistreret paid OpenAI-path uden om admission-controlleren
+- månedsskifte håndteret efter D005s låste perioderegler
+
+En `UNRESOLVED` reservation er ikke automatisk exit-failure, hvis den følger
+den låste konservative recovery-/reconciliation-policy.
+
+Men en unresolved state, som er ældre end den aktive policys tilladte
+reconciliation-/recovery-vindue, blokerer LIVE-canary, indtil den er
+afklaret.
+
+##### Decision-path completeness
+
+I exit-vinduet skal 100 % af decision-critical scheduled runs enten:
+
+- nå en canonical terminal status, eller
+- have en auditerbar suppression/deferral/failure-record med reason code
+
+Der må ikke findes "forsvundne" decision-critical runs uden canonical
+forklaring.
+
+Dette er ikke et krav om 100 % provider- eller markedsdatatilgængelighed.
+Fail-closed `BLOCKED_DATA`, providerfejl og andre ærlige terminale udfald kan
+være valide resultater.
+
+##### Gate reproducibility
+
+For alle exit-kritiske shadow gate-evaluations skal D008 kunne reproducere
+gate-beslutningen fra den samme immutable gate-basis og de samme relevante
+policy-/contract-versioner.
+
+Et exit-kritisk gate-resultat må ikke afhænge af UI-state, job-rækkefølge
+eller ikke-versioneret skjult konfiguration.
+
+Hvis en gate ikke kan reproduceres, er LIVE-canary blokeret for den
+relevante profile/policy epoch.
+
+##### Alert-simulation exitkrav
+
+Før external opportunity-alerting kan indgå i LIVE-canary for en profile,
+skal shadow alert-simulation i exit-vinduet vise:
+
+- nul duplicate projected logical alerts for samme canonical dedup-identitet
+- 100 % af `WOULD_ALERT` har komplet canonical trigger-/gate-reference
+- 100 % af `WOULD_ALERT` har gyldig alert type, channel og dedup-identitet
+- nul `WOULD_ALERT` hvor gate/lifecycle/research/reconciliation/freshness-
+  prerequisites er ugyldige
+- alle `WOULD_NOT_ALERT`/`BLOCKED_OR_INVALID` har auditerbar suppression-
+  eller reason code, når canonical grundlag findes
+- projected alert-volume ligger inden for den på forhånd definerede
+  operational capacity boundary i `live_exit_policy`
+
+Alert capacity boundary skal fastlægges før exit-window analyseres.
+
+D008 må ikke bagefter hæve grænsen, fordi projected volume blev højere end
+forventet.
+
+##### Metric readiness
+
+Alle metrics, som `live_exit_policy` klassificerer som exit-kritiske, skal
+have én af følgende tilladte states:
+
+- `SUFFICIENT_FOR_INTERPRETATION` og opfylder sin pre-committed pass-boundary
+- eksplicit `DEFERRED_LONG_HORIZON`, når horizon efter D001 strukturelt ikke
+  kan være moden inden LIVE-canary-beslutningen
+
+Følgende må ikke accepteres som bestået exit-kritisk metric:
+
+- `INSUFFICIENT_SAMPLE`
+- `INSUFFICIENT_MATURE_OUTCOMES`, medmindre metricen er særskilt og på forhånd
+  klassificeret som `DEFERRED_LONG_HORIZON`
+- `UNAVAILABLE`
+- en metric, der bryder sin pre-committed fail-/harm-boundary
+
+`DEFERRED_LONG_HORIZON` er en D008 reporting-/exit-status og må ikke blive en
+opportunity-status eller skjule, at langsigtet performance endnu er ukendt.
+
+##### Ingen krav om fuldt modne 60-måneders outcomes før canary
+
+D008 må ikke foregive, at Compounders 24-60 måneders performance er
+valideret efter en 8-ugers shadow-periode.
+
+En eventuel LIVE-canary er derfor en kontrolleret operationel aktivering,
+ikke et bevis for langsigtet alpha eller investeringsmæssig sikkerhed.
+
+Deferred outcomes fortsætter som canonical post-shadow/post-LIVE
+kalibrering.
+
+##### Profile-specifik activation
+
+`COMPOUNDER` og `CATALYST` kan opfylde D008-exitkriterier på forskellige
+tidspunkter.
+
+LIVE-canary aktiveres derfor profile-specifikt.
+
+At én profile består, aktiverer ikke automatisk den anden.
+
+Hvis begge profiler er klar samtidig, skal den første canary-profile vælges
+eksplicit i den versionerede activation policy; rækkefølgen må ikke opstå
+tilfældigt fra runtime.
+
+##### Initial canary-scope
+
+Den første LIVE-canary-fase aktiverer højst én opportunity-profile ad
+gangen.
+
+Inden for den aktiverede profile må systemet ikke cherry-picke enkelte cases
+manuelt for at få bedre resultater.
+
+Den versionerede LIVE-canary feature policy skal anvendes ensartet på de
+cases, der efter de låste regler er berettigede inden for det aktiverede
+scope.
+
+Den ikke-aktiverede profile forbliver i `SHADOW`.
+
+Ingen ny alert-kanal aktiveres som del af D008-canary. Normal
+opportunity-alerting bruger kun allerede godkendte kanaler efter D003-D007.
+
+##### Minimum canary-varighed
+
+Den første LIVE-canary-fase skal køre mindst **14 komplette dage** under
+samme materielle LIVE-canary policy epoch, før:
+
+- den anden opportunity-profile kan aktiveres
+- LIVE-canary-scope kan udvides materielt
+- canary kan erklæres operationelt stabil
+
+Fjorten dage er et operationelt canary-gulv og ikke et performancebevis.
+
+En critical hard-stop hændelse nulstiller ikke historikken, men stopper
+canary og kræver ny root-cause/retest før en senere reaktivering.
+
+##### LIVE-canary semantics
+
+For cases inden for aktiveret LIVE-canary-scope gælder de normale låste
+D002-D006-semantikker fuldt ud.
+
+Det betyder blandt andet:
+
+- gate-evaluation er fortsat side-effect-fri
+- kun gyldig committed lifecycle-transition må sætte `HIGH_CONVICTION`
+- required outbox følger den låste atomiske transition/outbox-kontrakt
+- dedup/idempotency ændres ikke
+- Telegram-delivery følger den låste outbox/recovery-kontrakt
+- `AMBIGUOUS` recovery giver ikke blind resend
+
+Canary må ikke bruge en "næsten LIVE"-specialsemantik for de cases, der
+faktisk er aktiveret.
+
+##### Hard-stop / kill switch
+
+LIVE-canary skal kunne disable-es hurtigt via en versioneret feature/
+execution policy, så fremtidige relevante evaluations igen forbliver i
+`SHADOW`.
+
+Hard-stop udløses mindst ved:
+
+- D005 hard-cap breach
+- uautoriseret ekstern delivery
+- duplicate logical opportunity-alert fra canonical workflow
+- committed `HIGH_CONVICTION` uden gyldig gate-/freshness-/researchbasis
+- konstateret canonical corruption, der kan påvirke decision correctness
+- sikkerhedsbrud med risiko for uautoriserede business side effects
+
+Et hard-stop:
+
+- må ikke slette eller omskrive allerede committed canonical historik
+- må ikke annullere en allerede dokumenteret delivery ved at ændre historien
+- må stoppe nye LIVE transitions/deliveries
+- skal bevare audit trail og årsag
+- kræver root-cause, remediation og retest før genaktivering
+
+##### Ingen automatisk expansion
+
+Bestået 14-dages canary må ikke automatisk:
+
+- aktivere den anden profile
+- fjerne shadow-observation
+- ændre gates
+- ændre alertregler
+- øge D005-budgettet
+- aktivere nye kanaler
+
+Enhver materiel udvidelse kræver en eksplicit versioneret activation/
+feature-policy-beslutning og skal kunne rollback-es.
+
+##### D008 lock aktiverer ikke LIVE
+
+Selv når D008 senere bliver `LOCKED`, er LIVE fortsat ikke aktiveret alene af
+blueprint-status.
+
+Faktisk activation kræver separat implementation/deployment af de låste
+guards og en eksplicit operational activation decision efter verificeret
+candidate configuration.
+
+#### D008.5 Endelig LIVE-exit-matrix og primary exit-metrics
+
+D008.5 samler D008.1-D008.4 i én reproducerbar beslutningsmatrix.
+
+Matrixen afgør kun, om en profile kan være
+`ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL`.
+
+Den aktiverer ikke LIVE.
+
+##### Exit-verdicts
+
+En D008 exit-evaluation skal give præcis ét overordnet calibration-verdict
+pr. opportunity-profile og `live_exit_policy_version`:
+
+- `BLOCKED`
+- `NOT_READY`
+- `ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL`
+
+Disse er calibration/reporting-verdicts.
+
+De er ikke:
+
+- lifecycle-states
+- gate-results
+- execution modes
+- feature-policy-states
+- alert-/delivery-states
+
+`ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL` betyder alene, at de låste D008-krav til
+at **foreslå** en begrænset LIVE-canary er opfyldt.
+
+Faktisk activation kræver fortsat særskilt implementation/deployment og
+eksplicit operational activation.
+
+##### Verdict precedence
+
+`BLOCKED` har højeste prioritet.
+
+Hvis en hard correctness-, security-, budget- eller canonical-integrity-
+blocker er aktiv efter D008.4, er resultatet `BLOCKED`, uanset øvrige metrics.
+
+Hvis ingen hard blocker er aktiv, men et obligatorisk ikke-deferred exitkrav:
+
+- mangler evidens
+- er `INSUFFICIENT_SAMPLE`
+- er `INSUFFICIENT_MATURE_OUTCOMES`
+- er `UNAVAILABLE`
+- eller bryder sin pre-committed pass-boundary
+
+er resultatet `NOT_READY`.
+
+Kun når alle obligatoriske krav enten:
+
+- består, eller
+- gyldigt er klassificeret `DEFERRED_LONG_HORIZON`
+
+kan verdict blive `ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL`.
+
+##### Ingen skjult vægtet exit-score
+
+D008 må ikke skabe en vægtet samlet "readiness score", hvor et stærkt område
+kan kompensere for et svagt kritisk område.
+
+Exit-matrixen er conjunctive:
+
+- hard invariants skal bestå
+- obligatoriske operational requirements skal bestå
+- obligatoriske data-/stability requirements skal bestå
+- exit-kritiske calibration metrics skal bestå eller være gyldigt deferred
+
+Et budget-, gate-, dedup- eller integrity-problem må aldrig opvejes af godt
+afkast.
+
+##### Endelig exit-matrix
+
+| Område | Primær evidens | Minimumsregel før LIVE-canary-forslag |
+|---|---|---|
+| Shadow-varighed | Prospektiv calibration cohort | Mindst 8 komplette uger |
+| Stable policy window | Calibration policy epoch foreslået til LIVE-canary | Mindst 4 komplette sammenhængende uger under den policykombination, der foreslås til LIVE-canary |
+| Universe coverage | Canonical observations | D008.2s 95 % first-observation coverage-gulv består |
+| Repeated coverage | Uafhængige observationer/cycles | D008.2s 90 % four-date/four-cycle coverage-gulv består |
+| Decision path | Scheduled decision-critical runs | 100 % har canonical terminal status eller auditerbar reason-coded terminal forklaring |
+| Shadow boundary | Lifecycle/outbox/delivery audit | Nul uautoriserede LIVE-side effects fra SHADOW |
+| Budget | D005 ledger/admission | Nul hard-cap breaches og ingen uafklaret state uden for tilladt recovery-vindue |
+| Gate correctness | Reproducible gate evaluations | Exit-kritiske gates er reproducerbare fra immutable basis/policies |
+| Canonical integrity | Persistence/recovery audit | Ingen aktiv uafklaret corruption/unknown commit-state, som kan påvirke correctness |
+| Dedup/concurrency | Logical identity + transaction audit | Ingen aktiv duplicate-logical-alert correctness-fejl |
+| Alert simulation | `WOULD_ALERT` calibration records | D008.4s reference-, prerequisite-, dedup- og capacity-krav består |
+| Data health | Data Confidence/freshness/blockers | Exit-kritiske pre-committed data-health boundaries består |
+| Score stability | Stability metrics | Exit-kritiske pre-committed churn/instability boundaries består |
+| Selection quality | Profile-specifikke primary metrics | Krævede modne metrics består deres pre-committed boundaries |
+| Long horizons | D001 outcome horizons | Kun strukturelt umodne horizons må være `DEFERRED_LONG_HORIZON` |
+| Canary scope | Activation policy | Højst én profile ved initial activation |
+| Rollback | Feature/execution policy | Kill-switch og auditerbar rollback-path er verificeret før activation |
+
+Tabellen indfører ikke nye lifecycle- eller gate-semantikker.
+
+##### Hårde versus statistiske krav
+
+Følgende typer krav er correctness-/safety-invarianter og må ikke få
+statistisk tolerance i D008:
+
+- D005 hard-cap
+- SHADOW/LIVE execution boundary
+- authorization
+- canonical transaction/integrity correctness
+- logical alert dedup correctness
+- High-Conviction gate/prerequisite correctness
+- alert-simulationens canonical reference-integritet
+
+Derimod er fx:
+
+- false-positive-rate
+- false-negative-rate
+- selection lift
+- score-/rank-churn
+- providerfejlrate
+- outcome-success-rate
+
+empiriske metrics og skal vurderes med D008.3s sample- og
+usikkerhedskontrakter.
+
+##### Boundary freeze
+
+Alle numeriske pass-/fail-boundaries for empiriske exit-kritiske metrics skal
+være fastlagt i den versionerede `live_exit_policy` før det relevante
+afsluttende exit-window analyseres.
+
+Det gælder blandt andet eventuelle boundaries for:
+
+- unexplained score-/threshold-churn
+- data-/freshness degradation
+- `BLOCKED_DATA`-rate
+- operational failure-/latency-rate
+- false-positive-rate
+- actionable false-negative-/missed-opportunity-rate
+- selection lift
+- V2-comparator no-harm/value-add
+- projected alert-volume
+
+D008 må ikke se resultatet først og derefter vælge en grænse, der får
+systemet til at bestå.
+
+##### Primary operational exit-metrics
+
+Følgende er primary operational exit-evidence for begge profiler:
+
+1. `decision_path_explained_rate`
+2. `shadow_live_boundary_violation_count`
+3. `budget_hard_cap_breach_count`
+4. `gate_reproducibility_rate`
+5. `canonical_integrity_unresolved_count`
+6. `duplicate_logical_alert_correctness_count`
+7. `would_alert_reference_completeness_rate`
+8. `would_alert_invalid_prerequisite_count`
+9. `universe_first_observation_coverage`
+10. `universe_repeated_observation_coverage`
+
+De allerede accepterede hard boundaries er:
+
+- `decision_path_explained_rate = 100 %`
+- `shadow_live_boundary_violation_count = 0`
+- `budget_hard_cap_breach_count = 0`
+- `canonical_integrity_unresolved_count = 0` for correctness-relevant
+  unresolved corruption/commit-state ved exit
+- `duplicate_logical_alert_correctness_count = 0`
+- `would_alert_reference_completeness_rate = 100 %`
+- `would_alert_invalid_prerequisite_count = 0`
+- `universe_first_observation_coverage >= 95 %`
+- `universe_repeated_observation_coverage >= 90 %`
+
+`gate_reproducibility_rate` skal være 100 % for de exit-kritiske gate-
+evaluations, som indgår i exit-evalueringen.
+
+##### Primary stability/data-health metrics
+
+Begge profiler skal have pre-committed primary metrics for mindst:
+
+- `unexplained_threshold_churn_rate`
+- `material_score_change_without_material_input_rate`
+- `critical_stale_or_invalid_input_rate`
+- `blocked_data_rate`
+- relevant Data Confidence/coverage degradation
+
+De konkrete acceptable empiriske boundaries fastlægges i
+`live_exit_policy` før exit-windowet.
+
+En høj `BLOCKED_DATA`-rate er ikke det samme som en negativ
+investeringsvurdering, men kan vise, at systemet ikke er driftsklart til
+LIVE-canary.
+
+##### Primary selection-quality metrics
+
+Selection-quality måles separat for `COMPOUNDER` og `CATALYST`.
+
+Når den relevante horizon er moden og sample er tilstrækkeligt, er følgende
+primary metrics:
+
+- Strong-Candidate-level false-positive-rate
+- shadow gate `PASS` false-positive-rate
+- selection lift versus `ELIGIBLE_UNIVERSE_BASELINE`
+- score-band monotonicity
+- relevant benchmark-relative outcome
+- V3 versus `V2_RANKING_COMPARATOR` på fair matched sample
+
+Candidate-level false-positive-rate og actionable false-negative/
+missed-opportunity-rate skal altid rapporteres som vigtige diagnostics.
+
+`live_exit_policy` kan gøre en diagnostic exit-kritisk, men det skal ske
+pre-committed før exit-windowet.
+
+##### Catalyst early outcome guardrail
+
+For `CATALYST` er D001s **1-måneds horizon** den første canonical
+early-outcome observation.
+
+Den bruges som obligatorisk tidlig no-harm-/kalibreringsevidens før en
+Catalyst LIVE-canary, men er ikke i sig selv thesis-confirmation for den
+låste Catalyst-horisont på 3-18 måneder.
+
+`live_exit_policy` skal før exit-windowet definere:
+
+- hvilke 1-måneds primary early metrics der er exit-kritiske
+- deres success-/harm-definition
+- deres sample-adequacy-regel
+- deres pre-committed no-harm/pass-boundary
+
+D008 fastsætter ikke bagefter en universel positiv-return- eller
+alpha-threshold for at få Catalyst til at bestå.
+
+Når 1-måneds outcomes er modne for den pre-committed exit-cohort:
+
+- de må ikke erstattes af en mere fordelagtig horizon
+- de relevante primary early metrics beregnes efter den pre-committed
+  1-måneds metric-policy
+- de skal være `SUFFICIENT_FOR_INTERPRETATION`
+- de skal opfylde den pre-committed no-harm/pass-boundary
+- utilstrækkeligt sample er `INSUFFICIENT_SAMPLE`, ikke
+  `DEFERRED_LONG_HORIZON`
+
+En Catalyst LIVE-canary må derfor ikke baseres alene på operationel
+correctness, hvis den obligatoriske 1-måneds early-outcome-evidens stadig er
+utilstrækkelig eller bryder sin pre-committed harm-boundary.
+
+Dette krav betyder ikke, at 1-måneds performance beviser eller afkræfter den
+fulde 3-18-måneders Catalyst-thesis.
+
+##### Catalyst thesis-aligned outcomes
+
+For `CATALYST` er **3-måneds horizon** den første D001-outcome-horizon, som
+ligger inden for den låste 3-18-måneders Catalyst-thesis-horisont.
+
+Den er derfor den første thesis-aligned outcome-horizon.
+
+D001s Catalyst-horizons på:
+
+- 3 måneder
+- 6 måneder
+- 12 måneder
+- 18 måneder
+
+fortsætter som canonical calibration/outcome tracking.
+
+De kan være `DEFERRED_LONG_HORIZON` ved den første LIVE-canary-evaluation,
+hvis de strukturelt endnu ikke er modne.
+
+Når 3-måneds eller en senere Catalyst-horizon er moden:
+
+- må den ikke fortsat kaldes deferred alene fordi resultatet er ufordelagtigt
+- outcome- og benchmarkmetrics beregnes efter den pre-committed metric-policy
+- resultatet indgår i fortsat calibration og relevante harm-/rollback-regler
+
+En tidlig Catalyst LIVE-canary er derfor en kontrolleret activation med
+1-måneds early no-harm evidence, ikke dokumentation for fuldt valideret
+3-18-måneders performance.
+
+##### Compounder primary outcome handling
+
+For `COMPOUNDER` er D001s første canonical outcome-horizon **6 måneder**.
+
+D008s 8-ugers shadow-minimum gør derfor ikke i sig selv et canonical
+Compounder-outcome modent.
+
+Ved en tidlig LIVE-canary-evaluation må Compounders:
+
+- 6 måneder
+- 12 måneder
+- 24 måneder
+- 36 måneder
+- 60 måneder
+
+kun være `DEFERRED_LONG_HORIZON`, når den konkrete horizon faktisk er
+strukturelt umoden ved outcome cutoff.
+
+Dette tillader en operationelt kontrolleret Compounder LIVE-canary uden at
+påstå dokumenteret langsigtet alpha.
+
+##### Deferred bliver ikke permanent
+
+Når en tidligere deferred horizon senere er moden:
+
+- outcome beregnes efter D001/D008.2
+- D008.3s metric-policy og usikkerhedsregler anvendes
+- resultatet indgår i fortsat calibration
+- eventuelle harm-/rollback-regler i den aktive policy evalueres
+
+`DEFERRED_LONG_HORIZON` må aldrig bruges permanent til at skjule modne
+negative outcomes.
+
+##### V2 comparator er ikke en veto-ret alene
+
+V3 skal sammenlignes fair med `V2_RANKING_COMPARATOR`, men V2 er ikke en
+canonical V3-gate.
+
+Den pre-committed exit-policy skal angive, om V2-comparatoren for den
+pågældende profile er:
+
+- exit-kritisk
+- no-harm guardrail
+- secondary diagnostic
+
+Valget skal træffes før exit-windowet.
+
+Manglende valid matched V2-observation må rapporteres `UNAVAILABLE`; den må
+ikke fabrikeres eller behandles som V2-score `0`.
+
+##### Resultat ved mixed evidence
+
+En profile må ikke få `ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL`, hvis:
+
+- en hard blocker er aktiv
+- en obligatorisk operational metric fejler
+- en exit-kritisk empirisk metric bryder sin boundary
+- en exit-kritisk metric er utilstrækkeligt observeret
+- en moden exit-kritisk outcome-horizon fejlagtigt er markeret deferred
+
+Positive secondary eller exploratory metrics kan ikke kompensere.
+
+D008.5 fortsætter med calibration-report contract, acceptance criteria,
+post-activation monitoring og den endelige D008 lock-checkliste.
+
+##### Calibration-report contract
+
+Enhver D008 exit-evaluation skal materialiseres som en reproducerbar,
+versioneret calibration report.
+
+Rapporten skal mindst identificere:
+
+- `calibration_report_id`
+- report schema/version
+- opportunity-profile
+- `live_exit_policy_version`
+- calibration policy epoch
+- relevante metric-policy-versioner
+- prospective cohort-id
+- exit-window start/slut
+- outcome cutoff/as-of
+- data-/provider cutoff
+- budget-period(er), der indgår
+- canonical execution mode for den evaluerede shadow-population
+- alle exit-matrix-rækker med status og evidence references
+- hard blockers
+- deferred long-horizon metrics
+- samlet D008 exit-verdict
+- report generation timestamp
+
+Rapporten skal kunne rekonstruere, hvorfor verdict blev:
+
+- `BLOCKED`
+- `NOT_READY`
+- `ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL`
+
+##### Row-level exit status
+
+Hver obligatorisk række i exit-matrixen skal have en eksplicit status.
+
+Minimum:
+
+- `PASS`
+- `FAIL`
+- `BLOCKED`
+- `INSUFFICIENT_SAMPLE`
+- `INSUFFICIENT_MATURE_OUTCOMES`
+- `DEFERRED_LONG_HORIZON`
+- `UNAVAILABLE`
+
+Disse statusser er kun calibration/reporting-statusser.
+
+De må ikke ændre:
+
+- opportunity lifecycle
+- gate-resultat
+- execution mode
+- alert-/delivery-state
+
+##### Evidence references
+
+Et row-level `PASS` eller `FAIL` må ikke eksistere som en løs konklusion.
+
+Det skal kunne pege på den evidens, der bærer vurderingen, fx:
+
+- canonical observation-/snapshot-id
+- metric result-id
+- gate-evaluation-id
+- budget ledger-/reservation-reference
+- alert-simulation-record
+- recovery-/integrity-audit
+- calibration anomaly/review record
+- policy-/contract-version
+
+Hvor en række aggregerer mange records, skal den anvendte cohort, denominator,
+cutoff og metric-policy være identificerbare.
+
+##### Report immutability
+
+En afsluttet calibration report er immutable som historisk beslutningsrecord.
+
+Hvis:
+
+- nye outcomes modnes
+- data korrigeres efter den oprindelige cutoff
+- en metric-policy ændres
+- en calibration policy epoch ændres
+- en exit-policy ændres
+
+skal en ny report/version oprettes.
+
+Den tidligere rapport må ikke omskrives, så historisk readiness ser bedre
+eller dårligere ud med hindsight.
+
+##### Human-review record
+
+`ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL` er nødvendigt, men ikke alene
+tilstrækkeligt til faktisk activation.
+
+Før LIVE-canary activation skal der findes en eksplicit human/operational
+review record, som mindst dokumenterer:
+
+- hvilken calibration report der blev reviewet
+- hvilken profile der foreslås aktiveret
+- hvilken exact feature-/activation-policy der foreslås
+- hvilken exact calibration/LIVE policy epoch der skal bruges
+- at hard blockers er gennemgået
+- at deferred outcomes er forstået
+- at kill-switch/rollback er verificeret
+- beslutning og timestamp
+
+Human review må ikke tilsidesætte en `BLOCKED` eller `NOT_READY` D008-verdict.
+
+Hvis reviewet ikke accepterer activation, forbliver profilen i `SHADOW`.
+
+##### Activation record er separat fra calibration
+
+Hvis LIVE-canary senere faktisk aktiveres, skal activation være en separat
+auditerbar operational record/change.
+
+Calibration report må ikke fungere som en skjult feature flag.
+
+Activation-recorden skal mindst kunne referere til:
+
+- godkendt calibration report
+- human-review record
+- activated opportunity-profile
+- activation-/feature-policy-version
+- effective timestamp
+- expected execution-mode scope
+- rollback/kill-switch policy
+
+Dette bevarer forskellen mellem:
+
+1. evidens
+2. proposal/readiness
+3. human operational decision
+4. faktisk activation
+
+##### Post-activation monitoring
+
+En profile i LIVE-canary forlader ikke calibration.
+
+D008s operational-, data-, stability-, alert- og outcome-metrics fortsætter
+under LIVE-canary med tydelig adskillelse mellem:
+
+- pre-activation prospective shadow
+- LIVE-canary-perioden
+- eventuel senere expanded LIVE
+
+Metrics må ikke blandes til én tidsserie uden synlig policy-/execution-epoch.
+
+##### Continuous hard-stop monitoring
+
+D008.4s hard-stop correctness-invarianter gælder kontinuerligt under
+LIVE-canary.
+
+Følgende kræver ikke, at 14-dages minimum først udløber:
+
+- D005 hard-cap breach
+- uautoriseret ekstern delivery
+- duplicate logical opportunity-alert fra canonical workflow
+- committed `HIGH_CONVICTION` uden gyldig current basis
+- correctness-relevant canonical corruption
+- security-/authorization-brud med risiko for uautoriserede business
+  side effects
+
+Ved en sådan hændelse skal nye relevante LIVE-side effects kunne stoppes
+efter den låste kill-switch-policy.
+
+##### Canary-monitoring uden hindsight reset
+
+Et hard-stop eller en dårlig canary-metric må ikke få den tidligere
+shadow-/canary-historik slettet eller nulstillet.
+
+Ved genaktivering efter remediation skal:
+
+- den oprindelige hændelse forblive auditerbar
+- root-cause og remediation være dokumenteret
+- relevante correctness-tests være gentaget
+- ny policy/config-version være identificeret, hvis den er ændret
+- ny relevant observationstid begynde, når D008-reglerne kræver det
+
+Man må ikke starte statistikken forfra alene for at fjerne en dårlig periode.
+
+##### Canary expansion evidence
+
+Efter mindst 14 komplette dage kan en profile kun foreslås udvidet, hvis:
+
+- ingen aktiv hard blocker findes
+- canary-periodens decision-critical paths er forklaret
+- operational capacity er fortsat acceptabel
+- alert correctness/dedup er intakt
+- nye calibration anomalies er adjudicated
+- eventuelle canary-specifikke primary guardrails består
+- rollback stadig er verificeret
+
+Bestået minimumsvarighed er ikke alene expansion-evidens.
+
+##### Anden profile
+
+Aktivering af den anden opportunity-profile kræver dens egen:
+
+- D008 exit-evaluation
+- `live_exit_policy`
+- calibration report
+- `ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL`
+- human/operational review
+- activation record
+
+Resultater for den først aktiverede profile må ikke bruges som erstatning for
+manglende evidens i den anden.
+
+##### Deferred outcomes efter activation
+
+`DEFERRED_LONG_HORIZON` fortsætter som aktiv outcome-forpligtelse.
+
+Når en deferred horizon modnes:
+
+- den markeres ikke længere deferred
+- outcome beregnes efter canonical D001/D008.2-regler
+- D008.3-metrics opdateres i en ny calibration report/as-of
+- pre-committed harm-/monitoring-regler evalueres
+- negative resultater må ikke skjules af tidligere activation
+
+LIVE activation fryser derfor ikke kalibreringen.
+
+##### Material policy change efter activation
+
+En materiel ændring af fx:
+
+- eligibility
+- score-policy
+- data-/freshness-policy
+- model-/prompt-route
+- confirmation/research-policy
+- gate-policy
+- alert-policy
+- budget admission-policy
+
+skal versioneres og behandles efter de allerede låste epoch-regler.
+
+En ændring må ikke stiltiende arve evidens fra en tidligere policy epoch som
+om systemet var uændret.
+
+Om ændringen kræver tilbagevenden til SHADOW, ny limited LIVE-canary eller
+kan fortsætte inden for et allerede låst change-scope, skal være eksplicit
+defineret i den relevante activation/change-policy.
+
+D008 giver ikke en generel ret til at springe ny kalibrering over.
+
+##### D005 gælder også under LIVE-canary
+
+LIVE-canary ændrer ikke D005.
+
+Det globale hard cap er fortsat:
+
+**100 DKK pr. kalendermåned i Europe/Copenhagen på tværs af V2 + V3 paid
+OpenAI.**
+
+Canary må ikke:
+
+- få separat ekstra budget
+- nulstille budgetperioden
+- sænke AI-kvalitet for at holde sig inden for budgettet
+- omgå reservation/admission
+- skjule unresolved paid attempts
+
+Hvis budgettet begrænser volumen, reduceres volumen frem for kvalitet.
+
+##### D008 acceptance criteria
+
+D008 kan først være kandidat til `LOCKED`, når mindst følgende er dokumenteret
+i blueprintet og har bestået samlet cross-review:
+
+1. D008.1:
+   - SHADOW/LIVE execution boundary er uændret fra D004/D006
+   - shadow har ingen automatiske LIVE business side effects
+2. D008.2:
+   - minimum 8 ugers shadow-regel er defineret
+   - coverage-gulve er defineret
+   - cohorts/policy epochs er reproducerbare
+   - replay/engineering/prospective evidence er adskilt
+   - pseudo-replikation og look-ahead er forbudt
+3. D008.3:
+   - benchmarks vælges ex ante
+   - false positives/false negatives er metric-specifikke
+   - stability/ranking metrics er defineret
+   - sample adequacy og uncertainty er metric-specifikke
+   - metric-shopping/hindsight er forbudt
+4. D008.4:
+   - production-lignende drift måles
+   - alert-simulation har ingen eksterne side effects
+   - LIVE-exit-policy er pre-committed
+   - hard blockers er nul-tolerance correctness-invarianter
+   - initial LIVE-canary er højst én profile
+   - minimum canary-varighed er 14 komplette dage
+   - kill-switch/rollback er eksplicit
+5. D008.5:
+   - exit-verdicts er defineret
+   - conjunctive exit-matrix er defineret
+   - empirical boundaries fryses før exit-window
+   - Catalyst 1-måneds early no-harm og 3-måneds thesis-aligned roller er
+     adskilt
+   - Compounder long-horizon uncertainty fremstilles ærligt
+   - calibration report, human review og activation er separate records
+   - post-activation calibration fortsætter
+
+##### D001-D007 må ikke genåbnes
+
+D008 acceptance kræver, at den samlede tekst fortsat respekterer:
+
+- D001 profile- og outcome-horizons
+- D002 score/confidence/High-Conviction gates
+- D003 lifecycle, noise og alert hierarchy
+- D004 data/gate/execution-mode semantics
+- D005 budget hard cap og quality floor
+- D006 persistence/transaction/outbox/recovery semantics
+- D007 Opportunities UX/history/alert presentation contracts
+
+Hvis D008 kræver ændring af en af disse låste kontrakter, må D008 ikke
+`LOCKED` som skrevet. Der skal i stedet oprettes en ny eksplicit V3-decision.
+
+##### D008 ændrer ikke D009
+
+D008 låser shadow/calibration/LIVE-canary semantics.
+
+Det fastlægger ikke Command Center V3s globale executive information
+architecture.
+
+Det forbliver D009s ansvar.
+
+##### D008 blueprint lock er ikke implementation
+
+At D008 senere markeres `LOCKED` betyder kun, at arkitekturkontrakten er
+godkendt.
+
+Det betyder ikke, at:
+
+- V3-kode er implementeret
+- V3 shadow-jobs kører
+- V3 database er deployet
+- LIVE-canary er aktiveret
+- opportunity-alerts er aktiveret
+- production service er restartet
+
+Implementation/deployment følger som særskilt arbejde efter den låste
+blueprintbeslutning.
+
+##### Næste reviewtrin
+
+D008.1-D008.5 er herefter komplet som review-kandidat.
+
+Før D008 kan markeres `LOCKED` kræves:
+
+1. kritisk read-only review af hele D008.5
+2. global read-only cross-review af D008 mod D001-D007
+3. final diff-integrity review mod den oprindelige blueprint
+4. eksplicit lock-write til repo-blueprint
+5. checkpoint-/statusopdatering
+6. commit og push
+7. ingen deploy/restart
+
+
+
+
+
+
 
 ### V3-D009
 
@@ -8061,11 +10447,11 @@ Command Center V3 og samlet informationsarkitektur.
 
 Ved næste arbejdssession:
 
-1. Kontrollér Git HEAD, `origin/main`, ren worktree og at V3-D007 fortsat er
+1. Kontrollér Git HEAD, `origin/main`, ren worktree og at V3-D008 fortsat er
    `LOCKED`.
-2. Fortsæt med V3-D008 — shadow mode og kalibrering — uden at genåbne
-   D001-D007s låste kontrakter.
-3. V3-D009 forbliver `PENDING`, indtil dens egen Command Center V3- og
+2. Fortsæt med V3-D009 — Command Center V3 og samlet informationsarkitektur —
+   uden at genåbne D001-D008s låste kontrakter.
+3. V3-D009 er fortsat `PENDING`, indtil dens egen Command Center V3- og
    informationsarkitekturkontrakt er designet og godkendt.
 4. Implementér ingen V3-kode, før de efterfølgende relevante V3-kontrakter,
    som implementationen afhænger af, er formelt låst.
@@ -8085,7 +10471,9 @@ Ved dette checkpoint er:
   semantisk cross-review og final pre-lock diff-/integritetskontrol
 - V3-D007 låst efter D007.1-D007.7, individuelle kritiske reviews,
   samlet D001-D006 cross-review og final diff-/integritetskontrol
-- V3-D008 og V3-D009 er fortsat `PENDING`
+- V3-D008 låst efter D008.1-D008.5, kritiske delreviews, samlet D001-D008
+  semantisk cross-review og final diff-/integritetskontrol
+- V3-D009 er fortsat `PENDING`
 - 100 DKK/måned er låst i D005 som global hard cap for samlet paid
   OpenAI-forbrug på tværs af V2 og V3
 - Opportunity Radar er fortsat defineret som V3’s vigtigste nye funktion
