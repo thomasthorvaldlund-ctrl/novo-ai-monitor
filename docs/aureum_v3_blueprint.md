@@ -10437,9 +10437,4869 @@ Før D008 kan markeres `LOCKED` kræves:
 
 ### V3-D009
 
-**Status:** PENDING
+**Status:** LOCKED
 
 Command Center V3 og samlet informationsarkitektur.
+
+#### D009.1 Mission, executive hierarchy og sideansvar
+
+Command Center V3 er Aureums **executive decision surface**.
+
+Dets primære opgave er ikke at vise mest mulig information, men at gøre det
+hurtigt at forstå:
+
+1. hvad kræver opmærksomhed nu
+2. hvilke investeringsmuligheder er vigtigst nu
+3. hvad betyder det for den aktuelle portfolio
+4. hvad har ændret sig
+5. hvor meget kan brugeren stole på data, drift og vurderinger
+
+Command Center er derfor et triage-, synthesis- og navigationslag oven på de
+canonical V3-kontrakter.
+
+Det er ikke en ny scoring-, lifecycle-, research-, alert- eller gate-motor.
+
+##### D001-D008 er authoritative
+
+D009 må ikke genåbne eller ændre:
+
+- D001s profile- og outcome-horizons
+- D002s score-, confidence- og High-Conviction-gates
+- D003s lifecycle-, noise- og alert-semantik
+- D004s data-, provenance-, gate- og execution-mode-kontrakter
+- D005s globale AI-budget og quality floor
+- D006s persistence-, transaction-, outbox- og recovery-kontrakter
+- D007s Opportunities-side, opportunity-detail, history og alert-UX
+- D008s shadow-, calibration- og LIVE-canary-semantik
+
+Hvis Command Center kræver en ny business-semantik for at fungere, skal den
+ikke opfindes i præsentationslaget.
+
+Det kræver i stedet en ny eksplicit V3-decision.
+
+##### Command Center er et read-/projection-lag
+
+Command Center må kun præsentere canonical eller dokumenterede materialized
+projections af allerede eksisterende data og beslutninger.
+
+En almindelig page load må ikke:
+
+- kalde OpenAI
+- kalde eksterne finansielle providers
+- ændre opportunity lifecycle
+- køre gate-evaluation
+- oprette research
+- oprette alert/outbox
+- sende Telegram
+- ændre portfolio
+- ændre calibration-verdict
+- aktivere eller udvide LIVE-canary
+
+Sortering, navigation, expand/collapse og almindelige read-interaktioner skal
+ligeledes være side-effect-frie.
+
+Hvis data er stale eller unavailable, vises det ærligt.
+
+Command Center må ikke foretage en skjult refresh eller generere nye data
+for at få siden til at se komplet ud.
+
+##### Executive priority hierarchy
+
+Command Center organiseres efter **beslutningsprioritet**, ikke efter hvilken
+backend-service der producerer informationen.
+
+Den overordnede prioritet er:
+
+1. **Attention / action required**
+2. **Best current opportunities**
+3. **Portfolio relevance**
+4. **What changed**
+5. **Market context**
+6. **Trust / data / system state**
+
+Dette er en informationshierarki-kontrakt og ikke nye lifecycle-states.
+
+##### 1. Attention / action required
+
+Det mest presserende vises først.
+
+Dette lag skal kunne fremhæve faktiske, canonical forhold som fx:
+
+- `THESIS_BROKEN`
+- kritisk portfolio-relevant `DATA_HOLD`
+- anden allerede låst critical attention-state
+- relevante delivery/recovery-problemer, når de faktisk kræver brugerens
+  opmærksomhed
+- andre allerede eksisterende conditions, som efter låst policy er
+  decision-critical
+
+Command Center må ikke opfinde en ny "critical" business-status alene for
+at få et element placeret øverst.
+
+Hvis der ikke er noget action-required, skal UI'et kunne vise dette roligt
+uden at fylde området med kunstige advarsler.
+
+##### 2. Best current opportunities
+
+Efter critical attention vises et lille executive udsnit af de vigtigste
+aktuelle opportunity-cases.
+
+Dette lag skal bevare D001/D007s profilseparation:
+
+- `COMPOUNDER`
+- `CATALYST`
+
+Der må ikke konstrueres én fælles Compounder/Catalyst-rangliste eller et
+fælles total-score.
+
+Command Center må ikke beregne en ny ranking.
+
+Udvælgelsen skal være en deterministisk projection af de allerede låste
+score-, lifecycle-, confidence-, gate- og presentation-regler.
+
+Hvis begge profiler vises samtidigt, skal de være visuelt og semantisk
+adskilt.
+
+##### 3. Portfolio relevance
+
+Portfolio-relevans er et separat personligt lag.
+
+Command Center kan vise, hvilke aktuelle forhold der er mest relevante for
+brugerens faktiske holdings eller portfolio, men må ikke ændre:
+
+- Opportunity Score
+- AI Confidence
+- Data Confidence
+- lifecycle
+- gate-resultat
+- objective opportunity-rank
+
+D007s låste regel gælder fortsat:
+
+**Portfolio Fit er separat fra den objektive opportunity-vurdering.**
+
+Portfolio-laget må derfor forklare relevans, men ikke omskrive selve
+investeringscasen.
+
+##### 4. What changed
+
+Command Center skal kunne svare på, hvad der er ændret siden relevante
+tidligere canonical vurderinger.
+
+Det kan fx være:
+
+- lifecycle-ændring
+- score-/confidence-ændring
+- ny material event
+- thesis strengthened/broken
+- ny eller løftet data-blocker
+- ny research/reconciliation-status
+- ændret portfolio-relevans
+
+"What changed" skal bygge på gemt historik og canonical timestamps.
+
+Det må ikke inferere en historisk ændring ud fra den nuværende state alene,
+hvis det oprindelige historical record ikke understøtter den.
+
+##### 5. Market context
+
+Market context er sekundært til konkrete decisions og opportunities.
+
+Markeds-/nyhedskontekst må bruges til at forklare, hvad der påvirker
+mulighederne, men Command Center må ikke udvikle sig til en generel
+nyhedsportal eller et langt market-feed.
+
+Market context skal være:
+
+- kondenseret
+- relevant
+- tidsstemplet
+- navigerbart til mere detaljeret kilde/side, hvor relevant
+
+##### 6. Trust / data / system state
+
+Data- og systemtillid skal være synlig uden at dominere siden i normal drift.
+
+Command Center skal kunne gøre det tydeligt, hvis fx:
+
+- data freshness er problematisk
+- Data Confidence er utilstrækkelig
+- provider-/pipeline-fejl påvirker beslutninger
+- budget/admission begrænser analysevolumen
+- shadow/LIVE-canary status er relevant
+- systemets decision-critical path er degraded
+
+Ved normal drift kan dette lag være kompakt.
+
+Ved decision-critical degradation skal det kunne løftes højere i den
+executive prioritet.
+
+Dette ændrer ikke de underliggende D004-D008-states.
+
+##### Command Center versus Opportunities
+
+Command Center og Opportunities har forskellige roller.
+
+**Command Center:**
+
+- executive synthesis
+- prioritering af det vigtigste nu
+- få, korte decision summaries
+- navigation til den relevante canonical case
+- portfolio- og trust-kontekst
+- ændringer og attention
+
+**Opportunities:**
+
+- komplet opportunity-case workspace
+- D007s tabs, filtre, sortering og søgning
+- alle relevante active/pipeline/history-cases
+- detaljeret thesis/research/evidence
+- score- og confidence-forklaring
+- timeline og historical outcomes
+- Portfolio Fit-detail
+- alert-/delivery-history
+
+Command Center må ikke forsøge at kopiere hele Opportunities-siden ind på
+forsiden.
+
+##### Opportunity-case er stadig den primære investeringsenhed
+
+Når et Command Center-element repræsenterer en V3-opportunity, skal det
+bevare den canonical opportunity-identitet.
+
+Det betyder mindst:
+
+- `opportunity_id`
+- opportunity-profile
+- instrument-identitet
+- current lifecycle-state
+- canonical score/confidence-data, når de vises
+
+En Compounder- og Catalyst-case for samme instrument må ikke smeltes sammen
+til én pseudo-case.
+
+Tickeret alene må ikke bruges som identitet, hvis elementet faktisk
+repræsenterer en opportunity-case.
+
+##### Drill-down frem for duplikation
+
+Command Center viser den executive konklusion og de få vigtigste reason-codes.
+
+Detaljerne hører på den authoritative destinationsside.
+
+Eksempler:
+
+- opportunity-summary → relevant Opportunity detail
+- "se alle muligheder" → relevant D007-tab/filter
+- portfolio-attention → relevant portfolio/opportunity context
+- alert/recovery-problem → relevant alert/history view
+- system/data-problem → relevant operational/data detail
+
+Navigationen må ikke ændre business state.
+
+##### Begrænset information density
+
+Command Center må ikke blive en lang samling af ligeværdige cards.
+
+Som informationsprincip gælder:
+
+- få topprioriterede items frem for komplette lister
+- konklusion før detaljer
+- exception/degradation før normal drift
+- progressive disclosure frem for permanent fuld detalje
+- én authoritative detail-destination pr. informationstype
+
+Hvis et modul kun gentager information, som allerede er synlig højere i
+hierarkiet uden at tilføre ny beslutningsværdi, bør det ikke have sit eget
+executive modul.
+
+##### Existing V2 content er ikke automatisk entitled til top-level plads
+
+At et card eller en sektion findes i nuværende Command Center betyder ikke,
+at den automatisk skal overleve som selvstændigt top-level V3-modul.
+
+Eksisterende V2-information kan:
+
+- beholdes
+- kondenseres
+- flyttes
+- indgå i en anden executive summary
+- flyttes til en detail-side
+- udgå fra Command Center
+
+afhængigt af dens beslutningsværdi.
+
+D009 designer informationsarkitekturen ud fra brugerens beslutningsbehov,
+ikke ud fra den nuværende templatestruktur.
+
+##### Ingen fake LIVE- eller alert-state
+
+D008s shadow-/LIVE-canary-semantik skal gengives korrekt.
+
+Command Center må ikke:
+
+- vise `WOULD_ALERT` som rigtig alert
+- vise shadow gate `PASS` som committed `HIGH_CONVICTION`
+- vise `ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL` som faktisk LIVE activation
+- vise en calibration report som feature-state
+- vise en attempted delivery som confirmed delivery
+
+Hvis shadow/calibration-data vises, skal det tydeligt være calibration- eller
+simulationsevidens.
+
+##### D009.1 acceptance
+
+D009.1 er kun godkendelig, hvis:
+
+- Command Center er executive synthesis, ikke endnu en detaildatabase
+- priority hierarchy starter med attention og beslutningsværdi
+- Compounder/Catalyst forbliver separate
+- Portfolio Fit forbliver separat fra objective opportunity assessment
+- Opportunities forbliver authoritative opportunity workspace
+- almindelige page loads/interaktioner er side-effect-frie
+- historical changes bygger på canonical history
+- shadow/LIVE/alert-semantik gengives uden fake state
+- D001-D008 ikke genåbnes
+
+D009.2 fastlægger top-of-page executive composition:
+attention, decision summary og de få vigtigste opportunity-signaler.
+
+#### D009.2 Top-of-page executive composition og primary viewport
+
+D009.2 fastlægger informationsrækkefølgen i den første executive del af
+Command Center.
+
+Det er en informationsarkitekturkontrakt, ikke en pixel-, CSS- eller
+breakpoint-specifikation.
+
+Målet er, at brugeren hurtigt kan besvare:
+
+- er der noget kritisk, jeg skal reagere på
+- hvad er Aureums vigtigste beslutningsmæssige konklusion lige nu
+- hvilke få opportunity-cases bør jeg se nærmere på
+- er min portfolio direkte berørt
+
+##### Primary viewport order
+
+Den normale top-of-page rækkefølge er:
+
+1. page context/header
+2. conditional Attention / Action Required
+3. Executive Decision Summary
+4. Best Current Opportunities
+5. Portfolio Relevance
+
+Denne rækkefølge følger D009.1s executive hierarchy.
+
+`What changed`, Market Context og Trust/Data/System State fortsætter længere
+nede på siden, medmindre en canonical degradation/attention-condition gør,
+at et trust-/systemforhold legitimt skal eskaleres til Attention.
+
+##### 1. Page context/header
+
+Headeren skal være kompakt.
+
+Den skal mindst kunne gøre følgende tydeligt:
+
+- at brugeren er i Command Center
+- hvilket canonical/as-of tidspunkt den viste executive projection bygger på
+- om centrale data er current, stale eller unavailable, når det er relevant
+- relevant execution-/calibration-kontekst, når den påvirker fortolkningen
+
+Headeren må ikke ligne et analytics-dashboard med mange KPI-tal.
+
+En eventuel V3 execution-indikator skal bruge de låste D004/D008-semantikker.
+
+Det betyder blandt andet:
+
+- `SHADOW` vises som shadow
+- canonical `LIVE` vises som LIVE
+- `LIVE-canary` må ikke præsenteres som en tredje `execution_mode`
+- `ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL` må ikke præsenteres som activation
+
+##### Header freshness er ikke refresh
+
+Et `as_of`, `updated_at` eller freshness-label beskriver den data/projection,
+som allerede er materialiseret.
+
+Det må ikke udløse:
+
+- provider-refresh
+- AI-generation
+- gate-evaluation
+- opportunity-rescore
+- research
+- alert-check
+
+ved almindelig page load.
+
+##### 2. Conditional Attention / Action Required
+
+Attention-zonen eksisterer for faktiske exception-/action-forhold.
+
+Hvis ingen canonical action-required conditions findes, må Command Center
+ikke reservere en stor tom alarmsektion.
+
+I normal tilstand kan UI'et nøjes med en rolig kompakt indikator, fx at der
+ikke er kritiske forhold.
+
+Hvis attention findes, skal den placeres før resten af executive content.
+
+Attention-itemet skal mindst kunne identificere:
+
+- hvad der kræver opmærksomhed
+- hvilken canonical case/systemcondition det vedrører
+- hvorfor det er vigtigt
+- relevant timestamp/as-of
+- relevant destination for drill-down
+
+##### Attention ordering
+
+Hvis flere attention-items findes, skal deres ordering være deterministisk
+og bygge på allerede låst severity/priority/business-semantik.
+
+Command Center må ikke skabe en ny skjult attention-score.
+
+Hvor locked semantics ikke definerer en entydig ordering, skal en
+presentation-policy bruge stabile, auditerbare tie-breakers som fx:
+
+- severity-class
+- event/reference timestamp
+- stable canonical identity
+
+Presentation-policyen må ikke ændre den underliggende business-state.
+
+##### Attention er exception-first
+
+Attention må ikke blive et alternativt feed med alle alerts, warnings og
+statusser.
+
+Kun forhold med reel executive beslutningsværdi hører i primary attention.
+
+Komplet alert-/delivery-history forbliver på de authoritative D007-flader.
+
+##### 3. Executive Decision Summary
+
+Efter eventuel Attention vises en kort tværgående executive summary.
+
+Summaryen skal svare på:
+
+**Hvad er det vigtigste Aureum mener, jeg bør vide eller undersøge nu?**
+
+Den initiale V3 presentation-policy må vise højst **tre korte decision
+points** i primary viewport.
+
+Et decision point skal være baseret på canonical/materialized evidens og kan
+fx sammenfatte:
+
+- vigtigste aktuelle opportunity-signal
+- vigtig portfolio-relevans
+- vigtig ændring siden sidste relevante vurdering
+- væsentlig data-/trust-begrænsning, hvis den påvirker konklusionen
+
+Tre-punktsgrænsen er et initialt presentation-density-loft for executive
+clarity, ikke en business threshold.
+
+##### Executive Summary må ikke skabe ny beslutning
+
+Summaryen er synthesis.
+
+Den må ikke:
+
+- oprette en ny Opportunity Score
+- skabe en ny lifecycle-state
+- opfinde en ny risk/priority-score
+- ændre AI Confidence
+- ændre Data Confidence
+- ændre Portfolio Fit
+- skabe `HIGH_CONVICTION`
+- ændre gate-resultat
+- aktivere alert
+
+Hvis summaryen er AI-formuleret, skal den være precomputed/materialized før
+page load.
+
+Page load må ikke kalde OpenAI for at skrive summaryen.
+
+##### Summary provenance og freshness
+
+En AI-formuleret eller anden materialized summary skal kunne knyttes til
+mindst:
+
+- relevant source/projection identity
+- generation/materialization timestamp
+- source/as-of cutoff
+- relevant policy/version, hvor dette er nødvendigt for reproducerbarhed
+
+Hvis summaryen er stale, skal det kunne ses.
+
+Hvis en current summary ikke findes, må UI'et:
+
+- vise en deterministisk non-AI fallback baseret på current canonical facts,
+  eller
+- vise summaryen som unavailable/stale
+
+Det må ikke foretage skjult on-demand AI-generation.
+
+##### Summary må ikke skjule konflikt
+
+Hvis relevante canonical states er i konflikt eller Data Confidence er
+utilstrækkelig, må executive summary ikke skrive sig uden om dette med en
+mere sikker formulering.
+
+Usikkerhed og data-begrænsning skal bevares.
+
+##### 4. Best Current Opportunities
+
+Top-of-page viser kun et lille executive udsnit af de vigtigste current
+opportunity-cases.
+
+Det er ikke en komplet liste.
+
+Komplet browsing hører fortsat til D007 Opportunities.
+
+Den initiale V3 presentation-policy må vise højst:
+
+- **2 Compounder-cases**
+- **2 Catalyst-cases**
+
+pr. page projection.
+
+Dette giver højst fire visible opportunity-cases i executive top-zonen.
+
+Hvis en profile har færre kvalificerede cases, må den anden profile ikke
+fylde de tomme pladser med ekstra cases.
+
+Profile-separationen er vigtigere end at udfylde layoutet.
+
+##### Opportunity selection er projection, ikke ny ranking
+
+Command Center må ikke beregne sin egen Opportunity ranking.
+
+De viste cases skal vælges deterministisk fra den authoritative current
+opportunity-projection efter de allerede låste D001-D007-regler og en
+versioneret presentation-policy.
+
+Presentation-policyen må fx fastlægge:
+
+- hvilke D003 lifecycle-states der er eligible til executive display
+- hvordan den allerede authoritative ordering afspejles
+- stabile tie-breakers
+- maksimum antal visible cases
+
+Den må ikke ændre:
+
+- Opportunity Score
+- lifecycle
+- AI Confidence
+- Data Confidence
+- gate-resultat
+- Portfolio Fit
+- profile
+
+##### Ingen fælles Compounder/Catalyst top-4
+
+De fire potentielle slots er ikke en fælles `Top 4`.
+
+UI'et skal semantisk vise:
+
+- Compounder
+- Catalyst
+
+som separate grupper.
+
+Der findes ingen skjult cross-profile sammenligning, selv hvis de to grupper
+vises ved siden af hinanden.
+
+##### Compact opportunity-card contract
+
+Et executive opportunity-card skal være kortere end D007 detail- og
+list-visninger.
+
+Det skal mindst kunne vise:
+
+- company/instrument identity
+- opportunity-profile
+- current lifecycle-state
+- Opportunity Score
+- AI Confidence
+- Data Confidence
+- én kort canonical/materialized "why now"-forklaring
+- relevant change-indikator, hvis noget materielt er ændret
+- tydelig drill-down til den authoritative opportunity-detail
+
+Hvis Portfolio Fit vises på kortet, skal det visuelt og semantisk fremstå som
+et separat personligt lag.
+
+##### Cardet må ikke ligne en handelsordre
+
+Executive opportunity-cardet er research/decision support.
+
+Det må ikke formulere opportunity-status som:
+
+- garanteret stigning
+- direkte køb/salg-ordre
+- personlig investeringsinstruks forklædt som objective score
+
+De låste D001-D003 semantics skal bevares.
+
+##### Card freshness
+
+Et card skal baseres på current materialized/canonical state.
+
+Hvis cardets kritiske data er stale eller blocked:
+
+- må det ikke visuelt fremstå som fully current
+- Data Confidence/freshness-state skal kunne forstås
+- relevant `DATA_HOLD`/blocker skal ikke skjules
+
+Command Center må ikke genberegne casen på page load.
+
+##### 5. Portfolio Relevance
+
+Efter executive opportunities vises en kompakt portfolio-relevanssektion,
+når der findes relevant portfolio-kontekst.
+
+Den skal prioritere spørgsmålet:
+
+**Hvad af det ovenstående eller andre current conditions påvirker mine
+faktiske holdings mest?**
+
+Det kan fx være:
+
+- held opportunity med thesis change
+- kommende event/regnskab med relevant locked alert-/risk-semantik
+- material score/confidence change
+- portfolio-relevant `DATA_HOLD`
+- anden canonical portfolio-relevant attention/ændring
+
+Critical portfolio-forhold, der allerede kvalificerer til Attention, hører
+først i Attention-zonen og bør ikke duplikeres som et ligeværdigt card her.
+
+##### Portfolio section er ikke en ny portfolio ranking
+
+Portfolio Relevance må ikke beregne en skjult personlig opportunity-score.
+
+Den skal bruge de allerede låste Portfolio Fit-/portfolio-relevanskontrakter.
+
+Objective opportunity assessment og personal relevance skal fortsat kunne
+skelnes.
+
+##### Cross-module dedup
+
+Primary viewport må ikke fyldes med den samme information flere gange.
+
+Når samme canonical event/opportunity ellers ville optræde som:
+
+- Attention
+- Executive Decision Summary
+- Best Current Opportunity
+- Portfolio Relevance
+
+skal presentation-laget reducere unødig duplikation.
+
+Attention har højeste presentation-prioritet.
+
+Summaryen må godt referere kort til samme forhold, fordi den er synthesis,
+men bør ikke gentage hele cardet.
+
+Samme `opportunity_id` bør ikke optage flere peer-slots i samme executive
+zone alene på grund af forskellige projections af samme case.
+
+Dedup ændrer ikke canonical records.
+
+##### Primary viewport empty states
+
+Manglende indhold skal ikke erstattes med støj.
+
+Eksempler:
+
+- ingen Attention → kompakt normal-state
+- ingen Catalyst-cases → "ingen current Catalyst-case i executive udsnittet"
+- ingen Compounder-cases → tilsvarende neutral state
+- ingen relevant portfolio → portfolio-modulet kan være skjult eller vise en
+  kort neutral forklaring
+- unavailable summary → vis deterministic fallback eller ærlig unavailable
+  state
+
+Empty states må ikke generere data.
+
+##### Progressive disclosure
+
+Primary viewport skal prioritere:
+
+- executive conclusion
+- få reason-codes
+- få cases
+- klare drill-downs
+
+Detaljer som:
+
+- fuld thesis
+- alle scorekomponenter
+- researchrapport
+- komplet timeline
+- outcome history
+- komplette alerts/deliveries
+
+hører ikke i top-zonen.
+
+##### UX-limit versioning
+
+Tre summary-points og to opportunity-cases pr. profile er initiale V3
+presentation-policy defaults/ceilings.
+
+De må senere justeres gennem en versioneret presentation-policy uden at
+genåbne D001-D008 eller skabe en ny V3 business-semantik, når ændringen
+fortsat bevarer:
+
+- Attention som højeste executive prioritet
+- få executive items frem for komplette lister
+- Compounder/Catalyst som separate grupper
+- ingen fælles cross-profile ranking
+- Opportunities som authoritative complete workspace
+- side-effect-fri page load og navigation
+
+En ændring, der i praksis gør Command Center til en komplet opportunity-liste,
+ændrer executive hierarchy eller introducerer ny business-prioritering, er
+ikke almindelig UX-tuning og kræver ny eksplicit arkitekturbeslutning.
+
+##### Responsive reading order
+
+Visual layout må ændres mellem desktop og mindre skærme, men den semantiske
+reading order skal bevares:
+
+1. context
+2. Attention
+3. Executive Decision Summary
+4. Compounder/Catalyst executive opportunities
+5. Portfolio Relevance
+
+Et desktop two-column layout må ikke gøre keyboard-/screen-reader-rækkefølgen
+uforståelig.
+
+##### Top-of-page links er navigation
+
+Handlinger i primary viewport skal primært være navigation, fx:
+
+- se opportunity
+- se alle Compounders
+- se alle Catalysts
+- se portfolio-kontekst
+- se relevant alert/history/detail
+
+Disse links må ikke:
+
+- promote/demote lifecycle
+- acknowledge/suppress business events
+- sende alerts
+- starte AI
+- aktivere LIVE
+- ændre portfolio
+
+uden en særskilt eksplicit action-kontrakt uden for almindelig navigation.
+
+##### D009.2 acceptance
+
+D009.2 er kun godkendelig, hvis:
+
+- top-of-page følger attention → summary → opportunities → portfolio
+- Attention er conditional og exception-first
+- initial V3 presentation-policy viser højst tre korte decision points
+- AI-summary aldrig genereres på page load
+- initial V3 presentation-policy viser højst 2 opportunities pr. profile
+- Compounder/Catalyst-slots aldrig bliver en fælles ranking
+- opportunity-cards bevarer score/confidence/lifecycle-separation
+- Portfolio Fit forbliver separat personal layer
+- duplicate executive content reduceres uden at ændre canonical state
+- empty states ikke udløser nye analyser
+- responsive reading order bevarer executive priority
+- navigation er side-effect-fri
+- D001-D008 forbliver authoritative
+
+D009.3 fastlægger lower-page composition:
+What Changed, Market Context, Trust/Data/System State samt hvilke eksisterende
+V2-moduler der bevares, kondenseres, flyttes eller udgår.
+
+#### D009.3 Lower-page composition og V2-module disposition
+
+D009.3 fastlægger den sekundære executive informationsarkitektur under
+D009.2s primary viewport.
+
+Lower-page må give mere kontekst end primary viewport, men skal fortsat
+prioritere beslutningsværdi frem for antallet af eksisterende V2-moduler.
+
+Den normale lower-page rækkefølge er:
+
+1. **What Changed**
+2. **Market Context**
+3. **Trust / Data / System State**
+
+Et decision-critical trust-/systemproblem kan efter D009.1-D009.2 eskaleres
+til Attention og skal da ikke vente på sin normale lower-page-position.
+
+##### Lower-page er ikke en anden dashboard-forside
+
+Lower-page må ikke blive stedet, hvor alle tidligere V2-cards blot flyttes
+ned uden prioritering.
+
+Et eksisterende modul får kun selvstændig plads, hvis det tilfører en
+beslutningsværdi, som ikke allerede er dækket mere klart af:
+
+- primary viewport
+- et andet lower-page executive modul
+- en authoritative detail-side
+
+Backend-services og historiske datasæt kan fortsat være værdifulde, selv om
+deres nuværende standalone card udgår fra Command Center.
+
+`Udgå fra Command Center` betyder derfor ikke automatisk:
+
+- slet service
+- slet data
+- slet canonical history
+- stop background job
+- fjern detail-side
+
+En sådan implementation-/retentionbeslutning kræver separat teknisk review.
+
+##### 1. What Changed
+
+`What Changed` er den primære lower-page decision-history projection.
+
+Den skal forklare de vigtigste dokumenterede ændringer siden relevante
+tidligere canonical vurderinger.
+
+Relevante change-types kan blandt andet være:
+
+- opportunity lifecycle change
+- material Opportunity Score change
+- AI Confidence change
+- Data Confidence/freshness change
+- thesis strengthened/broken
+- ny eller løftet data-blocker
+- ny material event
+- research-/reconciliation change
+- portfolio relevance change
+- relevant alert/recovery change
+
+Listen er presentation-kategorier over eksisterende canonical events og
+records.
+
+D009 skaber ikke nye lifecycle- eller event-types ved at gruppere dem.
+
+##### What Changed bygger på event-identitet
+
+Et change-item skal kunne knyttes til den canonical event-/record-identitet,
+der dokumenterer ændringen.
+
+Det skal mindst kunne bevare:
+
+- relevant opportunity/system identity
+- event/change type
+- before/after eller anden canonical change-reference, når tilgængelig
+- timestamp/as-of
+- relevant reason/provenance
+- destination for drill-down
+
+UI'et må ikke konstruere en historisk ændring alene ved at sammenligne dagens
+værdi med en tilfældig ældre værdi, hvis den låste historical kontrakt ikke
+understøtter fortolkningen.
+
+##### What Changed ordering
+
+Ordering skal være deterministisk.
+
+Presentation-policyen kan prioritere fx:
+
+- decision-critical changes
+- lifecycle/thesis changes
+- material score/confidence changes
+- portfolio-relevant changes
+- øvrige relevante changes
+- event timestamp
+- stable canonical identity
+
+Der må ikke oprettes en ny skjult `change importance score`, som påvirker
+business-semantik.
+
+##### What Changed er ikke fuld timeline
+
+Command Center viser kun et executive udsnit.
+
+Den komplette case timeline og immutable history forbliver på D007s
+authoritative opportunity-detail/history-flader.
+
+Et item skal derfor primært vise:
+
+- hvad ændrede sig
+- hvorfor er det relevant
+- hvornår skete det
+- hvor kan detaljerne ses
+
+##### 2. Market Context
+
+Market Context forklarer den eksterne kontekst, som er relevant for de
+aktuelle decisions og opportunities.
+
+Det kan aggregere eksisterende materialized information om fx:
+
+- relevant market health/state
+- markeds-/sektorbevægelser
+- væsentlige current market themes
+- relevante nyheds-/event-forhold
+- regnskabs-/earnings-kontekst
+- andre current external conditions, som påvirker de viste cases
+
+Market Context er ikke en ny opportunity-score og må ikke ændre objective
+case ranking.
+
+##### Market Context er selektivt
+
+Command Center må ikke vise et generelt langt news-feed.
+
+Market Context skal forklare det, der har executive relevans for:
+
+- current opportunity-cases
+- current portfolio
+- aktuelle attention conditions
+- væsentlige market-wide forhold
+
+Hvis en markedsoplysning ikke ændrer brugerens forståelse af de aktuelle
+beslutninger, behøver den ikke top-level Command Center-plads.
+
+##### Market Health flytter til context-laget
+
+Eksisterende V2 `Market Health`/market-overview-information kan fortsat være
+værdifuld, men hører normalt hjemme som en del af Market Context frem for
+som et peer-card ved siden af de vigtigste decisions.
+
+Ved decision-critical market degradation kan relevant state eskalere til
+Attention efter den låste attention-policy.
+
+##### Earnings/regnskab splittes efter relevans
+
+Eksisterende earnings-/regnskabsinformation skal ikke nødvendigvis
+præsenteres som ét stort standalone Command Center-card.
+
+Presentation-laget skal kunne skelne mellem:
+
+- critical portfolio-relevant earnings condition
+- earnings condition relevant for en current opportunity
+- bredere kommende earnings-context
+
+Critical forhold, som allerede kvalificerer efter låst alert-/attention-
+semantik, kan eskalere til Attention.
+
+Portfolio-relevant earnings-context kan indgå i Portfolio Relevance.
+
+Opportunity-relevant earnings-context kan vises på opportunity-card/detail og
+eventuelt kondenseres i Market Context.
+
+Den komplette regnskabsoversigt kan fortsat have en relevant detail-
+destination.
+
+Dette ændrer ikke earnings-risk-, alert- eller portfolio-semantik.
+
+##### AI Explain hører primært til case-detail
+
+Eksisterende `AI Explain Center` indeholder værdifuld forklaring, men
+detaljeret stock-/case-explanation er ikke et selvstændigt lower-page
+executive behov, når D007 Opportunities/detail allerede er authoritative.
+
+Command Center kan vise:
+
+- en kort `why now`
+- én eller få material reasons
+- drill-down til den relevante case/detail
+
+Den fulde explanation hører som udgangspunkt på authoritative detail-fladen.
+
+##### 3. Trust / Data / System State
+
+Trust/Data/System State samler den information, der hjælper brugeren med at
+vurdere, om de viste conclusions kan bruges med normal tillid.
+
+Den skal mindst kunne repræsentere relevant state for:
+
+- data freshness
+- Data Confidence
+- provider-/pipeline health
+- AI engine availability
+- budget/admission constraints
+- decision-critical job/path degradation
+- D008 shadow/LIVE/calibration context, når relevant
+- calibration/decision-quality evidence, når det påvirker fortolkningen
+
+Dette er ikke en ny samlet `trust score`.
+
+##### Trust er exception-oriented
+
+Ved normal drift skal Trust/Data/System State være kompakt.
+
+Command Center behøver ikke vise mange grønne systemcards for at dokumentere,
+at alt er normalt.
+
+Ved degradation skal relevant information blive tydeligere.
+
+Hvis degradation er decision-critical, kan den eskalere til Attention.
+
+##### System Health og AI Engine Status integreres
+
+Eksisterende V2 `System Health` og `AI Engine Status` bør ikke være to store
+peer-moduler i V3 Command Center.
+
+De skal som udgangspunkt integreres i Trust/Data/System State.
+
+Normal state kan vises kompakt.
+
+Relevant degraded state skal vise:
+
+- hvad der er påvirket
+- om decision correctness påvirkes
+- timestamp/as-of
+- relevant drill-down
+
+##### Data quality er decision context
+
+Data Confidence/freshness må ikke skjules i et teknisk systempanel, hvis
+det ændrer fortolkningen af en konkret opportunity eller decision.
+
+Case-specifik data quality hører fortsat ved casen.
+
+Global/provider-/pipeline-relateret degradation hører i Trust/Data/System
+State og kan eskalere til Attention.
+
+##### Decision Quality, Learning og Maturity kondenseres
+
+Eksisterende V2-moduler for fx:
+
+- AI Decision Quality
+- AI Decision Learning
+- Adaptive Behavior
+- Adaptive Performance
+- Adaptive Explanation
+- AI Maturity
+- Decision Learning Trend
+
+repræsenterer relaterede learning/calibration-temaer.
+
+De skal ikke automatisk fortsætte som syv ligeværdige Command Center-cards.
+
+Command Center kan i stedet vise én kompakt
+`Decision Quality / Learning`-summary, når den tilfører aktuel
+beslutningsværdi.
+
+Detaljerede:
+
+- historiske metrics
+- trends
+- læringsforklaringer
+- maturity-komponenter
+- adaptive diagnostics
+
+hører på en authoritative performance/learning/detail-flade.
+
+##### Analysis Frequency er metadata, ikke executive card
+
+Eksisterende `Analysis Frequency` er nyttig forklarende metadata, men bør
+ikke være et selvstændigt top-level executive modul.
+
+Relevant frequency/freshness-information kan:
+
+- indgå i Trust/Data/System State
+- vises som tooltip/help
+- vises på en relevant detail-side
+
+Det må ikke dominere Command Center i normal drift.
+
+##### Current V2 render-path er ikke D009-compliance bevis
+
+Den nuværende V2-route og templates er implementation-baseline, ikke den
+låste V3 read-path-kontrakt.
+
+D009 kræver fortsat, at normal V3 Command Center-rendering er
+side-effect-fri og projection-baseret.
+
+Særligt må V3-render-pathen ikke være afhængig af eager fallback-mønstre som:
+
+`cache.get(key, generating_or_provider_function())`
+
+når fallback-funktionen kan:
+
+- generere ny AI-output
+- kalde ekstern provider
+- ændre canonical/business state
+- foretage decision-critical recomputation
+- skrive history/snapshots
+- sende eller oprette alerts
+
+I Python evalueres funktionsargumentet før `cache.get(...)` kaldes, så et
+sådant mønster er ikke en betinget fallback.
+
+##### Missing projection på page load
+
+Hvis en nødvendig materialized projection mangler på page load, må render-
+pathen som udgangspunkt:
+
+- vise ærlig unavailable/stale state
+- bruge en dokumenteret side-effect-fri deterministic fallback fra allerede
+  loaded canonical data, hvor kontrakten tillader det
+
+Den må ikke generere sig ud af manglen.
+
+Generering/refresh skal ske uden for almindelig page rendering efter en
+separat autoriseret background-/job-/explicit-action-kontrakt.
+
+##### Route-context skal følge synlig IA
+
+D009-implementationen bør ikke fortsætte med at hente og sende store mængder
+legacy context-data til Command Center alene fordi de historisk har eksisteret.
+
+Route-/projection-context skal efter implementation-audit tilpasses den
+faktiske V3 informationsarkitektur.
+
+Dette betyder ikke, at et backend-output slettes.
+
+Det betyder, at Command Center ikke skal betale complexity-, latency- eller
+coupling-cost for data, som ikke bruges i den executive surface.
+
+##### D009.3 part 1 acceptance
+
+Denne del af D009.3 er kun godkendelig, hvis:
+
+- lower-page rækkefølgen er What Changed → Market Context → Trust/Data/System
+- What Changed bygger på canonical history/events
+- Market Context er selektivt og ikke et generelt news-feed
+- earnings fordeles efter attention/portfolio/opportunity/context-relevans
+- AI Explain primært flyttes til authoritative case-detail
+- Trust/Data/System State er kompakt i normal drift og tydelig ved degradation
+- System Health og AI Engine Status integreres
+- learning/adaptive/maturity-moduler kondenseres frem for at fortsætte som
+  mange peer-cards
+- Analysis Frequency behandles som metadata
+- page load må ikke bruge eager generating/provider fallbacks
+- missing projections må ikke udløse skjult generation
+- route-context senere tilpasses den faktiske synlige V3-IA
+- D001-D008 og D009.1-D009.2 forbliver authoritative
+
+D009.3 fortsætter med en eksplicit disposition-matrix for de faktisk
+verificerede nuværende Command Center-moduler.
+
+##### Disposition-termer
+
+D009 bruger følgende presentation-dispositioner for den verificerede
+nuværende Command Center-baseline:
+
+- `INTEGRATE`
+  - informationen indgår i et andet V3 executive modul
+- `CONDENSE`
+  - informationen bevares i en mindre executive summary
+- `MOVE_TO_DETAIL`
+  - detaljer hører på en authoritative detail-/workspace-flade
+- `CONDITIONAL`
+  - modulet/indholdet vises kun, når en relevant condition gør det
+    beslutningsmæssigt værdifuldt
+- `REMOVE_STANDALONE_COMMAND_CENTER`
+  - det nuværende standalone card/partial har ikke længere selvstændig
+    executive plads
+
+Disse dispositioner beskriver Command Center-information architecture.
+
+De betyder ikke automatisk:
+
+- delete service
+- delete cache key
+- delete historical records
+- stop scheduled job
+- remove API/route
+- remove authoritative detail page
+
+Sådanne implementationbeslutninger kræver særskilt dependency-, usage- og
+retention-review.
+
+##### Verificeret V2→V3 disposition-matrix
+
+| Nuværende Command Center-element | V3-disposition | V3-destination / rolle |
+|---|---|---|
+| `_command_center_intro.html` | `INTEGRATE` + `REMOVE_STANDALONE_COMMAND_CENTER` | Kompakt D009.2 page context/header; længere forklaring flyttes til help/detail |
+| inline market-data-status/freshness card | `INTEGRATE` + `CONDITIONAL` | Header freshness + Trust/Data/System State; decision-critical degradation kan eskalere til Attention |
+| `_executive_dashboard.html` som samlet standalone block | `REMOVE_STANDALONE_COMMAND_CENTER` | Dets værdifulde dele fordeles efter D009.1-D009.3 i Attention, Executive Decision Summary, Opportunities, Portfolio Relevance og Market Context |
+| `AI Decision Overview` | `INTEGRATE` + `CONDENSE` | D009.2 Executive Decision Summary; højst den versionerede presentation-policy tillader |
+| `Portfolio Health` | `INTEGRATE` + `CONDITIONAL` + `MOVE_TO_DETAIL` | Portfolio Relevance; critical portfolio-condition → Attention; detaljer → Portfolio Manager/authoritative portfolio-flade |
+| `Market Health` | `INTEGRATE` + `CONDENSE` | D009.3 Market Context; critical market degradation kan eskalere efter Attention-policy |
+| `AI Alerts` executive card/list | `INTEGRATE` + `CONDITIONAL` + `MOVE_TO_DETAIL` | Action-required alert/recovery → Attention; komplet alert/delivery-history → D007 authoritative history/detail |
+| `Best Opportunity` | `REMOVE_STANDALONE_COMMAND_CENTER` | Erstattes presentation-mæssigt af D009.2 `Best Current Opportunities` med separate Compounder/Catalyst-grupper |
+| `_executive_summary.html` | `INTEGRATE` + `REMOVE_STANDALONE_COMMAND_CENTER` | Relevant indhold fusioneres i D009.2 header/summary/portfolio/attention; undgå parallel executive summary |
+| `_ai_copilot.html` | `CONDENSE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Materialized beslutningsrelevant synthesis kan indgå i Executive Decision Summary; fuld Copilot-forklaring hører på detail-/assistant-flade |
+| `_ai_copilot_timeline.html` | `INTEGRATE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Canonical/documented changes → What Changed; fuld timeline → authoritative history/detail |
+| `_ai_explain_center.html` | `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Kort `why now` på executive opportunity-card; fuld forklaring → Opportunity detail |
+| `_earnings_risk.html` | `INTEGRATE` + `CONDITIONAL` + `MOVE_TO_DETAIL` | Critical → Attention; portfolio-relevant → Portfolio Relevance; opportunity-relevant → opportunity-card/detail; bredere → Market Context; komplet kalender/detail bevares separat |
+| `_ai_risk_dashboard.html` | `CONDENSE` + `CONDITIONAL` + `MOVE_TO_DETAIL` | Decision-critical risk → Attention; case-/portfolio-risk → relevant context; bred/systemisk risk-summary kan indgå i Trust/Market Context; detaljer flyttes |
+| `_ai_decision_quality.html` | `CONDENSE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Én Decision Quality/Learning-summary når relevant; fulde metrics → performance/learning detail |
+| `_ai_decision_learning.html` | `CONDENSE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Samme Decision Quality/Learning-summary; detaljer → learning detail |
+| `_ai_adaptive_behavior.html` | `CONDENSE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Relevant diagnostic signal kan indgå i Decision Quality/Learning; fulde diagnostics → detail |
+| `_ai_adaptive_performance.html` | `CONDENSE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Relevant performance-signal → Decision Quality/Learning; fulde metrics → detail |
+| `_ai_adaptive_explanation.html` | `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Forklaringsdetaljer → learning/performance detail; kun material executive implication kan kondenseres |
+| `_ai_maturity.html` | `CONDENSE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Relevant maturity/calibration implication → Decision Quality/Learning eller Trust; fuld maturity-model → detail |
+| `_ai_decision_learning_trend.html` | `CONDENSE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Relevant trend → Decision Quality/Learning; fuld trend → detail |
+| `_analysis_frequency.html` | `INTEGRATE` + `MOVE_TO_DETAIL` + `REMOVE_STANDALONE_COMMAND_CENTER` | Freshness/frequency metadata → Trust/header/help/detail |
+| inline `AI Engine Status` | `INTEGRATE` + `CONDITIONAL` | Trust/Data/System State; degraded decision-critical engine-state kan eskalere til Attention |
+
+##### Dispositionen er semantisk, ikke filnavnsafhængig
+
+Matrixen bruger verificerede nuværende partial-/modulnavne for at gøre
+migrationen konkret.
+
+Den låste arkitektur er dog knyttet til informationsrollen, ikke til at disse
+eksakte filnavne nødvendigvis eksisterer efter implementationen.
+
+Implementation må:
+
+- splitte partials
+- samle partials
+- omdøbe partials
+- ændre route-context-struktur
+
+så længe den låste D009-informationsarkitektur og D001-D008-semantik
+bevares.
+
+##### Executive Dashboard demonteres semantisk
+
+Det nuværende `_executive_dashboard.html` samler flere forskellige concerns i
+ét stort block.
+
+I V3 er det ikke denne container, der er authoritative.
+
+Dets nuværende underfunktioner fordeles således:
+
+- highest-priority/action → Attention
+- decision overview/recommendation synthesis → Executive Decision Summary
+- best opportunity → Best Current Opportunities
+- portfolio health/relevance → Portfolio Relevance
+- market health → Market Context
+- alert attention → Attention + D007 alert/detail navigation
+
+Dette reducerer duplicate executive interpretation.
+
+Det må ikke skabe en ny business-decision ved at flytte informationen.
+
+##### Executive Summary og Decision Overview må ikke leve parallelt
+
+Den nuværende baseline har både executive dashboard-/decision-overview og
+executive-summary-koncepter.
+
+V3 skal ikke vise to peer-moduler, som begge forsøger at fortælle brugeren
+"det vigtigste lige nu".
+
+D009.2s `Executive Decision Summary` er den ene executive synthesis-flade.
+
+Legacy summaries kan være upstream materialized input eller
+migration-reference, men må ikke give parallel top-level synthesis uden en
+klart adskilt beslutningsrolle.
+
+##### Morning Brief og Today’s Take
+
+Den aktuelle route/cache-model indeholder blandt andet:
+
+- `morning_brief`
+- `today_take`
+
+Selv om de ikke fremstår som separate aktuelle top-level includes i den
+verificerede template-inventory, er deres informationsroller relevante i
+migrationen.
+
+De må ikke automatisk blive nye peer-cards i V3.
+
+Materialized indhold kan, når det er canonical/understøttet og aktuelt,
+fordeles i:
+
+- Executive Decision Summary
+- What Changed
+- Market Context
+- Portfolio Relevance
+
+Alt efter hvad informationen faktisk beskriver.
+
+Hvis de fortsætter som selvstændige produkter/detail-flader, er det en
+separat navigation-/implementationbeslutning.
+
+##### Legacy Top Picks
+
+Den nuværende route/cache-model indeholder `top_picks`.
+
+V3 Command Center må ikke bruge legacy `Top Picks` som en alternativ
+authoritative V3 opportunity-ranking.
+
+D009.2 `Best Current Opportunities` skal bygge på den authoritative V3
+opportunity-projection efter D001-D007.
+
+Legacy Top Picks kan under migration:
+
+- eksistere parallelt som V2-data
+- bruges til teknisk comparison/transition, hvor en særskilt kontrakt
+  tillader det
+
+men må ikke blandes ind i V3 opportunity-cases som om de var samme business
+entity.
+
+##### Legacy Market Summary
+
+Eksisterende market-summary-/market-intelligence-data kan fortsat være
+nyttige upstream inputs til D009.3 `Market Context`.
+
+V3 skal dog vise én kondenseret Market Context-flade frem for flere
+side-by-side market-summary/market-health/intelligence-cards med overlappende
+budskaber.
+
+Detaljer kan drill-downes.
+
+##### Legacy Portfolio summaries
+
+Eksisterende:
+
+- portfolio summary
+- portfolio health
+- portfolio insights
+- portfolio recommendations
+
+kan fortsat være værdifulde inputs/detailprodukter.
+
+Command Center V3 skal dog kun vise den del, der er nødvendig for
+`Portfolio Relevance` og eventuel Attention.
+
+Portfolio Manager/andre authoritative portfolio-flader kan fortsat indeholde
+dybere analyse.
+
+Command Center må ikke blive en kopi af Portfolio Manager.
+
+##### Legacy Analyst
+
+Den aktuelle route/cache-model indeholder `analyst`.
+
+Et generelt `AI Analyst`-output har ikke automatisk standalone executive
+plads i D009.
+
+Hvis analyst-output er materialized og kan bindes til canonical evidens, kan
+en relevant kort konklusion indgå i:
+
+- Executive Decision Summary
+- Market Context
+- Opportunity `why now`
+
+En bred conversational/analyst-flade hører ellers på en særskilt
+assistant/detail-surface.
+
+Page load må ikke generere analyst-output.
+
+##### Decision Quality / Learning summary contract
+
+Hvis D009 viser en kondenseret `Decision Quality / Learning`-summary, må den
+ikke skabe en ny samlet "AI quality score" uden særskilt låst kontrakt.
+
+Den kan i stedet vise et lille antal eksisterende, klart navngivne metrics
+eller conclusions, fx:
+
+- calibration/decision quality status
+- relevant learning trend
+- relevant degradation/anomaly
+- link til fuld performance/learning detail
+
+Hvis data er utilstrækkelige, skal det vises.
+
+Mange grønne learning-/maturity-metrics må ikke bruges som pynt.
+
+##### Risk-information må ikke få dobbelt business-semantik
+
+Risk-information kan optræde i flere presentation contexts:
+
+- Attention
+- opportunity
+- portfolio
+- Market Context
+- Trust/Data/System State
+
+Men samme canonical risk/event må ikke præsenteres som forskellige
+business-states blot fordi den vises flere steder.
+
+Presentation-dedup og drill-down skal bevare canonical identity.
+
+##### Conditional betyder ikke hidden failure
+
+`CONDITIONAL` må ikke bruges til at skjule negative eller degraded states.
+
+Det betyder kun, at normal/irrelevant information ikke behøver permanent
+standalone plads.
+
+Når en condition efter locked semantics er decision-critical, skal den vises
+på det korrekte prioriteringsniveau.
+
+##### Standalone removal kræver migration-safe implementation
+
+Når et legacy card får `REMOVE_STANDALONE_COMMAND_CENTER`, skal
+implementationen verificere, at nødvendig brugeradgang til relevant detail,
+historik eller forklaring fortsat findes.
+
+Et card må ikke fjernes på en måde, der gør locked evidens utilgængelig.
+
+Det kan fx kræve:
+
+- ny eller eksisterende drill-down
+- link til Opportunities
+- link til Portfolio Manager
+- link til alert/history
+- link til performance/learning detail
+- link til system/data detail
+
+D009 låser informationsansvaret; implementationen skal bevare nødvendig
+navigerbarhed.
+
+##### Route-context disposition
+
+Efter V3-migration bør `/command-center` kun modtage data, der bruges af den
+synlige V3 executive surface eller dens side-effect-frie presentation.
+
+Legacy context keys må ikke fortsætte alene af historiske årsager.
+
+Før et context-key/service-call fjernes, kræves dog en implementation-audit
+for:
+
+- template usage
+- JavaScript usage
+- hidden/modal usage
+- downstream includes
+- tests
+- other routes
+- side effects
+- background/cache dependencies
+
+D009.3 er ikke i sig selv tilladelse til at slette en service-call.
+
+##### Eager fallback migration requirement
+
+Den verificerede nuværende route indeholder mønstre, hvor funktioner sendes
+som default-argument til `cache.get(...)`.
+
+V3-migrationen skal eksplicit klassificere hvert sådant fallback som:
+
+- side-effect-free deterministic read, eller
+- ikke tilladt på normal page-render-path
+
+Calls med potentiale for:
+
+- provider-I/O
+- OpenAI
+- generation
+- snapshot/history write
+- business recomputation
+- alert creation/delivery
+
+må ikke udføres implicit under normal rendering.
+
+En safe read-fallback må stadig være bounded, deterministic og uden business
+side effects.
+
+##### Current route direct calls skal auditeres
+
+Den verificerede route udfører også direkte calls uden for cache-defaults,
+blandt andet current portfolio-/market-/engine-relaterede reads.
+
+D009 klassificerer ikke automatisk alle direkte Python-funktionskald som
+forbudte.
+
+Implementation-audit skal afgøre, om hvert call er:
+
+- ren lokal read/projection
+- bounded og side-effect-free
+- nødvendigt for synlig V3-IA
+
+eller om det skal flyttes til materialization/background-path.
+
+Der må ikke antages safety alene ud fra funktionsnavnet.
+
+##### D009.3 acceptance
+
+D009.3 er kun godkendelig, hvis:
+
+- lower-page er What Changed → Market Context → Trust/Data/System State
+- verified V2-moduler har en eksplicit disposition
+- `REMOVE_STANDALONE_COMMAND_CENTER` ikke forveksles med service/data deletion
+- Executive Dashboard demonteres efter informationsrolle
+- parallelle executive summaries undgås
+- legacy Top Picks ikke bliver V3 authoritative opportunity-ranking
+- Morning Brief/Today’s Take ikke automatisk bliver peer-cards
+- Market Summary/Market Health/intelligence kondenseres som Market Context
+- portfolio-inputs kondenseres som Portfolio Relevance frem for Portfolio
+  Manager-kopi
+- AI Explain flyttes primært til opportunity-detail
+- earnings splittes efter attention/portfolio/opportunity/context-relevans
+- System Health og AI Engine Status integreres i Trust
+- learning/adaptive/maturity-information kondenseres
+- Analysis Frequency behandles som metadata
+- conditional rendering ikke skjuler degraded/negative states
+- route-context cleanup kræver implementation usage-audit
+- eager generating/provider fallbacks er forbudt på normal render-path
+- direkte route-calls auditeres for purity, boundedness og synlig nødvendighed
+- D001-D008 og D009.1-D009.2 forbliver authoritative
+
+#### D009.4 Navigation, deep links, state continuity og action boundary
+
+D009.4 fastlægger, hvordan Command Center navigerer til authoritative
+V3-flader uden at ændre business state eller miste den canonical kontekst,
+som gjorde elementet relevant.
+
+Navigation er som udgangspunkt en read-operation.
+
+##### Navigation bevarer canonical identity
+
+Når et Command Center-element repræsenterer en opportunity-case, skal
+navigationen bevare den canonical case-identitet.
+
+Det betyder mindst:
+
+- `opportunity_id`
+- opportunity-profile
+- relevant instrument-identitet
+- relevant source/event-reference, når navigationen skyldes en konkret
+  ændring eller attention-condition
+
+Ticker eller company name må gerne bruges som læsbar label, men må ikke
+erstatte `opportunity_id` som business-identitet.
+
+En Compounder- og Catalyst-case for samme instrument skal derfor kunne
+navigere til hver sin authoritative case.
+
+##### Profile skal være eksplicit
+
+Et opportunity-deep-link må ikke være afhængigt af, at destinationssiden
+gætter profile ud fra ticker eller den nuværende ranking.
+
+Hvor destinationen repræsenterer en opportunity-case, skal profile-kontekst
+være entydig.
+
+Et link fra et Catalyst-card må ikke ved fejl lande på Compounder-casen for
+samme instrument.
+
+##### Authoritative destinations
+
+D009 skelner mellem mindst følgende destinationstyper:
+
+- Opportunity workspace/list
+- Opportunity detail
+- canonical opportunity timeline/history
+- portfolio/Portfolio Manager context
+- alert-/delivery-/recovery-history
+- market/context detail
+- data/system/trust detail
+- performance/learning detail
+
+Command Center må gerne have flere navigation-entry-points til samme
+authoritative destination, men må ikke skabe parallelle kopier af detail-
+informationen alene for at undgå navigation.
+
+##### Deep links er semantic contracts
+
+Et deep link skal udtrykke den semantiske destination, ikke være afhængigt af
+en tilfældig visuel placering på den aktuelle side.
+
+Stable semantic identifiers kan fx være:
+
+- opportunity-id
+- profile
+- event-id
+- alert/logical-alert-id
+- lifecycle-transition-id
+- calibration/report-id
+- portfolio-context identifier
+- stable filter/tab identifier
+
+D009 låser ikke nødvendigvis den konkrete URL-syntaks.
+
+Implementation kan ændre route paths, så længe deep-link-semantikken og
+canonical identity bevares.
+
+##### Ingen silent fallback til forkert entity
+
+Hvis et deep link indeholder en ukendt eller ugyldig canonical identity, må
+systemet ikke stille og roligt vise en anden opportunity, et andet profile
+eller en generisk ticker-side som om det var den ønskede entity.
+
+UI'et skal i stedet kunne:
+
+- vise target som unavailable/not found
+- forklare at den konkrete canonical entity ikke kunne findes
+- tilbyde sikker navigation til en relevant overordnet workspace/list
+
+Det må ikke ændre business state for at "reparere" linket.
+
+##### Command Center → Opportunities list continuity
+
+Når brugeren vælger fx:
+
+- se alle Compounders
+- se alle Catalysts
+- se Attention-relaterede opportunities
+- se relevante active opportunities
+
+må Command Center linke til den relevante D007 workspace/list-kontekst.
+
+Navigationen kan bevare presentation state som fx:
+
+- profile-filter
+- D007-tab
+- relevant søge-/filterkontekst
+
+men må kun bruge filters/tabs, som den authoritative Opportunities-kontrakt
+faktisk understøtter.
+
+Command Center må ikke opfinde en ny lifecycle-state ved at encode den som et
+filter.
+
+##### D007 tab-semantik må ikke omskrives
+
+Deep links til Opportunities skal respektere D007s låste tabs og deres
+business-semantik.
+
+Et presentation-filter må ikke få en case til at fremstå som:
+
+- `CANDIDATE`
+- `STRONG_CANDIDATE`
+- `HIGH_CONVICTION`
+- `DATA_HOLD`
+- `THESIS_BROKEN`
+
+hvis den canonical lifecycle-state ikke er dette.
+
+URL-/navigation-state er ikke lifecycle-state.
+
+##### Filter state er presentation state
+
+Filter-, sorterings-, search- og tab-state er presentation state.
+
+Det må:
+
+- påvirke hvilke allerede eksisterende records der vises
+- påvirke presentation-order inden for den authoritative kontrakt
+- kunne repræsenteres i en URL, hvor det er hensigtsmæssigt
+
+Det må ikke:
+
+- ændre Opportunity Score
+- ændre lifecycle
+- ændre AI Confidence
+- ændre Data Confidence
+- ændre Portfolio Fit
+- ændre gate-resultat
+- skabe alert
+- skrive canonical history
+
+##### Invalid filter state
+
+Ugyldige eller ikke-understøttede filter-parametre må ikke blive skjulte
+business-instruktioner.
+
+Destinationen skal kunne:
+
+- ignorere den ugyldige presentation-state og bruge en sikker canonical
+  default, eller
+- vise at filteret ikke kunne anvendes
+
+uden at ændre business state.
+
+Hvis en fallback anvendes, må UI'et ikke få det til at se ud som om den
+oprindelige filterintention blev opfyldt, hvis den faktisk ikke blev det.
+
+##### Return-context
+
+Når brugeren drill-down'er fra Command Center og går tilbage, bør den
+relevante presentation-kontekst så vidt muligt kunne bevares.
+
+Dette kan ske gennem fx:
+
+- normal browser history
+- URL-baseret presentation state
+- side-effect-fri client-side navigation context
+
+Det må ikke kræve en canonical server-write alene for at huske:
+
+- scroll-position
+- åbent presentation-panel
+- valgt filter
+- hvilket Command Center-card brugeren kom fra
+
+Return-context er UX-state, ikke business-state.
+
+##### Referrer er ikke canonical identity
+
+HTTP referrer eller browser-navigation-history må ikke bruges som eneste
+kilde til business-identitet.
+
+Hvis en destination kræver `opportunity_id`, event-id eller anden canonical
+identity, skal denne identity komme fra den eksplicitte navigation/context-
+kontrakt.
+
+##### What Changed deep links
+
+Et `What Changed`-item skal så vidt muligt kunne navigere til den relevante
+authoritative case/history og den canonical change/event, som itemet bygger
+på.
+
+Hvis destinationen understøtter event-specific highlighting, skal det ske på
+basis af stable event-/record-identitet.
+
+UI'et må ikke konstruere en pseudo-event-anchor ud fra rækkefølgen på siden.
+
+##### Historical event versus current case
+
+Et deep link fra et historisk change-item må gerne åbne den nuværende
+authoritative case-detail med tydelig reference til den historiske event.
+
+Det må ikke præsentere den historiske state som current state.
+
+Hvis destinationsfladen understøtter et historisk/as-of view, skal dette
+være en read-only historical projection efter de låste temporal-integrity-
+regler.
+
+##### `as_of` er ikke backdated execution
+
+En URL/query-param som repræsenterer et historisk `as_of` må aldrig:
+
+- genkøre en historical gate som LIVE
+- skabe historical lifecycle-transition
+- skabe alert
+- ændre current opportunity-head
+- udføre backdated business logic
+
+Et eventuelt historical/as-of view er read-only.
+
+##### Alert/recovery navigation
+
+Et attention-item, der skyldes alert-/delivery-/recovery-state, skal linke
+til den relevante authoritative alert/history-kontekst.
+
+Navigationen skal skelne mellem fx:
+
+- logical alert
+- delivery attempt
+- delivery state
+- recovery state
+
+i overensstemmelse med D006-D007.
+
+Et link til en alert må ikke i sig selv:
+
+- acknowledge alerten
+- suppress alerten
+- retry delivery
+- resend
+- ændre recovery-state
+
+##### Portfolio navigation
+
+Et portfolio-relevant Command Center-item kan navigere til:
+
+- relevant opportunity-detail med separat Portfolio Fit-context
+- relevant Portfolio Manager/detail-flade
+
+Navigationen må gerne bevare presentation-kontekst om, hvorfor itemet blev
+vist.
+
+Den må ikke ændre:
+
+- portfolio holdings
+- Portfolio Fit
+- target allocation
+- rebalancing plan
+- objective opportunity assessment
+
+##### Trust/system navigation
+
+Et degraded Trust/Data/System-item skal kunne linke til den relevante
+authoritative operational/data-detail, hvis en sådan findes.
+
+Destinationen skal kunne forklare:
+
+- hvilken subsystem/data-path der er påvirket
+- relevant timestamp/as-of
+- om decision correctness er påvirket
+- relevant recovery/status-evidens
+
+Navigationen må ikke udføre recovery eller refresh alene fordi detail-siden
+åbnes.
+
+##### Detail-links skal kunne tåle stale source projection
+
+Et Command Center-card kan være blevet materialized på tidspunkt `T1`, mens
+den authoritative detail ved klik nu er på `T2`.
+
+Dette er legitimt.
+
+Destinationen skal vise current authoritative state og må, hvor relevant,
+også kunne vise hvilken source/as-of cardet blev bygget fra.
+
+Command Center må ikke fastholde en gammel state som current blot for at få
+card og detail til at matche.
+
+##### Navigation til unavailable target
+
+Hvis en target-detail er unavailable, skal UI'et fejle ærligt.
+
+Det kan fx vise:
+
+- detail unavailable
+- record no longer available
+- insufficient permission
+- stale/deleted projection
+- relevant overordnet destination
+
+Det må ikke generere en ny case, researchrapport eller alert for at skabe et
+target.
+
+##### GET/read navigation er side-effect-fri
+
+Almindelige navigation-links og read-only deep links skal kunne udføres uden
+business side effects.
+
+En read-navigation må ikke:
+
+- promote/demote lifecycle
+- acknowledge event
+- suppress alert
+- resend delivery
+- starte OpenAI
+- refresh providerdata
+- rebalance portfolio
+- activate LIVE-canary
+- ændre calibration-verdict
+- gemme canonical decision history
+
+Hvis en eksisterende destination i V2 i dag har read-side effects, skal dette
+behandles som en implementation-migrationsrisiko.
+
+##### Navigation versus explicit action
+
+Et UI-element er **navigation**, når det alene åbner eller filtrerer allerede
+eksisterende information.
+
+Et UI-element er en **explicit action**, når det kan ændre persistent
+business-/operational state eller starte arbejde, som kan gøre det.
+
+Examples på explicit actions kan være:
+
+- acknowledge/suppress
+- retry/resend
+- manual refresh/generation
+- lifecycle-/workflow-action
+- activation/deactivation
+- portfolio mutation
+
+Sådanne actions må ikke forklædes som almindelige links.
+
+##### Link wording skal afspejle effekt
+
+Link-/button-label skal gøre det forståeligt, om brugerens handling:
+
+- kun åbner information
+- starter en explicit action
+
+Et element med label som `Se detaljer` må ikke i samme click:
+
+- sende alert
+- refresh data
+- starte AI-generation
+- ændre lifecycle
+
+Navigation og mutation skal være separate interactions.
+
+##### Open in new tab må være sikkert
+
+Et deep link skal så vidt muligt kunne åbnes direkte eller i en ny browser-tab
+uden at kræve skjult transient server-state for at identificere target.
+
+Dette understøtter:
+
+- bookmarkability
+- reproducibel navigation
+- support/debugging
+- safe sharing inden for den relevante auth-boundary
+
+Sensitive/private data må naturligvis fortsat følge gældende authorization.
+
+##### Authorization bevares ved deep links
+
+At en bruger har fået vist en summary på Command Center er ikke i sig selv en
+authorization-token til enhver destination.
+
+Hver authoritative detail-route skal fortsat håndhæve sin relevante
+authorization/access-policy.
+
+En URL-param må ikke kunne omgå authorization.
+
+##### Deep-link presentation state må ikke være trusted input til business logic
+
+Profile-, filter-, tab-, sorting-, source- og return-parametre fra URL'en er
+presentation input.
+
+De skal valideres og må ikke bruges som trusted proof på fx:
+
+- canonical lifecycle
+- portfolio ownership
+- gate-resultat
+- alert authorization
+- LIVE execution-mode
+- calibration verdict
+
+Business logic skal bruge authoritative server-side canonical records.
+
+##### Accessibility i navigation
+
+Navigation skal være forståelig uden kun at være afhængig af:
+
+- ikon
+- farve
+- visuel card-position
+
+Link-text/accessible name skal gøre destinationen forståelig.
+
+Keyboard-navigation skal følge den semantiske reading order fra D009.2-D009.3.
+
+##### D009.4 part 1 acceptance
+
+Denne del af D009.4 er kun godkendelig, hvis:
+
+- opportunity-links bevarer `opportunity_id` og profile
+- ticker alene aldrig bliver opportunity identity
+- deep links bruger stable semantic identifiers
+- invalid identity aldrig silently fallback'er til en anden business entity
+- D007 tab/filter-semantik bevares
+- filter/search/sort er presentation state
+- return-context ikke kræver canonical write
+- historical/as-of navigation er read-only
+- alert-navigation ikke acknowledge/suppress/retry'er
+- portfolio-navigation ikke muterer portfolio eller objective assessment
+- trust/system-detail ikke udfører recovery/refresh på open
+- stale source projection ikke tvinger detail til at vise gammel state som
+  current
+- GET/read navigation er business-side-effect-fri
+- navigation og explicit actions er separate interactions
+- authorization håndhæves på destinationen
+- URL presentation-state aldrig bruges som trusted business-state
+- navigation er keyboard-/screen-reader-forståelig
+- D001-D008 og D009.1-D009.3 forbliver authoritative
+
+D009.4 fortsætter med den konkrete explicit-action-kontrakt:
+authorization, confirmation, idempotency, mutation-resultater og recovery.
+
+##### Explicit action contract
+
+Command Center må kun eksponere en state-changing handling som en explicit
+action, når den underliggende business-/operational action allerede har en
+autoriseret kontrakt.
+
+D009 skaber ikke nye mutation-semantikker alene ved at tilføje en button.
+
+En explicit action skal mindst gøre det tydeligt:
+
+- hvilken action der ønskes
+- hvilken canonical target/entity actionen gælder
+- hvilken effekt actionen kan have
+- om handlingen er reversibel eller kan kræve recovery
+- hvilket authoritative workflow der ejer mutationen
+
+##### Ingen mutation via almindelig GET/navigation
+
+State-changing actions må ikke udføres som side effect af:
+
+- almindeligt page load
+- GET navigation
+- deep-link open
+- browser refresh
+- back/forward navigation
+- open in new tab
+- preload/prefetch
+- crawler/link inspection
+
+Mutation skal bruge en særskilt action-path og den relevante HTTP-/request-
+semantik for en state-changing operation.
+
+Et link, som blot åbner detaljer, må aldrig samtidig mutere state.
+
+##### Browser actions kræver request-forgery protection
+
+Browserbaserede state-changing actions skal beskyttes mod cross-site request
+forgery efter platformens gældende security-kontrakt.
+
+CSRF-beskyttelse erstatter ikke authorization.
+
+Authorization erstatter heller ikke CSRF-beskyttelse.
+
+Begge skal håndhæves, hvor den konkrete request-type kræver det.
+
+##### Authorization afgøres server-side
+
+UI'et må gerne skjule eller disable en action, som brugeren ikke kan udføre.
+
+Det er kun presentation.
+
+Den authoritative action-handler skal selv validere:
+
+- authenticated principal
+- relevant authorization/access-policy
+- canonical target identity
+- current target state
+- action eligibility
+- relevante policy-/feature-flags
+
+Client-side visibility eller disabled-state må ikke bruges som security
+boundary.
+
+##### URL-/form-input er ikke authoritative state
+
+Action-handleren må ikke stole på browser-sendt state som proof på fx:
+
+- lifecycle
+- current score
+- gate-resultat
+- Data Confidence
+- portfolio ownership
+- alert delivery-state
+- recovery-state
+- execution mode
+- calibration verdict
+
+Browseren kan sende canonical identity og den nødvendige action-request-
+kontekst.
+
+Handleren skal genlæse/revalidere den authoritative server-side state før en
+mutation autoriseres.
+
+##### Stale UI må ikke forcere mutation
+
+Et Command Center-card kan være bygget ved `T1`, mens authoritative state er
+ændret ved `T2`.
+
+Hvis actionens gyldighed afhænger af current state, skal handleren validere
+`T2`-state før commit.
+
+Hvor den låste persistence-/workflow-kontrakt kræver:
+
+- expected version
+- compare-and-swap
+- fencing
+- lease
+- precondition
+
+skal action-pathen bruge den mekanisme.
+
+En stale browser må ikke kunne overskrive nyere canonical state alene fordi
+knappen stadig var synlig.
+
+##### Concurrency conflict er ikke success
+
+Hvis en action ikke længere kan udføres på grund af en concurrent eller
+nyere canonical ændring, skal UI'et vise en ærlig conflict/not-applicable-
+tilstand efter den underliggende kontrakt.
+
+Det må ikke:
+
+- vise success
+- forsøge at force-write
+- genstarte samme mutation blindt
+- skjule konflikten som almindelig navigation
+
+Brugeren kan efterfølgende navigere til current authoritative state.
+
+##### Idempotency ved retry-prone actions
+
+Actions, som realistisk kan blive:
+
+- dobbeltklikket
+- retried af browser/client
+- retried efter timeout
+- retried af recovery
+- submitted fra flere tabs
+
+skal bruge den relevante idempotency-/dedup-kontrakt.
+
+D009 opfinder ikke en alternativ idempotency-model.
+
+Når D006 eller en anden låst business-kontrakt allerede definerer canonical
+idempotency identity, skal UI/action-pathen respektere den.
+
+Duplicate UI-submission må ikke skabe duplicate canonical business effects.
+
+##### Confirmation er impact-baseret
+
+En explicit action, der kan have væsentlig eller vanskelig reversibel effekt,
+skal kunne kræve en tydelig confirmation før requesten sendes.
+
+Confirmation skal beskrive den faktiske handling og target.
+
+Eksempler kan være:
+
+- resend/retry med ekstern effekt
+- activation/deactivation
+- portfolio mutation
+- destructive/suppressive action
+
+Ikke alle harmless actions behøver en ekstra confirmation.
+
+Confirmation er UX-safety og erstatter ikke:
+
+- authentication
+- authorization
+- server-side eligibility
+- idempotency
+- transactional correctness
+
+##### Action-label må være præcis
+
+Labels som:
+
+- `Se detaljer`
+- `Åbn`
+- `Vis historik`
+
+må kun være navigation/read.
+
+State-changing labels skal beskrive mutationen, fx når en sådan action
+allerede er autoriseret:
+
+- `Retry`
+- `Resend`
+- `Acknowledge`
+- `Suppress`
+- `Refresh`
+- `Generate`
+
+Den konkrete action-semantik ejes fortsat af den authoritative underliggende
+kontrakt.
+
+D009 gør ikke disse eksempler til nye V3-actions.
+
+##### Ingen implicit action chaining
+
+En explicit action må ikke stiltiende starte andre business mutations, med
+mindre dette er en del af den låste authoritative workflow-kontrakt.
+
+Eksempelvis må:
+
+- `Åbn opportunity`
+  ikke samtidig starte research
+- `Se alert`
+  ikke samtidig acknowledge alerten
+- `Refresh data`
+  ikke automatisk promote lifecycle
+- `Generate analysis`
+  ikke automatisk skabe `HIGH_CONVICTION`
+
+UI'et må ikke sammensætte nye workflow-semantikker ved at chain'e eksisterende
+actions.
+
+##### Action-resultat skal afspejle authoritative outcome
+
+Efter en mutation må UI'et ikke vise success alene fordi requesten blev sendt.
+
+Resultatpresentationen skal skelne mellem det, som den underliggende kontrakt
+faktisk kan dokumentere, fx:
+
+- request afvist
+- request accepteret/queued, hvis en sådan async-kontrakt eksisterer
+- canonical mutation committed
+- conflict/not applicable
+- failure
+- recovery/unknown state, når den authoritative kontrakt har dette
+
+D009 definerer ikke nye globale action-resultat states.
+
+UI'et skal bruge den authoritative action-/workflow-status og må ikke
+oversætte `accepted` til `committed`.
+
+##### Optimistic UI må ikke lyve om canonical commit
+
+Et UI må gerne vise lokal progress, fx spinner eller disabled button, mens en
+action behandles.
+
+Det må ikke vise en canonical state-change som endelig, før den underliggende
+kontrakt har dokumenteret det nødvendige commit/resultat.
+
+Hvis requesten ender i ukendt eller ambiguous state, skal UI'et vise dette
+efter den authoritative recovery-kontrakt.
+
+##### Alert retry/resend følger D006-D007
+
+Retry/resend af alert-delivery må ikke opfindes i Command Center.
+
+Hvis en authoritative alert/recovery-flade understøtter en sådan action,
+gælder D006-D007 fuldt ud.
+
+Særligt:
+
+- logical alert identity bevares
+- duplicate prevention bevares
+- delivery-attempt og delivery-state må ikke blandes sammen
+- `AMBIGUOUS` giver ikke blind resend
+- recovery-policy må ikke bypasses af UI'et
+
+En `Retry`-button må ikke fungere som en skjult "send igen uanset state".
+
+##### Acknowledge/suppress kræver eksisterende semantik
+
+D009 indfører ikke generiske `ACKNOWLEDGED` eller `SUPPRESSED` business-states.
+
+Hvis en eksisterende låst alert-/workflow-kontrakt senere eller allerede
+understøtter acknowledge/suppress, kan Command Center linke til eller
+eksponere den action efter den kontrakt.
+
+Ellers må UI'et ikke opfinde handlingen.
+
+##### Manual refresh er en explicit action
+
+Hvis V3 senere tilbyder manuel refresh af:
+
+- providerdata
+- materialized projection
+- market context
+- opportunity-data
+
+er dette en explicit action og ikke navigation.
+
+Refresh skal have en autoriseret kontrakt, som definerer:
+
+- hvad der faktisk refreshes
+- hvilke providers/jobs der kan kaldes
+- rate-/concurrency-boundary
+- freshness/result semantics
+- failure/recovery
+
+Page load må fortsat ikke udføre denne refresh implicit.
+
+##### Manual AI generation følger D005
+
+Hvis en explicit action kan starte paid OpenAI-generation, skal D005 gælde
+uændret.
+
+Det betyder blandt andet:
+
+- reservation/admission før paid call
+- globalt 100 DKK/måned hard cap på tværs af V2 + V3
+- ingen separat Command Center-budgetpulje
+- ingen kvalitetsreduktion for at få plads i budgettet
+- konservativ behandling af unresolved attempts
+
+Budget rejection må ikke omgås ved at retry'e fra UI'et under en ny skjult
+action identity.
+
+##### AI-generation er ikke lifecycle mutation
+
+At en manual AI-generation eller research-action lykkes betyder ikke i sig
+selv:
+
+- lifecycle promotion
+- `HIGH_CONVICTION`
+- gate `PASS`
+- alert
+- LIVE activation
+
+Eventuelle efterfølgende business transitions skal fortsat følge de låste
+D002-D006 workflows.
+
+##### Portfolio mutation er ikke implicit Command Center-scope
+
+D009.2-D009.3 tillader Portfolio Relevance og navigation til Portfolio
+Manager.
+
+Det er ikke i sig selv authorization til at:
+
+- købe/sælge
+- ændre holdings
+- ændre target allocation
+- committe rebalancing
+- ændre Portfolio Fit
+
+Hvis en senere Command Center-action skal kunne mutere portfolio-state,
+kræver det en særskilt authoritative portfolio-action-kontrakt.
+
+##### LIVE activation/deactivation er ikke almindelig Command Center-action
+
+D008s LIVE-canary-/activation-kontrakt ændres ikke af D009.
+
+`ELIGIBLE_FOR_LIVE_CANARY_PROPOSAL` er ikke authorization til activation.
+
+En eventuel activation/deactivation skal følge D008s separate:
+
+- calibration report
+- human/operational review
+- activation record
+- feature-/activation-policy
+- kill-switch semantics
+
+Command Center må ikke reducere dette til en almindelig toggle uden den
+underliggende autoriserede workflow-kontrakt.
+
+##### Lifecycle/workflow-actions er ikke opfundet af D009
+
+D009 giver ikke brugeren nye manuelle muligheder for at:
+
+- promote til `CANDIDATE`
+- promote til `STRONG_CANDIDATE`
+- sætte `HIGH_CONVICTION`
+- sætte/fjerne `DATA_HOLD`
+- sætte `THESIS_BROKEN`
+
+Hvis en sådan manual workflow-action en dag skal eksistere, kræver den en
+særskilt låst business-kontrakt.
+
+Command Center presentation må ikke skabe den capability.
+
+##### Audit trail for mutation
+
+En business-/operational mutation skal følge den underliggende audit-
+kontrakt.
+
+Hvor actionen kræver audit, skal det mindst kunne spores efter den relevante
+authoritative model:
+
+- hvem/principal
+- hvilken action
+- canonical target identity
+- request/action identity
+- timestamp
+- relevant policy/version
+- result/commit reference eller failure/recovery reference
+
+D009 opfinder ikke en parallel Command Center-only auditlog, hvis den
+authoritative service allerede ejer auditsporet.
+
+##### UI feedback efter action
+
+Efter en explicit action skal UI'et så vidt muligt vise state fra en
+authoritative result/projection.
+
+Det må ikke bygge permanent state alene på den lokale browser-antagelse om,
+hvad der burde være sket.
+
+Hvis current authoritative projection endnu ikke er opdateret efter en async
+action, skal UI'et kunne vise dette uden at forfalske endelig state.
+
+##### Action failure må ikke skjules
+
+Ved action failure skal UI'et kunne skelne mellem fx:
+
+- authorization denied
+- action no longer applicable
+- validation/precondition failure
+- budget/admission blocked
+- provider/job failure
+- conflict/concurrency
+- recovery/unknown state
+
+kun i det omfang den underliggende authoritative kontrakt faktisk kan skelne.
+
+UI'et må ikke ændre en failure til success for at holde flowet "smooth".
+
+##### Action retry efter ukendt state
+
+Hvis en action har ukendt commit-/delivery-state, må UI'et ikke automatisk
+retry'e en mulig mutation, medmindre den authoritative recovery- og
+idempotency-kontrakt gør dette sikkert.
+
+Dette er især vigtigt for:
+
+- external delivery
+- paid generation
+- portfolio mutation
+- lifecycle/workflow mutation
+
+"Prøv igen" må ikke være en blind duplicate-effect-knap.
+
+##### Explicit actions og accessibility
+
+En action skal være semantisk en button/action-control, når den muterer state,
+ikke et link forklædt som mutation.
+
+Accessible name skal beskrive handlingen.
+
+Disabled-state skal kunne forstås uden kun farve.
+
+Confirmation/error/result feedback skal kunne opfattes med keyboard og
+assistive technology.
+
+##### D009.4 acceptance
+
+D009.4 er kun godkendelig, hvis:
+
+- navigation bevarer canonical identity/profile og er side-effect-fri
+- invalid deep links aldrig silently skifter business entity
+- presentation state aldrig bliver trusted business state
+- historical/as-of navigation er read-only
+- navigation og explicit actions er klart separeret
+- state-changing browser-actions har relevant CSRF-beskyttelse
+- authorization og action eligibility valideres server-side
+- stale UI kan ikke forcere mutation over nyere canonical state
+- retry-prone actions følger authoritative idempotency/dedup
+- confirmation bruges impact-baseret og erstatter ikke security/correctness
+- implicit action chaining er forbudt
+- UI success afspejler authoritative commit/resultat
+- alert retry/resend følger D006-D007 inklusive `AMBIGUOUS` no-blind-resend
+- manual paid AI-generation følger D005
+- AI-generation alene ændrer ikke lifecycle/gate/alert
+- portfolio mutation ikke autoriseres af D009 alene
+- LIVE activation ikke reduceres til almindelig UI-toggle
+- D009 skaber ingen nye lifecycle/workflow-actions
+- mutationsaudit ejes af den authoritative business-/operational kontrakt
+- unknown action-state aldrig blindt retry'es
+- explicit actions er accessibility-forståelige
+- D001-D008 og D009.1-D009.3 forbliver authoritative
+
+#### D009.5 Materialized executive view model, freshness og resilient read path
+
+Command Center V3 skal rendere fra et eksplicit read-/projection-lag.
+
+Det normale page-render path skal ikke være et orkestreringslag, som ved
+hver request samler business-services, providers og AI-kald dynamisk.
+
+Målet er:
+
+- deterministisk executive rendering
+- kendt source/as-of
+- ærlig freshness
+- partial availability uden fake data
+- bounded read-path
+- ingen business side effects
+- mulighed for at reproducere, hvad brugeren faktisk så
+
+##### Command Center projection
+
+Den normale V3-side skal kunne læse en materialized
+`command_center_projection`.
+
+Projectionen er et presentation/read-model.
+
+Den er ikke:
+
+- canonical opportunity-state
+- lifecycle-state
+- gate-resultat
+- alert-state
+- calibration verdict
+- portfolio truth
+- ny business-ranking
+
+Canonical D001-D008 records og authoritative projections forbliver
+sandhedskilder.
+
+Command Center projectionen organiserer kun disse til den låste D009-IA.
+
+##### Projection identity og versionering
+
+En materialized Command Center projection skal mindst kunne identificere:
+
+- `command_center_projection_id`
+- projection schema/version
+- presentation-policy-version
+- generated/materialized timestamp
+- projection `as_of`
+- relevant source cutoff
+- relevante source/projection references
+- relevant scope
+- build/result status
+
+Hvor projectionen indeholder portfolio-/personaliseret indhold, skal scope
+være entydigt nok til at forhindre, at én brugers personlige overlay
+genbruges som en anden brugers.
+
+D009 låser ikke den konkrete tabel-/fil-/JSON-form.
+
+##### Global projection og personal overlay
+
+Objective market-/opportunity-information og personal portfolio-information
+må ikke smeltes sammen til én business-semantik.
+
+Implementation kan derfor anvende fx:
+
+- én global executive projection
+- et separat user-/portfolio-scoped overlay
+
+eller en anden read-model-struktur, hvis den bevarer samme separation.
+
+Et personal overlay må ikke ændre den objective opportunity-projection.
+
+Det skal fortsat være muligt at skelne:
+
+- objective case state
+- personal Portfolio Fit/relevance
+
+##### Projection sections
+
+Read-modellen skal kunne repræsentere D009s executive sektioner uden at
+route-laget selv skal rekonstruere business-semantik.
+
+Mindst:
+
+- page context/header
+- Attention
+- Executive Decision Summary
+- Compounder executive opportunities
+- Catalyst executive opportunities
+- Portfolio Relevance
+- What Changed
+- Market Context
+- Trust/Data/System State
+
+En kondenseret Decision Quality/Learning-summary kan være en del af den
+relevante lower-page projection, når D009.3s regler gør den relevant.
+
+##### Availability og freshness er separate akser
+
+D009 må ikke bruge én enkelt status til både availability og freshness.
+
+En section skal som minimum kunne skelne availability som fx:
+
+- `AVAILABLE`
+- `PARTIAL`
+- `UNAVAILABLE`
+
+og freshness som fx:
+
+- `CURRENT`
+- `STALE`
+- `UNKNOWN`
+
+Disse er presentation/read-model-statusser.
+
+De er ikke:
+
+- lifecycle-states
+- Data Confidence
+- gate-results
+- calibration verdicts
+- provider business-status
+
+##### `PARTIAL` er ikke negativ business-vurdering
+
+`PARTIAL` betyder, at noget af den krævede presentation-evidens mangler eller
+ikke kan vises.
+
+Det betyder ikke automatisk:
+
+- dårlig investment thesis
+- lav Opportunity Score
+- `DATA_HOLD`
+- `BLOCKED_DATA`
+- `THESIS_BROKEN`
+
+Hvis en locked business-state faktisk er påvirket, skal den vises som den
+canonical state og ikke udledes af presentation-statussen.
+
+##### `STALE` må aldrig ligne `CURRENT`
+
+Hvis en section bruger last-known-good eller ældre materialized data, skal
+freshness fremgå ærligt.
+
+Stale data må ikke:
+
+- få nyt `updated_at` alene fordi siden blev åbnet
+- præsenteres som current
+- få højere Data Confidence af presentation-laget
+- udløse skjult refresh
+
+Relevant source-as-of skal bevares.
+
+##### Per-section source/as-of
+
+Forskellige executive sections kan bygge på upstream projections med
+forskellig cadence.
+
+Command Center må derfor ikke foregive, at alle informationer nødvendigvis
+har samme source timestamp.
+
+Projectionen skal kunne bevare mindst:
+
+- overall projection `as_of`
+- per-section source/as-of, når det er relevant
+- freshness/result state
+
+Dette gør det muligt at vise en coherent page projection uden at falsificere
+upstream-tidspunkter.
+
+##### Coherent snapshot betyder ikke identisk timestamp
+
+En coherent Command Center projection betyder, at den publicerede read-model
+er internt veldefineret og versioneret.
+
+Det betyder ikke, at:
+
+- market data
+- opportunity data
+- portfolio data
+- alerts
+- learning/calibration data
+
+skal være produceret i samme millisekund.
+
+Forskellige source cutoffs skal blot være auditerbare og ikke præsenteres som
+mere samtidige, end de faktisk er.
+
+##### Build off render-path
+
+Projection-materialization skal ske uden for almindelig page rendering.
+
+Det kan ske gennem en autoriseret:
+
+- background job
+- scheduler
+- event-driven projection builder
+- eksplicit refresh-action med egen kontrakt
+
+Page load må ikke starte projection-build.
+
+Hvis build kræver OpenAI eller provider-I/O, gælder de allerede låste
+D004-D006/D008-kontrakter på build-pathen.
+
+##### Publish complete snapshot atomisk
+
+En ny projection må ikke blive synlig som et halvt bygget read-model.
+
+Implementation skal kunne:
+
+1. bygge candidate projection
+2. validere schema/invariants
+3. færdiggøre section-statusser/source references
+4. publicere den nye projection som én coherent version
+
+eller beholde den tidligere publicerede projection.
+
+D009 kræver ikke en bestemt storage-mekanisme, men publication skal forhindre
+readers i at se tilfældige blandinger af gammel og ny projection på grund af
+partial write.
+
+##### Publication er ikke canonical business commit
+
+At en ny Command Center projection publiceres ændrer ikke i sig selv:
+
+- opportunity lifecycle
+- portfolio
+- alert
+- gate
+- calibration verdict
+- execution mode
+
+Projection publication er en read-model operation.
+
+Business mutation skal allerede være committed i det authoritative lag, hvis
+den vises som current business state.
+
+##### Projection builder må ikke opfinde missing facts
+
+Materialization må sammenfatte og organisere canonical/materialized inputs.
+
+Den må ikke udfylde manglende fakta ved at:
+
+- sætte missing numeric data til `0`
+- opfinde score/confidence
+- inferere lifecycle uden canonical state
+- antage successful alert delivery
+- antage portfolio ownership
+- antage gate `PASS`
+
+Missing data skal forblive missing/partial/unavailable efter relevant
+kontrakt.
+
+##### Projection validation
+
+Før publication skal builderen som minimum kunne afvise en projection, som
+bryder read-model-invariants, fx:
+
+- ukendt schema-version
+- manglende required identity
+- Compounder/Catalyst case identity blandet sammen
+- invalid deep-link target contract
+- malformed section status
+- personal scope mismatch
+- required source reference mangler
+- presentation-resultat hævder en business-state uden canonical evidens
+
+En afvist projection må ikke publiceres som current.
+
+##### Last-known-good
+
+Hvis en ny projection-build fejler, kan den senest valide publicerede
+projection bruges som last-known-good, hvis den stadig kan læses sikkert.
+
+Den skal da bevare sit oprindelige:
+
+- projection-id
+- generated/materialized timestamp
+- source/as-of
+- freshness
+
+Render-pathen må ikke ændre disse felter for at få den gamle projection til
+at ligne en ny build.
+
+##### Last-known-good er ikke altid tilladt
+
+En tidligere projection må ikke vises ukritisk, hvis:
+
+- dens integrity ikke kan valideres
+- authorization/scope ikke længere er gyldig
+- relevant retention-policy ikke tillader den
+- den er inkompatibel med current read-schema
+- den kan få brugeren til at tro, at en known critical state stadig er
+  current, når systemet ved, at den ikke kan valideres
+
+I sådanne tilfælde skal relevant section/page vise unavailable/degraded
+state frem for falsk certainty.
+
+##### Partial availability
+
+Én unavailable non-critical section behøver ikke gøre hele Command Center
+unavailable.
+
+Eksempel:
+
+- Market Context kan være unavailable
+- mens Attention og Opportunities fortsat kan være valide
+
+hvis deres egne source-/freshness-kontrakter er opfyldt.
+
+Page rendering skal derfor kunne degradere per section.
+
+##### Critical section failure
+
+Partial rendering må ikke bruges til at skjule en failure, som gør
+decision-correctness ukendt.
+
+Hvis en decision-critical source eller integrity condition gør, at en
+executive conclusion ikke kan betragtes som valid, skal relevant summary/
+section:
+
+- markeres unavailable/degraded
+- undlade at vise stale conclusion som current
+- løfte relevant trust/attention-signal efter locked semantics, når muligt
+
+Et grønt shell omkring en invalid decision er ikke acceptabelt.
+
+##### Executive Summary dependency
+
+Executive Decision Summary må kun fremstilles som current, hvis dens
+required source set opfylder den versionerede summary-policy.
+
+Hvis en optional source mangler, kan summaryen være `PARTIAL`, hvis
+presentation-policyen tillader det og manglen vises.
+
+Hvis en required decision-critical source mangler, må summaryen ikke
+præsenteres som current.
+
+##### Opportunity sections er profile-separate ved failure
+
+Compounder- og Catalyst-sektionerne har separate availability/freshness.
+
+Hvis Catalyst projection fejler, må systemet ikke:
+
+- kopiere Compounder-cases ind som Catalyst
+- udvide Compounder-slots for at skjule manglen
+- skabe cross-profile fallback-ranking
+
+Den relevante Catalyst-section viser partial/unavailable state.
+
+##### Attention må ikke forsvinde pga. unrelated failure
+
+En failure i en ikke-relateret section må ikke automatisk skjule valide
+canonical Attention-items.
+
+Omvendt må en Attention projection heller ikke vises som current, hvis dens
+egne required sources/integrity ikke kan valideres.
+
+##### Portfolio overlay failure
+
+Hvis personal portfolio-overlay er unavailable, må objective opportunity-
+information stadig kunne vises, når den er valid.
+
+Portfolio Relevance skal da vise:
+
+- unavailable/partial state
+
+frem for at:
+
+- antage ingen holdings
+- vise Portfolio Fit som `0`
+- fjerne objektive opportunities
+
+Missing personal overlay er ikke det samme som tom portfolio.
+
+##### No cross-user cache leakage
+
+User-/portfolio-scoped projection eller fragment må ikke cache-keyes så bredt,
+at personal data kan serveres til en anden principal/scope.
+
+Cache/read-model identity skal inkludere den nødvendige authorization/scope-
+dimension.
+
+D009 fastlægger ikke den konkrete cache-key syntax.
+
+##### Normal route læser projection, ikke business-services
+
+Den normale `/command-center` V3 route bør som udgangspunkt:
+
+1. resolve authorization/principal
+2. load den relevante publicerede read-model/projection
+3. validere read-schema/scope
+4. rendere presentation
+5. returnere response
+
+Den bør ikke på normal path orkestrere de mange individuelle legacy
+business-services fra D009.3-inventoryet.
+
+##### Safe local reads er ikke provider fallback
+
+En normal render kan anvende bounded, side-effect-frie lokale reads, når
+projection-kontrakten eksplicit kræver det, fx:
+
+- authorization/session context
+- read-model load
+- static configuration
+- side-effect-fri lookup nødvendig for presentation
+
+Det er ikke tilladelse til at kalde en generating/provider-function som
+fallback.
+
+##### Client-side fetch boundary
+
+JavaScript på Command Center må ikke omgå server-render-kontrakten ved efter
+page load automatisk at starte:
+
+- OpenAI-generation
+- provider-refresh
+- lifecycle/gate recomputation
+- alert mutation
+- portfolio mutation
+
+Client-side requests til supplerende data skal være read-only og læse
+authoritative/materialized projections efter samme freshness-/scope-regler,
+medmindre brugeren udfører en særskilt explicit action efter D009.4.
+
+##### Read API og HTML skal være semantisk konsistente
+
+Hvis Command Center bruger både:
+
+- server-rendered HTML
+- JSON/read endpoints
+
+må de ikke have forskellige business-semantikker for samme projection.
+
+De skal kunne bindes til:
+
+- samme projection identity/version
+- compatible source/as-of
+- samme section availability/freshness-kontrakt
+
+Et JSON-endpoint må ikke silently generere data, som HTML-renderen ikke måtte
+generere.
+
+##### D009.5 part 1 acceptance
+
+Denne del af D009.5 er kun godkendelig, hvis:
+
+- Command Center renderer fra explicit read-/projection-lag
+- projection er presentation/read-model og ikke canonical business-state
+- schema, policy, projection-id og as-of er versionerbare/auditerbare
+- personal overlay ikke ændrer objective opportunity-state
+- availability og freshness er separate presentation-akser
+- stale aldrig præsenteres som current
+- per-section source/as-of kan bevares
+- projection builds foregår uden for normal render-path
+- publication er coherent/atomisk på read-model-niveau
+- builder ikke opfinder missing facts
+- invalid candidate projection ikke publiceres
+- last-known-good bevarer original identity/as-of
+- last-known-good afvises, når safety/scope/schema/integrity kræver det
+- page kan degradere per section
+- critical decision failure ikke skjules af partial rendering
+- Compounder/Catalyst availability håndteres separat
+- missing portfolio overlay ikke behandles som tom portfolio
+- user-scoped cache/projection ikke lækker på tværs af principals
+- normal route læser projection frem for at orkestrere legacy services
+- client-side fetches ikke omgår read-/action-boundaries
+- HTML og read APIs bruger samme projection-semantik
+- D001-D008 og D009.1-D009.4 forbliver authoritative
+
+D009.5 fortsætter med latency/resilience, cache publication/invalidation,
+observability, failure modes og endelig render-path acceptance.
+
+##### Latency er en operational presentation contract
+
+Command Center skal opleves responsivt, men latency må ikke ændre
+business-semantik.
+
+Konkrete latency-mål og timeouts skal ligge i en versioneret operational/
+presentation-policy.
+
+D009 låser ikke et bestemt antal millisekunder som business-threshold.
+
+Operational policy bør kunne definere mindst:
+
+- render/read deadline
+- relevante p50/p95/p99 observationsmål
+- projection-load deadline
+- lokale dependency-read deadlines
+- background build-duration expectations
+
+En langsom dependency må ikke få route-laget til at skifte til en anden
+business-vurdering.
+
+##### Normal render-path er bounded
+
+Den normale Command Center request må ikke vente ubundet på:
+
+- provider-I/O
+- OpenAI
+- projection rebuild
+- recovery jobs
+- analytics jobs
+- lifecycle/gate recomputation
+- cache warm-up som kræver generating work
+
+Read-pathen skal have bounded execution.
+
+Ved overskredet read deadline skal systemet bruge den relevante
+degraded/fallback-kontrakt frem for at blokere requesten ubestemt.
+
+##### Render-path må ikke vente på rebuild
+
+Hvis en projection mangler, er stale eller er ved at blive rebuilt, må et
+almindeligt page load ikke vente på hele rebuild-jobbet.
+
+Normal rækkefølge er principielt:
+
+1. current valid published projection
+2. valid last-known-good, tydeligt markeret efter freshness-kontrakten
+3. partial/unavailable presentation
+
+ikke:
+
+1. start rebuild
+2. vent på providers/AI
+3. render når rebuild er færdig
+
+##### Cache er acceleration, ikke authority
+
+Et cache-lag kan accelerere læsning af publicerede projections eller
+read-only fragments.
+
+Cache-indhold er ikke en ny canonical truth.
+
+Et cache-hit må ikke ændre:
+
+- lifecycle
+- Opportunity Score
+- AI Confidence
+- Data Confidence
+- gate-resultat
+- alert-state
+- Portfolio Fit
+- calibration verdict
+- execution mode
+
+Hvis cache og authoritative published projection identity ikke kan
+reconciles efter read-kontrakten, må cache ikke vinde alene fordi den er
+hurtigere.
+
+##### Cache-key skal bevare semantic identity
+
+Cache identity skal være specifik nok til at forhindre semantic collision.
+
+Relevant identity kan blandt andet omfatte:
+
+- projection schema/version
+- presentation-policy-version
+- projection/scope identity
+- global versus personal overlay
+- authorization-/principal-scope hvor nødvendigt
+- locale/presentation variant hvor det faktisk ændrer rendering
+
+D009 fastlægger ikke konkret key-format.
+
+User-kontrolleret URL-/filter-input må ikke alene kunne vælge en cache-entry,
+som indeholder en anden principals private projection.
+
+##### TTL er ikke freshness truth
+
+Cache-TTL og business/source freshness er forskellige begreber.
+
+En cache-entry kan teknisk være inden for sin TTL og stadig indeholde en
+section, hvis source er `STALE`.
+
+Omvendt må en cache eviction ikke få valid source-data til at blive
+klassificeret som stale.
+
+Freshness skal afgøres fra den versionerede source-/projection-kontrakt, ikke
+fra cache-entryens alder alene.
+
+##### Cache-hit må ikke forynge data
+
+Når en cached projection læses, må render-pathen ikke overskrive dens:
+
+- projection `as_of`
+- materialized timestamp
+- source timestamps
+- freshness basis
+
+med request-tidspunktet.
+
+Et cache-hit er en read, ikke en ny materialization.
+
+##### Publication og cache invalidation
+
+Når en ny valid projection publiceres, skal readers kunne skifte til den nye
+publicerede identity uden at se tilfældig blanding af gammel og ny version.
+
+Cache invalidation bør derfor knyttes til den publicerede projection/version
+eller anden eksplicit read-model identity.
+
+D009 kræver ikke én bestemt invalidation-teknik.
+
+Det kræver, at invalidation ikke:
+
+- omskriver canonical business-state
+- opfinder freshness
+- kræver provider-/AI-kald på page load
+- skaber cross-user leakage
+- gør en partial write synlig
+
+##### Cache miss må ikke starte generating fallback
+
+Et cache miss på normal `/command-center` path er ikke tilladelse til at
+kalde:
+
+- OpenAI
+- market/news provider
+- research engine
+- lifecycle/gate engine
+- alert delivery
+- portfolio mutation
+
+for at fylde cachen.
+
+Cache miss håndteres gennem den publicerede read-model/last-known-good/
+degraded-kontrakt.
+
+##### Stale-while-revalidate må ikke omgå D009.4
+
+En implementation kan bruge stale-while-revalidate-lignende operational
+mønstre på en autoriseret background build-path.
+
+Et almindeligt GET/page load må dog ikke få state-changing side effects blot
+fordi cachen ønsker revalidation.
+
+Hvis en read request implicit starter generating/provider work eller en
+business mutation, er den ikke længere en ren D009.4 navigation/read.
+
+##### Stampede protection hører til build-pathen
+
+Projection materialization skal beskytte mod, at mange samtidige triggers
+starter samme dyre eller eksterne arbejde unødigt.
+
+Implementation skal have en relevant single-flight/lease/lock/dedup-
+mekanisme for build scope.
+
+D009 låser ikke den konkrete primitive.
+
+Beskyttelsen skal dog være kompatibel med:
+
+- concurrency-safe publication
+- D005 budget reservation/admission
+- provider rate limits
+- crash/recovery
+- idempotent eller dedupliceret build-resultat hvor relevant
+
+##### Lease expiry må ikke give stale writer authority
+
+Hvis en builder mister en lease/lock, må den ikke automatisk få ret til at
+publicere over en nyere valid projection senere.
+
+Publication skal revalidere den relevante build/publication precondition.
+
+Hvor implementation anvender generation/lease identities, fencing,
+compare-and-swap eller tilsvarende, skal en gammel builder kunne afvises.
+
+En slow old build må ikke overskrive en newer authoritative read-model alene
+fordi den afslutter sidst.
+
+##### Publication må ikke regressere silently
+
+En ny publication må ikke stille og roligt flytte Command Center tilbage til
+en ældre source/projection state, hvis en nyere valid projection allerede er
+publiceret.
+
+Hvis en eksplicit rollback/recovery nogensinde understøttes, skal den følge
+en særskilt autoriseret operational kontrakt og være auditerbar.
+
+D009 opfinder ikke en generisk rollback-button.
+
+##### Duplicate builders må ikke multiplicere paid AI
+
+Hvis materialization involverer paid OpenAI, gælder D005 stadig.
+
+Concurrent eller duplicate projection-builds må ikke bruges til at:
+
+- reservere budget flere gange for samme logical paid work uden gyldig grund
+- omgå cache/dedup
+- overskride det globale 100 DKK/calendar-month cap
+- fortsætte efter fail-closed admission rejection
+
+Projection stampede protection erstatter ikke D005; den supplerer D005.
+
+##### Provider rate limits og backoff
+
+Background builders skal respektere relevante provider-rate limits og
+versionerede retry/backoff-regler.
+
+Retry må ikke ske på normal render-path.
+
+Retry-policy skal skelne mellem mindst:
+
+- retryable failure
+- permanent/validation failure
+- authorization/admission failure
+- unknown/ambiguous outcome hvor blind duplicate effekt er farlig
+
+D009 skaber ikke nye provider/business result states ved denne skelnen.
+
+##### Read failure hierarchy
+
+Render-path failure skal håndteres deterministisk.
+
+Eksempler omfatter:
+
+- projection storage unavailable
+- schema mismatch
+- scope/authorization mismatch
+- corrupt projection
+- missing global projection
+- missing personal overlay
+- unavailable section
+- stale source
+- local read timeout
+
+Håndteringen skal følge den relevante section/page-kontrakt fra D009.5
+part 1.
+
+Et technical read failure må ikke oversættes til en positiv business-state.
+
+##### Schema mismatch failer ærligt
+
+En reader må ikke gætte betydningen af en ukendt/incompatible projection
+schema-version.
+
+Den skal enten:
+
+- læse versionen gennem eksplicit kompatibilitet
+- bruge en valid kompatibel published projection efter policy
+- vise degraded/unavailable
+
+Den må ikke silently reinterpret castede eller manglende felter som current
+business truth.
+
+##### Rolling deployment compatibility
+
+Projection reader og builder skal kunne deployes uden et vindue, hvor
+tilfældige requests får forskellige business-semantikker for samme
+projection identity.
+
+Schema evolution skal derfor være eksplicit versioneret.
+
+Under rolling deployment kan implementation eksempelvis støtte kendte
+compatible versioner eller fail graceful.
+
+D009 låser ikke migrationsmekanismen.
+
+##### Incompatible policy kræver ikke skjult reinterpretation
+
+Hvis presentation-policy ændres, må gamle projection-data ikke automatisk
+fortolkes som om de var materialized under den nye policy, når forskellen er
+semantisk relevant.
+
+Projectionen skal bevare sin policy-version.
+
+Ny policy kan kræve ny projection-build eller explicit compatible rendering.
+
+##### Time semantics skal være auditerbare
+
+Machine timestamps i projection/build/cache metadata skal være
+timezone-aware og sammenlignelige.
+
+Presentation kan vise brugerrelevant lokal tid.
+
+Render-tidspunktet må ikke erstatte source-/materializationstidspunktet.
+
+D005s calendar-month budgetgrænse i `Europe/Copenhagen` ændres ikke af D009.
+
+##### Relative tidslabels er presentation
+
+Tekst som:
+
+- `opdateret for 12 min. siden`
+- `data fra i går`
+
+er presentation beregnet ud fra authoritative timestamps.
+
+En ændret relativ label ved nyt page load er ikke en ny projection eller
+business mutation.
+
+Den underliggende absolute source/as-of skal fortsat kunne vises eller
+udledes korrekt.
+
+##### Observability er obligatorisk på projection-pathen
+
+Det skal være muligt at observere, om Command Center read-model fungerer som
+designet.
+
+Relevant operational telemetry bør mindst kunne belyse:
+
+- render/read latency
+- projection load success/failure
+- current/stale/unknown distributions
+- available/partial/unavailable distributions
+- projection age
+- build success/failure
+- build duration
+- publication success/rejection
+- schema mismatch
+- scope mismatch
+- cache hit/miss
+- last-known-good usage
+- build contention/dedup
+- local read timeout
+
+Konkrete metric names låses ikke af D009.
+
+##### Observability skaber ikke en ny AI quality score
+
+Operational metrics må ikke automatisk samles til et nyt skjult:
+
+- AI Quality Score
+- Trust Score
+- Readiness Score
+- Opportunity Score
+
+D009.3s regel om ikke at opfinde en ny aggregate AI quality score består.
+
+Operational telemetry er evidens om systemdrift, ikke en ny investment
+assessment.
+
+##### Correlation mellem render og projection
+
+En request skal kunne korreleres med den projection, der blev anvendt.
+
+Logs/telemetry bør derfor kunne referere til relevante ikke-hemmelige
+identifiers såsom:
+
+- projection id
+- schema/version
+- presentation-policy-version
+- build/publication identity hvor relevant
+- section result/freshness
+- request/correlation id
+
+Personal/sensitive data skal minimeres efter relevant security/privacy
+policy.
+
+Secrets og credentials må ikke logges.
+
+##### User-scoped telemetry og cache må ikke lække data
+
+Observability må ikke genintroducere cross-user leakage, som projection- og
+cache-kontrakten ellers forhindrer.
+
+Eksempelvis må en metric label eller shared cache key ikke ukritisk indeholde
+personlig portfolio-information.
+
+D009 kræver ikke en bestemt anonymiseringsmekanisme, men scope separation og
+data minimization skal bevares.
+
+##### Operational alerts er ikke opportunity alerts
+
+En operational alarm om fx:
+
+- projection build failure
+- schema mismatch
+- cache corruption
+- repeated stale data
+
+er ikke automatisk en D003 opportunity alert.
+
+D009 må ikke få system-health telemetry til at ligne en normal
+`HIGH_CONVICTION` Telegram opportunity notification.
+
+Eventuel operational notification følger sin egen eksisterende/autoriserede
+operations-kontrakt.
+
+##### Untrusted presentation content
+
+Tekst og metadata fra:
+
+- providers
+- news
+- AI output
+- external URLs
+
+skal behandles som data, ikke som trusted executable markup.
+
+Render-laget skal anvende relevant escaping/sanitization og link-policy.
+
+En materialized projection er ikke en tilladelse til at bypass'e normal web
+security.
+
+##### Personalized HTTP/browser caching
+
+Hvis response eller client-side projection indeholder personal
+portfolio-information, må den ikke behandles som en offentligt delt cacheable
+response.
+
+Implementation skal anvende passende scope-aware HTTP/browser-cache-policy.
+
+D009 låser ikke konkrete HTTP headers, men resultatet må ikke kunne servere
+én brugers private overlay til en anden.
+
+##### Client-side state er ikke recovery storage
+
+Browser state kan bruges til presentation-state som låst i D009.4.
+
+Den må ikke blive den eneste authoritative recovery-kilde for:
+
+- lifecycle
+- alerts
+- paid AI admission
+- portfolio mutation
+- projection publication
+- LIVE activation
+
+Reload/new device skal kunne falde tilbage på authoritative server-side
+state.
+
+##### Deterministisk rendering
+
+Givet samme:
+
+- published projection identity
+- compatible presentation-policy
+- authorization/scope
+- locale/presentation context
+
+skal business-indholdet i Command Center være semantisk deterministisk.
+
+Relative tidslabels, responsive layout og accessibility presentation kan
+ændre form uden at ændre business-semantik.
+
+Random eller request-time AI-generation må ikke ændre executive conclusion
+på almindelig page load.
+
+##### Trust escalation ved read-model degradation
+
+Hvis projection/read-path degradation er decision-critical, skal dette kunne
+komme frem i D009s Trust/Attention-hierarki efter de allerede låste regler.
+
+Det må ikke skjules alene for at bevare en visuelt grøn Command Center-side.
+
+Samtidig må et ikke-kritisk cache miss ikke automatisk fremstilles som en
+investment-risk event.
+
+##### Recovery må ikke ske blindt fra render-path
+
+Hvis storage/cache/projection-state er ambiguous, må almindelig rendering
+ikke:
+
+- slette canonical data
+- regenerere paid AI blindt
+- invalidere business history
+- force-publicere en candidate projection
+- aktivere LIVE
+- resend alerts
+
+Recovery skal ligge på den relevante autoriserede operational/business
+workflow.
+
+##### Endelig D009.5 render-path acceptance
+
+D009.5 er kun godkendelig, hvis hele projection-/render-kontrakten samlet
+opfylder:
+
+- normal page load er bounded og side-effect-fri
+- latency-policy er operational/versioneret og ikke investment-threshold
+- route-laget venter ikke på projection rebuild
+- cache er acceleration og ikke canonical authority
+- TTL og source freshness er adskilt
+- cache-hit forynger ikke timestamps
+- cache miss starter ikke generating/provider fallback
+- cache/publication identity forhindrer cross-user semantic collision
+- publication/invalidation kan skifte coherent mellem read-model-versioner
+- stale-while-revalidate omgår ikke D009.4
+- build stampede beskyttes uden at omgå D005
+- stale/expired builders kan ikke overskrive nyere valid publication
+- publication regresserer ikke silently
+- paid AI duplicate builds kan ikke omgå globalt budget
+- provider retry/backoff ligger uden for normal render-path
+- read/schema/scope failures failer ærligt
+- rolling schema/policy evolution er eksplicit versioneret
+- timestamps og source/as-of forbliver auditerbare
+- observability dækker render, projection, build, freshness og degradation
+- observability opfinder ikke et nyt AI/trust/opportunity score
+- logs/metrics bevarer privacy og må ikke indeholde secrets
+- operational alerts forveksles ikke med D003 opportunity alerts
+- untrusted projection content behandles sikkert
+- personal responses/cache bevarer principal/scope separation
+- client-side state er ikke authoritative recovery state
+- samme projection giver semantisk deterministisk business-rendering
+- decision-critical read degradation kan eskaleres ærligt
+- recovery udføres ikke blindt fra render-path
+- D001-D008 og D009.1-D009.4 forbliver authoritative
+
+D009.5 ændrer ikke production runtime og autoriserer ikke implementation,
+deploy, restart eller LIVE activation.
+
+D009.5 er herefter komplet for critical review.
+
+#### D009.6 Migration, cutover og implementation acceptance
+
+D009.6 fastlægger, hvordan den nuværende Command Center implementation kan
+migreres til D009.1-D009.5 uden at blande V2- og V3-semantik på en usikker
+måde.
+
+D009.6 er stadig blueprint.
+
+Den:
+
+- implementerer ikke V3
+- deployer ikke V3
+- ændrer ikke production runtime
+- aktiverer ikke D008 LIVE
+- autoriserer ikke sletning af V2 services/data
+
+##### Migration er presentation/read-path migration
+
+Command Center V3-migrationen ændrer primært:
+
+- information architecture
+- presentation
+- projection/read-model
+- route/render-path
+- navigation/deep links
+- client-side read behavior
+
+Den er ikke i sig selv en migration af canonical business truth.
+
+D001-D008s authoritative records og business-kontrakter forbliver
+authoritative.
+
+##### Ingen parallel Command Center-business-model
+
+V3 Command Center må ikke skabe en alternativ:
+
+- opportunity lifecycle
+- scoremodel
+- confidence-model
+- gate
+- alert-state
+- Portfolio Fit-model
+- calibration model
+
+for at gøre migrationen lettere.
+
+Migrationen skal tilpasse presentation/read-path til de eksisterende locked
+V3-kontrakter, ikke kopiere dem til et separat Command Center-domæne.
+
+##### Current V2 er migration baseline, ikke V3-kontrakt
+
+Den nuværende `/command-center` implementation er vigtig som inventory og
+regression baseline.
+
+Den er ikke automatisk korrekt under D009.
+
+Særligt de i D009.3 identificerede:
+
+- eager fallback expressions
+- direkte service-calls
+- legacy standalone cards
+- parallelle summaries/rankings
+- route-context dependencies
+
+skal behandles som migration-punkter.
+
+De må ikke grandfatheres ind i V3 alene fordi de findes i production i dag.
+
+##### Migration inventory før kodeændringer
+
+Før første V3 Command Center implementation-change skal migrationen have et
+konkret inventory over mindst:
+
+- route handlers
+- templates/partials
+- client-side JavaScript
+- CSS/layout dependencies
+- cache keys/files
+- background builders/jobs
+- direct service calls
+- provider-generating calls
+- OpenAI-generating calls
+- portfolio dependencies
+- alert dependencies
+- deep links
+- authentication/authorization dependencies
+- monitoring/health dependencies
+
+Inventory skal identificere, hvad der:
+
+- bevares
+- flyttes til projection builder
+- bliver read-only dependency
+- flyttes til detail
+- kondenseres
+- fjernes som standalone presentation
+- kræver særskilt action-kontrakt
+- ikke længere må kaldes på render-path
+
+##### Disposition betyder ikke delete
+
+D009.3s dispositioner er presentation/IA-dispositioner.
+
+Eksempelvis betyder:
+
+`REMOVE_STANDALONE_COMMAND_CENTER`
+
+ikke automatisk:
+
+- delete service
+- delete cache
+- delete history
+- delete job
+- delete API
+- delete detail page
+
+En underliggende komponent må først fjernes fysisk, når dependency- og
+retention-review viser, at den ikke længere kræves af:
+
+- andre routes
+- jobs
+- history/audit
+- alerts
+- recovery
+- portfolio
+- calibration
+- detail views
+- operations
+
+##### Projection builder indføres før V3 render afhænger af den
+
+V3 render-path må ikke cuttes over til en projection, som endnu ikke kan
+produceres og valideres stabilt.
+
+Migrationen bør derfor etablere:
+
+1. projection schema/contracts
+2. builder
+3. validation
+4. publication
+5. read path
+6. V3 presentation
+
+i en rækkefølge, hvor hver fase kan verificeres uden at gøre production
+afhængig af en halv implementation.
+
+##### Builder kan valideres uden serving-cutover
+
+En ny V3 projection builder kan køres i en non-serving migrationstilstand,
+hvor den producerer test-/shadow projections til verification.
+
+Dette er en UI/read-model migrationstilstand.
+
+Det er ikke:
+
+- D004 execution mode
+- en ny `SHADOW` business-state
+- D008 LIVE-canary
+- authorization til lifecycle transition
+
+Terminologien må ikke få UI-migration og D004/D008 execution semantics til at
+blive blandet sammen.
+
+##### Ingen dual-write af canonical business-state
+
+UI-migration må ikke introducere dual-write til:
+
+- V2 business state
+- V3 canonical business state
+- Command Center-specific business state
+
+for samme logical mutation.
+
+Canonical mutation følger den authoritative kontrakt.
+
+Command Center migrationen læser/projicerer resultatet.
+
+##### V3 read-model kan bygges parallelt med V2 serving
+
+Det er tilladt, at:
+
+- V2 Command Center fortsat serves
+- V3 projection builder samtidig producerer non-serving projections
+
+under migrationen.
+
+Dette gør det muligt at verificere V3 read-model uden at ændre brugerens
+production-side.
+
+Parallel projection-building må fortsat følge:
+
+- D005 budget
+- provider limits
+- concurrency/dedup
+- privacy/scope
+- D009.5 publication semantics
+
+##### Serving selector er presentation routing
+
+Hvis migrationen bruger feature flag/cohort/rollout-selector til at vælge
+mellem V2- og V3-rendering, må selectoren kun vælge presentation/read-path.
+
+Den må ikke ændre:
+
+- objective Opportunity Score
+- lifecycle
+- gate-resultat
+- Data Confidence
+- AI Confidence
+- alert semantics
+- Portfolio Fit
+- execution mode
+
+Samme canonical business-state skal derfor have samme betydning uanset
+hvilken Command Center-presentation der vises.
+
+##### Feature flag er ikke URL-trust
+
+En V3-serving selector må ikke kunne autoriseres alene gennem en
+user-controlled query parameter som fx:
+
+`?v3=1`
+
+hvis det giver adgang til en ikke-autoriseret rollout.
+
+Selector/scope skal afgøres af relevant server-side configuration/policy.
+
+Et query parameter kan eventuelt være presentation input inden for allerede
+autoriseret scope, men er ikke authorization.
+
+##### Én request skal have én render-arkitektur
+
+En normal Command Center request skal deterministisk resolve enten:
+
+- V2 serving path
+- V3 serving path
+
+under migrationen.
+
+Den må ikke begynde i V3 og derefter stille og roligt hente enkelte legacy
+V2 business-services som generating fallback, fordi projection-data mangler.
+
+Det ville genintroducere den D009.3/D009.5 render-adfærd, som V3 netop skal
+fjerne.
+
+##### V3 projection failure giver V3 degraded state
+
+Når en request er resolved til V3, skal D009.5s:
+
+- last-known-good
+- partial
+- unavailable
+- trust/degradation
+
+kontrakter anvendes ved projection/read failure.
+
+V3 må ikke skjule failure ved dynamisk at rekonstruere legacy Command Center
+på samme request.
+
+##### Explicit whole-route rollback er noget andet end fallback
+
+Under rollout kan en autoriseret operational policy tillade, at serving
+skiftes tilbage fra V3 til den hidtidige V2-route/presentation.
+
+Det er en explicit route-level rollback/cutover-beslutning.
+
+Det er ikke det samme som:
+
+- per-section legacy fallback
+- provider fallback
+- OpenAI fallback
+- hidden service orchestration inde i en V3 request
+
+Rollback må ikke omskrive canonical business-state.
+
+##### Rollback skal være auditerbar og bounded
+
+Hvis V3-serving deaktiveres efter en rollout-fejl, skal operationen mindst
+kunne spores som relevant:
+
+- tidspunkt
+- selector/config-version
+- årsag
+- affected serving scope
+- før/efter serving mode
+- responsible operational principal/process hvor relevant
+
+D009 låser ikke konkret audit-storage.
+
+Rollback må ikke blindt slette V3 projections eller business history.
+
+##### Rollback ændrer ikke D004 execution mode
+
+UI serving mode må ikke navngives eller implementeres på en måde, der gør den
+forvekslelig med D004:
+
+- `SHADOW`
+- `LIVE`
+
+eller D008 LIVE-canary.
+
+Eksempelvis er:
+
+`V3_UI_ENABLED`
+
+en presentation/cutover concern.
+
+Det er ikke en investment execution mode.
+
+##### V3 serving må ikke kræve LIVE
+
+Command Center V3 skal kunne renderes korrekt, mens canonical D004
+`execution_mode` fortsat er `SHADOW`.
+
+V3 UI rollout må derfor ikke være betinget af, at investment execution først
+aktiveres som LIVE.
+
+Omvendt må UI rollout heller ikke aktivere LIVE.
+
+##### Deep-link continuity under migration
+
+Eksisterende bookmarks/navigation skal behandles eksplicit.
+
+Migrationen skal identificere:
+
+- links der kan bevares
+- links der kan redirectes sikkert
+- links der skal vise moved/unavailable
+- links hvor profile/opportunity identity skal gøres eksplicit
+
+Redirect må ikke miste canonical identity eller sende brugeren til en anden
+opportunity-case alene fordi ticker matcher.
+
+##### Redirects er side-effect-frie
+
+Et migration redirect må ikke:
+
+- starte research
+- refresh providerdata
+- recompute gate
+- acknowledge alert
+- mutate portfolio
+- aktivere LIVE
+
+Redirect/navigation følger D009.4.
+
+##### Historical links må ikke omskrives til current meaning
+
+Hvis et gammelt link refererer til historisk information, må migrationen ikke
+automatisk omskrive det til en current case på en måde, der ændrer
+betydningen.
+
+Hvor en præcis migration ikke er mulig, er en ærlig historical
+unavailable/moved state bedre end silent semantic drift.
+
+##### Template migration skal bevare accessibility
+
+Når standalone V2 cards kondenseres/flyttes/fjernes fra Command Center, skal
+V3 fortsat bevare D007/D009s accessibility-kontrakter.
+
+Migration må ikke miste:
+
+- keyboard navigation
+- semantic landmarks/headings
+- accessible action names
+- visible focus
+- non-color-only state communication
+- readable degraded/error feedback
+
+##### Responsive migration må følge samme hierarchy
+
+Responsive breakpoints må ændre layout, men ikke D009s information
+hierarchy.
+
+På small viewport skal rækkefølgen fortsat prioritere:
+
+1. page context
+2. Attention
+3. Executive Decision Summary
+4. Best Current Opportunities
+5. Portfolio Relevance
+6. lower-page sections
+
+når de relevante sektioner findes.
+
+Responsive layout må ikke skabe en ny cross-profile ranking.
+
+##### No-JavaScript/degraded client behavior
+
+Kritisk executive information må ikke være afhængig af, at client-side
+JavaScript kan udføre generating work.
+
+Hvis JavaScript fejler eller er blokeret, skal server-side/read-model
+presentation så vidt muligt stadig kunne vise den authoritative executive
+projection eller en ærlig degraded state.
+
+D009 låser ikke krav om fuld feature parity uden JavaScript for alle
+non-critical interactions.
+
+##### Security headers/session/auth må ikke svækkes under cutover
+
+V3-serving må ikke kræve, at eksisterende authentication/session/security
+boundaries gøres svagere.
+
+Migrationen skal bevare relevant:
+
+- authenticated access
+- authorization
+- CSRF-protection for mutations
+- output escaping/sanitization
+- secure cookie/session policy
+- principal/scope separation
+
+D009 opfinder ikke nye security mechanisms, men cutover må ikke bypass'e de
+eksisterende boundaries.
+
+##### Comparison mode er read-only verification
+
+Under migrationen kan implementation sammenligne V2 og V3 outputs for
+engineering verification.
+
+Comparison må ikke:
+
+- vælge den højeste score mellem to modeller
+- merge lifecycle results
+- sende duplicate alerts
+- multiplicere paid AI uden D005-admission
+- skrive canonical business-state baseret på UI-difference alene
+
+Formålet er regression-/migration-verification, ikke ensemble investing.
+
+##### Comparison skal forstå semantic differences
+
+V2 og V3 behøver ikke have samme:
+
+- card count
+- ordering
+- labels
+- grouping
+- page density
+
+fordi D009 bevidst ændrer information architecture.
+
+Migration acceptance skal derfor teste locked semantics, ikke pixel-identisk
+output.
+
+##### Screenshot/visual review er supplement
+
+Visual regression og screenshot review kan bruges til:
+
+- layout
+- responsive behavior
+- hierarchy
+- clipping
+- spacing
+- obvious accessibility regressions
+
+men kan ikke alene bevise:
+
+- side-effect freedom
+- canonical identity
+- authorization
+- cache scope safety
+- D005 correctness
+- publication consistency
+
+Disse kræver contract/integration tests og relevant runtime evidence.
+
+##### Migration test matrix
+
+Før V3 serving cutover skal implementation mindst have tests/evidence for:
+
+- authenticated authorized page load
+- unauthorized access
+- current projection
+- stale projection
+- last-known-good
+- partial section
+- unavailable critical section
+- unavailable non-critical section
+- missing personal overlay
+- Compounder-only availability
+- Catalyst-only availability
+- invalid projection schema
+- scope mismatch
+- cache hit
+- cache miss
+- builder unavailable
+- deep-link valid case
+- deep-link invalid case
+- historical deep-link
+- stale UI action attempt
+- duplicate action submission hvor relevant
+- ambiguous alert/recovery state hvor relevant
+- responsive layout
+- accessibility-critical navigation/action behavior
+
+##### Paid-call regression test
+
+Migration acceptance skal bevise, at ordinary V3 Command Center:
+
+- page load
+- refresh
+- sort
+- filter
+- tab
+- navigation
+- expand/collapse
+- client-side read-only fetch
+
+ikke starter paid OpenAI.
+
+Hvis en særskilt explicit action kan starte paid AI, testes den separat efter
+D005/D009.4.
+
+##### Provider-call regression test
+
+Migration acceptance skal tilsvarende bevise, at normal V3 rendering ikke
+starter provider-generating/refresh work som hidden fallback.
+
+Provider-I/O på projection build-pathen testes separat.
+
+##### Business-mutation regression test
+
+Ordinary V3 Command Center interaction skal dokumenteres ikke at kunne
+skrive:
+
+- lifecycle
+- gate
+- alert
+- portfolio
+- calibration verdict
+- execution mode
+
+medmindre brugeren udfører en allerede autoriseret explicit action med den
+underliggende kontrakt.
+
+##### Projection identity verification
+
+Runtime evidence for V3 serving skal kunne vise, hvilken:
+
+- projection identity
+- schema version
+- presentation-policy-version
+- relevant source/as-of
+
+der blev renderet.
+
+Dette er nødvendig migration evidence for at kunne skelne:
+
+- current V3 projection
+- last-known-good
+- stale/degraded result
+- forkert scope/version
+
+##### Initial serving rollout bør være reversible
+
+Den første production-serving aktivering af V3 Command Center bør ske med en
+reversibel route/presentation selector, så UI-serving kan deaktiveres uden at:
+
+- rulle canonical business-state tilbage
+- slette V3 canonical data
+- aktivere/deaktivere D004 LIVE
+- resend alerts
+- ændre D005 ledger
+
+Dette er UI-operational rollback, ikke business rollback.
+
+##### Ingen automatisk rollout expansion
+
+Hvis V3-serving introduceres gradvist, må rollout scope ikke automatisk
+udvides alene fordi et tidsinterval er gået.
+
+Udvidelse skal baseres på versioneret rollout-policy og observeret
+implementation evidence.
+
+D009.6 låser ikke konkrete cohort-procenter eller antal dage som business
+thresholds.
+
+##### Cutover blocker classes
+
+V3 serving må ikke godkendes til bred production cutover, hvis der findes en
+kendt blocker i mindst én af disse klasser:
+
+- canonical identity correctness
+- authorization/privacy leakage
+- hidden business mutation på read-path
+- hidden paid OpenAI/provider generation på render-path
+- cross-profile semantic corruption
+- incorrect current/stale/unavailable presentation
+- cross-user cache/projection leakage
+- non-coherent publication
+- stale writer overwrite
+- broken D005 budget enforcement
+- alert/recovery semantics violation
+- inability to disable V3 serving safely
+
+Dette er correctness blockers.
+
+De må ikke kompenseres af høj performance eller flot UX.
+
+##### Non-blocking presentation defects
+
+Mindre presentation-fejl kan håndteres separat efter severity.
+
+Eksempler kan være:
+
+- spacing
+- ikke-kritisk copy
+- minor responsive polish
+
+hvis de ikke bryder:
+
+- accessibility
+- decision meaning
+- canonical identity
+- security/privacy
+- action safety
+- freshness/trust presentation
+
+D009 fastlægger ikke en komplet bug severity taxonomy.
+
+##### Legacy cleanup kommer efter stable cutover
+
+Fysisk oprydning af V2 Command Center-specific kode bør ske efter, at:
+
+- V3 serving er verificeret
+- rollback-window/policy er tilfredsstillende
+- dependency inventory er revalideret
+- required history/audit er bevaret
+- andre routes/jobs ikke afhænger af komponenten
+
+Cutover og cleanup er dermed separate implementation phases.
+
+##### D009.6 part 1 acceptance
+
+Denne del af D009.6 er kun godkendelig, hvis:
+
+- migration behandles som presentation/read-path migration
+- D001-D008 forbliver authoritative business contracts
+- current V2 bruges som baseline/inventory, ikke som V3-semantik
+- dependency inventory kræves før cleanup
+- D009.3 disposition betyder ikke automatisk fysisk delete
+- projection builder etableres/valideres før V3 render afhænger af den
+- non-serving V3 projection verification ikke blandes med D004/D008 SHADOW/LIVE
+- UI-migration skaber ingen canonical dual-write
+- V3 projection kan valideres parallelt med V2 serving
+- feature flag/cohort selector ændrer kun presentation/read-path
+- user-controlled URL er ikke serving authorization
+- én request bruger én render-arkitektur
+- V3 failure håndteres gennem D009.5 og ikke hidden V2 service fallback
+- route-level rollback er explicit og ændrer ikke canonical business-state
+- UI serving mode holdes adskilt fra D004 execution mode
+- V3 serving kræver ikke LIVE og aktiverer ikke LIVE
+- deep links bevarer canonical identity/history meaning
+- redirect er side-effect-fri
+- accessibility/responsive hierarchy bevares
+- client degradation starter ikke generating work
+- security/session/auth boundaries svækkes ikke
+- comparison mode er read-only verification
+- migration tests validerer semantics, ikke kun pixels
+- ordinary V3 interactions starter ikke paid OpenAI
+- ordinary V3 rendering starter ikke hidden provider generation
+- ordinary read interaction skaber ikke business mutation
+- projection identity/as-of kan verificeres i runtime
+- initial V3 UI serving kan deaktiveres uden business rollback
+- rollout udvides ikke automatisk uden policy/evidence
+- correctness blockers kan ikke kompenseres af performance/UX
+- legacy cleanup sker efter cutover og dependency review
+- D009.1-D009.5 forbliver authoritative
+
+D009.6 fortsætter med endelig implementation-ready acceptance,
+cutover evidence, legacy cleanup guardrails og samlet D009 exit criteria.
+
+##### Implementation-ready er ikke cutover-ready
+
+D009 skelner mellem mindst tre forskellige milestones:
+
+1. blueprint/contract complete
+2. implementation-ready
+3. production-serving cutover eligible
+
+At implementation kan begynde betyder ikke, at V3 Command Center må serve
+production-trafik.
+
+At V3 kan serve en begrænset UI-rollout betyder heller ikke, at D008
+investment LIVE er aktiveret.
+
+Disse beslutninger må ikke collapses til én "enable V3"-handling.
+
+##### Implementation skal opdeles i verificerbare slices
+
+Command Center V3 bør implementeres i små, reversible slices.
+
+En passende principiel rækkefølge er:
+
+1. read-model/schema contracts
+2. projection builder
+3. validation/publication
+4. non-serving projection verification
+5. V3 read route
+6. V3 templates/presentation
+7. deep-link/navigation integration
+8. operational serving selector
+9. begrænset V3 UI serving
+10. bredere V3 UI serving
+11. senere legacy cleanup
+
+D009 låser ikke branch-/commit-strategien.
+
+Den låser, at implementation ikke bør kræve et big-bang cutover for at kunne
+verificeres.
+
+##### Hver slice skal kunne bevises isoleret
+
+En implementation-slice skal have evidence for de contracts, den berører.
+
+Eksempelvis skal projection-builder-slicen kunne testes uden at gøre
+`/command-center` afhængig af builderen.
+
+Tilsvarende skal V3 render-slicen kunne testes mod kendte projections uden at
+starte providers/OpenAI.
+
+Dette reducerer risikoen for, at fejl i én migration concern skjules af
+andre samtidige ændringer.
+
+##### Cutover evidence package
+
+Før production-serving aktiveres for V3 Command Center, skal der kunne
+samles et reproducerbart evidence package.
+
+Det bør mindst identificere:
+
+- source commit/build identity
+- relevant deployment artifact identity
+- projection schema-version
+- presentation-policy-version
+- rollout/serving-selector configuration
+- relevante feature flags
+- test/evidence version
+- build/publication configuration
+- relevante dependency/config versions
+- tidspunkt for evidence
+- environment/scope
+- reviewer/approval reference hvor den operational policy kræver det
+
+D009 låser ikke filformatet.
+
+##### Evidence skal referere immutable identifiers
+
+Når muligt bør cutover evidence bruge immutable identifiers frem for
+flydende labels.
+
+Eksempler:
+
+- Git commit SHA
+- artifact digest/hash
+- schema version
+- policy version
+- immutable test report identity
+
+Et label som `latest` eller `current` er ikke alene tilstrækkeligt til at
+reproducere en cutover-beslutning.
+
+##### Production baseline skal være kendt
+
+Før serving-cutover skal implementation vide, hvilken production baseline
+der erstattes eller omgås.
+
+Baseline evidence bør mindst identificere:
+
+- current deployed commit/artifact
+- current Command Center serving path
+- relevant selector/config state
+- relevante current route/template dependencies
+- rollback destination
+
+Dette er operational migration evidence.
+
+Det ændrer ikke canonical investment business-state.
+
+##### Candidate og deployed artifact skal kunne reconciles
+
+Det må ikke være uklart, om det testede V3 build er det samme build, som
+serveres.
+
+Production evidence skal derfor kunne forbinde:
+
+- reviewed source
+- built artifact
+- deployed artifact
+- active serving selector/config
+
+Hvor deployment-processen producerer hashes/digests, bør de verificeres.
+
+D009 låser ikke deployment tooling.
+
+##### Test-pass må ikke være baseret på en anden semantic configuration
+
+En V3 candidate må ikke godkendes på:
+
+- schema A
+- presentation-policy A
+- selector policy A
+
+og derefter cuttes over med semantisk inkompatibel:
+
+- schema B
+- presentation-policy B
+- selector policy B
+
+uden ny relevant verification.
+
+Configuration drift mellem review og serving skal kunne opdages.
+
+##### Golden semantic fixtures
+
+Migrationen bør have et begrænset sæt deterministic semantic fixtures, som
+dækker centrale locked cases.
+
+Fx:
+
+- Compounder Candidate
+- Catalyst Strong Candidate
+- Data Hold
+- Thesis Broken
+- current High Conviction
+- stale projection
+- partial section
+- unavailable critical source
+- missing portfolio overlay
+- alert `AMBIGUOUS`
+- historical event
+- invalid deep-link identity
+
+Formålet er ikke at gøre fixtures til production truth.
+
+Formålet er at gøre regression af locked semantics synlig.
+
+##### Golden fixtures må ikke indeholde lookahead
+
+Historical/regression fixtures skal respektere D007/D008s no-lookahead og
+historical semantics.
+
+Et fixture må ikke bruge information, som ikke var tilgængelig på det
+relevante `as_of`, hvis testen hævder at verificere historisk decision
+presentation.
+
+Engineering-only synthetic fixtures skal markeres som sådanne.
+
+##### Read-path network evidence
+
+Før V3 serving cutover skal der være evidence for, at ordinary read
+interactions ikke foretager skjulte generating/network side effects.
+
+Relevant verification bør kunne vise, at:
+
+- page load
+- refresh
+- sort/filter/tab
+- deep-link navigation
+- expand/collapse
+- ordinary client read fetches
+
+ikke starter paid OpenAI eller provider refresh/generation.
+
+Authorization/session/local projection reads er ikke det samme som
+generating provider work.
+
+##### Paid OpenAI evidence følger D005
+
+Hvis implementation har explicit paid-AI actions, skal disse testes separat.
+
+Evidence skal bekræfte, at de fortsat følger:
+
+- global D005 ledger
+- reservation/admission før call
+- 100 DKK/calendar month i `Europe/Copenhagen`
+- fail-closed ved unreliable accounting
+- ingen Command Center-specific budget bypass
+
+Ordinary rendering skal stadig have nul paid AI-generation.
+
+##### Business-write evidence
+
+For ordinary Command Center reads skal implementation kunne dokumentere, at
+der ikke skrives til canonical business-state.
+
+Relevant evidence kan fx omfatte:
+
+- database write tracing
+- transaction assertions
+- audit-event assertions
+- immutable before/after state comparisons
+
+D009 låser ikke testmekanismen.
+
+Det nødvendige resultat er, at read/navigation ikke muterer business truth.
+
+##### Projection publication concurrency evidence
+
+Implementation skal verificere D009.5s publication guarantees under
+concurrency.
+
+Tests bør mindst dække:
+
+- to samtidige builders
+- slow old builder versus newer builder
+- lease expiry
+- candidate validation failure
+- crash før publication
+- crash efter publication boundary
+- repeated trigger/dedup
+
+En stale builder må ikke kunne overskrive en newer valid publication.
+
+##### Cache isolation evidence
+
+User-/portfolio-scoped cache/projection behavior skal verificeres med mindst
+to forskellige principals/scopes.
+
+Testen skal kunne demonstrere, at:
+
+- principal A ikke modtager principal Bs overlay
+- cache hit ikke bypasser authorization
+- scope mismatch failer ærligt
+- anonymous/shared cache ikke indeholder private portfolio-data
+
+Et enkelt happy-path login er ikke tilstrækkelig privacy evidence.
+
+##### Freshness/degradation evidence
+
+Cutover evidence skal verificere mindst:
+
+- `CURRENT`
+- `STALE`
+- `UNKNOWN`
+- `AVAILABLE`
+- `PARTIAL`
+- `UNAVAILABLE`
+
+som presentation/read-model states.
+
+Testen skal kontrollere, at:
+
+- stale ikke ligner current
+- partial ikke bliver investment-negative state
+- unavailable ikke bliver fake zero/default
+- last-known-good bevarer original source/as-of
+- critical invalidity ikke skjules af grønt shell
+
+##### Failure injection er relevant migration evidence
+
+Hvor praktisk skal implementation kunne verificeres med kontrollerede
+dependency failures.
+
+Eksempler:
+
+- projection storage timeout
+- cache unavailable
+- invalid schema
+- personal overlay unavailable
+- builder failure
+- stale projection
+- authorization mismatch
+
+Failure injection skal ske på en sikker test/non-serving path eller anden
+kontrolleret environment/scope.
+
+D009 autoriserer ikke destructive production testing.
+
+##### Observability skal eksistere før rollout afhænger af den
+
+De D009.5 metrics/logs, der er nødvendige for at opdage cutover blockers,
+skal være tilgængelige før V3 serving udvides.
+
+Det er ikke tilstrækkeligt at planlægge observability efter en bred cutover.
+
+Relevant minimum evidence bør kunne belyse:
+
+- route/render failures
+- projection/schema failures
+- stale/unavailable rates
+- scope mismatch
+- build/publication failures
+- cache behavior
+- latency
+- serving selector state
+
+##### Observability skal kunne skelne V2 og V3 serving
+
+Under migrationen skal operational telemetry kunne skelne, hvilken
+presentation/read-path der faktisk blev anvendt.
+
+Dette må ikke kræve, at V2 og V3 får forskellig business-semantik.
+
+Det er et serving/diagnostic dimension.
+
+##### Serving selector skal være observerbar
+
+Når rollout-selector bruges, skal det være muligt at verificere den aktive
+selector/config-version og relevant scope.
+
+Et UI, der ser ud som V3, er ikke alene proof for, at den forventede route/
+projection-kontrakt faktisk blev brugt.
+
+##### Limited UI rollout er ikke D008 LIVE-canary
+
+En begrænset V3 Command Center serving-cohort er en UI/presentation rollout.
+
+Den må ikke navngives eller behandles som D008 investment LIVE-canary.
+
+Den:
+
+- ændrer ikke D004 `execution_mode`
+- aktiverer ikke High Conviction lifecycle
+- ændrer ikke opportunity alerts
+- ændrer ikke calibration verdict
+
+D008s LIVE-canary følger fortsat sin egen locked kontrakt.
+
+##### Begrænset UI rollout skal være policy-styret
+
+Hvis V3 først serves til et begrænset scope, skal rollout-policy mindst kunne
+definere:
+
+- eligible scope
+- activation authority
+- rollback authority
+- evidence requirements
+- blocker handling
+- expansion procedure
+
+D009 låser ikke procent, brugertal eller varighed.
+
+Disse er operational rollout parameters, ikke investment thresholds.
+
+##### Ingen automatisk promotion fra UI rollout til bred rollout
+
+At en begrænset serving-cohort har været aktiv uden fejl i et bestemt antal
+timer/dage er ikke alene tilstrækkelig authorization til bred rollout.
+
+Udvidelse kræver relevant human/operational review efter den versionerede
+policy.
+
+Automatisk tidsbaseret expansion er ikke D009-default.
+
+##### Cutover approval er explicit
+
+Production-serving cutover skal være en explicit operational beslutning.
+
+En successful:
+
+- build
+- deploy
+- test run
+- projection publication
+- cache warm
+- timer
+
+må ikke alene aktivere bred V3 serving, medmindre en senere eksplicit locked
+deployment policy specifikt autoriserer dette.
+
+D009 gør ikke dette automatisk.
+
+##### Correctness blockers er conjunctive
+
+D009.6 part 1s blocker classes er conjunctive.
+
+En kendt blocker i én correctness-klasse kan ikke kompenseres af:
+
+- lav latency
+- høj cache hit-rate
+- flot UX
+- andre passing tests
+
+Der er ingen weighted cutover score.
+
+##### Blocker evidence skal være current nok til cutover
+
+Evidence må ikke ukritisk genbruges efter semantisk relevante ændringer.
+
+Ny verification kræves efter ændringer, der fx påvirker:
+
+- canonical identity mapping
+- authorization/scope
+- projection schema
+- publication concurrency
+- cache identity
+- paid-call boundary
+- provider-call boundary
+- business mutation boundary
+- alert/recovery presentation
+- serving selector
+
+D009 låser ikke én universel evidence-expiry-periode.
+
+##### Ambiguous deployment state failer sikkert
+
+Hvis systemet ikke kan afgøre, hvilket artifact/config/selector der faktisk
+server production, må cutover verification ikke antage success.
+
+Operational state skal først reconciles.
+
+Ambiguous deployment state må ikke løses ved at mutere investment business
+state.
+
+##### Partial deployment skal være schema-compatible
+
+Ved rolling/partial deployment skal readers/builders følge D009.5s
+versionerings- og compatibility-kontrakt.
+
+En request må ikke tilfældigt få forskellig business meaning alene fordi den
+rammer en anden process/version under samme declared serving contract.
+
+Hvis compatibility ikke kan garanteres, skal rollout stoppe/fail graceful
+efter operational policy.
+
+##### Rollback path skal testes før bred cutover
+
+Det skal være verificeret, at V3 UI serving kan deaktiveres uden:
+
+- canonical investment rollback
+- D004 execution-mode change
+- D005 ledger rewrite
+- duplicate alert send
+- V3 business-history deletion
+
+Rollback verification bør udføres før bred production-serving afhænger af
+den.
+
+##### Rollback destination skal være kendt
+
+Operational rollback må ikke pege på en ukendt eller allerede inkompatibel
+V2 serving destination.
+
+Før cutover skal deployment evidence derfor identificere den faktiske
+rollback destination og dens forventede compatibility.
+
+Hvis V2 senere fjernes fysisk, skal rollback-strategien revideres før
+cleanup.
+
+##### Kill switch er UI-serving scoped
+
+En operational V3 Command Center kill switch kan deaktivere V3 serving.
+
+Den må ikke samtidig:
+
+- aktivere/deaktivere D004 LIVE
+- ændre lifecycle
+- ændre scores/confidence
+- sende/resend alerts
+- ændre portfolio
+
+Kill switchen er serving control.
+
+##### Recovery efter failed cutover
+
+Efter et failed UI cutover skal recovery prioritere:
+
+1. stop/afgræns faulty V3 serving
+2. bevar canonical business-state
+3. bevar evidence/logs
+4. verificer rollback destination
+5. restore safe serving path
+6. diagnosticer root cause
+7. kræv ny relevant evidence før re-expansion
+
+Recovery må ikke skjule den oprindelige failure ved at overskrive audit/
+telemetry.
+
+##### Legacy compatibility shim skal have ejer og exit
+
+Hvis midlertidig compatibility-kode er nødvendig, skal den have:
+
+- tydeligt formål
+- bounded scope
+- ansvarlig owner/phase
+- kendt dependency
+- exit condition
+
+Compatibility shim må ikke blive permanent hidden V2 business fallback inde
+i V3 render-pathen.
+
+##### Legacy cleanup kræver ny dependency verification
+
+Før fysisk removal af V2 Command Center-specific komponenter skal
+implementation re-scanne dependencies.
+
+Det skal mindst verificeres, om komponenten stadig bruges af:
+
+- andre routes
+- scheduled jobs
+- alerts
+- portfolio
+- history/audit
+- recovery
+- calibration
+- operational tools
+- tests
+- external/internal links
+
+Et tidligere inventory er ikke automatisk current efter flere implementation
+commits.
+
+##### History/audit retention overlever cleanup
+
+Legacy presentation cleanup må ikke fjerne required evidence eller history,
+som fortsat kræves for:
+
+- historical reconstruction
+- alert/recovery audit
+- portfolio audit
+- calibration
+- operational incident review
+
+Presentation removal er ikke authorization til data destruction.
+
+##### Cleanup må ikke bryde rollback ubevidst
+
+Hvis rollback fortsat er en required operational capability, må cleanup ikke
+fjerne dens nødvendige dependencies uden at rollback-strategien først ændres
+og verificeres.
+
+Rollback-window/policy og cleanup skal derfor være konsistente.
+
+##### Dead code removal er separat change set
+
+Hvor praktisk bør fysisk legacy cleanup ske som en separat, auditerbar
+implementation change efter stable cutover.
+
+Det gør det muligt at skelne:
+
+- V3 behavior change
+- serving cutover
+- cleanup/deletion
+
+og reducerer risikoen for at blande rollback og deletion.
+
+D009 låser ikke antal commits.
+
+##### Final implementation-ready acceptance
+
+D009 kan kun betragtes som implementation-ready blueprint, hvis:
+
+- D009.1 executive mission/hierarchy er entydig
+- D009.2 primary viewport/presentation policy er entydig
+- D009.3 V2 module disposition er entydig
+- D009.4 navigation/action boundary er entydig
+- D009.5 projection/render contract er entydig
+- D009.6 migration/cutover contract er entydig
+- D001-D008 fortsat er authoritative
+- ingen D009-del autoriserer hidden business semantics
+- implementation kan opdeles i reversible/verificerbare slices
+- production cutover kræver evidence ud over "tests passed"
+- rollback kan ske uden investment business rollback
+- cleanup er separat fra cutover
+
+##### D009 samlet correctness invariant
+
+Command Center V3 må som samlet system ikke ændre investment meaning alene
+på grund af:
+
+- page load
+- presentation
+- route choice
+- cache state
+- browser state
+- responsive layout
+- V2 versus V3 UI serving
+- projection rebuild timing
+
+Investment meaning kommer fortsat fra D001-D008s authoritative contracts.
+
+##### D009 samlet read-path invariant
+
+Ordinary Command Center read/navigation skal samlet være:
+
+- side-effect-fri
+- bounded
+- projection/read-model-baseret
+- scope-safe
+- freshness-aware
+- deterministisk i business meaning
+- uden paid OpenAI-generation
+- uden hidden provider generation
+- uden canonical business mutation
+
+##### D009 samlet trust invariant
+
+Hvis Command Center ikke kan validere en decision-critical projection eller
+source, skal systemet vise uncertainty/degradation ærligt.
+
+Det må ikke skabe falsk certainty gennem:
+
+- zero/default substitution
+- stale-as-current
+- hidden legacy fallback
+- silent provider refresh
+- request-time AI generation
+- cross-profile substitution
+
+##### D009 samlet profile invariant
+
+Compounder og Catalyst forbliver separate opportunity-profiler gennem:
+
+- ranking
+- presentation
+- failure
+- fallback
+- deep links
+- migration
+- cache/projection identity
+
+D009 introducerer ikke en fælles totalrangering.
+
+##### D009 samlet portfolio invariant
+
+Portfolio Fit/relevance forbliver et separat personal overlay.
+
+Manglende personal overlay må ikke:
+
+- ændre objective opportunity score
+- antage tom portfolio
+- blive cross-user cached
+- omskrive canonical opportunity-state
+
+##### D009 samlet alert/recovery invariant
+
+Command Center presentation bevarer D006/D007s skelnen mellem:
+
+- logical alert
+- attempt
+- delivery
+- recovery
+
+`AMBIGUOUS` giver fortsat ikke blind resend.
+
+UI migration/cutover opfinder ikke nye alert business-states.
+
+##### D009 samlet budget invariant
+
+Alle paid OpenAI-kald, inklusive eventuelle explicit Command Center actions
+eller projection build-work, er fortsat under D005s ene globale:
+
+**100 DKK/calendar month i Europe/Copenhagen**
+
+D009 skaber ingen separat UI-/migration-/shadow-budgetpulje.
+
+##### D009 samlet LIVE invariant
+
+Command Center V3 presentation, projection build, limited UI rollout,
+broad UI rollout og rollback ændrer ikke i sig selv D004 execution mode.
+
+D008 LIVE-canary er fortsat en separat investment execution beslutning.
+
+D009 aktiverer ikke LIVE.
+
+##### D009 exit criteria
+
+V3-D009 kan først foreslås `LOCKED`, når:
+
+- D009.1-D009.6 er kritisk reviewet
+- samlet cross-review mod D001-D008 består
+- ingen unresolved architecture contradiction findes
+- ingen review-marker er tilbage
+- candidate kun ændrer V3-D009 blueprint-sektionen
+- candidate hash er verificeret
+- repository baseline stadig er den forventede D008 commit
+- working tree er clean før blueprint install/commit
+- blueprint status/checkpoint opdateres atomisk og reviewes
+- blueprint install/commit/push sker som en separat eksplicit handling
+- ingen V3 implementation/deploy/restart udføres som side effect af lock
+
+##### Lock er ikke implementation authorization
+
+Et senere `LOCKED` D009 betyder:
+
+- architecture contract approved
+
+Det betyder ikke automatisk:
+
+- start implementation
+- deploy V3
+- enable V3 serving
+- enable D004 LIVE
+- send nye alerts
+- delete legacy code
+
+Implementation-start skal være en eksplicit efterfølgende fase.
+
+##### D009.6 acceptance
+
+D009.6 er kun godkendelig, hvis:
+
+- implementation-ready og cutover-ready holdes adskilt
+- implementation kan ske i reversible slices
+- cutover evidence bruger reproducible/immutable identities
+- production baseline og rollback destination er kendt
+- tested candidate kan reconciles med deployed artifact/config
+- semantic config drift kræver relevant re-verification
+- golden fixtures tester locked semantics uden historical lookahead
+- ordinary read-path har evidence for nul paid/provider generation
+- ordinary read-path har evidence for nul canonical business writes
+- projection concurrency/stale-writer behavior testes
+- cross-user cache/scope isolation testes
+- freshness/degradation states testes
+- controlled failure evidence findes for kritiske read-path cases
+- nødvendig observability findes før rollout expansion
+- V2/V3 serving kan skelnes operationalt uden business semantic split
+- limited V3 UI rollout ikke blandes med D008 LIVE-canary
+- rollout expansion ikke sker automatisk alene på tid
+- production cutover er explicit
+- correctness blockers er conjunctive og ikke weighted
+- ambiguous deployed state failer sikkert
+- rolling deployment respekterer schema compatibility
+- rollback path er verificeret før bred cutover
+- UI kill switch ændrer ikke investment business-state
+- failed cutover recovery bevarer canonical state og evidence
+- compatibility shims har explicit exit
+- cleanup kræver fresh dependency review
+- history/audit retention bevares
+- cleanup og rollback policy er konsistente
+- D009s samlede correctness/read/trust/profile/portfolio/alert/budget/LIVE
+  invariants er bevaret
+- D009 lock sker separat fra implementation/deploy
+- D001-D008 og D009.1-D009.5 forbliver authoritative
+
+D009.6 ændrer ikke production runtime og autoriserer ikke implementation,
+deploy, restart, V3 serving eller D004 LIVE activation.
+
+D009.6 er herefter komplet for critical review.
+
+V3-D009 er `LOCKED` efter kritiske delreviews, samlet global cross-review
+mod D001-D008 og final pre-lock integritetskontrol.
+
+D009-lock betyder alene, at arkitekturkontrakten er godkendt. Den
+implementerer eller deployer ikke V3, aktiverer ikke V3 serving og ændrer
+ikke D004 `execution_mode` eller D008 LIVE-canary.
 
 ---
 
@@ -10447,14 +15307,18 @@ Command Center V3 og samlet informationsarkitektur.
 
 Ved næste arbejdssession:
 
-1. Kontrollér Git HEAD, `origin/main`, ren worktree og at V3-D008 fortsat er
-   `LOCKED`.
-2. Fortsæt med V3-D009 — Command Center V3 og samlet informationsarkitektur —
-   uden at genåbne D001-D008s låste kontrakter.
-3. V3-D009 er fortsat `PENDING`, indtil dens egen Command Center V3- og
-   informationsarkitekturkontrakt er designet og godkendt.
-4. Implementér ingen V3-kode, før de efterfølgende relevante V3-kontrakter,
-   som implementationen afhænger af, er formelt låst.
+1. Kontrollér Git HEAD, `origin/main`, remote `main`, ren worktree og at
+   V3-D009 fortsat er `LOCKED`.
+2. Bevar D001-D009 som låste arkitekturkontrakter. Hvis implementationen
+   kræver ændret business-semantik, skal det ske gennem en ny eksplicit
+   V3-decision og ikke som skjult implementation-detail.
+3. Start kun næste V3-fase som en særskilt eksplicit implementation-
+   planlægningsfase. Begynd med dependency/inventory-review og den første
+   lille reversible implementation-slice efter D009.6.
+4. D009-lock er ikke deploy- eller serving-autorisation. Udfør ingen
+   production deploy/restart som side effect af blueprint-locket.
+5. D004 `execution_mode` og D008 LIVE-canary forbliver separate investment-
+   execution decisions. D009-lock aktiverer ikke LIVE.
 
 ---
 
@@ -10473,9 +15337,24 @@ Ved dette checkpoint er:
   samlet D001-D006 cross-review og final diff-/integritetskontrol
 - V3-D008 låst efter D008.1-D008.5, kritiske delreviews, samlet D001-D008
   semantisk cross-review og final diff-/integritetskontrol
-- V3-D009 er fortsat `PENDING`
-- 100 DKK/måned er låst i D005 som global hard cap for samlet paid
+- V3-D009 låst efter D009.1-D009.6, individuelle kritiske reviews,
+  samlet D001-D008 global cross-review og final pre-lock integritetskontrol
+- D001-D009 forbliver authoritative for den efterfølgende V3-implementation
+- Command Center V3 er låst som executive projection/read-model og ikke som
+  en ny scoring-, lifecycle-, gate-, alert- eller portfolio-motor
+- Compounder og Catalyst forbliver separate opportunity-profiler uden fælles
+  totalrangering
+- Portfolio Fit/relevance forbliver et separat personal overlay
+- ordinary Command Center read/navigation er kontraktmæssigt side-effect-fri
+  og må ikke starte paid OpenAI eller hidden provider generation
+- 100 DKK/måned er fortsat låst i D005 som global hard cap for samlet paid
   OpenAI-forbrug på tværs af V2 og V3
-- Opportunity Radar er fortsat defineret som V3’s vigtigste nye funktion
-- ingen V3-kode er implementeret
-- production runtime ikke ændret af V3-blueprintarbejdet
+- D006/D007 `AMBIGUOUS` recovery giver fortsat ikke blind resend
+- D009 UI rollout/serving er separat fra D004 `execution_mode` og D008
+  LIVE-canary
+- Opportunity Radar er fortsat defineret som V3's vigtigste nye funktion
+- ingen V3-kode er implementeret af D009-blueprintarbejdet
+- ingen V3 serving er aktiveret
+- D004 LIVE er ikke aktiveret af D009
+- production runtime er ikke ændret af V3-D009 blueprintarbejdet
+- næste fase er en særskilt eksplicit implementation-planlægningsfase
