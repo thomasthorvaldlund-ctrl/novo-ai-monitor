@@ -1,0 +1,169 @@
+{# Slice 6c: standalone, non-serving template. Input: the locked 6b view model.
+   No V2 inheritance, business selection, data fetching or deep-link generation.
+   A version check is not authorization or canonical evidence verification. #}
+{% macro value(v) -%}
+{% if v is none %}<span class="cc-v3-muted">Ikke oplyst</span>{% else %}{{ v|forceescape }}{% endif %}
+{%- endmacro %}
+{% macro refs(values, present=true, label='Kildereferencer') -%}
+<details class="cc-v3-refs">
+  <summary>{{ label }}</summary>
+  {% if not present %}<p>Kildereferencer mangler.</p>
+  {% elif values %}<ul>{% for ref in values %}<li>{{ ref|forceescape }}</li>{% endfor %}</ul>
+  {% else %}<p>Ingen kildereferencer angivet.</p>{% endif %}
+</details>
+{%- endmacro %}
+{% macro field(label, name, v) -%}
+<div><dt>{{ label }}</dt><dd data-field="{{ name }}">{{ value(v) }}</dd></div>
+{%- endmacro %}
+{% set titles = {
+  'page_context': 'Command Center V3', 'attention': 'Attention',
+  'executive_decision_summary': 'Executive Decision Summary',
+  'compounder_opportunities': 'Compounder', 'catalyst_opportunities': 'Catalyst',
+  'portfolio_relevance': 'Portfolio Relevance', 'what_changed': 'What Changed',
+  'market_context': 'Market Context', 'trust_data_system_state': 'Trust / Data / System State'
+} %}
+{% set empty_text = {
+  'attention': 'Ingen Attention-punkter i dette udsnit.',
+  'executive_decision_summary': 'Ingen opsummeringspunkter i dette udsnit.',
+  'compounder_opportunities': 'Ingen Compounder-cases i dette udsnit.',
+  'catalyst_opportunities': 'Ingen Catalyst-cases i dette udsnit.',
+  'portfolio_relevance': 'Ingen portfolio-relevanspunkter i dette udsnit. Det er ikke en opgørelse over beholdninger.',
+  'what_changed': 'Ingen ændringspunkter i dette udsnit.',
+  'market_context': 'Ingen markedskontekstpunkter i dette udsnit.',
+  'trust_data_system_state': 'Ingen trust-/systempunkter i dette udsnit.',
+  'page_context': 'Sidekontekst er ikke tilgængelig.'
+} %}
+{% set availability_labels = {'AVAILABLE': 'Tilgængelig', 'PARTIAL': 'Delvist tilgængelig', 'UNAVAILABLE': 'Utilgængelig'} %}
+{% set freshness_labels = {'CURRENT': 'Aktuel', 'STALE': 'Forældet', 'UNKNOWN': 'Aktualitet ukendt'} %}
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Aureum · Command Center V3</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/command_center_v3.css') }}">
+</head>
+<body class="cc-v3-body">
+<a class="cc-v3-skip" href="#cc-v3-main">Gå til indhold</a>
+<div class="cc-v3-masthead"><strong>AUREUM</strong><span>V3 · Isoleret præsentation</span></div>
+<main id="cc-v3-main" class="cc-v3" tabindex="-1">
+{% if vm is defined and vm is not none
+   and vm.view_model_version == 'command_center_presentation_view_model:v1'
+   and vm.payload_version == 'command_center_presentation_payload:v1'
+   and vm.presentation_policy_version == 'command_center_presentation:v1' %}
+  <div class="cc-v3-grid">
+  {% for key in vm.section_order %}
+    {% set section = vm.sections[key] %}
+    <section id="cc-v3-{{ key }}" class="cc-v3-section"
+      data-section="{{ key }}" data-availability="{{ section.availability|forceescape }}"
+      data-freshness="{{ section.freshness|forceescape }}" aria-labelledby="cc-v3-title-{{ key }}">
+      <header class="cc-v3-section-head">
+      {% if key == 'page_context' %}
+        <p class="cc-v3-eyebrow">Beslutningsstøtte · materialiseret datagrundlag</p>
+        <h1 id="cc-v3-title-{{ key }}">{% if section.has_content and section.availability != 'UNAVAILABLE' %}{{ section.payload.title|forceescape }}{% else %}Command Center V3{% endif %}</h1>
+      {% else %}<h2 id="cc-v3-title-{{ key }}">{{ titles[key] }}</h2>{% endif %}
+        <div class="cc-v3-status">
+          <span class="cc-v3-badge" data-axis="availability">{{ availability_labels[section.availability] }}</span>
+          <span class="cc-v3-badge" data-axis="freshness">{{ freshness_labels[section.freshness] }}</span>
+        </div>
+        <p class="cc-v3-source-time">{% if section.source_as_of_present and section.source_as_of is not none %}Datagrundlag pr. <time datetime="{{ section.source_as_of|forceescape }}">{{ section.source_as_of|forceescape }}</time>{% elif section.source_as_of_present %}Kildetidspunkt ikke oplyst.{% else %}Kildetidspunkt mangler.{% endif %}</p>
+        {% if key == 'page_context' %}<p class="cc-v3-source-time">Projection pr. <time datetime="{{ vm.projection.as_of|forceescape }}">{{ vm.projection.as_of|forceescape }}</time></p>{% endif %}
+      </header>
+      {% if section.availability == 'PARTIAL' %}<p class="cc-v3-notice" data-notice="partial">Datagrundlaget er delvist. Læs oplysningerne med denne begrænsning.</p>{% endif %}
+      {% if section.freshness == 'STALE' %}<p class="cc-v3-notice" data-notice="stale">Ældre datagrundlag — må ikke læses som en aktuel vurdering.</p>
+      {% elif section.freshness == 'UNKNOWN' %}<p class="cc-v3-notice" data-notice="unknown">Datagrundlagets aktualitet er ikke afklaret.</p>{% endif %}
+
+      {% if key == 'trust_data_system_state' and vm.verification_warnings %}
+      <aside class="cc-v3-notice" aria-labelledby="cc-v3-warning-title" data-verification-warnings>
+        <h3 id="cc-v3-warning-title">Tekniske præsentationsforbehold</h3>
+        <p>Fra verifieren. Disse forbehold er ikke nye business- eller Attention-events.</p>
+        <ul>{% for warning in vm.verification_warnings %}<li><strong>{{ warning.code|forceescape }}</strong> · {{ warning.severity|forceescape }}<br>{{ warning.message|forceescape }}<br><span class="cc-v3-mono">{{ warning.path|forceescape }}</span></li>{% endfor %}</ul>
+      </aside>
+      {% endif %}
+
+      {% if section.availability == 'UNAVAILABLE' %}
+        <p class="cc-v3-empty" data-state="unavailable">{% if key == 'portfolio_relevance' %}Portfolio-konteksten er ikke tilgængelig. Det siger ikke, om du har beholdninger.{% elif key == 'attention' %}Attention-data er ikke tilgængelige. Fravær af advarsler kan ikke konkluderes.{% elif key == 'executive_decision_summary' %}En gyldig opsummering er ikke tilgængelig.{% else %}Sektionens oplysninger er ikke tilgængelige.{% endif %}</p>
+      {% elif not section.has_content %}
+        <p class="cc-v3-empty" data-state="empty">{{ empty_text[key] }}</p>
+      {% elif key == 'page_context' %}
+        {% if section.payload.description is not none %}<p class="cc-v3-lead">{{ section.payload.description|forceescape }}</p>{% endif %}
+        <p class="cc-v3-context">Et executive udsnit, ikke en komplet opportunity-liste. Compounder og Catalyst er separate profiler; Portfolio Fit er et særskilt personligt lag.</p>
+      {% elif key == 'executive_decision_summary' %}
+        <ul class="cc-v3-summary">{% for point in section.payload.points %}<li>{{ point|forceescape }}</li>{% endfor %}</ul>
+        {{ refs(section.payload.source_references, label='Opsummeringens kildereferencer') }}
+      {% elif key in ('compounder_opportunities', 'catalyst_opportunities') %}
+        <p class="cc-v3-context">Profilens eget udsnit — ingen fælles rangliste med den anden profil.</p>
+        <div class="cc-v3-cases">
+        {% for item in section.payload %}
+          <article class="cc-v3-case" data-opportunity-id="{{ item.opportunity_id|forceescape }}"
+            data-profile="{{ item.opportunity_profile|forceescape }}" aria-labelledby="cc-v3-case-{{ key }}-{{ loop.index }}">
+            <p class="cc-v3-eyebrow">{{ item.opportunity_profile|forceescape }}</p>
+            <h3 id="cc-v3-case-{{ key }}-{{ loop.index }}">{% if item.instrument_label is not none %}{{ item.instrument_label|forceescape }}{% else %}{{ item.instrument_id|forceescape }}{% endif %}</h3>
+            <dl class="cc-v3-facts cc-v3-identities">
+              {{ field('Instrument-ID', 'instrument_id', item.instrument_id) }}
+              {{ field('Opportunity-ID', 'opportunity_id', item.opportunity_id) }}
+            </dl>
+            <dl class="cc-v3-facts">
+              {{ field('Lifecycle', 'lifecycle', item.lifecycle) }}
+              {{ field('Opportunity Score', 'opportunity_score', item.opportunity_score) }}
+              {{ field('AI Confidence', 'ai_confidence', item.ai_confidence) }}
+              {{ field('Data Confidence', 'data_confidence', item.data_confidence) }}
+            </dl>
+            <div class="cc-v3-why"><h4>Why now</h4><p data-field="why_now">{{ value(item.why_now) }}</p></div>
+            <div class="cc-v3-blockers"><h4>Kritiske blockers</h4>
+              {% if item.critical_blockers is none %}<p data-blockers="unknown">Blocker-oplysninger ikke oplyst.</p>
+              {% elif item.critical_blockers %}<ul data-blockers="present">{% for blocker in item.critical_blockers %}<li>{{ blocker|forceescape }}</li>{% endfor %}</ul>
+              {% else %}<p data-blockers="empty">Ingen kritiske blockers angivet i datagrundlaget.</p>{% endif %}
+            </div>
+            {{ refs(item.source_references, label='Kortets kildereferencer') }}
+          </article>
+        {% endfor %}
+        </div>
+      {% else %}
+        {% if key == 'portfolio_relevance' %}<p class="cc-v3-context">Personlig relevans — ikke en ny objektiv opportunity-score.</p>{% endif %}
+        <ul class="cc-v3-items">
+        {% for item in section.payload %}
+          <li data-item-id="{{ item.item_id|forceescape }}">
+            {% if item.title is not none %}<h3>{{ item.title|forceescape }}</h3>{% endif %}
+            {% if item.text is not none %}<p class="cc-v3-text">{{ item.text|forceescape }}</p>{% endif %}
+            {% if key == 'portfolio_relevance' %}
+            <dl class="cc-v3-facts cc-v3-overlay">
+              {{ field('Instrument-ID', 'instrument_id', item.instrument_id) }}
+              {{ field('Opportunity-ID', 'opportunity_id', item.opportunity_id) }}
+              {{ field('Portfolio Fit · personligt lag', 'portfolio_fit', item.portfolio_fit) }}
+            </dl>
+            {% elif key == 'what_changed' %}<dl class="cc-v3-facts">{{ field('Record-reference', 'record_reference', item.record_reference) }}</dl>{% endif %}
+            {{ refs(item.source_references, label='Punktets kildereferencer') }}
+          </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+      {{ refs(section.source_references, section.source_references_present, label='Sektionens kildereferencer') }}
+      {% if key == 'page_context' %}
+      <details class="cc-v3-refs cc-v3-audit"><summary>Projection og versioner</summary>
+        <dl class="cc-v3-facts">
+        {% for name, label in [('command_center_projection_id', 'Projection-ID'), ('as_of', 'Projection as-of'), ('materialized_at', 'Materialiseret'), ('source_cutoff', 'Source cutoff'), ('build_status', 'Build-status'), ('schema_version', 'Projection-schema'), ('presentation_policy_version', 'Presentation-policy')] %}
+          {{ field(label, name, vm.projection[name]) }}
+        {% endfor %}
+          {{ field('View-model', 'view_model_version', vm.view_model_version) }}
+          {{ field('Payloadkontrakt', 'payload_version', vm.payload_version) }}
+        </dl>
+      </details>
+      {% endif %}
+    </section>
+  {% endfor %}
+  </div>
+{% else %}
+  <section class="cc-v3-section" data-page-state="unavailable" aria-labelledby="cc-v3-unavailable-title">
+    <h1 id="cc-v3-unavailable-title">Command Center V3</h1>
+    <p>Præsentationsgrundlaget mangler eller har en ikke-understøttet version. Ingen vurderinger vises.</p>
+  </section>
+{% endif %}
+</main>
+<footer class="cc-v3-footer">
+  <p>Research og beslutningsstøtte — ikke en handelsordre eller garanti for afkast.</p>
+  <p>Denne isolerede præsentation tilføjer ikke detalje-navigation, opdateringshandlinger eller LIVE-aktivering. Kildereferencer er ikke i sig selv verificeret evidens.</p>
+</footer>
+</body>
+</html>
