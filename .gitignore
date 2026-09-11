@@ -95,6 +95,12 @@ deep_ai_entitlements.lock
 aureum_accounts.sqlite3
 aureum_accounts.sqlite3-wal
 aureum_accounts.sqlite3-shm
+
+# Aureum V3 canonical runtime database
+/aureum_v3.sqlite3
+/aureum_v3.sqlite3-wal
+/aureum_v3.sqlite3-shm
+
 quiet_alert_state.json
 quiet_alert_state.json.lock
 
