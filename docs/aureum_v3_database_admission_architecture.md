@@ -1,9 +1,9 @@
 # Aureum V3: database-admission architecture
 
 Status: DRAFT for samlet admission-arkitektur. Målprofilen i afsnit 9.2,
-service-/procesmodellen i afsnit 10.2 og entrypoint-/service-boundary i afsnit
-11.2 er APPROVED_ARCHITECTURE_ONLY; øvrige åbne valg og deployment er ikke
-godkendt. D006 forbliver uændret.
+service-/procesmodellen i afsnit 10.2, entrypoint-/service-boundary i afsnit
+11.2 og composition-root/API i afsnit 12.2 er APPROVED_ARCHITECTURE_ONLY;
+øvrige åbne valg og deployment er ikke godkendt. D006 forbliver uændret.
 Dato: 2026-09-11.
 Kodebaseline: `153b45bcaf32dd6c46f2c479c383d100deeea185`.
 Autoritativ kilde: `docs/aureum_v3_blueprint.md`, SHA-256
@@ -151,12 +151,13 @@ ikke en SQLite-build, konkret implementation, integration, initialisering,
 migration, deploy eller restart. Dette dokumentationstrin foretager heller
 ikke staging, commit eller push.
 
-Målprofilens og service-/procesmodellens godkendelsesregistreringer er reviewet
-og gemt. Entrypoint-/service-boundary i afsnit 11.2 registreres nu som næste
-separate arkitekturbeslutning. Derefter kan composition-root/API og den senere
-admission-integration afgrænses read-only før implementation. De resterende
-åbne valg skal stadig afklares før integration og deployment. Den låste
-blueprint ændres ikke stiltiende.
+Målprofilens, service-/procesmodellens og entrypoint-/service-boundarys
+godkendelsesregistreringer er reviewet og gemt. Composition-root/API i afsnit
+12.2 registreres nu som næste separate arkitekturbeslutning. Derefter kan
+observer-, schema- og admission-lagene samt det senere orchestrator-API
+afgrænses read-only før implementation. De resterende åbne valg skal stadig
+afklares før integration og deployment. Den låste blueprint ændres ikke
+stiltiende.
 
 ## 9. Observeret platform og godkendt målprofil
 
@@ -348,6 +349,70 @@ Den godkender ingen SQLite-build, database-admission-implementation, database-
 HTTP/OpenAI/Telegram-arbejde, systemd-enhed, cron/timer, deploy, restart eller
 LIVE-aktivering. Eksisterende V2-service, root-cron og committede V3-kontrakter
 ændres ikke af denne arkitekturbeslutning.
+
+## 12. V3 composition-root/API
+
+Status: V3_COMPOSITION_ROOT_API_APPROVED_ARCHITECTURE_ONLY.
+Beslutningen fastlægger den fremtidige composition roots procesvendte API og
+ansvarsgrænse; den vælger ikke modulnavn, orchestrator-API eller process lifetime.
+
+### 12.1 Observeret beslutningsgrundlag 2026-09-12
+
+Et read-only AST-review inventarierede de eksisterende V3-API'er uden at
+importere projektmoduler eller åbne databaser. De nuværende databasebyggesten
+har smalle offentlige funktioner til path-resolution, SQLite runtime-guard samt
+connection- og permission-kontrakter. Der blev ikke observeret import-time
+effectful calls i disse moduler.
+
+De fremtidige permission-/connection-observers, schema-kontrakt og samlede
+database-admission var fortsat fraværende. De eksisterende databasebyggesten
+blev fortsat kun observeret som direkte anvendt af deres tests. Repoet har
+allerede en produktionsnær konvention med en top-level `main() -> int` og en
+eksplicit `raise SystemExit(main())`-grænse i `scripts/run_internal_job.py`.
+Disse observationer er designinput og godkender ikke runtime eller databaseadgang.
+
+### 12.2 Godkendt composition-root/API - kun arkitekturbeslutning
+
+- Composition root skal have én eksplicit procesvendt startfunktion med
+  signaturen `main(argv: Sequence[str] | None = None) -> int`.
+- Modulimport skal fortsat være side-effect-free. `main()` kaldes kun gennem en
+  eksplicit startgrænse; en `if __name__ == "__main__": raise SystemExit(main())`
+  guard er tilladt, men godkender ikke i sig selv nogen runtime-aktivering.
+- `main()` ejer kun proces-/composition-ansvar: parse godkendte argumenter og
+  konfiguration, sammensæt eksplicit godkendte dependencies, kald et senere
+  godkendt orchestrator-lag, oversæt kendte procesfejl til exit status og
+  returnér et heltal.
+- Composition root må ikke indeholde SQL, kalde `sqlite3.connect()` direkte,
+  observere permissions/PRAGMA/schema på egen hånd eller reimplementere
+  database-, permission-, connection-, schema- eller migration-kontrakter.
+- Composition root må ikke udføre HTTP/provider-, OpenAI- eller Telegram-kald,
+  filesystem-publication eller business-/scoring-logik direkte. Sådan adfærd
+  skal ligge bag særskilt godkendte dependencies og flows.
+- Den eksisterende path-resolver og SQLite runtime-guard kan senere komponeres
+  som dependencies. Canonical databasearbejde forbliver blokeret, indtil de
+  nødvendige observer-, schema- og admission-lag er implementeret, reviewet og
+  godkendt fail closed.
+- Dependency-sammensætning skal være eksplicit. Der må ikke indføres skjulte
+  import-sideeffekter, globale SQLite-connections eller implicitte singleton-
+  sessions som composition-mekanisme.
+- Konkrete CLI-argumenter, numeriske exit codes og orchestratorens API fastlåses
+  ikke i denne beslutning; de kræver særskilt kontrakt og review.
+- Beslutningen ændrer ikke entrypoint-boundary i afsnit 11.2, den separate
+  non-root servicegrænse, V2-driften, D004s LIVE-grænser eller D006s krav.
+
+### 12.3 Hvad denne beslutning IKKE godkender
+
+Beslutningen fastlægger ikke fil-/modulnavn, service-navn, konkrete CLI-
+argumenter, numeriske exit-code-værdier, orchestrator-API, dependency
+implementation, long-running service versus one-shot worker/timer, jobopdeling
+eller grænsen mellem V2-webreads og V3-data. Den opretter ingen ny Python-fil.
+
+Den godkender ingen permission-/connection-observer, schema-kontrakt,
+database-admission-implementation, SQLite-build, databaseåbning, fil-/directory-
+oprettelse, schema-bootstrap, migration, canonical write, HTTP/OpenAI/Telegram-
+arbejde, systemd-enhed, cron/timer, deploy, restart eller LIVE-aktivering.
+Eksisterende V2-service, root-cron og committede V3-kontrakter ændres ikke af
+denne arkitekturbeslutning.
 
 ## Kilder
 
