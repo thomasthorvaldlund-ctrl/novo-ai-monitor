@@ -1,8 +1,9 @@
 # Aureum V3: database-admission architecture
 
-Status: DRAFT for samlet admission-arkitektur. Målprofilen i afsnit 9.2 og
-service-/procesmodellen i afsnit 10.2 er APPROVED_ARCHITECTURE_ONLY; øvrige
-åbne valg og deployment er ikke godkendt. D006 forbliver uændret.
+Status: DRAFT for samlet admission-arkitektur. Målprofilen i afsnit 9.2,
+service-/procesmodellen i afsnit 10.2 og entrypoint-/service-boundary i afsnit
+11.2 er APPROVED_ARCHITECTURE_ONLY; øvrige åbne valg og deployment er ikke
+godkendt. D006 forbliver uændret.
 Dato: 2026-09-11.
 Kodebaseline: `153b45bcaf32dd6c46f2c479c383d100deeea185`.
 Autoritativ kilde: `docs/aureum_v3_blueprint.md`, SHA-256
@@ -150,11 +151,12 @@ ikke en SQLite-build, konkret implementation, integration, initialisering,
 migration, deploy eller restart. Dette dokumentationstrin foretager heller
 ikke staging, commit eller push.
 
-Målprofilens godkendelsesregistrering er reviewet og gemt. Service-/procesmodellen
-i afsnit 10.2 registreres nu som næste separate arkitekturbeslutning. Derefter
-kan entrypoint-/service-boundary afgrænses read-only før implementation. De
-resterende åbne valg skal stadig afklares før integration og deployment. Den
-låste blueprint ændres ikke stiltiende.
+Målprofilens og service-/procesmodellens godkendelsesregistreringer er reviewet
+og gemt. Entrypoint-/service-boundary i afsnit 11.2 registreres nu som næste
+separate arkitekturbeslutning. Derefter kan composition-root/API og den senere
+admission-integration afgrænses read-only før implementation. De resterende
+åbne valg skal stadig afklares før integration og deployment. Den låste
+blueprint ændres ikke stiltiende.
 
 ## 9. Observeret platform og godkendt målprofil
 
@@ -286,6 +288,66 @@ Den godkender ingen SQLite-build, databaseinitialisering, schema-bootstrap,
 migration, databaseåbning, canonical write, LIVE-aktivering eller deployment.
 D006 og den eksisterende permission-/connection-/runtime-guard-kode ændres ikke
 af denne arkitekturbeslutning.
+
+## 11. V3 entrypoint-/service-boundary
+
+Status: V3_ENTRYPOINT_SERVICE_BOUNDARY_APPROVED_ARCHITECTURE_ONLY.
+Beslutningen fastlægger en smal composition-root-grænse for den fremtidige
+V3-proces; den vælger ikke et konkret modulnavn og opretter ingen runtime.
+
+### 11.1 Observeret beslutningsgrundlag 2026-09-12
+
+Et read-only AST-review parsede 208 trackede Python-filer uden at importere
+moduler. `app.py` havde 29 top-level non-definition statements og 25 top-level
+calls, herunder Flask-oprettelse, 14 blueprint-registreringer, miljøopslag og
+login-konfiguration. Statisk scan fandt desuden Telegram-, HTTP- og OpenAI-
+relateret adfærd i modulet. `app.py` havde samtidig ingen observerede V3-navne,
+importerede hverken V3-routes eller opportunity-databaselaget og forblev derfor
+isoleret fra den nye V3-grænse.
+
+De isolerede V3-routefiler havde ingen top-level calls. De eksisterende V3-
+databasekontrakter havde ingen eller kun trivielle konstante initialiseringer
+ved import. `command_center_projection_store.py` havde ingen top-level calls,
+men indeholder filesystem-write-kapacitet inde i funktionaliteten. Observationen
+er statisk beslutningsinput og ikke runtime-bevis for side-effect-fri adfærd.
+
+### 11.2 Godkendt entrypoint-/service-boundary - kun arkitekturbeslutning
+
+- V3 skal have en ny, smal composition root/entrypoint adskilt fra `app.py` og
+  fra Flask-routefilerne. Hele `app.py` må fortsat ikke bruges som V3-entrypoint.
+- Import af den fremtidige composition root skal være side-effect-free: ingen
+  SQLite-connection, filesystem-write, HTTP/provider-, OpenAI- eller Telegram-
+  kald, subprocess, thread/process-start, Flask-app-oprettelse eller blueprint-
+  registrering må ske alene ved import.
+- Runtime-arbejde skal ligge bag en eksplicit `main()` eller anden eksplicit
+  kaldbar startgrænse; modulimport må ikke starte arbejdet.
+- Composition root må senere komponere godkendte V3-kontrakter, path-resolver,
+  runtime-guard og fremtidige admission/orchestrator-lag, men kun efter at de
+  konkrete dependencies og deres kontrakter er særskilt reviewet og godkendt.
+- Entrypointet må ikke selv skabe en database, bootstrappe eller migrere schema
+  eller omgå admission. Manglende eller ikke-godkendt database-admission skal
+  blokere databasearbejde fail closed.
+- `command_center_v3_routes.py` og `command_center_v3_presentation_routes.py`
+  forbliver isolerede web/read-model-grænser og er ikke service-entrypoints.
+- `command_center_projection_store.py` er ikke composition root. Dets eventuelle
+  senere brug som dependency kræver et eksplicit flow, fordi modulet indeholder
+  filesystem-write-kapacitet, selv om reviewet ikke fandt top-level writes.
+- Beslutningen ændrer ikke den godkendte separate non-root servicegrænse, V2-
+  servicen, root-cron, D004s LIVE-grænser eller D006s databasekrav.
+
+### 11.3 Hvad denne beslutning IKKE godkender
+
+Beslutningen fastlægger ikke fil-/modulnavn, CLI, service-navn, konkret
+composition-root API, orchestrator-API, long-running service versus one-shot
+worker/timer, dependency injection-model, jobopdeling eller grænsen mellem
+V2-webreads og V3-data. Den opretter ingen ny Python-fil og registrerer ingen
+Flask-blueprint.
+
+Den godkender ingen SQLite-build, database-admission-implementation, database-
+åbning, fil-/directory-oprettelse, schema-bootstrap, migration, canonical write,
+HTTP/OpenAI/Telegram-arbejde, systemd-enhed, cron/timer, deploy, restart eller
+LIVE-aktivering. Eksisterende V2-service, root-cron og committede V3-kontrakter
+ændres ikke af denne arkitekturbeslutning.
 
 ## Kilder
 
