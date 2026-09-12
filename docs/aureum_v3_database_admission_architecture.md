@@ -2,8 +2,9 @@
 
 Status: DRAFT for samlet admission-arkitektur. Målprofilen i afsnit 9.2,
 service-/procesmodellen i afsnit 10.2, entrypoint-/service-boundary i afsnit
-11.2 og composition-root/API i afsnit 12.2 er APPROVED_ARCHITECTURE_ONLY;
-øvrige åbne valg og deployment er ikke godkendt. D006 forbliver uændret.
+11.2, composition-root/API i afsnit 12.2 og database-admission-lagdelingen i
+afsnit 13.2 er APPROVED_ARCHITECTURE_ONLY; øvrige åbne valg og deployment er
+ikke godkendt. D006 forbliver uændret.
 Dato: 2026-09-11.
 Kodebaseline: `153b45bcaf32dd6c46f2c479c383d100deeea185`.
 Autoritativ kilde: `docs/aureum_v3_blueprint.md`, SHA-256
@@ -151,13 +152,14 @@ ikke en SQLite-build, konkret implementation, integration, initialisering,
 migration, deploy eller restart. Dette dokumentationstrin foretager heller
 ikke staging, commit eller push.
 
-Målprofilens, service-/procesmodellens og entrypoint-/service-boundarys
-godkendelsesregistreringer er reviewet og gemt. Composition-root/API i afsnit
-12.2 registreres nu som næste separate arkitekturbeslutning. Derefter kan
-observer-, schema- og admission-lagene samt det senere orchestrator-API
-afgrænses read-only før implementation. De resterende åbne valg skal stadig
-afklares før integration og deployment. Den låste blueprint ændres ikke
-stiltiende.
+Godkendelsesregistreringerne for målprofilen, service-/procesmodellen,
+entrypoint-/service-boundary og composition-root/API er reviewet og gemt.
+Database-admission-lagdelingen i afsnit 13.2 registreres nu som næste separate
+arkitekturbeslutning. Derefter skal de fortsat åbne correctness-mekanismer,
+herunder path-identitet, WAL/SHM-read-livscyklus, schema-manifest,
+read-policy under migration og unknown-commit reconciliation, afgrænses
+read-only før implementation. De resterende åbne valg skal stadig afklares
+før integration og deployment. Den låste blueprint ændres ikke stiltiende.
 
 ## 9. Observeret platform og godkendt målprofil
 
@@ -413,6 +415,122 @@ oprettelse, schema-bootstrap, migration, canonical write, HTTP/OpenAI/Telegram-
 arbejde, systemd-enhed, cron/timer, deploy, restart eller LIVE-aktivering.
 Eksisterende V2-service, root-cron og committede V3-kontrakter ændres ikke af
 denne arkitekturbeslutning.
+
+## 13. V3 database-admission-lagdeling
+
+Status: V3_DATABASE_ADMISSION_LAYERING_APPROVED_ARCHITECTURE_ONLY.
+Beslutningen fastlægger ownership og grænser mellem pre-open observation,
+connection-adgang, schema-/migration-verifikation, bounded unit of work og
+business/orchestration. Den vælger ikke konkrete modulnavne eller åbne
+correctness-mekanismer.
+
+### 13.1 Observeret beslutningsgrundlag 2026-09-12
+
+Et read-only review ved checkpoint
+`8ce09b3a55b02e5d4c6bed1fc57ca1a0e60c5cdb` parsede 208 trackede Python-filer
+uden projektmodul-import og uden SQLite-connection. De fire eksisterende
+databaseprimitiver havde fortsat ingen non-test-importers. De forventede
+filesystem-/connection-observer-, schema-, admission- og unit-of-work-lag var
+fortsat ikke implementeret.
+
+Reviewet genfandt D006s låste anchors for blandt andet `BEGIN IMMEDIATE`,
+`foreign_keys`, `busy_timeout`, `read_uncommitted`, `synchronous = FULL`,
+`user_version`, `schema_migrations`, `schema_migration_control`, `QUIESCED`,
+`MIGRATING`, checksums og capabilities. Den allerede godkendte admission-
+arkitektur kræver desuden samme work-connection, samme konsistente snapshot for
+read-kompatibilitet og data, transaction-bound recheck af write-barrieren samt
+eksplicit commit/rollback/close. Et permanent `approved=True` og en global,
+ubundet SQLite-connection er fortsat forbudt.
+
+### 13.2 Godkendt L0-L5 database-admission-lagdeling - kun arkitekturbeslutning
+
+- **L0 - pre-open configuration, policies og contracts.** L0 ejer path-resolution,
+  release-/runtime-policy og side-effect-frie valideringskontrakter. Den
+  eksisterende SQLite runtime-guard udføres som en pre-open gate og må ikke åbne
+  databasen. L0 ejer ingen filesystem-observation, SQLite-connection,
+  transaction eller business-adgang.
+- **L1 - pre-open filesystem observation og platform-policy-validering.** L1
+  observerer den valgte path-kæde og relevante directory-/DB-/WAL-/SHM-
+  egenskaber, herunder forventet identitet, filtype, modes, ACL, hardlinks og
+  autoritativt fravær, og validerer observationen mod den godkendte målprofil i
+  afsnit 9.2. Ukendt eller fejlet observation giver ingen admission. L1 må ikke
+  åbne SQLite eller reparere med `chmod`, `chown`, `mkdir`, fallback eller
+  schema-init.
+- **L2 - connection acquisition og actual-connection observation.** L2 må først
+  efter godkendte pre-open gates åbne den eksisterende database med den
+  godkendte access mode, aldrig `mode=rwc`. L2 konfigurerer og læser relevante
+  connection-settings/PRAGMA-state tilbage på den faktiske work-connection og
+  validerer dem mod de godkendte contracts. L2 udfører ingen business-SQL,
+  migration eller varig admission og ejer ingen global connection-pool eller
+  singleton-session.
+- **L3 - connection-/transaction-bound schema, migration og capability
+  verification.** L3 modtager den faktiske work-connection, som L4 ejer, og
+  observerer/validerer blandt andet `user_version`, canonical
+  `schema_migrations`-historik og checksums, krævede capabilities samt den
+  relevante migration-control-state. L3 åbner eller lukker ikke connectionen,
+  committer/rollbacker ikke og udsteder ingen selvstændig, genbrugelig
+  admission. Hvor correctness kræver et snapshot eller en writer-barriere,
+  udføres L3-verifikationen inde i den transaction, som L4 ejer.
+- **L4 - bounded admitted unit of work.** L4 er den eneste autoritative
+  database-admission-grænse. L4 orkestrerer L0-L3, overtager ejerskabet af den
+  konkrete work-connection og ejer dens bounded lifecycle, transaction/snapshot,
+  commit/rollback/close og cleanup. Admission gælder kun den konkrete unit of
+  work og må ikke overleve dens connection-/transaction-kontekst eller
+  materialiseres som et permanent boolsk flag.
+- **L5 - orchestrator/business caller.** L5 må anmode L4 om en eksplicit bounded
+  databaseoperation, men må ikke modtage rå, ubundet SQLite-authority eller selv
+  eje PRAGMA-, schema-, migration-control-, transaction- eller admission-logik.
+  Composition root må sammensætte de godkendte lag, men må fortsat ikke
+  implementere database-admission selv.
+
+For read-flows skal L4 etablere den konsistente read-transaction/snapshot, lade
+L3 verificere read-kompatibilitet på samme connection/snapshot og derefter
+udføre den bounded business-read før transactionen afsluttes og connectionen
+lukkes. Read-admission må ikke genbruges på tværs af snapshots.
+
+For correctness-kritiske write-flows skal L4 bruge den fælles
+`BEGIN IMMEDIATE`-serialiseringsgrænse, lade L3 genkontrollere write-schema,
+migration-control og øvrig write-kompatibilitet inde i samme transaction før
+business-writes og derefter committe eller rollbacke eksplicit og lukke
+connectionen. En connection åbnet under tidligere `NORMAL` får derfor ingen
+varig write-adgang, hvis control-head senere er `QUIESCED` eller `MIGRATING`.
+Et ukendt commit-resultat må fortsat ikke blindt retries; konkret
+reconciliation-API fastlægges separat.
+
+### 13.3 Cross-layer invariants
+
+- Filesystem-observation sker før SQLite-open og skal dække den godkendte
+  platformmålprofil; den eksisterende permission-kontrakt er ikke alene
+  tilstrækkelig som platform-admission.
+- Connection- og schema-observationer skal komme fra den faktiske
+  work-connection. Caller-leverede, løsrevne observationer kan ikke i sig selv
+  give runtime-admission.
+- Schema-/migration-verifikation og dataadgang bindes til samme snapshot, når
+  read-correctness kræver det.
+- Write-barriere og write-kompatibilitet genkontrolleres transaction-bound under
+  writer-serialization.
+- Normal runtime må ikke bootstrappe eller migrere schema og må ikke automatisk
+  falde fra write til read for at omgå en fejlet write-admission.
+- Ingen lag må returnere en global connection eller et permanent
+  database-approved-token, der kan bruges uden for den bounded unit of work.
+- Admission erstatter ikke authorization, budget-, lifecycle-, business- eller
+  LIVE-gates fra de øvrige låste V3-beslutninger.
+
+### 13.4 Hvad denne beslutning IKKE godkender
+
+Beslutningen fastlægger ikke path-identitetsmekanismen, WAL/SHM-read-
+livscyklussen, schema-manifest-formatet, read-policy under migration,
+migration-control-observationens konkrete shape, unknown-commit
+reconciliation-API, konkrete modul-/filnavne, public Python-API'er eller
+orchestrator-API.
+
+Den opretter ingen observer, platform-policy, connection-factory, schema-
+contract/verifier, admission-, session- eller unit-of-work-implementation og
+godkender ingen SQLite-build, databaseåbning, databasefil, directory-oprettelse,
+schema-bootstrap, migration, canonical write, HTTP/OpenAI/Telegram-arbejde,
+systemd-enhed, cron/timer, deploy, restart eller LIVE-aktivering. Eksisterende
+V2-service, root-cron, D006 og de committede V3-primitiver ændres ikke af denne
+arkitekturbeslutning.
 
 ## Kilder
 
