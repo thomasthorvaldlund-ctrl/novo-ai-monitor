@@ -1,8 +1,8 @@
 # Aureum V3: database-admission architecture
 
-Status: DRAFT for samlet admission-arkitektur. Målprofilen i afsnit 9.2 er
-APPROVED_ARCHITECTURE_ONLY; øvrige åbne valg og deployment er ikke godkendt.
-D006 forbliver uændret.
+Status: DRAFT for samlet admission-arkitektur. Målprofilen i afsnit 9.2 og
+service-/procesmodellen i afsnit 10.2 er APPROVED_ARCHITECTURE_ONLY; øvrige
+åbne valg og deployment er ikke godkendt. D006 forbliver uændret.
 Dato: 2026-09-11.
 Kodebaseline: `153b45bcaf32dd6c46f2c479c383d100deeea185`.
 Autoritativ kilde: `docs/aureum_v3_blueprint.md`, SHA-256
@@ -150,9 +150,11 @@ ikke en SQLite-build, konkret implementation, integration, initialisering,
 migration, deploy eller restart. Dette dokumentationstrin foretager heller
 ikke staging, commit eller push.
 
-Næste trin er read-only review af godkendelsesregistreringens afgrænsning.
-De resterende åbne valg skal stadig afklares før integration og deployment.
-Den låste blueprint ændres ikke stiltiende.
+Målprofilens godkendelsesregistrering er reviewet og gemt. Service-/procesmodellen
+i afsnit 10.2 registreres nu som næste separate arkitekturbeslutning. Derefter
+kan entrypoint-/service-boundary afgrænses read-only før implementation. De
+resterende åbne valg skal stadig afklares før integration og deployment. Den
+låste blueprint ændres ikke stiltiende.
 
 ## 9. Observeret platform og godkendt målprofil
 
@@ -225,6 +227,65 @@ kompromitteret kode under den godkendte ejer. [S9] Pre/post-metadata alene
 løser ikke path-races; afsnit 5s identitetskrav og afsnit 4s WAL/SHM-livscyklus
 skal stadig bevises. Ingen SQLite-build, ACL-status, faktisk service-path,
 read-policy under migration eller samlet database-admission godkendes her.
+
+## 10. V3 service-/procesmodel
+
+Status: V3_SERVICE_PROCESS_MODEL_APPROVED_ARCHITECTURE_ONLY.
+Beslutningen afgrænser V3 fra den eksisterende V2-drift; den implementerer,
+installerer, starter eller aktiverer ingen ny service.
+
+### 10.1 Observeret beslutningsgrundlag 2026-09-12
+
+Den eksisterende `aureum-ai.service` blev observeret som en aktiv Gunicorn-
+webservice under `root`, med `UMask=0022`, `WorkingDirectory=/root/aureum-ai-platform`
+og et gthread-setup med én worker og to threads. Service-definitionen bruger
+`/etc/aureum-ai.env`; miljøværdier og EnvironmentFile-indhold blev ikke læst.
+
+Den eksisterende V2-drift omfatter desuden root-cronjobs, der starter separate
+Python-processer fra samme repo til blandt andet risk/news checks, rapporter,
+dashboard-cache, screener-cache og portfolio jobs. Disse jobs blev kun
+inventorieret og ikke kørt eller ændret.
+
+Kodeinventaret viste et bredt V2-web-/delivery-scope i `app.py` og relaterede
+routes/services. De nuværende V3-databasebyggesten er ikke observeret som en
+production-integreret databaseadgangsvej. Default V3 DB/WAL/SHM var fortsat
+fraværende ved reviewet.
+
+### 10.2 Godkendt service-/procesmodel - kun arkitekturbeslutning
+
+- V3 skal have en særskilt, dedikeret ikke-root service-/procesgrænse i stedet
+  for at migrere den eksisterende `aureum-ai.service` til V3-identiteten.
+- Den eksisterende `aureum-ai.service` og den eksisterende root-crontab
+  forbliver V2-drift og ændres ikke som følge af denne beslutning.
+- Den fremtidige V3-proces skal bruge den godkendte platformmålprofil fra
+  afsnit 9.2, herunder dedikeret ikke-root identitet, `UMask=0077`, privat
+  dataplacering og eksplicit V3-path-konfiguration, når deployment senere
+  godkendes.
+- V3 får et smalt, eksplicit entrypoint. Hele `app.py` må ikke bruges som
+  implicit V3-entrypoint; genbrug skal ske gennem afgrænsede moduler med
+  dokumenterede sideeffekter og dependencies.
+- Canonical V3 writers og senere V3 maintenance-jobs må kun flyttes til den
+  nye procesmodel gennem særskilt review og deploymentbeslutning. Den
+  eksisterende root-crontab er ikke godkendt som canonical V3 writer-path.
+- Der er ingen automatisk root-fallback, ingen implicit åbning af `/root` for
+  V3-servicekontoen og ingen stiltiende deling af V2-runtimefiler.
+- En fremtidig V3-service bliver ikke LIVE eller offentligt eksponeret alene
+  ved at eksistere. D004s aktiveringsgrænser og D006s databasekrav gælder
+  fortsat uændret.
+
+### 10.3 Hvad denne beslutning IKKE godkender
+
+Beslutningen fastlægger ikke service-navn, kontonavn, numeriske UID/GID,
+endelig data-/kodeplacering, konkrete systemd-hardening-direktiver, timers,
+jobopdeling, resource-limits, dependency model eller den senere grænse mellem
+V2-webreads og V3-data. Den godkender heller ikke installation, `daemon-reload`,
+`enable`, `start`, restart, cronændringer, fil-/directory-oprettelse eller
+ændringer i `/etc/aureum-ai.env`.
+
+Den godkender ingen SQLite-build, databaseinitialisering, schema-bootstrap,
+migration, databaseåbning, canonical write, LIVE-aktivering eller deployment.
+D006 og den eksisterende permission-/connection-/runtime-guard-kode ændres ikke
+af denne arkitekturbeslutning.
 
 ## Kilder
 
