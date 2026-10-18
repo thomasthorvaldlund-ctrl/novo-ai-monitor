@@ -532,6 +532,104 @@ systemd-enhed, cron/timer, deploy, restart eller LIVE-aktivering. Eksisterende
 V2-service, root-cron, D006 og de committede V3-primitiver ændres ikke af denne
 arkitekturbeslutning.
 
+## 14. V3 path-identitetsmekanisme
+
+**Status: APPROVED_ARCHITECTURE_ONLY.**
+
+Denne beslutning konkretiserer den path-identitetsmekanisme, som
+afsnit 13.4 tidligere lod stå åben. Den giver ikke runtime-admission.
+
+### 14.1 Observeret beslutningsgrundlag 2026-10-18
+
+- Den tidligere observerede målplatform anvender Python 3.12.3
+  og SQLite 3.45.1.
+- Python-standardbibliotekets sqlite3-grænseflade giver ikke
+  den nødvendige direkte, understøttede adgang til samtlige
+  SQLite C-identitetsoperationer. APSW var ikke tilgængelig
+  i den tidligere kontrollerede platform.
+- SQLite beskriver SQLITE_OPEN_NOFOLLOW, sqlite3_db_filename()
+  og SQLITE_FCNTL_HAS_MOVED i de officielle C-grænseflader
+  [S10], [S11] og [S12].
+- Disse grænseflader udgør ikke alene bevis for, at et pathname
+  og den faktiske work-connection refererer til samme objekt.
+
+### 14.2 Godkendt path-identitetsmekanisme - kun arkitekturbeslutning
+
+1. L1 foretager descriptor-relativ, no-follow pre-open-observation
+   af den godkendte directory-kæde og eksisterende databasefil.
+   Symlinks og uventet directory-/filidentitet må ikke accepteres.
+
+2. L1 registrerer st_dev/st_ino og relevante metadata for den
+   observerede fil. Filtype, hardlink-count, ejerskab, modes,
+   ACL og directory-tillid skal opfylde den godkendte platform-
+   policy. Ukendt observation afvises.
+
+3. L2 kræver en verificeret identity-capable SQLite-backend.
+   Databaseåbning skal være existing-only og anvende
+   SQLITE_OPEN_NOFOLLOW. L2 skal verificere den faktisk
+   opnåede access mode via sqlite3_db_readonly() [S13] og afvise
+   utilsigtet read-only downgrade. Databaseoprettelse og
+   automatisk fallback er ikke tilladt.
+
+4. L2 skal indhente evidens fra den faktiske work-connection,
+   herunder sqlite3_db_filename() og SQLITE_FCNTL_HAS_MOVED.
+   Sidstnævnte kontrol skal være understøttet, returnere
+   succes og bekræfte HAS_MOVED=false. Et returneret pathname
+   er ikke i sig selv et inode-/identitetsbevis.
+
+5. L4 lader L1 genobservere den betroede path-kæde og databasefil
+   descriptor-relativt og no-follow efter SQLite-open.
+   Pre-/post-open st_dev/st_ino, path-identitet, permissions
+   og relevant platform-policy skal stemme overens.
+
+   L4 skal desuden kræve verificerbar binding mellem den
+   faktisk åbnede SQLite-databasefil og samme objektidentitet.
+   En dokumenteret og testet VFS-/OS-handle-mekanisme kan
+   eksempelvis levere sådan evidens, men dens tilgængelighed
+   og korrekthed er endnu ikke godkendt.
+
+   sqlite3_db_filename(), HAS_MOVED=false og pre-/post-open
+   pathname-observationer er ikke alene et tilstrækkeligt
+   bevis mod en uobserveret udskiftning under open.
+   Manglende binding, mismatch eller ukendt resultat skal
+   medføre fail-closed uden runtime-admission.
+
+6. Identitetskontrol forbliver bundet til den konkrete bounded
+   unit of work. L4 skal kræve relevante fornyede kontroller
+   ved operationens admission-/transaction-grænser. Ingen
+   observation giver permanent eller global godkendelse.
+
+7. Manglende backend-capability, afvigende objektidentitet,
+   ukendt resultat eller utilstrækkeligt bevis medfører
+   fail-closed. Der er ingen automatisk fallback til en
+   svagere path-kontrol eller almindelig stdlib-admission.
+
+### 14.3 Cross-layer invariants
+
+- L1 ejer filesystem-observation; L2 ejer observation fra den
+  faktisk åbnede connection; L4 er eneste admission-authority.
+- Pathnavne, realpath-resultater eller metadata fra et tidligere
+  tidspunkt er ikke alene tilstrækkelig identitetsevidens.
+- Directory-tillid og eksisterende platform-policy består.
+- WAL/SHM-livscyklus og tilhørende identitet skal afklares
+  særskilt; DB-path-identitet afgør ikke dette alene.
+- Connection-settings, schema/migration, authorization,
+  business-, budget- og LIVE-gates gælder fortsat uændret.
+
+### 14.4 Hvad denne beslutning IKKE godkender
+
+Beslutningen godkender ikke valg eller installation af en konkret
+SQLite-backend, runtime-implementering, VFS-modifikation,
+databaseåbning, databaseoprettelse, schema-bootstrap, migration,
+WAL/SHM-livscyklus, schema-manifest, read-policy under migration
+eller unknown-commit reconciliation.
+
+Den godkender heller ikke ændringer i V2, service, cron,
+systemd, HTTP/OpenAI/Telegram, deploy, restart eller LIVE.
+
+Manglende identitetscapabilities er en blokerende betingelse,
+ikke en tilladelse til at anvende en svagere mekanisme.
+
 ## Kilder
 
 D006-henvisningerne er til den SHA-låste lokale blueprint ovenfor; linjerne
@@ -547,3 +645,10 @@ kontrolleret 2026-09-11 og fastlægger mekanik, ikke nye Aureum-beslutninger.
 - [S7] Linux acl(5), access/default ACL og filoprettelse: https://man7.org/linux/man-pages/man5/acl.5.html
 - [S8] systemd.exec(5), UMask, User/Group og NoNewPrivileges: https://man7.org/linux/man-pages/man5/systemd.exec.5.html
 - [S9] Linux capabilities(7), DAC-bypass og eksisterende privilegier: https://man7.org/linux/man-pages/man7/capabilities.7.html
+
+Supplerende kilder til §14, kontrolleret 2026-10-18:
+
+- [S10] SQLite opening database connections: https://www.sqlite.org/c3ref/open.html
+- [S11] SQLite database filename: https://www.sqlite.org/c3ref/db_filename.html
+- [S12] SQLite file-control opcodes: https://www.sqlite.org/c3ref/c_fcntl_begin_atomic_write.html
+- [S13] SQLite determine if a database is read-only: https://www.sqlite.org/c3ref/db_readonly.html
