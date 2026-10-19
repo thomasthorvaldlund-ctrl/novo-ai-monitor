@@ -630,6 +630,189 @@ systemd, HTTP/OpenAI/Telegram, deploy, restart eller LIVE.
 Manglende identitetscapabilities er en blokerende betingelse,
 ikke en tilladelse til at anvende en svagere mekanisme.
 
+## 15. V3 WAL/SHM read-livscyklus
+
+**Status: APPROVED_ARCHITECTURE_ONLY.**
+
+Dette afsnit fastlægger krav til en kontrolleret WAL/SHM-livscyklus
+for normale V3-read-units of work. Det giver ikke runtime-
+admission og ændrer ikke den låste D006.
+
+### 15.1 Sikkerheds- og procesgrænse
+
+- Den godkendte V3-proces er en dedikeret ikke-root
+  service med privat database-directory (0700),
+  DB/WAL/SHM-mode 0600 og proces-umask 0077.
+- V2-service, root-cron og V2-webprocesser får ingen
+  implicit direkte adgang til canonical V3 SQLite.
+- Logisk read-only betyder ingen canonical SQL-writes,
+  schemaændringer eller business-state-mutation.
+- Det betyder ikke nødvendigvis nul filsystemændringer.
+  SQLite kan håndtere interne WAL/SHM-sideeffects
+  under den godkendte connection-livscyklus. [S1]
+- Kun den godkendte V3-identitet og SQLite-backend
+  må udføre autoriseret sidecar-oprettelse/håndtering.
+- Manglende SQLite runtime-/identity-capability
+  blokerer også read-admission.
+- Den observerede SQLite 3.45.1 består ikke den
+  eksisterende WAL-reset-release-gate.
+
+### 15.2 Sidecar-tilstand før SQLite-open
+
+| WAL | SHM | Normal read-policy |
+| --- | --- | --- |
+| Findes | Findes | Betinget admission efter fuld validering |
+| Mangler | Mangler | Betinget SQLite-styret oprettelse |
+| Findes | Mangler | Betinget SQLite-styret SHM-genopbygning |
+| Mangler | Findes | Ingen normal admission før særskilt klassifikation |
+| Ukendt | Vilkårlig | Fail-closed |
+| Vilkårlig | Ukendt | Fail-closed |
+
+Betinget betyder, at L1 først skal verificere den
+betroede path-kæde, autoritativ tilstedeværelse/fravær,
+directory-/filidentitet, ejerskab, modes, ACL, filtype
+og den godkendte oprettelsesautoritet.
+
+En manglende sidecar er ikke automatisk korruption.
+Tilsvarende er en eksisterende sidecar ikke automatisk
+gyldig eller knyttet til den rigtige database.
+
+Ved WAL uden SHM kan SQLite eventuelt genopbygge
+WAL-index under sine egne dokumenterede regler.
+Aureum må ikke selv slette, nulstille eller oprette
+en erstatnings-SHM som admission-reparation.
+
+En SHM uden WAL kræver separat klassifikation.
+Dette er ikke i sig selv bevis for korruption,
+men almindelig read-admission afvises indtil videre.
+
+### 15.3 L1-L4 admission- og lifecycle-krav
+
+1. L1 observerer database-directory og DB/WAL/SHM
+   descriptor-relativt og no-follow. Pre-open og
+   senere genobservationer skal bevare SQLite-låse.
+   Selvstændig open/close af SQLite-database- eller
+   sidecar-filer kan forstyrre låse i samme proces.
+   L1 må derfor ikke bruge rå DB/WAL/SHM-open/read/
+   close som observationsgenvej. Dirfd-relativ
+   no-follow stat kan observere metadata uden at
+   åbne filen, men giver ikke alene et bevis for
+   connection-binding eller fravær af races. [S4]
+
+2. L0/L2 kræver godkendt SQLite runtime, backend,
+   existing-only databaseadgang og §14 path-identity.
+   Reads åbnes fysisk read-only med verificeret
+   faktisk access mode og uden immutable/nolock.
+
+3. L2 må ikke ændre journal_mode eller initialisere
+   schema. Eksisterende WAL-mode og normale
+   connection-settings verificeres på den faktiske
+   work-connection.
+
+4. L4 lader L1 genvalidere relevante sidecar-
+   metadata efter SQLite-open. Tilladte SQLite-
+   livscyklustransitioner skal skelnes fra uventet
+   udskiftning, symlink, ownership-/mode-afvigelse
+   eller ukendt filidentitet.
+
+   Pre-/post-open forskelle er ikke automatisk
+   korruption, men kræver verificerbar evidens for
+   en autoriseret SQLite-livscyklustransition.
+   Ukendt årsag eller identitet giver ingen
+   read-admission. Metadata-snapshots giver
+   aldrig permanent sidecar-godkendelse.
+
+5. L4 kræver tilstrækkelig evidens for binding
+   mellem work-connection, hoveddatabase og dens
+   anvendte sidecars. Pre/post-pathmetadata alene
+   er ikke sådan et bevis. Den konkrete VFS-/OS-
+   evidensmekanisme er endnu ikke godkendt.
+
+6. L4 etablerer en bounded read-transaction og
+   et konsistent snapshot. L3 verificerer read-
+   kompatibilitet inden for samme connection og
+   snapshot, før business-read får adgang.
+
+7. Reads må ikke udføre checkpoint, journal-mode-
+   mutation, schema-bootstrap eller migration
+   som adgangsreparation.
+
+8. L4 ejer rollback/transaction-afslutning,
+   connection-close og cleanup. Efter-close
+   observation klassificerer relevante afvigelser,
+   men er ikke en ny eller genbrugelig admission.
+
+9. Ved fejl skal operationen fail-closed. En
+   filesystem-sideeffect, som allerede er udført
+   af SQLite før fejlen, kan ikke antages rullet
+   tilbage og skal håndteres særskilt.
+
+### 15.4 WAL, recovery og maintenance
+
+- En WAL kan indeholde committed data, som endnu
+  ikke er overført til hoveddatabasen. En read-
+  proces må ikke ignorere WAL for at læse DB alene.
+- Kun SQLite må administrere aktiv WAL/SHM-state.
+  Ingen manuel unlink, truncate, rename eller
+  checkpoint-forcing som admission-reparation.
+- SQLite kan bevare eller fjerne sidecars ved
+  normal connection-lukning. Begge udfald kan
+  være legitime efter den faktiske lifecycle.
+  Hvis sidste connection er read-only, kan
+  WAL/SHM forblive efter lukning. Dette er
+  ikke i sig selv et recovery- eller
+  integrity-incident. [S1, S14]
+- Crash-rester må ikke automatisk betragtes som
+  ugyldige eller slettes.
+- PERSIST_WAL, exclusive locking, ændret auto-
+  checkpoint-policy og særlige VFS-løsninger
+  indføres ikke gennem denne beslutning.
+- Checkpointing forbliver særskilt versioneret
+  maintenance under D006.5 og ikke correctness-
+  bevis for read-admission.
+- Restore, migration, WAL/SHM-generationer og
+  read-policy under QUIESCED/MIGRATING kræver
+  fortsat deres respektive særskilte kontrakter.
+
+### 15.5 Acceptance-tests før runtime-godkendelse
+
+På isolerede fixtures og en særskilt godkendt
+SQLite-build skal tests mindst dække:
+
+- Alle fire kendte WAL/SHM-tilstandskombinationer
+  samt ukendt observation.
+- Korrekt og forkert UID/GID, mode, ACL, symlink,
+  hardlink, directory og oprettelsesautoritet.
+- Manglende eller udskiftet sidecar ved open,
+  transaction-grænse og close.
+- Sidecar-races og dokumenteret DB/sidecar-binding.
+- Read-only actual mode, manglende backend-
+  capabilities og ingen immutable/nolock-fallback.
+- Samtidige readers/writers og stabile snapshots.
+- Graceful last-close, read-only last-close,
+  crash/restart og bevaret uncheckpointed WAL.
+- Bevarelse af SQLite POSIX-låse under L1's
+  pre-open og post-open metadataobservationer
+  med samtidige connections.
+- Busy/locked, disk-full, permission-denied,
+  cleanup-fejl og ukendt operationstilstand.
+- Ingen canonical writes, schema-init, migration,
+  manuel sidecar-reparation eller utilsigtet
+  aktivering af LIVE-funktionalitet.
+- Ingen svækkelse af §14 identitetskrav eller
+  D006s transaction-, budget- og migrationsgates.
+
+### 15.6 Hvad denne beslutning IKKE godkender
+
+Beslutningen godkender ikke en konkret SQLite-backend,
+VFS, OS-handle-binding, runtime-admission, read-policy
+under migration, servicekonto, systemd-enhed,
+databaseoprettelse, sidecar-oprettelse, migration,
+production-test, deploy, restart eller LIVE.
+
+Eksisterende V2-drift, root-cron, Git-checkpoints,
+D006 og committede V3-primitiver ændres ikke.
+
 ## Kilder
 
 D006-henvisningerne er til den SHA-låste lokale blueprint ovenfor; linjerne
@@ -652,3 +835,7 @@ Supplerende kilder til §14, kontrolleret 2026-10-18:
 - [S11] SQLite database filename: https://www.sqlite.org/c3ref/db_filename.html
 - [S12] SQLite file-control opcodes: https://www.sqlite.org/c3ref/c_fcntl_begin_atomic_write.html
 - [S13] SQLite determine if a database is read-only: https://www.sqlite.org/c3ref/db_readonly.html
+
+Supplerende kilde til §15, kontrolleret 2026-10-19:
+
+- [S14] SQLite WAL-mode file format and lifecycles: https://www.sqlite.org/walformat.html
