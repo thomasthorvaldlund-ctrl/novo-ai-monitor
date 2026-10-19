@@ -962,6 +962,166 @@ runtime-admission, service/deploy eller LIVE.
 §14 og §15, D006 og alle eksisterende V2-grænser
 forbliver uændrede.
 
+## 17. V3 read-policy under migration
+
+**Status: APPROVED_ARCHITECTURE_ONLY.**
+
+Dette afsnit fastlægger en konservativ read-policy
+under schema-migration. D006s eksisterende
+write-barriere ændres ikke. Beslutningen giver
+ingen runtime-admission.
+
+### 17.1 Read-klasser og control-state
+
+| State | Normal business-read | Autoriseret migrations-read |
+| --- | --- | --- |
+| NORMAL | Betinget L1-L4-admission | Særskilt autorisation |
+| QUIESCED | Ingen ny admission | Afgrænset backup/preflight |
+| MIGRATING | Ingen ny admission | Afgrænset verification/recovery |
+| Ukendt/ugyldig | Fail-closed | Særskilt recovery-afklaring |
+
+- Normale reads omfatter V3 business- og
+  dashboard-/analyseadgang til canonical SQLite.
+- Migrations-reads er særskilte, autoriserede
+  operationer knyttet til migration/deployment
+  eller auditeret recovery.
+- En migration-read er aldrig implicit tilladt
+  alene på grund af procesidentitet eller
+  adgang til en rå SQLite-connection.
+- V2-webprocessen får ingen implicit direkte
+  canonical V3-databaseadgang.
+
+### 17.2 Normal read-admission og snapshots
+
+- L4 ejer den bounded read-unit of work.
+- L1/L2/§14/§15-gates gælder fortsat.
+- L4 etablerer et konsistent read-snapshot.
+- L3 verificerer migration-control, schema,
+  ledger og read-kompatibilitet i samme
+  snapshot før den tilhørende business-read.
+- Snapshotbundet verifikation er nødvendig,
+  men beviser ikke alene, at en senere
+  committed QUIESCED-barriere er respekteret.
+  En ældre NORMAL-observation kan ikke give
+  ny admission efter barrier-commit.
+- BEGIN DEFERRED alene er ikke bevis for,
+  at det faktiske read-snapshot er etableret.
+  Den faktiske kontrol-læsning skal binde
+  snapshot og admission. [S16, S17]
+- En tidligere connection-observation giver
+  ikke permanent adgang eller adgang til et
+  senere snapshot.
+- Uventet state, schema, capability eller
+  observation giver fail-closed.
+- Read-only må ikke opgraderes til write eller
+  omgå kontrol gennem gammel application-code.
+
+### 17.3 QUIESCED og reader-drain
+
+- Efter committed NORMAL -> QUIESCED må
+  ingen nye normale read-units admitted.
+- Allerede admitted reads fra før barrieren
+  må kun afslutte bounded, kontrolleret.
+- Read-admission og committed NORMAL -> QUIESCED
+  skal koordineres gennem en fælles, race-sikker
+  lineariseringsgrænse på tværs af processer.
+- En read-unit skal være admitted og registreret
+  som in-flight før barrier-commit eller afvises.
+  Et ældre NORMAL-snapshot kan ikke omgå dette.
+- In-flight-evidens skal forblive bundet til
+  den faktiske read-transaction og connection,
+  indtil afslutning og cleanup er verificeret.
+- Protokollen skal forhindre både sen admission
+  og tabt registrering ved samtidige operationer.
+- Protokollen skal dække alle autoriserede
+  V3-reader-processer og generationer.
+- Den må ikke bero på en enkelt proces'
+  ubeskyttede memory-counter eller antage,
+  at committed QUIESCED dræner readers.
+- Før første schemaændrende migration skal
+  alle tidligere normale read-units være
+  sikkert afsluttet eller afbrudt og
+  dette verificeret på tværs af processer.
+  Drain-beviset skal også omfatte aktive
+  SQLite-transaktioner, åbne statements/cursors
+  og uafklarede connection-lifecycles.
+  En lokal tæller alene er ikke tilstrækkelig.
+- Ukendte/stale reader-generationer,
+  ukendte connections eller uafklaret
+  drain-status blokerer migrationen.
+- Den konkrete race-sikre drain-protokol
+  fastlægges og testes separat.
+- Autoriseret pre-migration backup kan
+  fortsat læse under QUIESCED, bundet til
+  korrekt migration-ID, lease/fencing og
+  snapshotkontrakt.
+- Backup-/preflight-læsninger skal afsluttes
+  før den schemaændrende migrationsgrænse.
+
+### 17.4 MIGRATING, recovery og genåbning
+
+- Ingen almindelige business-reads admitted
+  under MIGRATING.
+- Nødvendig migrationsverifikation udføres
+  kun under autoriseret migration-control
+  og gældende lease/fencing-kontrakt.
+- Recovery efter lease-tab eller ukendt
+  commit skal først reconciles mod
+  control-head, ledger, user_version og
+  migration-ID/checksum.
+- Ingen generisk read-admission, automatisk
+  DDL-retry eller write-to-read-fallback
+  anvendes som recovery-genvej.
+- FAIL-verifikation, ukendt schema eller
+  uafklaret recovery holder normale reads
+  blokeret.
+- Først efter dokumenteret verification,
+  smoke/integrity og committed transition
+  MIGRATING -> NORMAL kan nye normale reads
+  søge admission igen.
+- Hver ny read-unit skal stadig gennem
+  den aktuelle schema-/manifestkontrol.
+- Gammel application-generation får ikke
+  adgang alene fordi NORMAL er genetableret.
+- Inkompatibel D005-budgetstore må fortsat
+  ikke føre til ubudgetterede paid AI-kald.
+
+### 17.5 Acceptance-tests
+
+Isolerede tests skal mindst dække:
+
+- NORMAL, QUIESCED, MIGRATING og ukendt state.
+- Read-admission umiddelbart før/efter
+  committed QUIESCED.
+- Ældre NORMAL-snapshot uden allerede
+  gennemført admission efter barrier-commit.
+- Fault-injection mellem registrering,
+  snapshot-start, admission, barrier-commit
+  og read-transaction/connection-close.
+- BEGIN DEFERRED med forsinket første SELECT.
+- Aktivt ældre snapshot under barrier.
+- Samtidige readers i flere processer.
+- Reader, der crasher under transaction.
+- Untracked/stale reader og fejlet drain.
+- Ingen DDL før verificeret reader-drain.
+- Fenced pre-migration backup under QUIESCED.
+- Verification-reads under MIGRATING.
+- Tabt lease, ukendt commit og recovery.
+- Ny NORMAL med inkompatibel reader-version.
+- Fail-closed uden ændring af V2 eller
+  omgåelse af §14-§16 og D006.
+
+### 17.6 Hvad denne beslutning IKKE godkender
+
+Beslutningen godkender ikke en konkret reader-drain-
+mekanisme, registreringsstruktur, ny tabel,
+runtime-implementation, databaseåbning,
+schema-migration, backup, service/deploy,
+restart eller LIVE.
+
+Eksisterende D006, §14-§16, V2-service og
+root-cron forbliver uændrede.
+
 ## Kilder
 
 D006-henvisningerne er til den SHA-låste lokale blueprint ovenfor; linjerne
@@ -992,3 +1152,8 @@ Supplerende kilde til §15, kontrolleret 2026-10-19:
 Supplerende kilde til §16, kontrolleret 2026-10-19:
 
 - [S15] SQLite schema table: https://www.sqlite.org/schematab.html
+
+Supplerende kilder til §17, kontrolleret 2026-10-19:
+
+- [S16] SQLite isolation: https://www.sqlite.org/isolation.html
+- [S17] SQLite transactions: https://www.sqlite.org/lang_transaction.html
