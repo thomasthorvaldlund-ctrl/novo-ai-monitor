@@ -813,6 +813,155 @@ production-test, deploy, restart eller LIVE.
 Eksisterende V2-drift, root-cron, Git-checkpoints,
 D006 og committede V3-primitiver ændres ikke.
 
+## 16. V3 schema-manifest og migrationsverifikation
+
+**Status: APPROVED_ARCHITECTURE_ONLY.**
+
+Dette afsnit fastlægger manifest- og verifikationskrav for
+canonical V3-schema. Det ændrer ikke den låste D006 og
+giver ingen runtime-admission.
+
+### 16.1 Schema-inventar og kontraktgrundlag
+
+- D006.2, D006.6 og D006.7 udgør det låste grundlag.
+- Det foreløbige inventar omfatter mindst 74 særskilt
+  identificerede canonical tabelnavne.
+- Inventaret er ikke et færdigt fysisk DDL-schema.
+- Migration-backfills, migrationshistorik, control,
+  retention og audit skal være omfattet.
+- Eksterne artefakter som retention_restore_guard
+  må ikke fejlagtigt klassificeres som DB-tabeller.
+
+### 16.2 Betroet, versioneret manifest
+
+- Hver understøttet schema-version skal have et
+  eksplicit, versioneret og hashbundet manifest.
+- Manifestet leveres fra reviewet applikations-/
+  migrationskode, aldrig autoritativt fra den
+  database, som aktuelt skal verificeres.
+- Manifestet binder schema-version, migration-chain,
+  ordnede migration-ID'er og immutable checksums.
+- Manifestet beskriver forventede tabeller, kolonner,
+  typer, nullability, defaults, PK/FK, UNIQUE,
+  CHECK, index-definitioner og nødvendige
+  views/triggers samt SQLite-schemaegenskaber.
+- Partial/expression indexes, FK-actions, collations
+  og generated columns skal dækkes, når relevante.
+- Forventede SQLite-interne objekter skal have en
+  dokumenteret og versioneret acceptpolitik.
+  Ukendte application-schemaobjekter må ikke
+  stiltiende accepteres.
+- Manifestet binder krævede database-capabilities
+  og eksplicit read-/write-kompatibilitet.
+- Ingen opdigtede schema-versioner, migrations-ID'er,
+  checksums eller physical DDL bliver defaults.
+
+### 16.3 L3 schema-verifikation
+
+- L3 arbejder på L4's faktiske work-connection.
+- Reads verificeres inden for samme snapshot som
+  den efterfølgende bounded business-read.
+- Writes verificeres under L4's writer-serialization
+  og samme transaction før business-mutation.
+- L3 sammenholder user_version, migration-ledger,
+  ordnet applied-history, ID'er og checksums med
+  et betroet manifest for den konkrete version.
+- L3 kontrollerer relevant migration-control-state
+  og krævede capabilities.
+- L2 verificerer på den faktiske work-connection,
+  at foreign_keys=ON og ignore_check_constraints=OFF.
+  L3 kræver denne verificerede enforcement-evidens.
+  Ukendt eller unsupported resultat er ikke PASS.
+- sqlite_schema og understøttede metadata-PRAGMA'er
+  bruges til faktisk schemaobservation. [S3, S15]
+- Observationen scopes eksplicit til canonical main
+  via main.sqlite_schema og schema-kvalificerede
+  PRAGMA'er. TEMP/ATTACH-objekter kan ikke opfylde
+  main-manifestets krav.
+- L2/L3 verificerer tilknyttede schemas med
+  database_list. Uventet ATTACH eller TEMP-shadowing
+  må ikke ændre canonical SQL-resolution eller
+  give admission uden godkendt isolation-policy.
+- Observation omfatter blandt andet table_list,
+  table_xinfo, index_list, index_xinfo og
+  foreign_key_list, hvor understøttet.
+- CHECK-udtryk, partial-index predicates og øvrig
+  DDL-semantik kræver en versioneret, deterministisk
+  comparator mod det betroede versionsmanifest.
+  sqlite_schema.sql kan være SQLite-normaliseret
+  eller omskrevet af ALTER TABLE. Løst tekstmatch
+  og uverificeret semantisk ækvivalens accepteres
+  ikke. Ukendt DDL eller unsupported sammenligning
+  medfører fail-closed.
+- SQLite-interne autoindexes kan mangle SQL-tekst.
+  De må ikke fejlagtigt tælles som manglende indexes.
+- Databaseinterne rootpage-numre er ikke stabile
+  schema-identiteter.
+- Ukendt objekt, manglende struktur, inkompatibel
+  capability eller utilstrækkelig verifikation
+  giver ingen admission.
+
+### 16.4 Migration, compatibility og verification
+
+- Versionerede migrationer er eneste godkendte
+  produktionsvej til ændring af canonical schema.
+- Bootstrap følger den samme migration-chain.
+- D006.6s schema-/control-/fencing-/ledger-/
+  user_version-atomicity bevares uændret.
+- Applied migration-history må ikke indeholde
+  ukendte gaps, ID-konflikter eller checksum-afvigelser.
+- En allerede anvendt migration må ikke omskrives.
+- Post-commit verification gemmes i separate immutable
+  schema_migration_verifications-records.
+- Production-verifikation kræver PASS for præcis
+  applied migration og checksum.
+- Et historisk PASS erstatter ikke observation af
+  det aktuelle schemas faktiske struktur.
+- Canonical writes kræver præcis required write-
+  version og de deklarerede capabilities.
+- Reads af andre versioner kræver eksplicit
+  kompatibilitetsmanifest og read-range.
+- Read-policy under QUIESCED/MIGRATING fastlægges
+  fortsat i en særskilt beslutning.
+- Integrity/FK- og forretningsinvariantkontroller
+  følger D006s migration-/deploymentkrav.
+  Deres runtime-frekvens kræver særskilt policy.
+- Ingen automatisk migration, schema-reparation,
+  user_version-ændring eller svagere fallback
+  må udføres ved almindelig read/write-admission.
+
+### 16.5 Acceptance-tests
+
+Isolerede fixtures skal mindst dække:
+
+- Korrekt user_version med forkert fysisk schema.
+- TEMP/ATTACH-shadowing og korrekt main-scope.
+- Deaktiveret CHECK-enforcement eller ukendt PRAGMA.
+- Ændret DDL-semantik og unsupported comparator.
+- Manglende/ekstra tabel, kolonne, constraint,
+  index, trigger eller forkert FK-action.
+- Ændret CHECK-/partial-index-semantik.
+- Manglende, dubleret eller ukendt migration.
+- ID-/version-/checksum-konflikt og history-gap.
+- Manglende eller forkert post-commit PASS.
+- Ældre, nyere og eksplicit read-kompatible schemas.
+- Schemaændring mellem connection-open og admission.
+- Concurrent migration/write-barriere.
+- Forkert control-/fencing-generation.
+- Fejl før commit og ukendt commit-resultat.
+- Fail-closed uden database- eller schema-reparation.
+- Ingen ændringer i V2 account/auth eller runtime.
+
+### 16.6 Hvad denne beslutning IKKE godkender
+
+Beslutningen godkender ikke endeligt fysisk schema,
+DDL, manifest-filformat, implementation, konkrete
+migrations, schema-bootstrap, SQLite-backend,
+runtime-admission, service/deploy eller LIVE.
+
+§14 og §15, D006 og alle eksisterende V2-grænser
+forbliver uændrede.
+
 ## Kilder
 
 D006-henvisningerne er til den SHA-låste lokale blueprint ovenfor; linjerne
@@ -839,3 +988,7 @@ Supplerende kilder til §14, kontrolleret 2026-10-18:
 Supplerende kilde til §15, kontrolleret 2026-10-19:
 
 - [S14] SQLite WAL-mode file format and lifecycles: https://www.sqlite.org/walformat.html
+
+Supplerende kilde til §16, kontrolleret 2026-10-19:
+
+- [S15] SQLite schema table: https://www.sqlite.org/schematab.html
