@@ -1122,6 +1122,198 @@ restart eller LIVE.
 Eksisterende D006, §14-§16, V2-service og
 root-cron forbliver uændrede.
 
+## 18. V3 unknown commit reconciliation
+
+**Status: APPROVED_ARCHITECTURE_ONLY.**
+
+Denne beslutning fastlægger krav til reconciliation
+af ukendte SQLite-commit-resultater. Den ændrer
+ikke D006 og giver ingen runtime-admission.
+
+### 18.1 Scope og adskilte udfald
+
+- SQLite-commit, provider-betaling, Telegram-
+  levering og fysisk retention-I/O er forskellige
+  correctness- og reconciliation-domæner.
+- En committed authorization beviser ikke, at
+  den efterfølgende eksterne side effect skete.
+- En manglende completion beviser ikke, at den
+  eksterne side effect udeblev.
+- Ukendt database-commit må aldrig udløse blind
+  gentagelse af canonical write eller ekstern I/O.
+
+### 18.2 Stabil operationsidentitet
+
+- Correctness-kritiske writes skal have en
+  stabil, scoped operation-/idempotency-identitet
+  etableret før den oprindelige transaction.
+- Identiteten bindes til operationens forventede
+  semantik, relevante source-/owner-referencer,
+  versioner og immutable resultater.
+- Den samme identitet genbruges ved reconciliation.
+  Semantisk mismatch er integrity conflict.
+- Head, immutable audit/events og relevante
+  UNIQUE/CAS/FK-kontrakter skal kunne anvendes
+  til efterfølgende committed-result verification.
+- En stabil nøgle alene er ikke bevis for commit.
+- Ingen ny owner-token, attempt-number eller
+  fencing-generation skabes ved blind retry.
+- Konkrete API-navne og fysisk schema fastlægges
+  senere og må ikke opfindes som runtime-defaults.
+
+### 18.3 Reconciliation-resultater
+
+| Resultat | Krævet bevis |
+| --- | --- |
+| COMMITTED | Positiv, sammenhængende canonical evidens for den oprindelige operation |
+| NOT_COMMITTED | Verificeret fravær af mulig fremtidig commit samt tilstrækkelig canonical evidens |
+| UNRESOLVED | Manglende, modstridende eller utilstrækkelig evidens |
+
+- COMMITTED kræver match på operationens stabile
+  identitet, semantik og dens relevante atomiske
+  resultatrelationer. Senere legitime state-
+  transitioner må vurderes gennem immutable
+  historik, ikke alene current head.
+- NOT_COMMITTED kræver positiv evidens for, at
+  den oprindelige transaction er endeligt
+  afsluttet uden commit, eller at sikker recovery
+  definitivt udelukker en senere commit.
+  En ny serialiseret canonical observation skal
+  bekræfte, at de atomiske effekter ikke findes.
+  Lease-expiry, fencing eller processtop er ikke
+  tilstrækkeligt bevis alene.
+  Uafklaret original transaction er UNRESOLVED.
+- Et manglende record, timeout, udløbet lease,
+  lukket socket eller gammelt snapshot er aldrig
+  alene bevis for NOT_COMMITTED.
+- UNRESOLVED forbliver blokerende for gentagelse
+  af samme logical operation og dens risikable
+  side effects, indtil ny evidens gør beslutning
+  sikker. Ingen falsk success eller rollback.
+- NOT_COMMITTED giver ikke automatisk ret til
+  retry. Ny authorization kræver alle aktuelle
+  domain-, budget-, fencing- og business-gates.
+
+### 18.4 SQLite- og L1-L4-observation
+
+- COMMIT-resultater skal klassificeres ud fra
+  verificeret SQLite-/transaction-state, ikke
+  alene en generisk exception eller error-code.
+- SQLITE_BUSY ved COMMIT kan efterlade en aktiv
+  transaction. Connection-/cleanup-udfald må
+  ikke stiltiende omskrive outcome til rollback.
+  [S17, S18]
+- En aktiv eller potentielt stadig committende
+  original transaction må ikke behandles som
+  definitivt NOT_COMMITTED.
+- Under NORMAL anvender reconciliation en ny,
+  betroet L4-observation efter L1-L3, §14-§17
+  og den gældende schema-/read-policy.
+- Under QUIESCED/MIGRATING forbliver normal
+  business-read-admission blokeret.
+  Kun særskilt autoriseret migration-/recovery-
+  read efter §17 må anvendes gennem L4.
+  Observationen skal verificere aktuel
+  control-head, migration-ID/checksum, relevant
+  lease-/fencing-generation samt betroet,
+  recovery-kompatibelt schema for tilstanden.
+  Ukendt eller utilstrækkelig evidens giver
+  UNRESOLVED. Ingen almindelig admission-bypass
+  eller ekstern side effect tillades.
+- Observationen skal læse canonical committed
+  state i et nyt konsistent snapshot; et ældre
+  pinned snapshot er utilstrækkeligt.
+- Hvor correctness kræver writer-serialization,
+  skal den anvendes sammen med ny state- og
+  fencing-verifikation, uden at omgå D006.
+- Ukendt DB-identitet, schema, permissions,
+  WAL/SHM-state eller migration-control blokerer
+  reconciliation frem for at gætte på udfald.
+- Resultatklassifikation og tilhørende evidence
+  skal være versionsbundet og auditerbar. Et
+  eventuelt reconciliation-write er selv en
+  idempotent, commit-sikker operation.
+
+### 18.5 Domænespecifik reconciliation
+
+- Lifecycle: verificer immutable transition,
+  gatebinding, CAS-version og krævet outbox.
+  En senere legitim lifecycle-head må ikke
+  skjule en allerede committed transition.
+- Jobs/leases: sammenhold candidate owner-token,
+  lease-head, immutable events, sequence og
+  fencing-generation. Senere takeover betyder
+  ikke, at en tidligere acquisition udeblev.
+- Migration: sammenhold user_version,
+  schema_migrations, checksum, control-head,
+  control-events og aktiv fencing-generation.
+  Ukendt DDL-commit giver ingen blind DDL-retry.
+  DDL-commit er ikke det samme som en efterfølgende
+  immutable post-commit verification med PASS.
+- Paid AI: verificer authorization, attempt-
+  binding, reservation-head/events, completion,
+  usage og settlement hver efter deres kontrakt.
+  En mulig startet provider-omkostning må aldrig
+  frigives alene på timeout eller manglende usage.
+  UNRESOLVED og global budget-blocker bevares
+  efter D005/D006, indtil gyldig resolution.
+- Outbox: verificer authorization, completion,
+  outbox-head og immutable reconciliation.
+  Committed authorization er ikke leveringsbevis.
+  Ukendt eksternt send må ikke automatisk
+  genudsendes uden sikker provider-idempotency
+  eller dokumenteret ikke-levering.
+- Retention: irreversible archive-/purge-actions
+  må ikke gentages efter ukendt fysisk outcome,
+  men kræver D006.7s særskilte state-/storage-
+  reconciliation og retention-/policy-verifikation.
+- Ingen af domænerne må omgå deres eksisterende
+  UNIQUE-, CAS-, audit- eller state machines.
+
+### 18.6 Recovery og acceptance-tests
+
+Isolerede fault-injection-tests skal mindst dække:
+
+- Fejl før commit, efter commit og tabt commit-ACK.
+- SQLITE_BUSY med stadig aktiv transaction.
+- IO-/close-fejl med ukendt final transaction-state.
+- Crash/restart under commit og reconciliation.
+- Manglende record, ældre snapshot og sen commit.
+- Lease-expiry eller højere fencing-token, mens
+  den oprindelige transaction stadig kan committe.
+- NOT_COMMITTED med verificeret transaction-afslutning
+  og ny serialiseret observation; fravær alene
+  giver ikke NOT_COMMITTED.
+- QUIESCED/MIGRATING: autoriseret recovery-read
+  versus afvist normal business-read samt
+  forkert schema, migration-ID eller fencing.
+- Concurrent reconciliation af samme operation.
+- Semantisk mismatch på identisk idempotency-key.
+- Head, events og immutable resultat i modstrid.
+- Lease takeover efter ukendt acquisition.
+- Migration committed uden post-commit PASS.
+- Budget-authorization før mulig provider-charge.
+- Paid completion med uafklaret usage/cost.
+- Outbox-authorization med tvetydig levering.
+- Irreversibel retention-action efter crash.
+- NOT_COMMITTED uden automatisk reauthorization.
+- UNRESOLVED uden ny risikabel udførelse.
+- Ingen dobbelt lifecycle, budget-settlement,
+  AI-attempt, Telegram-send eller retention-purge.
+- Fail-closed under forkert DB, schema, path,
+  WAL/SHM, migration-control eller fencing.
+- Recovery må ikke ændre V2 eller aktivere LIVE.
+
+### 18.7 Hvad denne beslutning IKKE godkender
+
+Beslutningen godkender ikke konkrete public Python-
+API'er, reconciliation-tabeller, SQLite-backend,
+runtime-implementation, provider-retry, migration,
+databaseåbning, deploy, restart eller LIVE.
+
+D006, §14-§17, V2-service og root-cron
+forbliver uændrede.
+
 ## Kilder
 
 D006-henvisningerne er til den SHA-låste lokale blueprint ovenfor; linjerne
@@ -1157,3 +1349,7 @@ Supplerende kilder til §17, kontrolleret 2026-10-19:
 
 - [S16] SQLite isolation: https://www.sqlite.org/isolation.html
 - [S17] SQLite transactions: https://www.sqlite.org/lang_transaction.html
+
+Supplerende kilde til §18, kontrolleret 2026-10-20:
+
+- [S18] SQLite result and error codes: https://www.sqlite.org/rescode.html
