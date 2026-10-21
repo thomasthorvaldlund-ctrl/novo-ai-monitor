@@ -209,6 +209,68 @@ journal, tabel, flag, sti eller servicekonfiguration vælges her.
 R1-A forbliver et forslag. R1-B lukker ikke R1; R2–R4 ændres ikke.
 Ingen ændring af D006, kode, V2-service eller runtime-/deploygodkendelse.
 
+### 3.3 R1-C — Evidensgrundlag og workflowopdelt genåbning
+
+**Status: PROPOSED_FOR_REVIEW; R1 forbliver OPEN.**
+**Reviewdato: 2026-10-21.**
+
+**Grundlag og afgrænsning.** R1-C konkretiserer evidenskravene i R1/R1-A/R1-B
+som reviewforslag. D005/D006 og §17–18 bevarer deres eksisterende krav. [B1, B2]
+Dette er ikke nye runtimeobservationer eller valg af lagringsteknologi.
+En restore-markør beviser ikke alene tidligere commit, betaling eller levering.
+
+**Foreslået grundlag pr. genåbningsvurdering (ikke godkendt):**
+- Identificér det præcise restore-snapshot og den relevante databasehistorik.
+- Angiv evidenskilder, oprindelse og bevaring, herunder om det aktuelle
+  restore-forløb kan have tilbageført kilderne sammen med databasen.
+- Dokumentér dækkede operationer/intervaller og kendte huller samt hvorfor
+  dækningen er tilstrækkelig for den konkrete vurdering.
+- Afgræns de berørte workflows og deres afhængigheder.
+- Begrund resultatet med verificeret evidens og eksplicitte ukendte forhold;
+  ingen generel godkendelse af hele platformen udledes af en delvurdering.
+
+Et tidspunkt eller hash er ikke alene et dækningsbevis. En intakt kilde kan
+mangle relevant historik. Oplysningerne ovenfor er foreslåede informationskrav,
+ikke nye tabelnavne, API-felter eller implementerede records.
+
+**Foreslåede workflowkrav:**
+- Ukendt database-commit: tilstrækkelig historik til at afgøre den oprindelige
+  operations udfald. Fravær i restored state er ikke alene NOT_COMMITTED.
+  Bevis for tidligere commit, men manglende nødvendige canonical records,
+  kræver særskilt recovery; hverken blind gentagelse eller almindelig succes.
+- Paid AI: tilstrækkelig evidens til at rekonstruere relevant budgeteksponering,
+  inklusive mulige startede attempts og uafklarede omkostninger, efter D005/D006.
+  Ældre forbrugstal eller manglende usage må ikke alene give nul eksponering.
+- Outbox: authorization-, completion- og reconciliation-evidens skal gøre
+  næste handling sikker efter den eksisterende delivery-kontrakt.
+  Restored PENDING er ikke alene bevis for, at en tidligere levering udeblev.
+- Retention: nødvendige deletion-/purge-oplysninger og gældende policies skal
+  anvendes efter D006.7, så restore ikke gør slettet materiale tilgængeligt igen.
+  retention_restore_guard omdefineres ikke til bevis for alle betalinger
+  eller leveringer.
+
+**Foreslået beslutningsgrænse:**
+- Manglende evidens er ikke i sig selv evidens for et negativt udfald.
+- Utilstrækkelig historik holder de berørte risikable workflows blokeret.
+- Delvis genåbning kræver begrundelse ud fra workflowenes afhængigheder og
+  alle deres eksisterende gates. Budgetafklaring frigiver ikke automatisk
+  outbox; recovery-read autoriserer ikke i sig selv eksterne handlinger.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Kilde består hashkontrol, men har et relevant dækningshul:
+  ingen automatisk konklusion om ingen tidligere commit, omkostning eller levering.
+- Tidligere commit er bevist, men canonical records mangler efter restore:
+  særskilt recovery, ikke blind gentagelse eller almindelig succes.
+- Budgetgrundlag er tilstrækkeligt, men leveringsstatus er ukendt:
+  ingen automatisk outbox-frigivelse; andre workflows kræver egne gates
+  og verificerede afhængigheder før eventuel genåbning.
+
+**Fortsat åbent:** Evidensformat, lagring, bevaring, kontrol af dækning og
+genåbningsmekanisme. Ingen ekstern tjeneste, ekstra database, journal, tabel,
+API eller ny state machine vælges her. R1-A/R1-B forbliver forslag.
+R1-C lukker ikke R1; R2–R4 ændres ikke. Ingen ændring af D006, kode,
+V2-service eller runtime-/deploygodkendelse.
+
 ## 4. R2 — Koordinering fra før open til verificeret cleanup
 
 **Eksisterende grundlag.** §12 lader composition root sammensætte dependencies,
