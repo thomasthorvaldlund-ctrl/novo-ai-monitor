@@ -108,6 +108,51 @@ D006.6's begrænsninger på restore. [B1]
 evidens og procedure for sikker genåbning. Ingen ny tabel, ekstern journal eller
 generationsmekanisme vælges her.
 
+### 3.1 R1-A — Placering og beskyttelse af historikevidens
+
+**Status: PROPOSED_FOR_REVIEW; R1 forbliver OPEN.**
+**Reviewdato: 2026-10-21.**
+
+**Observeret kodegrundlag ved 5f475df.** Platform-/full-backup gennemløber
+PROJECT_DIR med os.walk/tar.add, ikke V3-resolveren. Den viste backupkode
+etablerer ikke et særskilt, valideret V3-snapshot. [B5]
+
+Uden path-overrides går STATE_DIR via DATA_DIR tilbage til PROJECT_DIR.
+Kun en manglende AUREUM_V3_DB_PATH vælger state_path-defaulten; en eksplicit
+ugyldig V3-override afvises. Resolverens environ-mapping styrer kun V3-
+overriden; defaulten bruger state_path med den allerede indlæste STATE_DIR.
+Path-valget er ikke kontrol af filidentitet eller historik. [B6]
+
+Disse observationer er fra committet kildekode. Faktisk servicemiljø,
+databaseplacering, backupindhold og drift er ikke undersøgt i dette trin.
+
+**Foreslået integrationskontrakt (ikke godkendt):**
+
+1. Bevar aureum_paths.py og opportunity_database_config.py uændrede.
+   Ingen ændring af globale V2-paths, default eller override-semantik.
+2. Hold platformarkiv, valideret V3-snapshot og restore-historikevidens
+   adskilt i formål. V3-backup skal bruge den konfigurerede, admitted
+   database og D006s snapshotkontrakt, ikke blot et PROJECT_DIR-gennemløb.
+3. Dokumentér, hvad hvert understøttet restore-forløb kan tilbageføre.
+   Evidens, som skal afsløre historikerstatning, må ikke alene ligge i det
+   materiale, der tilbageføres. En anden mappe er ikke alene tilstrækkelig,
+   hvis hele serverens snapshot kan tilbageføre både database og markør.
+   Dette er en designafledning, ikke en observeret hændelse.
+4. Berørte paid-AI-, outbox- og reconciliation-forløb må ikke genoptages
+   automatisk ved utilstrækkelig historikevidens. Ældre budgettal, restored
+   PENDING eller nyt operations-ID er ikke alene sikker genåbning.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Ekstern V3-path: et projektarkiv alene opfylder ikke V3-backupkontrakten.
+- Database og eneste markør tilbageføres sammen: ingen falsk NOT_COMMITTED
+  eller automatisk genoptagelse på grundlag af den tilbageførte historik.
+- Tilstrækkelig evidens mangler: berørte risikable workflows forbliver blokeret.
+
+**Fortsat åbent:** Placering, bevaring, historikbinding og genåbningsmekanisme.
+Ingen ny miljøvariabel, tabel, journal, mappe eller ekstern tjeneste vælges.
+D006.6s restorebegrænsninger og D006.7s retention-/deletionkrav består.
+R1-A lukker ikke R1; R2–R4 ændres ikke. Ingen runtime-/deploygodkendelse.
+
 ## 4. R2 — Koordinering fra før open til verificeret cleanup
 
 **Eksisterende grundlag.** §12 lader composition root sammensætte dependencies,
@@ -308,6 +353,15 @@ SQLite eller production-call paths.
 angiver mønster og de to søgte dokumenter; linje 20–24 viser fundamentals-lineage;
 linje 40–59 viser calibration/policy-epochs. Resultatet er begrænset søgeevidens,
 ikke et udtømmende fraværsbevis.
+
+[B5] Supplerende brugerleverede kodeudtræk ved Git-commit
+`5f475df346b1256fac80f6d7a41642fb07e8065d`: backup_service.py
+(create_platform_backup/create_full_backup), backup_routes.py og app.py's
+backupregistrering. Statisk læsning; ingen backup/restore eller driftskontrol.
+
+[B6] Samme commit: aureum_paths.py, linje 20–85, og
+opportunity_database_config.py, linje 27–60. Statisk path-kontrakt;
+projektmoduler er ikke importeret, og service-environment er ikke aflæst.
 
 ### Officielle eksterne kilder
 
