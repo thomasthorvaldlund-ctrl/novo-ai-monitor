@@ -153,6 +153,62 @@ Ingen ny miljøvariabel, tabel, journal, mappe eller ekstern tjeneste vælges.
 D006.6s restorebegrænsninger og D006.7s retention-/deletionkrav består.
 R1-A lukker ikke R1; R2–R4 ændres ikke. Ingen runtime-/deploygodkendelse.
 
+### 3.2 R1-B — Restore-forløb og kontrolleret genåbning
+
+**Status: PROPOSED_FOR_REVIEW; R1 forbliver OPEN.**
+**Reviewdato: 2026-10-21.**
+
+**Grundlag og afgrænsning.** R1-B konkretiserer R1/R1-A som reviewforslag.
+D006.1, D006.6, D006.7 og §17–18 bevarer deres eksisterende krav. [B1, B2]
+Nedenstående afgrænsning er ikke en godkendt eller implementeret recoveryvej.
+Ingen nye observationer af serverens restore- eller genstartsadfærd indgår.
+
+**Foreslået V3.0-scope (ikke godkendt):**
+- Kontrolleret V3-database-restore er den normale, testbare restorevej.
+  Restore sker til quiesced staging og følger D006s snapshot-, fencing-,
+  integritets-, schema- og retention-/deletionkontrakter.
+- Server-/volume-rollback behandles som særskilt disaster recovery.
+  Tilbageførte data, markører og aktiveringsindstillinger giver ikke alene
+  tilladelse til automatisk genåbning af berørte workflows.
+- Utilgængelig nyere database eller audit kræver særskilt evidensafklaring.
+  Manglende historik må ikke erstattes af antagelser om ingen tidligere
+  commit, nul forbrug eller ingen levering.
+
+**Tre adskilte krav før genåbning:**
+1. Snapshotvalidering: det valgte snapshot, schema og krævede
+   integritetskontroller opfylder D006. Det beviser ikke alene historik.
+2. Historikafklaring: tilstrækkelig evidens for relevante tidligere
+   operationer, budgeteksponering, levering og obligatoriske sletninger.
+3. Kontrolleret genåbning: kun workflows med opfyldte krav frigives gennem
+   en eksplicit, auditerbar procedure. Eksisterende admission-, migration-,
+   budget- og LIVE-gates gælder fortsat; ingen generel frigivelse.
+
+**Foreslået håndhævelsesgrænse:**
+- Genstartsproceduren skal holde berørte workers og eksterne handlinger
+  tilbage, før de begynder at arbejde. Et flag, som selv tilbageføres med
+  samme serverimage, er ikke alene tilstrækkelig håndhævelse.
+- Autoriseret recovery-read er ikke almindelig business-read-admission
+  og frigiver ikke betalte AI-kald eller outbox-send. §17 består.
+- Ældre budgettal, gendannet PENDING eller nyt operations-ID giver ikke
+  alene sikker genoptagelse. Utilstrækkelig evidens holder berørte
+  risikable workflows blokeret.
+- En disaster-recovery-beslutning ændrer ikke i sig selv D005/D006s
+  budget-, dedup- eller retentionkrav og beviser ikke eksterne udfald.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Valideret snapshot med ukendt nyere budget-/leveringshistorik:
+  ingen automatisk genåbning af de berørte risikable workflows.
+- Database, lokal markør og aktiveringsflag tilbageføres sammen:
+  ingen genaktivering alene på grundlag af den tilbageførte state.
+- Restart under uafsluttet recovery: beskyttelsen består før worker-start.
+- Autoriseret recovery-read: ingen implicit ret til eksterne handlinger.
+
+**Fortsat åbent:** Håndhævelse før worker-start, historikevidens,
+bevaring og auditerbar genåbningsmekanisme. Ingen konkret ekstern tjeneste,
+journal, tabel, flag, sti eller servicekonfiguration vælges her.
+R1-A forbliver et forslag. R1-B lukker ikke R1; R2–R4 ændres ikke.
+Ingen ændring af D006, kode, V2-service eller runtime-/deploygodkendelse.
+
 ## 4. R2 — Koordinering fra før open til verificeret cleanup
 
 **Eksisterende grundlag.** §12 lader composition root sammensætte dependencies,
