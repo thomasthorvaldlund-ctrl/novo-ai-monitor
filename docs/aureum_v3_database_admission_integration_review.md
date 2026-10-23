@@ -322,6 +322,72 @@ POSIX-lock-risiko består. [E5, E6]
 **Åbne valg:** Tværprocesprotokol, ejerskabsoverdragelse, crash-/cleanup-evidens og
 faseautorisation. Ingen låsetype, ny registreringstabel eller public API vælges.
 
+### 4.1 R2-A — Pre-open deltagelse og migrationsbarrierens rækkefølge
+
+**Status: PROPOSED_FOR_REVIEW; R2 forbliver OPEN.**
+**Reviewdato: 2026-10-23.**
+
+**Grundlag.** D006.6 fastlægger fenced `NORMAL` -> `QUIESCED`,
+writer-barriere og migrationsrækkefølge. §17 kræver race-sikker
+read-admission og verificeret drain på tværs af processer. §12 og §13
+placerer composition, connection acquisition og lifecycle hos deres
+respektive lag. Dette afsnit er en præcisering til review, ikke en
+ny godkendt migrationsprotokol.
+
+**Foreslået integrationskontrakt (ikke godkendt):**
+- L4 skal gennem en eksplicit koordineringsdependency etablere
+  deltagelse i den fælles livscyklus før L2's SQLite-open-forsøg.
+  Composition root må kun sammensætte dependencyen, ikke udføre
+  koordinering eller database-admission på egen hånd.
+- Etablering af deltagelse må ikke selv forudsætte et uregistreret
+  open af samme canonical V3-database.
+- Deltagelse før open er ikke business-admission og giver hverken
+  ret til read, write eller omgåelse af gældende migration-control.
+- Nye normale forsøg og committed `QUIESCED` skal have en fælles,
+  race-sikker rækkefølge på tværs af processer og generationer.
+  Et forsøg, som starter omkring barrier-commit, må hverken
+  overses eller opnå ny normal admission efter barrieren.
+- Et allerede registreret, men endnu ikke admitted, forsøg får
+  ikke adgang alene på grund af registrering før barrier-commit.
+  Allerede admitted reads følger §17's bounded afslutningsregler.
+- Migrationens drain må ikke erklæres afsluttet alene ud fra
+  fraværet af admitted readers. Den skal også håndtere relevante
+  open-forsøg, delvist etablerede handles og uafklaret cleanup.
+- Deltagelsen skal bevares gennem afvist admission, fejl i open,
+  cleanup og eventuel ejerskabsoverdragelse, indtil afslutningen
+  er verificeret. Detaljeret handle-ejerskab og cleanup-evidens
+  udestår i R2 og fastlægges ikke af R2-A alene.
+- Før schemaændrende migration gælder §17's verificerede drain.
+  Dette ændrer ikke D006.6's `BEGIN IMMEDIATE`, fencing,
+  migration-ID/checksum, atomicitet eller verification.
+- BACKFILL og øvrige migrationsfaser skal følge deres særskilte
+  D006.6-kontrakter. R2-A indfører ikke en automatisk global
+  reader-drain for enhver backfill-batch.
+- Migrationens egne backup-, verification- og recovery-forbindelser
+  kræver fortsat særskilt faseautorisation; R2-A giver dem ingen
+  implicit undtagelse fra den eksisterende sikkerhedspolitik.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Barrier-commit konkurrerer med registrering før SQLite-open:
+  ingen tabte forsøg eller normal admission efter barrieren.
+- Barrier-commit sker efter registrering, men før faktisk open:
+  registreringen er ikke en genbrugelig adgangstilladelse.
+- Open fejler eller admission afvises med et uafklaret handle:
+  ingen falsk drain-succes før verificeret cleanup.
+- To processer og forskellige generationer konkurrerer om
+  open, barrier og drain: en lokal tæller kan ikke alene frigive DDL.
+- Ukendt participant-/cleanup-status blokerer den berørte
+  schemaændring, indtil tilstrækkelig evidens foreligger.
+- BACKFILL uden fysisk schemaændring behandles fortsat efter
+  sin godkendte fasekontrakt, ikke som implicit ny DDL-barriere.
+
+**Fortsat åbent:** Konkret tværprocesprotokol, lineariseringsmekanisme,
+registreringens livscyklus, crash-reconciliation, handle-ejerskab
+og særskilte migrationsforbindelser. Ingen ny lås, tabel, journal,
+database, public API eller implementering vælges her. R2 forbliver
+OPEN; R1/R3/R4 ændres ikke. Ingen ændring af D006, §12-§18,
+V2, runtime, service, migration, deploy eller LIVE.
+
 ## 5. R3 — Runtime-evidens bundet til faktisk backend
 
 **Eksisterende grundlag.** Den viste `require_sqlite_wal_reset_fix()` læser
