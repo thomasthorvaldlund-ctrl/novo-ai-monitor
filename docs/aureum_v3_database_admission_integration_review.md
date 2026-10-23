@@ -388,6 +388,75 @@ database, public API eller implementering vælges her. R2 forbliver
 OPEN; R1/R3/R4 ændres ikke. Ingen ændring af D006, §12-§18,
 V2, runtime, service, migration, deploy eller LIVE.
 
+### 4.2 R2-B — Handle-ejerskab og verificeret cleanup
+
+**Status: PROPOSED_FOR_REVIEW; R2 forbliver OPEN.**
+**Reviewdato: 2026-10-23.**
+
+**Grundlag og afgrænsning.** §13 og §15 placerer det overordnede
+connection-, transaction- og cleanup-ansvar hos L4. §17 kræver
+verificeret lifecycle-afslutning før reader-drain. R2-A foreslår
+koordineret deltagelse allerede før SQLite-open. [B2]
+SQLite C-API kan returnere et handle ved fejlet open. Et close-kald
+kan afvises eller efterlade udskudt ressourcefrigivelse. [E2, E3]
+Den senere valgte Python-/SQLite-binding skal vurderes særskilt.
+
+**Foreslået integrationskontrakt (ikke godkendt):**
+- L4 har det overordnede lifecycle- og cleanup-ansvar fra
+  registreret pre-open-forsøg til verificeret endelig afslutning.
+- L2 skal have entydig, afgrænset håndtering af ethvert handle,
+  som et open-forsøg kan efterlade, indtil L4 udtrykkeligt
+  overtager det. Fejl før overdragelsen må ikke miste ejerskab.
+- Overdragelsens succes eller fejl skal være entydig. Hverken
+  dobbelt cleanup eller et ejerløst handle må kunne antages sikkert.
+- Fejl under open, connection-konfiguration, sidecar-verifikation
+  eller afvist admission skal følge den kontrollerede cleanup-grænse.
+  Ingen sådan fejl giver business-admission eller implicit retry.
+- Åbne statements/cursors, BLOB-handles og backup-objekter skal
+  medregnes, når den konkrete binding kan holde SQLite-ressourcer
+  i live efter et close-forsøg.
+- Et returneret close-kald er ikke alene bevis for endelig
+  ressourcefrigivelse. Særligt må udskudt frigivelse og fejlet
+  close ikke fejlklassificeres som verificeret cleanup.
+- Ukendt eller fejlet cleanup må ikke frigive en participant eller
+  give reader-drain-succes uden tilstrækkelig lifecycle-evidens.
+  Crash- og stale-participant-reconciliation afklares i R2-C.
+- Efter-close filesystem-metadata kan klassificere sidecar-tilstand,
+  men beviser ikke alene, at handles og SQLite-ressourcer er væk.
+  L1 må ikke omgå §15 med rå DB/WAL/SHM-open/read/close.
+- Legitimiteten af WAL/SHM-sideeffects afgøres efter §14-§15.
+  En fejlet operation kan have autoriserede filesystem-effekter;
+  ingen manuel sletning, nulstilling eller reparation indføres.
+- Verificeret cleanup, kendt commit, kendt rollback og ukendt
+  operationelt udfald skal holdes adskilt. §18's reconciliation
+  må ikke erstattes med antagelser ud fra et close-resultat.
+- Migrationens særlige connections og process crashes forbliver
+  særskilte R2-afklaringer og får ingen implicit adgang her.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Fejlet open returnerer et delvist etableret handle:
+  handle-håndtering og cleanup er dækket før drain-succes.
+- Fejl mellem L2's open og L4's overtagelse:
+  ingen mistet eller tvetydig ressourceejer.
+- Afvist admission efter oprettet connection:
+  ingen tidlig frigivelse af lifecycle-deltagelsen.
+- Close afvises som busy eller frigivelsen udskydes:
+  intet falsk bevis for fuldført resource cleanup.
+- Aktiv cursor, BLOB eller backup overlever close-forsøg:
+  drain følger verificeret ressourceafslutning.
+- WAL/SHM findes stadig efter sidste close:
+  ingen automatisk korruptionsklassifikation eller manuel unlink.
+- Forbindelsen frigives, men commit-udfaldet er ukendt:
+  cleanup-succes giver ikke NOT_COMMITTED eller tilladelse
+  til blind gentagelse eller ekstern side effect.
+
+**Fortsat åbent:** Bindingens faktiske handle-semantik,
+overdragelsesmekanisme, ressourceinventar, dokumenterbar afslutning,
+fejlhåndtering og crash-reconciliation. Ingen konkret close-API,
+SQLite-backend, lås, tabel, journal eller implementering vælges her.
+R2 forbliver OPEN; R1/R3/R4 ændres ikke. D006, §12-§18,
+V2, runtime, migration, deploy og LIVE forbliver uændrede.
+
 ## 5. R3 — Runtime-evidens bundet til faktisk backend
 
 **Eksisterende grundlag.** Den viste `require_sqlite_wal_reset_fix()` læser
