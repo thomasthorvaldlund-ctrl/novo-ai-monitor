@@ -457,6 +457,92 @@ SQLite-backend, lås, tabel, journal eller implementering vælges her.
 R2 forbliver OPEN; R1/R3/R4 ændres ikke. D006, §12-§18,
 V2, runtime, migration, deploy og LIVE forbliver uændrede.
 
+### 4.3 R2-C — Crash, stale participants og faseautoriserede forbindelser
+
+**Status: PROPOSED_FOR_REVIEW; R2 forbliver OPEN.**
+**Reviewdato: 2026-10-23.**
+
+**Grundlag og afgrænsning.** R2-A foreslår koordinering før SQLite-open,
+og R2-B foreslår entydigt handle-ejerskab og verificeret cleanup.
+§17 kræver fælles, race-sikker reader-drain, herunder ukendte
+processer/generationer. D006.5 fastlægger lease-/fencing- og
+business-recovery-kontrakter; D006.6 fastlægger migrationsfaser,
+pre-migration backup og kontrolleret genåbning. [B1, B2]
+R2-C vælger ingen runtime-protokol og lukker ikke R2.
+
+**Foreslået integrationskontrakt (ikke godkendt):**
+- En deltagers livscyklus må ikke erklæres afsluttet alene på grund
+  af lease-expiry, timeout, manglende heartbeat eller fravær af
+  aktiv business-admission. Disse forhold kan udløse afklaring,
+  men er ikke i sig selv evidens for frigivne SQLite-ressourcer.
+- Crash-/stale-reconciliation skal relatere deltagelsen til dens
+  konkrete proces-/generation-/forbindelsesforsøg og afklare,
+  om relevant SQLite-aktivitet eller ressourceejerskab kan bestå.
+  Genbrugt PID eller ældre registrering må ikke forveksles med
+  verificeret afslutning af den oprindelige deltager.
+- En konstateret procesafslutning kan indgå i evidensen, men
+  er kun tilstrækkelig, hvis den valgte backend, VFS og
+  proces-/handlemodel understøtter den konkrete konklusion.
+  Ukendte nedarvede/delte handles og uafsluttede ressourcer
+  må ikke automatisk klassificeres som lukkede.
+- Den fælles koordinering skal bevare eller sikkert reconcile
+  uafklarede deltagere på tværs af crash og genstart, så et
+  tab af lokal memory-state ikke kan give falsk reader-drain.
+  Den konkrete evidenskilde og bevaringsmekanisme er åben.
+- Kun verificeret lifecycle-afslutning eller tilsvarende
+  dokumenteret sikker crash-reconciliation må lade en deltager
+  udgå af drain. Ukendt status blokerer den berørte DDL-/restore-
+  grænse; manuel eller automatisk genåbning kræver særskilt
+  verificerbar beslutning og må ikke omgå eksisterende gates.
+- D006.5's job-lease/fencing og job_run-recovery må ikke bruges
+  som erstatning for connection-drain. Business-commit, paid AI
+  og outbox-udfald behandles fortsat efter D006/§18 og R1;
+  frigivet connection beviser ikke, at ekstern side effect udeblev.
+- Normale V3-forbindelser skal respektere committed `QUIESCED`
+  og §17's reader-/writer-gates. Tidligere generationer må
+  ikke få adgang alene ved procesrestart eller ældre snapshots.
+- Migrationsforbindelser skal være eksplicit scope- og
+  faseautoriserede samt indgå i relevant lifecycle-evidens.
+  Under `QUIESCED` gælder særskilt fenced backup/preflight;
+  disse forbindelser afsluttes før schemaændrende migration.
+  Under `MIGRATING` gælder særskilt fenced verification/recovery.
+- Hver særskilt migration-operation skal respektere relevant
+  migration-ID/checksum, aktiv lease/fencing og D006.6's
+  kontrol af schema, snapshot og fase. Et mistet lease giver
+  ikke ret til at fortsætte DDL, verification eller frigive barrier.
+- Der kræves ikke nul autoriserede migrationsforbindelser i
+  alle faser. Ved fysisk restore/fil-publicering skal derimod
+  være tilstrækkelig evidens for, at relevante ældre forbindelser
+  og generationer ikke fortsat anvender den gamle database.
+  Ingen manuel WAL/SHM-reparation eller rå DB-open som probe.
+- Bounded, idempotente backfills følger fortsat deres særskilte
+  D006.6-fasekontrakter og får ikke automatisk et nyt globalt
+  drain-krav for hver batch uden en schema-/restore-grænse.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Lease udløber, men den gamle proces kører videre med connection:
+  expiry alene må ikke frigive deltageren eller autorisere DDL.
+- Worker crasher under open eller cleanup; deltagelse er ukendt:
+  migration forbliver blokeret, indtil lifecycle kan reconciles.
+- Proces-ID genbruges eller registreringen er stale efter restart:
+  ingen falsk klassifikation af originalt handle som afsluttet.
+- Procesdød er bevist, men backend-/handle-evidens er utilstrækkelig:
+  ingen ubetinget drain-godkendelse eller usikker filudskiftning.
+- Autoriseret backup under `QUIESCED` og verification under
+  `MIGRATING`: korrekt scope/fencing og afslutning ved fasegrænse.
+- Migration-lease mistes under verification eller recovery:
+  ingen DDL-fortsættelse eller `MIGRATING` -> `NORMAL` uden ny
+  godkendt reconciliation og gældende kontrolkontrakter.
+- Connection-lifecycle afsluttes, men commit eller ekstern
+  levering er ukendt: ingen afledning af negativt business-udfald.
+
+**Fortsat åbent:** Konkrete participant-identiteter, tværproces-
+koordinering, crash-evidens, backend-/OS-semantik, faseautorisation
+og verifikation af ressourcefrigivelse. Ingen lock-type, journal,
+tabel, database, API, service eller implementering vælges her.
+R2 forbliver OPEN; R1/R3/R4 ændres ikke. D006, §12-§18,
+V2, migration, runtime, deploy og LIVE forbliver uændrede.
+
 ## 5. R3 — Runtime-evidens bundet til faktisk backend
 
 **Eksisterende grundlag.** Den viste `require_sqlite_wal_reset_fix()` læser
