@@ -543,6 +543,128 @@ tabel, database, API, service eller implementering vælges her.
 R2 forbliver OPEN; R1/R3/R4 ændres ikke. D006, §12-§18,
 V2, migration, runtime, deploy og LIVE forbliver uændrede.
 
+### 4.4 R2-D — V3.0 maintenancekoordinering og verificeret drain
+
+**Status: PROPOSED_FOR_REVIEW; R2 forbliver OPEN.**
+**Reviewdato: 2026-10-24.**
+
+**Grundlag og afgrænsning.** R2-A fastlægger som reviewforslag deltagelse
+før SQLite-open, R2-B entydigt handle-ejerskab og verificeret cleanup,
+og R2-C crash-/stale-reconciliation samt faseautoriserede
+migrationsforbindelser. §17 kræver en fælles race-sikker grænse mellem
+normal read-admission og committed `QUIESCED`. D006.5/D006.6 og §18
+bevarer deres eksisterende fencing-, migration- og reconciliation-krav.
+Dette afsnit vælger ingen konkret runtime-mekanisme og lukker ikke R2.
+
+**Præcisering af kandidatmodellerne (ikke godkendt):**
+Kontrolleret V3-maintenance med stop/drain og online koordinering er ikke
+to alternativer til fælles koordinering. Begge kræver en race-sikker
+pre-open-/lifecycle-grænse. Forskellen er, om normale V3-workers holdes
+aktive gennem maintenance-forløbet eller afskærmes som del af en
+kontrolleret maintenance-procedure.
+
+**Foretrukken kandidat for V3.0 (ikke godkendt):**
+Til schemaændrende migrationer på den godkendte enkeltserver-målprofil
+foretrækkes kontrolleret V3-maintenance, hvor normale V3-start- og
+databaseadgangsveje afskærmes, eksisterende deltagere drænes eller
+reconciles, og kun eksplicit faseautoriserede migrationsforbindelser
+kan fortsætte. Præferencen begrundes i lavere forventet
+koordinationskompleksitet, ikke i at processtop erstatter D006 eller §17.
+
+**Foreslået integrationskontrakt (ikke godkendt):**
+- Maintenance-spærringen skal omfatte nye normale V3-units of work og
+  SQLite-open-forsøg fra både nye og allerede kørende processer.
+  Et service-stop alene er derfor ikke et fuldstændigt adgangsbevis.
+- Alle normale V3-adgangsveje skal passere den samme godkendte
+  pre-open-/admission-grænse. Et forsøg, som konkurrerer med
+  maintenance-overgangen, skal enten være registreret og afvikles
+  kontrolleret eller afvises; det må ikke forsvinde mellem to checks.
+- D006.6's migration-lease/fencing og committed `NORMAL` -> `QUIESCED`
+  bevares. Maintenance-spærringen er et ekstra fail-closed krav og
+  må ikke erstatte den canonical migrationsbarriere.
+- Migrator-crash må ikke automatisk genåbne normal V3-adgang.
+  Frigivet proces-/OS-lås, timeout, lease-expiry eller observeret
+  processtop er ikke alene bevis for sikkert afsluttet maintenance.
+- Et crash før eller efter barrier-commit skal kunne efterlade en
+  blokerende, reconcilerbar tilstand, indtil både maintenance-status,
+  migration-control og relevante connection-lifecycles er afklaret.
+  Den konkrete persistens- og koordineringsmekanisme vælges senere.
+- Migrationens egne lease-, barrier-, backup-, DDL-, verification-
+  og recovery-forbindelser skal have eksplicit faseautorisation.
+  De må ikke være skjulte undtagelser fra lifecycle-evidensen.
+- Drain må ikke kræve nul migrationsforbindelser i alle faser.
+  Protokollen skal i stedet skelne normale participants fra
+  migrationsparticipants og undgå en rækkefølge, hvor migratoren
+  venter på sig selv eller holder en ressource, som cleanup behøver.
+- Ventetid på processtop, participant-drain eller ekstern backup må
+  ikke indføres som langvarigt arbejde inde i en SQLite-write-
+  transaction. D006's korte transactions og fasegrænser består.
+- En fri koordinationslås er ikke alene cleanup-bevis. Den valgte
+  mekanisme skal dokumentere, at lifecycle-beskyttelsen dækker
+  relevante SQLite-ressourcer indtil verificeret afslutning, og at
+  crash håndteres efter R2-C.
+- Verificeret connection-cleanup beviser ikke `NOT_COMMITTED`.
+  §18's COMMITTED/NOT_COMMITTED/UNRESOLVED-reconciliation forbliver
+  særskilt og må ikke afledes af processtop, close eller drain.
+- Normal genåbning kræver både D006's gyldige verification/fencing og
+  committed tilbagevenden til `NORMAL` samt afklaring af den ekstra
+  maintenance-/lifecycle-spærre. Ingen af de to lag må alene kunne
+  give adgang ved ukendt eller modstridende evidens.
+- V3-databaseadgang skal bindes til den betroede V3-konfiguration,
+  §14-identitet og korrekt schema-/manifestkontrakt. Forskellige
+  miljøvariabelnavne eller pathnames er ikke alene bevis for, at
+  canonical V3 er fysisk adskilt fra V2's account/auth-store.
+- V2-web/login/TOTP må ikke stoppes eller migreres som en bivirkning
+  af V3-maintenance. Eksisterende D005/D006 fail-closed regler for
+  funktioner, der senere afhænger af V3, gælder dog fortsat.
+- Online tværproceskoordinering forbliver en mulig senere model, men
+  får ingen svagere krav til pre-open-race, cleanup, crash, fencing,
+  databaseidentitet eller reconciliation.
+
+**Foreslået protokolrækkefølge (ikke implementeret):**
+1. Afskærm nye normale V3-open/admission-forsøg gennem den fælles
+   maintenance-/pre-open-grænse uden at ændre V2.
+2. Acquire og verificér migration-lease/fencing og commit D006.6's
+   `NORMAL` -> `QUIESCED` efter dens eksisterende kontrakt.
+3. Dræn eller reconcile alle relevante normale participants,
+   open-forsøg, transactions og cleanup-forløb. Ukendt status blokerer.
+4. Kør kun de særskilt autoriserede backup-/migration-/verification-
+   forbindelser, som den aktuelle D006/§17-fase tillader.
+5. Efter migration: gennemfør påkrævet verification, smoke/integrity
+   og fencing-kontrol før committed `MIGRATING` -> `NORMAL`.
+6. Frigiv først normal V3-adgang, når både canonical migration-state
+   og maintenance-/lifecycle-evidens er konsistente og sikre.
+7. Ved crash eller ukendt udfald: ingen automatisk genåbning eller
+   blind DDL-retry; brug særskilt autoriseret reconciliation.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- En allerede kørende worker starter nyt open samtidigt med maintenance:
+  forsøget overses ikke og får ingen sen normal admission.
+- Migratoren crasher før `QUIESCED`, efter `QUIESCED` eller under
+  verification: frigivne proceslåse åbner ikke automatisk V3 igen.
+- Normal participant crasher med ukendt cleanup eller nedarvede/delte
+  handles: ingen drain-succes uden tilstrækkelig lifecycle-evidens.
+- Migrationens egen backup-/verification-connection er aktiv:
+  protokollen tæller den korrekt og undgår self-deadlock.
+- DDL committer, men commit-ACK mistes: §18-reconciliation anvendes;
+  ingen blind DDL-gentagelse eller falsk rollback.
+- Canonical state er `NORMAL`, men maintenance-afslutningen er ukendt:
+  normal V3-adgang forbliver blokeret indtil sikker reconciliation.
+- Maintenance-status ser afsluttet ud, men control-head er
+  `QUIESCED`/`MIGRATING`: ingen normal admission.
+- V3-konfiguration peger mod V2 account/auth-store eller identiteten
+  kan ikke bevises: fail-closed før canonical V3-adgang.
+- V2 login/TOTP fortsætter uden V3-stophandlinger, mens funktioner
+  med låst V3-afhængighed fortsat følger deres egne fail-closed gates.
+
+**Fortsat åbent:** Konkret maintenance-spærre, tværprocesprotokol,
+lineariseringsbevis, participant-identitet, crash-persistens,
+backend-/OS-handlebinding, resource-cleanup og recovery-API.
+Ingen fil-/proceslås, tabel, journal, service, systemd-policy,
+SQLite-backend eller implementering vælges her. R2 forbliver OPEN;
+R1/R3/R4 ændres ikke. D006, §9-§18, V2, runtime, migration,
+deploy og LIVE forbliver uændrede.
+
 ## 5. R3 — Runtime-evidens bundet til faktisk backend
 
 **Eksisterende grundlag.** Den viste `require_sqlite_wal_reset_fix()` læser
