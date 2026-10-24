@@ -709,6 +709,96 @@ snævre guards eksisterende ansvar ændres ikke af notatet.
 connection. Ingen pakkeinstallation, global SQLite-udskiftning eller ny
 versionsallowlist vælges.
 
+### 5.1 R3-A — Backend, factory og actual-connection evidensbinding
+
+**Status: PROPOSED_FOR_REVIEW; R3 forbliver OPEN.**
+**Reviewdato: 2026-10-24.**
+
+**Grundlag og afgrænsning.** Den eksisterende WAL-reset release-guard
+kontrollerer standardbibliotekets loaded SQLite-version og åbner ingen
+database. Den eksisterende connection-contract validerer allerede
+observerede værdier og udfører ingen I/O. De gennemgåede tests verificerer
+disse smalle egenskaber med simuleret metadata og konstruerede
+observationer; de er ikke integrationstest af en backend/factory/
+work-connection-kæde. [B3]
+
+§13 kræver actual-connection observation i L2, §14 kræver en
+identity-capable backend og connection-bundet identitetsevidens,
+og R3 kræver, at den kontrollerede backend er den backend, som faktisk
+åbner den konkrete work-connection. Dette afsnit vælger ingen backend.
+
+**Foreslået integrationskontrakt (ikke godkendt):**
+- Pre-open runtime-, build- og capability-evidens skal være bundet
+  til den konkrete SQLite-binding/backend, som den godkendte L2-factory
+  efterfølgende bruger. Evidens fra en anden binding eller proces
+  kan ikke alene autorisere connection-open.
+- Factoryen må ikke kontrollere backend A og derefter åbne gennem
+  backend B, direkte eller gennem implicit fallback.
+- Standardbibliotekets `sqlite3.sqlite_version_info` kan kun være
+  evidens for den SQLite-runtime, som det konkrete stdlib-modul er
+  bundet til. Den giver ingen automatisk attestering af APSW,
+  pysqlite3 eller en anden fremtidig binding.
+- Et accepteret versionsnummer er ikke alene capability-evidens.
+  Krævede funktioner fra §14, §15 og den valgte transaction-kontrakt
+  skal verificeres særskilt mod den backend, der faktisk anvendes.
+- L2 skal indsamle connection-state og krævet backend-evidens fra
+  den konkrete work-connection, som L4 ejer. Caller-konstruerede
+  `ConnectionStateObservation`-værdier må ikke alene være
+  authoritative admission-evidens.
+- Den rene connection-contract kan fortsat validere et observation-
+  objekt, men provenance/binding af observationen til den faktiske
+  connection skal etableres af den godkendte observation/factory-
+  kæde uden at gøre kontraktmodulet til I/O-owner.
+- Connection-identitet, access mode, relevante settings og
+  capabilities skal knyttes til samme bounded unit of work.
+  Evidens fra en tidligere connection må ikke ukritisk genbruges.
+- Backend-, adapter-, factory- eller relevant konfigurationsskift
+  invaliderer tidligere backend-/connection-evidens, medmindre en
+  eksplicit versioneret kontrakt dokumenterer sikker genbrug.
+- Backend-afvisning eller manglende capability må give fail-closed.
+  Ingen automatisk fallback til stdlib, anden binding, svagere
+  identity-kontrol eller caller-leveret versionsmetadata er tilladt.
+- Build-/source-provenance kan være nødvendig, når releaseversionen
+  alene ikke er tilstrækkelig, eksempelvis ved vendor-backport.
+  Den konkrete provenance-mekanisme vælges ikke her.
+- V2's eksisterende SQLite-adgang må ikke globalt omlægges eller
+  opgraderes som bivirkning af V3-backendvalget.
+- R3-A giver ingen database-admission alene; L1-L4, §14-§18,
+  schema/manifest, migration, transaction og business-gates
+  gælder fortsat.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Pre-open kontrol udføres mod backend A, mens factory forsøger B:
+  ingen SQLite-open eller business-admission gennem B.
+- Samme versionsnummer findes i to forskellige bindings/builds:
+  versionslighed alene giver ingen capability- eller provenance-
+  lighed.
+- Caller leverer et perfekt formet `ConnectionStateObservation`
+  uden dokumenteret connection-provenance:
+  ingen authoritative admission alene på objektets værdier.
+- Factory åbner korrekt backend, men actual connection mangler en
+  krævet §14-capability:
+  fail-closed før business-adgang.
+- Backend eller factory-konfiguration ændres mellem pre-open-gate
+  og connection-open:
+  tidligere evidens må ikke ukritisk genbruges.
+- Godkendt backend afvises eller mangler:
+  ingen silent fallback til en anden SQLite-binding.
+- Vendor-backport rapporterer en version, som release-guarden afviser:
+  ingen runtime-admission gennem den nuværende guard. Eventuel senere
+  accept kræver særskilt godkendt build-/source-policy og binding til
+  den backend, som den godkendte factory faktisk anvender.
+- V3-backendvalget ændres:
+  V2's account/auth SQLite-path påvirkes ikke automatisk.
+
+**Fortsat åbent:** Konkret SQLite-backend, factory-shape,
+capability-manifest, build-/source-provenance, connection-observer
+og den konkrete evidensbinding mellem backend og connection.
+Ingen pakkeinstallation, global SQLite-udskiftning, databaseåbning,
+public API eller runtime-implementation vælges her. R3 forbliver OPEN;
+R1/R2/R4 ændres ikke. D006, §12-§18, V2, deploy og LIVE
+forbliver uændrede.
+
 ## 6. R4 — Bindingens faktiske transaktionskontrakt
 
 **Eksisterende grundlag.** D006 kræver korte transactions, genvalidering af
