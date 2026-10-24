@@ -799,6 +799,116 @@ public API eller runtime-implementation vælges her. R3 forbliver OPEN;
 R1/R2/R4 ændres ikke. D006, §12-§18, V2, deploy og LIVE
 forbliver uændrede.
 
+### 5.2 R3-B — Backend capability-manifest og kandidatgrænse
+
+**Status: PROPOSED_FOR_REVIEW; R3 forbliver OPEN.**
+**Reviewdato: 2026-10-24.**
+
+**Observeret kandidatstatus.** Den seneste read-only inventering i den
+aktive Aureum-venv viste Python 3.12.3 med standardbibliotekets `sqlite3`
+og loaded SQLite 3.45.1. Den eksisterende WAL-reset release-policy
+accepterer ikke 3.45.1. APSW og pysqlite3 blev ikke fundet ved den
+afgrænsede import-specifikationstest. Ingen database blev åbnet.
+Observationen er et aktuelt inventory-punkt, ikke et backendvalg.
+
+§14 kræver desuden en identity-capable backend med capabilities, som
+ikke alene følger af et accepteret versionsnummer. R3-A kræver binding
+mellem backend, factory og den faktiske work-connection.
+
+**Foreslået capability-manifest (ikke godkendt):**
+En backendkandidat skal have en versioneret, reviewbar capability-profil,
+som mindst beskriver og kan verificere følgende kategorier:
+
+- **Backend/runtime-identitet:** Den konkrete Python-binding/adapter,
+  runtime SQLite-version og relevant build-/source-provenance skal
+  kunne knyttes til den backend, som factoryen faktisk anvender.
+- **Release-policy:** Den gældende WAL-reset release-/build-policy
+  skal være bestået ved enhver V3-connection-open, som bruger den
+  godkendte backend. En afvist release må ikke fortsætte via override,
+  fallback eller anden implicit binding.
+- **Existing-only open:** Factoryen skal kunne åbne den valgte
+  eksisterende V3-database uden implicit create eller fallback til
+  en anden database.
+- **No-follow/open-policy:** Backend/factory skal dokumenteret kunne
+  anvende §14's godkendte `SQLITE_OPEN_NOFOLLOW`-krav ved den faktiske
+  SQLite-open. Bindingens konkrete API-mapping vælges med backendvalget;
+  en svagere path-kontrol må ikke bruges som fallback.
+- **Actual access mode:** Den faktisk opnåede read-only/read-write
+  mode skal kunne observeres fra den konkrete connection; requested
+  mode alene er ikke evidens.
+- **Connection-bundet databaseevidens:** Backend skal levere de
+  connection-bundne filename-/VFS-/movement-observationer, som §14
+  kræver, uden at et pathname alene bliver identitetsbevis.
+- **DB-object binding:** Backend/VFS/OS-integrationen skal have en
+  dokumenterbar og testbar mekanisme til den stærkere binding mellem
+  faktisk åbnet databaseobjekt og den betroede filidentitet, som §14
+  fortsat lader implementeringsmæssigt åben.
+- **WAL/SHM-livscyklus:** Backend skal kunne indgå i §15's kontrollerede
+  sidecar-livscyklus uden immutable/nolock-fallback, manuel sidecar-
+  reparation eller skjult journal-mode-mutation.
+- **Actual-connection settings:** De værdier, som den eksisterende
+  `ConnectionStateObservation` validerer, skal kunne observeres fra
+  den konkrete work-connection og bindes til samme bounded unit of work.
+- **Schema/capability observation:** `user_version`, manifest,
+  migrationshistorik/checksums og krævede schema-capabilities skal
+  senere kunne verificeres efter §16 og L3 uden at factoryen opfinder
+  en permanent admission.
+- **Transaction integration:** Backend skal kunne understøtte den
+  eksplicitte transaction-kontrakt, som senere godkendes under R4.
+  R3-B vælger ikke autocommit-mode, BEGIN-policy eller retry-semantik.
+- **Cleanup/resource integration:** Backendens connection-, statement-,
+  cursor-, BLOB- og backup-resource-semantik skal kunne indgå i
+  R2-B/R2-C's verificerede cleanup- og crash-kontrakt.
+- **Introspection failure:** Ukendt, manglende eller ikke-verificerbar
+  capability skal være fail-closed. Manglende introspection må ikke
+  omskrives til "supported".
+- **Ingen global V2-effekt:** Installation eller valg af V3-backend må
+  ikke automatisk udskifte eller ændre V2's eksisterende SQLite-binding.
+
+**Manifestets rolle:**
+- Capability-manifestet er en policy/kravprofil, ikke runtime-evidens.
+- En backend må ikke selv erklære sig compliant uden verificerbar
+  mapping fra hvert krævet capability til konkret API/adfærd og tests.
+- En capability, som kun findes i en buildvariant, skal bindes til den
+  konkrete build/provenance; pakkenavn eller versionsstreng alene er
+  utilstrækkelig.
+- Factoryens backend-ID, capability-profil og observationer skal kunne
+  sammenholdes uden caller-leverede bypass-værdier.
+- Et senere backendskift kræver ny capability-review; tidligere
+  godkendelse er ikke automatisk portabel mellem bindings/builds.
+
+**Foreslåede acceptance-cases (ikke udført):**
+- Stdlib SQLite 3.45.1 på den observerede server:
+  ingen normal V3-open gennem den eksisterende release-guard.
+- Backend består release-policy, men mangler §14 DB-object binding:
+  ingen business-admission.
+- Backend understøtter requested read-only, men actual mode kan ikke
+  verificeres:
+  fail-closed.
+- Filename og HAS_MOVED-lignende evidens er tilgængelig, men stærkere
+  objektbinding mangler:
+  ingen påstand om fuld §14-identitet.
+- Connection-settings kan kun leveres som caller-data:
+  ingen authoritative actual-connection admission.
+- Compile/build-diagnostic er utilgængelig:
+  manglende provenance-evidens håndteres efter den senere godkendte
+  build-policy, ikke ved at antage standardbuild.
+- Backend opfylder R3-capabilities, men den valgte transaction-mode
+  bryder R4:
+  backend er ikke dermed implementeringsklar.
+- Optional backend er ikke installeret:
+  ingen silent installation, import-fallback eller stdlib-fallback.
+- V3-backend installeres senere:
+  V2's account/auth-store fortsætter på sin særskilt godkendte path
+  og binding, medmindre en separat V2-beslutning ændrer dette.
+
+**Fortsat åbent:** Den konkrete backendkandidat, capability-ID'er,
+manifest-format, build-/source-provenance, OS/VFS-object-binding,
+factory-/observer-API og integrationstests. R3-B vælger ingen pakke,
+installationsmetode eller runtime-admission. R3 forbliver OPEN;
+R1/R2/R4 ændres ikke. D006, §12-§18, V2, deploy og LIVE
+forbliver uændrede.
+
 ## 6. R4 — Bindingens faktiske transaktionskontrakt
 
 **Eksisterende grundlag.** D006 kræver korte transactions, genvalidering af
