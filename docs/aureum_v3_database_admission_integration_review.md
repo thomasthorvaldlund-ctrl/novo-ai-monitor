@@ -909,6 +909,118 @@ installationsmetode eller runtime-admission. R3 forbliver OPEN;
 R1/R2/R4 ændres ikke. D006, §12-§18, V2, deploy og LIVE
 forbliver uændrede.
 
+### 5.3 R3-C — Backendkandidater og WAL/VFS-gapanalyse
+
+**Status: PROPOSED_FOR_REVIEW; R3 forbliver OPEN.**
+**Reviewdato: 2026-10-24.**
+
+**Grundlag:** Godkendt §14 path-identitet, §15 WAL/SHM-livscyklus,
+R3-A factory-binding og R3-B capability-manifest samt officiel
+SQLite-/APSW-dokumentation. Dette er dokumentationsbaseret analyse,
+ikke installeret-backend-test eller runtime-evidens.
+
+**Aktuel platform:** Aktiv venv blev observeret med Python 3.12.3,
+stdlib sqlite3 og SQLite 3.45.1. Sidstnævnte består ikke den
+eksisterende WAL-reset release-policy. APSW og pysqlite3 var ikke
+installeret ved den afgrænsede inventory-kontrol.
+
+**Kandidatsammenligning:**
+- **Stdlib sqlite3:** URI-open kan afgrænse existing-only adgang,
+  men den dokumenterede offentlige Python-API eksponerer ikke
+  direkte alle de nødvendige §14 C-operationer. Den observerede
+  SQLite 3.45.1 afvises desuden af den nuværende release-guard.
+  Stdlib-bindingen alene er derfor ikke en kvalificeret løsning
+  til den godkendte canonical V3-admission.
+- **APSW:** Dokumentationen beskriver sqlite3_open_v2 med eksplicitte
+  flags, faktisk read-only-observation, connection-filename,
+  file_control og VFS-adgang. Det gør APSW relevant for videre
+  undersøgelse af L2-capabilities.
+- **APSW default-open:** Standardflags inkluderer READWRITE og
+  CREATE. En eventuel V3-factory skal eksplicit fjerne CREATE,
+  kræve existing-only og anvende SQLITE_OPEN_NOFOLLOW. Ingen
+  almindelig eller implicit fallback er tilladt.
+- **HAS_MOVED:** At APSW file_control accepterer en operation
+  beviser ikke HAS_MOVED=false. Både operationens succes og
+  den konkrete outputværdi kræver godkendt observation.
+- **APSW file_control-pointer:** API'en modtager en rå pointer.
+  Output-bufferens type og levetid samt operationens return-status
+  og faktiske outputværdi skal være verificerbare. Rå pointeradgang
+  er ikke i sig selv en sikker identitetsbinding.
+- **§14 L4 objektbinding:** Hverken filename, HAS_MOVED=false,
+  VFS-navn eller før-/efter-observation af pathname beviser alene
+  den faktiske SQLite-fils identitet. Ingen kandidat er på dette
+  grundlag kvalificeret til business-admission.
+- **§15 sidecar-binding:** APSW's VFS-udvidelsesmuligheder er
+  ikke bevis for sammenhæng mellem work-connection og faktiske
+  DB/WAL/SHM-objekter eller deres generationer.
+- **R2/R4:** Backendens cleanup-, cursor-, statement-,
+  transaction-, autocommit- og crash-semantik er fortsat
+  særskilte åbne integrationskrav.
+- **APSW transaction-context:** `with connection` starter en
+  transaction og committer normalt ved afslutning uden exception.
+  Indlejrede context managers bruger savepoints. Denne adfærd
+  skal vurderes under R4 og er ikke en godkendt L4-policy.
+- **APSW close-semantik:** `Connection.close()` lukker også
+  udestående cursors, BLOBs og backups; `force=True` ignorerer
+  exceptions. Et close-kald alene er ikke verificeret R2-cleanup
+  og siger ikke, om en business-transaction blev committed.
+
+**Særlige §15-risici:**
+- L1 må ikke åbne og lukke DB/WAL/SHM råt for at skaffe ekstra
+  inode-/handle-evidens. Dette kan forstyrre SQLite POSIX-låse.
+- Dirfd-relativ no-follow metadataobservation bevares, men er
+  ikke alene en racefri connection-/objektbinding.
+- Fysisk read-only åbning kan indebære SQLite-styrede WAL/SHM-
+  sideeffects. Logisk read-only er ikke identisk med nul
+  filsystemændringer.
+- Autoriseret sidecar-oprettelse og SHM-genopbygning skal være
+  SQLite-styret og verificeret; ingen manuel repair.
+- Immutable/nolock, PERSIST_WAL, exclusive locking og ændret
+  checkpoint-policy er ikke løsninger godkendt af §15.
+- WAL kan indeholde committed data, som endnu ikke er
+  checkpointed. Read-admission må ikke ignorere WAL.
+- Crash-rester, manglende sidecars og sidste read-only close
+  kræver §15-klassifikation, ikke automatisk sletning.
+- L4 skal kunne dokumentere sikker read-snapshot-livscyklus,
+  ressourceafslutning og relevant efter-close-observation.
+
+**VFS-/OS-integration — mulig, men ikke valgt:**
+- En konkret mekanisme skal binde faktiske SQLite-open-handles
+  til godkendt filidentitet uden at skabe nye racevinduer.
+- Samme løsning skal dokumentere DB/WAL/SHM-relation,
+  locking, shared-memory, recovery og sikre close-forløb.
+- APSW VFS-arv eller file_control-adgang giver ingen automatisk
+  garanti for disse egenskaber.
+- Enhver custom VFS/native integration kræver separat review
+  af build, OS-semantik, concurrency og failure paths.
+- Ingen VFS-implementation, OS-handle-API eller backend vælges her.
+
+**Foreslåede acceptance-scenarier, ikke udført:**
+- Manglende CREATE-forbud eller NOFOLLOW: reject.
+- Forkert actual access mode eller ukendt HAS_MOVED: reject.
+- Samme pathname men udskiftet faktisk DB-objekt: reject.
+- Uverificeret DB/WAL/SHM-binding eller sidecar-race: reject.
+- Rå close-operation der påvirker SQLite-låse: reject.
+- READONLY/WAL med autoriseret SQLite-sidecar-transition:
+  kun betinget admission efter fuld §15-validering.
+- Samtidige readers/writers, snapshots, graceful close,
+  read-only last-close, crash/restart og bevaret WAL:
+  kræver isolerede concurrency- og recovery-tests.
+- Backendversion eller VFS skifter: tidligere capability-evidens
+  kan ikke genbruges uden eksplicit ny godkendelse.
+
+**Foreløbig vurdering:** APSW er en relevant primær
+undersøgelseskandidat, ikke en valgt eller godkendt backend.
+En separat VFS-/OS-integration kan være nødvendig, men er
+endnu ikke specificeret eller sikkerhedsvurderet.
+
+**Fortsat åbent:** Konkret backend/build-provenance,
+§14 faktisk OS-object-binding, §15 DB/WAL/SHM-binding,
+sikker POSIX-låsehåndtering, R2-resource-lifecycle,
+R4-transaktionssemantik og isolerede tests.
+R1-R4 forbliver OPEN. Ingen kodeændring, installation,
+databaseåbning, V2-ændring, deploy eller LIVE-godkendelse.
+
 ## 6. R4 — Bindingens faktiske transaktionskontrakt
 
 **Eksisterende grundlag.** D006 kræver korte transactions, genvalidering af
