@@ -1021,6 +1021,120 @@ R4-transaktionssemantik og isolerede tests.
 R1-R4 forbliver OPEN. Ingen kodeændring, installation,
 databaseåbning, V2-ændring, deploy eller LIVE-godkendelse.
 
+### 5.4 R3-D — OS-handle-binding og VFS-mekanismekandidater
+
+**Status: PROPOSED_FOR_REVIEW; R3 forbliver OPEN.**
+**Reviewdato: 2026-10-26.**
+
+**Grundlag:** Godkendt §14/§15 og R3-A/B/C. Read-only
+repository-kontrol fandt krav om VFS-/OS-handle-binding,
+men ingen godkendt konkret native mekanisme.
+Dette er kandidatvurdering, ikke implementeringsgodkendelse.
+
+**Mekanismekandidater — ingen valgt:**
+
+1. **Almindelige APSW/SQLite connection-API'er:**
+   Filename, VFS-navn, HAS_MOVED og pre-/post-open metadata
+   beviser ikke alene faktisk OS-objektidentitet.
+   SQLITE_FCNTL_FILE_POINTER giver en sqlite3_file-pointer,
+   ikke en dokumenteret Unix-file-descriptor. Intern
+   VFS-strukturlayout må ikke antages stabilt.
+
+2. **Python-baseret APSW VFS-shim:**
+   VFS-arv og observation af xOpen/xFileControl kan være
+   relevante, men giver ikke automatisk verificeret
+   identitet af underliggende OS-filobjekter.
+   Arvede WAL-/xShm-egenskaber er heller ikke bevis
+   for korrekt DB/WAL/SHM-binding.
+
+3. **Auditeret native VFS-/OS-integration:**
+   En undersøgelsesretning er identitetsevidens fra det
+   filobjekt, som SQLite's faktiske VFS allerede ejer.
+   Eventuel fstat-evidens skal bindes til samme åbne
+   filobjekt, connection, generation og levetid.
+   Ingen konkret API eller mekanisme er godkendt.
+
+4. **Komplet alternativ VFS:**
+   Kræver særskilt bevis for locking, WAL/SHM,
+   recovery, close, crash og concurrency.
+   Dette indebærer større korrekthedsrisiko og
+   er ikke en godkendt løsning.
+
+**Krav til fremtidig objektbinding:**
+
+- L1's descriptor-relative no-follow pre-open-kontrol,
+  st_dev/st_ino og øvrige platform-policy bevares.
+- L2 kræver existing-only og SQLITE_OPEN_NOFOLLOW.
+- Evidens skal komme fra faktisk åbnet SQLite-filobjekt,
+  ikke caller-data eller et selvstændigt pathname-opslag.
+- L4 kræver post-open genobservation og verificerbar
+  binding til L1's godkendte objektidentitet.
+- Admission- og transaction-grænser kræver relevante
+  fornyede kontroller inden for bounded unit of work.
+- Ingen observation giver permanent eller global adgang.
+- Manglende capability, mismatch eller ukendt resultat
+  medfører fail-closed uden business-admission.
+
+**SQLite-pointer-, lock- og cleanup-livscyklus:**
+
+- SQLITE_FCNTL_FILE_POINTER er ikke i sig selv
+  et OS-descriptor- eller inodebevis.
+- sqlite3_database_file_object() er knyttet til en
+  afgrænset WAL-/journal-xOpen-kontekst, ikke en
+  generel SHM-identitetsmekanisme.
+- xClose kan kaldes efter fejlet xOpen afhængigt af
+  pMethods-tilstanden. Ownership, pointerlevetid
+  og fejlstier skal derfor verificeres.
+- Rå pointere må ikke eksponeres til business-kode.
+- Ingen særskilt rå DB/WAL/SHM-open/close eller
+  descriptor-genvej, der kan forstyrre POSIX-låse.
+- SQLite's egen låse- og sidecar-administration bevares.
+- R2-cleanup og unknown-commit-status forbliver
+  selvstændige krav, også efter close-fejl.
+
+**WAL/SHM-, backend- og procesbinding:**
+
+- Hoveddatabase og WAL skal forbindes til den samme
+  godkendte databasegeneration.
+- SHM kræver også verificeret xShm-livscyklus;
+  WAL-xOpen alene giver ikke fuld §15-binding.
+- Sidecar-oprettelse, genopbygning og close-overgange
+  skal følge §15 og være SQLite-styrede.
+- ATTACH, URI-vfs og alternative factory-adgangsveje
+  må ikke omgå identitets- eller admission-policy.
+- Backend/build/VFS-provenance skal dokumenteres.
+- Flere SQLite-kopier eller bindings i samme proces
+  må ikke skabe inkompatibel POSIX-låsesemantik.
+- R4-transaktionssemantik godkendes separat.
+
+**Foreslåede negative acceptance-tests — ikke udført:**
+
+- Path udskiftes under open og gendannes:
+  forkert faktisk OS-objekt skal afvises.
+- Korrekt pathname, men forkert faktisk inode: reject.
+- Kun pathname eller intern pointer som bevis: reject.
+- WAL/SHM udskiftes uden verificeret lifecycle: reject.
+- WAL-binding findes, men SHM-binding mangler:
+  ingen fuld §15-admission.
+- Native close påvirker anden SQLite-connection: reject.
+- Fejlet xOpen efterlader ukendt handle/cleanup:
+  reject og kræv reconciliation.
+- Forkert VFS via URI/ATTACH eller fallback: reject.
+- Flere bindings med udokumenteret locking: reject.
+- Backend eller VFS ændres uden nyt capability-review:
+  reject.
+
+**Foreløbig vurdering:** Auditeret identitetsevidens
+fra SQLite's faktisk åbne filobjekt er en relevant
+undersøgelsesretning. Ingen APSW-, native- eller
+custom-VFS-løsning vælges eller godkendes her.
+
+**Fortsat åbent:** Konkret API, OS-handle-evidens,
+DB/WAL/SHM-generationer, POSIX-låse, build-provenance,
+R2-cleanup, R4-transaktioner og isolerede tests.
+R1-R4 forbliver OPEN. Ingen kodeændring, installation,
+databaseåbning, V2-ændring, deploy eller LIVE-godkendelse.
+
 ## 6. R4 — Bindingens faktiske transaktionskontrakt
 
 **Eksisterende grundlag.** D006 kræver korte transactions, genvalidering af
